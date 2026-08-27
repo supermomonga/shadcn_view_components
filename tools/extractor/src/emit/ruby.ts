@@ -87,6 +87,12 @@ function renderExportConstants(exportData: Export): string[] {
   lines.push(`      ROOT_SLOT = T.let(${rubyString(exportData.root_slot)}, String)`)
   lines.push("")
 
+  if (exportData.classes_slot && exportData.classes_slot !== exportData.root_slot) {
+    lines.push(`      # 契約クラスが属する要素の data-slot(ルートがラッパー構造の場合)`)
+    lines.push(`      CLASSES_SLOT = T.let(${rubyString(exportData.classes_slot)}, String)`)
+    lines.push("")
+  }
+
   const defaultsPairs = Object.keys(exportData.cva.defaults).sort()
     .map((key) => [key, rubySymbol(exportData.cva.defaults[key]!)] as [string, string])
   lines.push(`      DEFAULTS = T.let(${rubyHashBody(defaultsPairs)}.freeze, T::Hash[Symbol, Symbol])`)

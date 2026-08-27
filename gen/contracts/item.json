@@ -1,0 +1,263 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "Item": {
+      "classes_slot": "item",
+      "combinations": {
+        "size=default&variant=default": "group/item flex flex-wrap items-center rounded-md border border-transparent text-sm transition-colors duration-100 outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 [a]:transition-colors [a]:hover:bg-accent/50 bg-transparent gap-4 p-4",
+        "size=default&variant=muted": "group/item flex flex-wrap items-center rounded-md border border-transparent text-sm transition-colors duration-100 outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 [a]:transition-colors [a]:hover:bg-accent/50 bg-muted/50 gap-4 p-4",
+        "size=default&variant=outline": "group/item flex flex-wrap items-center rounded-md border text-sm transition-colors duration-100 outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 [a]:transition-colors [a]:hover:bg-accent/50 border-border gap-4 p-4",
+        "size=sm&variant=default": "group/item flex flex-wrap items-center rounded-md border border-transparent text-sm transition-colors duration-100 outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 [a]:transition-colors [a]:hover:bg-accent/50 bg-transparent gap-2.5 px-4 py-3",
+        "size=sm&variant=muted": "group/item flex flex-wrap items-center rounded-md border border-transparent text-sm transition-colors duration-100 outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 [a]:transition-colors [a]:hover:bg-accent/50 bg-muted/50 gap-2.5 px-4 py-3",
+        "size=sm&variant=outline": "group/item flex flex-wrap items-center rounded-md border text-sm transition-colors duration-100 outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 [a]:transition-colors [a]:hover:bg-accent/50 border-border gap-2.5 px-4 py-3"
+      },
+      "component_class": "Shadcn::Item",
+      "cva": {
+        "compound": [],
+        "defaults": {
+          "size": "default",
+          "variant": "default"
+        },
+        "prop_names": [
+          "size",
+          "variant"
+        ]
+      },
+      "passthrough_class": true,
+      "root_slot": "item",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "data-size",
+            "data-variant"
+          ],
+          "name": "item",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "ItemActions": {
+      "classes_slot": "item-actions",
+      "combinations": {
+        "": "flex items-center gap-2"
+      },
+      "component_class": "Shadcn::Item::Actions",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "item-actions",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "item-actions",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "ItemContent": {
+      "classes_slot": "item-content",
+      "combinations": {
+        "": "flex flex-1 flex-col gap-1 [&+[data-slot=item-content]]:flex-none"
+      },
+      "component_class": "Shadcn::Item::Content",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "item-content",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "item-content",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "ItemDescription": {
+      "classes_slot": "item-description",
+      "combinations": {
+        "": "line-clamp-2 text-sm leading-normal font-normal text-balance text-muted-foreground [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary"
+      },
+      "component_class": "Shadcn::Item::Description",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "item-description",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "item-description",
+          "static_attributes": {},
+          "tag": "p"
+        }
+      ]
+    },
+    "ItemFooter": {
+      "classes_slot": "item-footer",
+      "combinations": {
+        "": "flex basis-full items-center justify-between gap-2"
+      },
+      "component_class": "Shadcn::Item::Footer",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "item-footer",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "item-footer",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "ItemGroup": {
+      "classes_slot": "item-group",
+      "combinations": {
+        "": "group/item-group flex flex-col"
+      },
+      "component_class": "Shadcn::Item::Group",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "item-group",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "item-group",
+          "static_attributes": {
+            "role": "list"
+          },
+          "tag": "div"
+        }
+      ]
+    },
+    "ItemHeader": {
+      "classes_slot": "item-header",
+      "combinations": {
+        "": "flex basis-full items-center justify-between gap-2"
+      },
+      "component_class": "Shadcn::Item::Header",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "item-header",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "item-header",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "ItemMedia": {
+      "classes_slot": "item-media",
+      "combinations": {
+        "variant=default": "flex shrink-0 items-center justify-center gap-2 group-has-[[data-slot=item-description]]/item:translate-y-0.5 group-has-[[data-slot=item-description]]/item:self-start [&_svg]:pointer-events-none bg-transparent",
+        "variant=icon": "flex shrink-0 items-center justify-center gap-2 group-has-[[data-slot=item-description]]/item:translate-y-0.5 group-has-[[data-slot=item-description]]/item:self-start [&_svg]:pointer-events-none size-8 rounded-sm border bg-muted [&_svg:not([class*='size-'])]:size-4",
+        "variant=image": "flex shrink-0 items-center justify-center gap-2 group-has-[[data-slot=item-description]]/item:translate-y-0.5 group-has-[[data-slot=item-description]]/item:self-start [&_svg]:pointer-events-none size-10 overflow-hidden rounded-sm [&_img]:size-full [&_img]:object-cover"
+      },
+      "component_class": "Shadcn::Item::Media",
+      "cva": {
+        "compound": [],
+        "defaults": {
+          "variant": "default"
+        },
+        "prop_names": [
+          "variant"
+        ]
+      },
+      "passthrough_class": true,
+      "root_slot": "item-media",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "data-variant"
+          ],
+          "name": "item-media",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "ItemSeparator": {
+      "classes_slot": "item-separator",
+      "combinations": {
+        "": "my-0"
+      },
+      "component_class": "Shadcn::Item::Separator",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "item-separator",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "item-separator",
+          "static_attributes": {
+            "orientation": "horizontal"
+          },
+          "tag": "Separator"
+        }
+      ]
+    },
+    "ItemTitle": {
+      "classes_slot": "item-title",
+      "combinations": {
+        "": "flex w-fit items-center gap-2 text-sm leading-snug font-medium"
+      },
+      "component_class": "Shadcn::Item::Title",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "item-title",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "item-title",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    }
+  },
+  "name": "item",
+  "registry_dependencies": [
+    "separator"
+  ],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "deddca81a4d938c43b4d52112a14048de8ef9f4485e46c1f9152a48e87a28e0d"
+  }
+}

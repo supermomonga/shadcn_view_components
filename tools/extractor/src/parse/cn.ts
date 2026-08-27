@@ -14,6 +14,8 @@ export interface CnAnalysis {
   statics: string[]
   /** props.className(利用者上書き)がcnの引数に現れるか */
   hasUserClass: boolean
+  /** cn を持つ要素の data-slot(無い場合は "")。契約クラスが属する要素の特定に使う */
+  slot: string
 }
 
 /**
@@ -28,7 +30,7 @@ export function analyzeCn(
   item: string,
   file: string,
 ): CnAnalysis {
-  const analysis: CnAnalysis = { cvaRef: null, cvaProps: [], statics: [], hasUserClass: false }
+  const analysis: CnAnalysis = { cvaRef: null, cvaProps: [], statics: [], hasUserClass: false, slot: "" }
 
   traverse(ast, {
     JSXAttribute: (path) => {
@@ -45,6 +47,19 @@ export function analyzeCn(
 
       for (const argument of expression.arguments) {
         classifyCnArgument(argument, analysis, cvaDefinitions, item, file, expression.loc?.start)
+      }
+
+      // このcnが属する要素の data-slot を記録する(複数ある場合は最初のもの)
+      if (analysis.slot === "") {
+        const element = path.findParent((parent) => parent.isJSXElement())
+        if (element?.node.type === "JSXElement") {
+          for (const attribute of element.node.openingElement.attributes) {
+            if (attribute.type !== "JSXAttribute" || attribute.name.type !== "JSXIdentifier") continue
+            if (attribute.name.name !== "data-slot") continue
+            const slotValue = attribute.value
+            if (slotValue?.type === "StringLiteral") analysis.slot = slotValue.value
+          }
+        }
       }
     },
   })

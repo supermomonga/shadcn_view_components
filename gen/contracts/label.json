@@ -1,0 +1,37 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "Label": {
+      "classes_slot": "label",
+      "combinations": {
+        "": "flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
+      },
+      "component_class": "Shadcn::Label",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "label",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "label",
+          "static_attributes": {},
+          "tag": "LabelPrimitive.Root"
+        }
+      ]
+    }
+  },
+  "name": "label",
+  "registry_dependencies": [],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "d8ee58d93947e114a83ddbd7b5e47036f045d049091dd127146d4d2f2882efaf"
+  }
+}

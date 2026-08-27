@@ -21,6 +21,9 @@ export const SlotSchema = z.object({
 
 export const ExportSchema = z.object({
   root_slot: z.string(),
+  /** 契約クラス(cn由来)が属する要素の data-slot。ルート自体が持つ場合は root_slot と同じ。
+   *  Table のようにラッパー要素がルートになる構造で、検証対象要素を特定するために使う */
+  classes_slot: z.string(),
   component_class: z.string(),
   cva: CvaSchema,
   /** 事前解決済みの最終クラス文字列。キーは "prop=value&..." 形式(静的のみの場合 "")。 */

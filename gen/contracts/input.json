@@ -1,0 +1,39 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "Input": {
+      "classes_slot": "input",
+      "combinations": {
+        "": "h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40"
+      },
+      "component_class": "Shadcn::Input",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "input",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "type"
+          ],
+          "name": "input",
+          "static_attributes": {},
+          "tag": "input"
+        }
+      ]
+    }
+  },
+  "name": "input",
+  "registry_dependencies": [],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "c223f134568a391206024d83f8b35e93671e4e7e782b8ea5f9a4b518236b8f9e"
+  }
+}

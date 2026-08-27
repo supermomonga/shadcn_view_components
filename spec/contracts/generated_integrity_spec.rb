@@ -93,14 +93,28 @@ RSpec.describe "generated outputs integrity", type: :conformance do
 
     it "has a resolvable component class and contract for implemented entries" do
       registry.reject { |_name, entry| entry["pending"] }.each do |name, entry|
-        expect { entry.fetch("component").constantize }.not_to raise_error, "#{name}: component class missing"
-        expect(ShadcnViewComponents::Contracts.const_defined?(name.camelize)).to be(true), "#{name}: contract missing"
+        exports = entry["exports"] || [{ "component" => entry["component"], "export" => entry["export"] }]
+        exports.each do |export_entry|
+          component_name = export_entry.fetch("component")
+          expect { component_name.constantize }.not_to raise_error, "#{name}/#{export_entry['export']}: component class missing"
+          contract_path = component_name.delete_prefix("Shadcn::")
+          expect(ShadcnViewComponents::Contracts.const_defined?(contract_path)).to be(true),
+                                                                                   "#{name}/#{export_entry['export']}: contract missing"
+        end
       end
+    end
+
+    it "keeps registry, extractor targets, and generated contracts in sync" do
+      targets = JSON.parse(File.read(File.join(REPO_ROOT, "tools/extractor/config/targets.json")))["items"].sort
+      implemented = registry.reject { |_name, entry| entry["pending"] }.keys.sort
+      generated = Dir[File.join(GEN_JSON_DIR, "*.json")].map { |f| File.basename(f, ".json") }.sort
+
+      expect(implemented).to eq(targets), "registry.yml と tools/extractor/config/targets.json が乖離している"
+      expect(generated).to eq(targets), "gen/contracts と targets.json が乖離している"
     end
 
     it "lists unimplemented vendor items as pending (負債の見える化)" do
       implemented = registry.count { |_name, entry| !entry["pending"] }
-      expect(implemented).to eq(1) # Phase 0: buttonのみ実装
       expect(registry.keys.size - implemented).to eq(manifest_items.size - implemented)
     end
   end

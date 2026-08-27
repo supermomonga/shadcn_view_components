@@ -9,6 +9,9 @@ module Shadcn
 
     VariantOption = T.type_alias { T.nilable(T.any(Symbol, String)) }
 
+    # HTMLのvoid要素。閉じタグを付けてはならない
+    VOID_ELEMENTS = %w[area base br col embed hr img input link meta source track wbr].freeze
+
     # ViewComponent::Base は initialize を持たず、ActionView::Base の initialize は
     # 互換性のない引数を取るため super を呼ばない(ViewComponentの標準的な慣行)。
     # この件は .rubocop.yml の Lint/MissingSuper Exclude にも反映している。
@@ -47,11 +50,51 @@ module Shadcn
       end
     end
 
-    # asChild代替(04 §3.3): 同じクラス・スロット構造で要素名だけ変える
+    # 構造を持たない単一要素コンポーネントの既定レンダリング。
+    # ERBテンプレートを置かない限りこれが使われる(クラス文字列を持たない — 04 §5)。
+    # 構造を持つコンポーネント(Buttonのdata属性、Tableのラッパー等)はcallを上書きするか
+    # sidecarテンプレートを置く
+    sig { returns(String) }
+    def call
+      return open_tag if void_element?
+
+      content_tag(tag, **html_attributes) { content }
+    end
+
+    sig { returns(T::Boolean) }
+    def void_element?
+      VOID_ELEMENTS.include?(tag)
+    end
+
+    private
+
+    # void要素は閉じタグ無しで出力する。
+    # NOTE: content_tag はブロック付き呼び出しでのみ第二引数ハッシュが属性扱いになるため
+    # 空ブロックを渡してから閉じタグを取り除く
+    sig { returns(String) }
+    def open_tag
+      content_tag(tag, **html_attributes) { "".html_safe }
+        .then { |markup| markup.sub(%r{></#{Regexp.escape(tag)}>\z}, ">") }
+        .then(&:html_safe)
+    end
+
+    # asChild代替(04 §3.3): 同じクラス・スロット構造で要素名だけ変える。
+    # 契約タグがPrimitives由来(AvatarPrimitive.Root 等)でHTML要素名ではない場合は
+    # この既定タグへフォールバックする(各コンポーネントが上書きしてよい)
     sig { returns(String) }
     def tag
-      default = T.cast(contract_root_slot[:tag], T.nilable(String))
-      (@tag || default || "div").to_s
+      return @tag if @tag
+
+      contract_tag = T.cast(contract_root_slot[:tag], T.nilable(String))
+      return contract_tag if contract_tag&.match?(/\A[a-z][a-z0-9-]*\z/)
+
+      default_tag
+    end
+
+    # 契約タグがHTML要素名ではないときの描画タグ
+    sig { returns(String) }
+    def default_tag
+      "div"
     end
 
     # バリアント値の正規化 + fail-fast検証。契約に存在しない値は ArgumentError
@@ -66,10 +109,12 @@ module Shadcn
       {}
     end
 
-    # 契約由来の data 属性。ルートの data-slot は必ず出力する(04 §4.2)
+    # 契約由来の data 属性。ルートの data-slot は必ず出力する(04 §4.2)。
+    # ルートが data-slot を持たない契約(spinner等)では slot を出力しない
     sig { returns(T::Hash[Symbol, T.untyped]) }
     def contract_data_attributes
-      { slot: contract_root_slot[:name] }
+      root_slot = self.class.contract.const_get(:ROOT_SLOT)
+      root_slot.to_s.empty? ? {} : { slot: root_slot }
     end
 
     sig { returns(T::Hash[Symbol, T.untyped]) }
@@ -80,8 +125,6 @@ module Shadcn
       merge_nested(attributes, :aria, {})
       attributes
     end
-
-    private
 
     sig { returns(T::Module[T.anything]) }
     def contract
@@ -95,7 +138,9 @@ module Shadcn
       slots.find { |slot| slot[:name] == root_slot_name } || slots.first || {}
     end
 
-    # 契約の static_attributes を既定値として採用(利用者指定が優先 — 04 §6)
+    # 契約の static_attributes を既定値として採用(利用者指定が優先 — 04 §6)。
+    # cn を経ない静的 className(table のラッパー等)は class キーとして現れるため
+    # resolved_class で統合する
     sig { returns(T::Hash[Symbol, T.untyped]) }
     def static_attribute_defaults
       T.cast(contract_root_slot[:static_attributes], T::Hash[Symbol, T.untyped])
@@ -104,7 +149,10 @@ module Shadcn
 
     sig { returns(String) }
     def resolved_class
-      self.class.classes(extra: @user_class, **variant_options)
+      static_class = T.cast(static_attribute_defaults[:class], T.nilable(String))
+      extra = [static_class, @user_class].compact.join(" ")
+      extra = nil if extra.empty?
+      self.class.classes(extra: extra, **variant_options)
     end
 
     # data: / aria: は深部マージ(契約由来の値と利用者指定が共存する)

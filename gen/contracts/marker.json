@@ -1,0 +1,91 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "Marker": {
+      "classes_slot": "marker",
+      "combinations": {
+        "variant=border": "group/marker relative flex min-h-4 w-full items-center gap-2 text-left text-sm text-muted-foreground [&_svg:not([class*='size-'])]:size-4 [a]:underline [a]:underline-offset-3 [a]:hover:text-foreground border-b border-border pb-2",
+        "variant=default": "group/marker relative flex min-h-4 w-full items-center gap-2 text-left text-sm text-muted-foreground [&_svg:not([class*='size-'])]:size-4 [a]:underline [a]:underline-offset-3 [a]:hover:text-foreground",
+        "variant=separator": "group/marker relative flex min-h-4 w-full items-center gap-2 text-left text-sm text-muted-foreground [&_svg:not([class*='size-'])]:size-4 [a]:underline [a]:underline-offset-3 [a]:hover:text-foreground before:mr-1 before:h-px before:min-w-0 before:flex-1 before:bg-border after:ml-1 after:h-px after:min-w-0 after:flex-1 after:bg-border"
+      },
+      "component_class": "Shadcn::Marker",
+      "cva": {
+        "compound": [],
+        "defaults": {
+          "variant": "default"
+        },
+        "prop_names": [
+          "variant"
+        ]
+      },
+      "passthrough_class": true,
+      "root_slot": "marker",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "data-variant"
+          ],
+          "name": "marker",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "MarkerContent": {
+      "classes_slot": "marker-content",
+      "combinations": {
+        "": "min-w-0 wrap-break-word group-data-[variant=separator]/marker:flex-none group-data-[variant=separator]/marker:text-center *:[a]:underline *:[a]:underline-offset-3 *:[a]:hover:text-foreground"
+      },
+      "component_class": "Shadcn::Marker::Content",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "marker-content",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "marker-content",
+          "static_attributes": {},
+          "tag": "span"
+        }
+      ]
+    },
+    "MarkerIcon": {
+      "classes_slot": "marker-icon",
+      "combinations": {
+        "": "size-4 shrink-0 [&_svg:not([class*='size-'])]:size-4"
+      },
+      "component_class": "Shadcn::Marker::Icon",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "marker-icon",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "marker-icon",
+          "static_attributes": {
+            "aria-hidden": "true"
+          },
+          "tag": "span"
+        }
+      ]
+    }
+  },
+  "name": "marker",
+  "registry_dependencies": [],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "f12eb633974b71f6d280a4c9616a98c7ccb7af7b4f632dc632d30c8021cf2fbb"
+  }
+}

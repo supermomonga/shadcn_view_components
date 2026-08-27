@@ -1,0 +1,40 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "Separator": {
+      "classes_slot": "separator",
+      "combinations": {
+        "": "shrink-0 bg-border data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px"
+      },
+      "component_class": "Shadcn::Separator",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "separator",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "decorative",
+            "orientation"
+          ],
+          "name": "separator",
+          "static_attributes": {},
+          "tag": "SeparatorPrimitive.Root"
+        }
+      ]
+    }
+  },
+  "name": "separator",
+  "registry_dependencies": [],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "73d9d973ed587b3b122360333976803dceae3278da39ef87a0818e2146332a6d"
+  }
+}

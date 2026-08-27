@@ -1,0 +1,37 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "Skeleton": {
+      "classes_slot": "skeleton",
+      "combinations": {
+        "": "animate-pulse rounded-md bg-accent"
+      },
+      "component_class": "Shadcn::Skeleton",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "skeleton",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "skeleton",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    }
+  },
+  "name": "skeleton",
+  "registry_dependencies": [],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "2323903e8c95154fb4256a5167acef14f55c4ec7df90688858ce334eb8844aca"
+  }
+}

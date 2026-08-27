@@ -1,0 +1,181 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "Breadcrumb": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::Breadcrumb",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "breadcrumb",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "breadcrumb",
+          "static_attributes": {
+            "aria-label": "breadcrumb"
+          },
+          "tag": "nav"
+        }
+      ]
+    },
+    "BreadcrumbEllipsis": {
+      "classes_slot": "breadcrumb-ellipsis",
+      "combinations": {
+        "": "flex size-9 items-center justify-center"
+      },
+      "component_class": "Shadcn::Breadcrumb::Ellipsis",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "breadcrumb-ellipsis",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "breadcrumb-ellipsis",
+          "static_attributes": {
+            "aria-hidden": "true",
+            "role": "presentation"
+          },
+          "tag": "span"
+        }
+      ]
+    },
+    "BreadcrumbItem": {
+      "classes_slot": "breadcrumb-item",
+      "combinations": {
+        "": "inline-flex items-center gap-1.5"
+      },
+      "component_class": "Shadcn::Breadcrumb::Item",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "breadcrumb-item",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "breadcrumb-item",
+          "static_attributes": {},
+          "tag": "li"
+        }
+      ]
+    },
+    "BreadcrumbLink": {
+      "classes_slot": "breadcrumb-link",
+      "combinations": {
+        "": "transition-colors hover:text-foreground"
+      },
+      "component_class": "Shadcn::Breadcrumb::Link",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "breadcrumb-link",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "breadcrumb-link",
+          "static_attributes": {},
+          "tag": "a"
+        }
+      ]
+    },
+    "BreadcrumbList": {
+      "classes_slot": "breadcrumb-list",
+      "combinations": {
+        "": "flex flex-wrap items-center gap-1.5 text-sm break-words text-muted-foreground sm:gap-2.5"
+      },
+      "component_class": "Shadcn::Breadcrumb::List",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "breadcrumb-list",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "breadcrumb-list",
+          "static_attributes": {},
+          "tag": "ol"
+        }
+      ]
+    },
+    "BreadcrumbPage": {
+      "classes_slot": "breadcrumb-page",
+      "combinations": {
+        "": "font-normal text-foreground"
+      },
+      "component_class": "Shadcn::Breadcrumb::Page",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "breadcrumb-page",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "breadcrumb-page",
+          "static_attributes": {
+            "aria-current": "page",
+            "aria-disabled": "true",
+            "role": "link"
+          },
+          "tag": "span"
+        }
+      ]
+    },
+    "BreadcrumbSeparator": {
+      "classes_slot": "breadcrumb-separator",
+      "combinations": {
+        "": "[&>svg]:size-3.5"
+      },
+      "component_class": "Shadcn::Breadcrumb::Separator",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "breadcrumb-separator",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "breadcrumb-separator",
+          "static_attributes": {
+            "aria-hidden": "true",
+            "role": "presentation"
+          },
+          "tag": "li"
+        }
+      ]
+    }
+  },
+  "name": "breadcrumb",
+  "registry_dependencies": [],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "e574ee6733819f32162ce43091569c485029fc53cd86a12062a8cc789c0a0283"
+  }
+}

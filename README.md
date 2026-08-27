@@ -14,9 +14,11 @@
 
 ## ステータス
 
-Phase 0(インフラ + Buttonによるパイプライン実証)が完了。ロードマップは `docs.local/10-roadmap.md` 参照。
+Phase 0(インフラ + パイプライン実証)と Phase 1(表示のみコンポーネント)が完了。ロードマップは `docs.local/10-roadmap.md` 参照。
 
-- 提供コンポーネント: **Button**(全バリアント組み合わせが適合試験で検証済み)
+- 提供コンポーネント(18アイテム / 全エクスポートが適合試験で検証済み):
+  **Button, Badge, Alert, Card, Avatar, Separator, Skeleton, Table, Label, Kbd, Spinner,
+  Empty, AspectRatio, Item, Marker, Input, Textarea, Breadcrumb**
 - upstream 出所: `vendor/shadcn/manifest.json` が唯一の真実の源(現在: shadcn@4.19.0 系)
 
 ## インストール
@@ -77,7 +79,18 @@ render(Shadcn::Button.new(tag: :a, href: post_path(post))) { "詳細" }
 
 # クラスだけ欲しい場面(自前要素に適用)
 Shadcn::Button.classes(variant: :link)
+
+# 複合(ERBでは自然に書ける)
+<%= render(Shadcn::Card.new) do %>
+  <%= render(Shadcn::Card::Header.new) do %>
+    <%= render(Shadcn::Card::Title.new) { "タイトル" } %>
+  <% end %>
+  <%= render(Shadcn::Card::Content.new) { "本文" } %>
+<% end %>
 ```
+
+注意: 純Rubyのコード(`#call` 内等)で複数の子を `render` で連ねるときはブロックの
+戻り値しか使われないため `safe_join([...])` で連結する(ERBでは出力バッファが連結するため不要)。
 
 - バリアント値は Symbol / String 両方を受け付ける。契約に存在しない値は `ArgumentError`(fail-fast)
 - `class:` で渡した追加クラスは `tailwind_merge` により契約クラスと統合される(利用者の上書きが後勝ち)

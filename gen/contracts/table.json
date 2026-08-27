@@ -1,0 +1,199 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "Table": {
+      "classes_slot": "table",
+      "combinations": {
+        "": "w-full caption-bottom text-sm"
+      },
+      "component_class": "Shadcn::Table",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "table-container",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "table-container",
+          "static_attributes": {
+            "class": "relative w-full overflow-x-auto"
+          },
+          "tag": "div"
+        },
+        {
+          "dynamic_attributes": [],
+          "name": "table",
+          "static_attributes": {},
+          "tag": "table"
+        }
+      ]
+    },
+    "TableBody": {
+      "classes_slot": "table-body",
+      "combinations": {
+        "": "[&_tr:last-child]:border-0"
+      },
+      "component_class": "Shadcn::Table::Body",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "table-body",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "table-body",
+          "static_attributes": {},
+          "tag": "tbody"
+        }
+      ]
+    },
+    "TableCaption": {
+      "classes_slot": "table-caption",
+      "combinations": {
+        "": "mt-4 text-sm text-muted-foreground"
+      },
+      "component_class": "Shadcn::Table::Caption",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "table-caption",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "table-caption",
+          "static_attributes": {},
+          "tag": "caption"
+        }
+      ]
+    },
+    "TableCell": {
+      "classes_slot": "table-cell",
+      "combinations": {
+        "": "p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]"
+      },
+      "component_class": "Shadcn::Table::Cell",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "table-cell",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "table-cell",
+          "static_attributes": {},
+          "tag": "td"
+        }
+      ]
+    },
+    "TableFooter": {
+      "classes_slot": "table-footer",
+      "combinations": {
+        "": "border-t bg-muted/50 font-medium [&>tr]:last:border-b-0"
+      },
+      "component_class": "Shadcn::Table::Footer",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "table-footer",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "table-footer",
+          "static_attributes": {},
+          "tag": "tfoot"
+        }
+      ]
+    },
+    "TableHead": {
+      "classes_slot": "table-head",
+      "combinations": {
+        "": "h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]"
+      },
+      "component_class": "Shadcn::Table::Head",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "table-head",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "table-head",
+          "static_attributes": {},
+          "tag": "th"
+        }
+      ]
+    },
+    "TableHeader": {
+      "classes_slot": "table-header",
+      "combinations": {
+        "": "[&_tr]:border-b"
+      },
+      "component_class": "Shadcn::Table::Header",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "table-header",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "table-header",
+          "static_attributes": {},
+          "tag": "thead"
+        }
+      ]
+    },
+    "TableRow": {
+      "classes_slot": "table-row",
+      "combinations": {
+        "": "border-b transition-colors hover:bg-muted/50 has-aria-expanded:bg-muted/50 data-[state=selected]:bg-muted"
+      },
+      "component_class": "Shadcn::Table::Row",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "table-row",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "table-row",
+          "static_attributes": {},
+          "tag": "tr"
+        }
+      ]
+    }
+  },
+  "name": "table",
+  "registry_dependencies": [],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "ae89c9de2ff30715f02a087f0e3deed52954a687115481a82028ed790e8d6039"
+  }
+}

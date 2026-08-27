@@ -1,0 +1,88 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "Alert": {
+      "classes_slot": "alert",
+      "combinations": {
+        "variant=default": "relative grid w-full grid-cols-[0_1fr] items-start gap-y-0.5 rounded-lg border px-4 py-3 text-sm has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] has-[>svg]:gap-x-3 [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current bg-card text-card-foreground",
+        "variant=destructive": "relative grid w-full grid-cols-[0_1fr] items-start gap-y-0.5 rounded-lg border px-4 py-3 text-sm has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] has-[>svg]:gap-x-3 [&>svg]:size-4 [&>svg]:translate-y-0.5 bg-card text-destructive *:data-[slot=alert-description]:text-destructive/90 [&>svg]:text-current"
+      },
+      "component_class": "Shadcn::Alert",
+      "cva": {
+        "compound": [],
+        "defaults": {
+          "variant": "default"
+        },
+        "prop_names": [
+          "variant"
+        ]
+      },
+      "passthrough_class": true,
+      "root_slot": "alert",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "alert",
+          "static_attributes": {
+            "role": "alert"
+          },
+          "tag": "div"
+        }
+      ]
+    },
+    "AlertDescription": {
+      "classes_slot": "alert-description",
+      "combinations": {
+        "": "col-start-2 grid justify-items-start gap-1 text-sm text-muted-foreground [&_p]:leading-relaxed"
+      },
+      "component_class": "Shadcn::Alert::Description",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "alert-description",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "alert-description",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "AlertTitle": {
+      "classes_slot": "alert-title",
+      "combinations": {
+        "": "col-start-2 line-clamp-1 min-h-4 font-medium tracking-tight"
+      },
+      "component_class": "Shadcn::Alert::Title",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "alert-title",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "alert-title",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    }
+  },
+  "name": "alert",
+  "registry_dependencies": [],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "6ff97fbdd3b48f0636aebe416c22d5e302578f991466f0f13cf7c48e227a0d97"
+  }
+}

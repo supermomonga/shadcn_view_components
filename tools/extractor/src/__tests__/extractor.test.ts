@@ -93,10 +93,12 @@ describe("parse: exports and slots", () => {
     ])
   })
 
-  it("fails fast when the root element has no data-slot", () => {
+  it("allows a root element without data-slot (spinner等のアイコン系) and records it as name: \"\"", () => {
     const ast = parseTsx(`function X() { return <div className="x" /> }\nexport { X }`)
     const exports = discoverExports(ast, "x", "ui/x.tsx")
-    expect(() => collectSlots(ast, exports[0]!.functionNode!, "x", "ui/x.tsx")).toThrow(/data-slot/)
+    const slots = collectSlots(ast, exports[0]!.functionNode!, "x", "ui/x.tsx")
+    expect(slots.rootSlot).toBe("")
+    expect(slots.slots).toEqual([{ name: "", tag: "div", static_attributes: {class: "x"}, dynamic_attributes: [] }])
   })
 
   it("resolves swapped native tags (Comp = asChild ? Slot.Root : \"button\")", () => {
@@ -181,6 +183,7 @@ describe("emit: determinism", () => {
     exports: {
       Button: {
         root_slot: "button",
+        classes_slot: "button",
         component_class: "Shadcn::Button",
         cva: { prop_names: ["size", "variant"], defaults: { size: "default", variant: "default" }, compound: [] },
         combinations: {

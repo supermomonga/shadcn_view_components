@@ -1,0 +1,40 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "Spinner": {
+      "classes_slot": "",
+      "combinations": {
+        "": "size-4 animate-spin"
+      },
+      "component_class": "Shadcn::Spinner",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "",
+          "static_attributes": {
+            "aria-label": "Loading",
+            "role": "status"
+          },
+          "tag": "Loader2Icon"
+        }
+      ]
+    }
+  },
+  "name": "spinner",
+  "registry_dependencies": [],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "777c52535f800cd6af00c3062ed90c21fe21b07e0a6f5d18ebbbf13d93c4f3a3"
+  }
+}

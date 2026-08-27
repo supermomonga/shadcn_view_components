@@ -3,7 +3,21 @@
 # 出力する場合に「追加を許す属性」をコンポーネント単位で明示する(ホワイトリスト)。
 # upstream の dynamic_attributes(JSで変化する属性)は元々適合試験の対象外。
 #
-# クラス列の不一致が許容されるケースは原則なし。許容が必要だと判明した場合、
-# その理由をこのコメントと docs.local/07-testing.md に残す。
-button:
-  attributes: []
+# class_mode: contains は「契約クラスを全て含む」検証への緩和。upstreamが実行時に
+# 別アイテムのクラスを合成する構造(item-separator が Separator をラップする等)で、
+# 抽出器が単一アイテム内のクラスしか事前解決できないための措置。
+# クラス列の不一致が許容されるケースは原則これのみ。
+separator:
+  Separator:
+    # ネイティブdiv化に伴うARIA(05-stimulus-hotwire §3 の方針)
+    attributes: [role, aria-orientation]
+item:
+  ItemSeparator:
+    # upstream は Separator(別アイテム)のクラス + "my-0" を実行時に合成する。
+    # 契約(item側)には "my-0" のみ記録されるため、描画は Separator のクラス群を含む
+    class_mode: contains
+    attributes: [role, aria-orientation]
+spinner:
+  Spinner:
+    # lucide と同等のインラインSVGとして描画するためのSVG属性
+    attributes: [xmlns, viewBox, fill, stroke, stroke-width, stroke-linecap, stroke-linejoin]

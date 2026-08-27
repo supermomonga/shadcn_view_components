@@ -1,0 +1,149 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "Avatar": {
+      "classes_slot": "avatar",
+      "combinations": {
+        "": "group/avatar relative flex size-8 shrink-0 overflow-hidden rounded-full select-none data-[size=lg]:size-10 data-[size=sm]:size-6"
+      },
+      "component_class": "Shadcn::Avatar",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "avatar",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "data-size"
+          ],
+          "name": "avatar",
+          "static_attributes": {},
+          "tag": "AvatarPrimitive.Root"
+        }
+      ]
+    },
+    "AvatarBadge": {
+      "classes_slot": "avatar-badge",
+      "combinations": {
+        "": "absolute right-0 bottom-0 z-10 inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground ring-2 ring-background select-none group-data-[size=sm]/avatar:size-2 group-data-[size=sm]/avatar:[&>svg]:hidden group-data-[size=default]/avatar:size-2.5 group-data-[size=default]/avatar:[&>svg]:size-2 group-data-[size=lg]/avatar:size-3 group-data-[size=lg]/avatar:[&>svg]:size-2"
+      },
+      "component_class": "Shadcn::Avatar::Badge",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "avatar-badge",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "avatar-badge",
+          "static_attributes": {},
+          "tag": "span"
+        }
+      ]
+    },
+    "AvatarFallback": {
+      "classes_slot": "avatar-fallback",
+      "combinations": {
+        "": "flex size-full items-center justify-center rounded-full bg-muted text-sm text-muted-foreground group-data-[size=sm]/avatar:text-xs"
+      },
+      "component_class": "Shadcn::Avatar::Fallback",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "avatar-fallback",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "avatar-fallback",
+          "static_attributes": {},
+          "tag": "AvatarPrimitive.Fallback"
+        }
+      ]
+    },
+    "AvatarGroup": {
+      "classes_slot": "avatar-group",
+      "combinations": {
+        "": "group/avatar-group flex -space-x-2 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:ring-background"
+      },
+      "component_class": "Shadcn::Avatar::Group",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "avatar-group",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "avatar-group",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "AvatarGroupCount": {
+      "classes_slot": "avatar-group-count",
+      "combinations": {
+        "": "relative flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-sm text-muted-foreground ring-2 ring-background group-has-data-[size=lg]/avatar-group:size-10 group-has-data-[size=sm]/avatar-group:size-6 [&>svg]:size-4 group-has-data-[size=lg]/avatar-group:[&>svg]:size-5 group-has-data-[size=sm]/avatar-group:[&>svg]:size-3"
+      },
+      "component_class": "Shadcn::Avatar::Group::Count",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "avatar-group-count",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "avatar-group-count",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "AvatarImage": {
+      "classes_slot": "avatar-image",
+      "combinations": {
+        "": "aspect-square size-full"
+      },
+      "component_class": "Shadcn::Avatar::Image",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "avatar-image",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "avatar-image",
+          "static_attributes": {},
+          "tag": "AvatarPrimitive.Image"
+        }
+      ]
+    }
+  },
+  "name": "avatar",
+  "registry_dependencies": [],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "7c6ffb500dce0845908fc92f04f2c7062d654682383fcbddda9f7632d2351fb8"
+  }
+}

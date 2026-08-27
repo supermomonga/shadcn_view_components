@@ -45,12 +45,11 @@ export function collectSlots(ast: File, fnNode: FunctionLike, item: string, file
     throw new ParseError("component function does not return JSX", item, file)
   }
 
-  const rootSlot = staticAttributeValue(rootElement.openingElement, "data-slot")
-  if (rootSlot === undefined) {
-    throw new ParseError(
-      "root JSX element has no static data-slot attribute (all primitives must carry data-slot)",
-      item, file, rootElement.openingElement.loc?.start,
-    )
+  // ルートに data-slot が無い場合(spinner 等のアイコン系)は root_slot を空文字として許容する。
+  // ルート自体は name: "" のスロット候補として記録し、静的属性(role / aria-label 等)を保持する
+  const rootSlot = staticAttributeValue(rootElement.openingElement, "data-slot") ?? ""
+  if (rootSlot === "" ) {
+    slots.unshift(describeElement(rootElement.openingElement, localTags, "", item, file))
   }
 
   return { rootTag: describeTagName(rootElement.openingElement, localTags), rootSlot, slots }
@@ -173,6 +172,21 @@ function describeSlotElement(
   const slotName = staticAttributeValue(opening, "data-slot")
   if (slotName === undefined) return null
 
+  return describeElement(opening, localTags, slotName, item, file)
+}
+
+/**
+ * 要素の属性を契約スロット記述へ落とし込む。cn() を経らない静的な className
+ * (構造ラッパーの table-container 等)は static_attributes["class"] として記録し、
+ * 手書き側がラッパー構造を再現できるようにする。
+ */
+function describeElement(
+  opening: JSXOpeningElement,
+  localTags: Record<string, string>,
+  slotName: string,
+  item: string,
+  file: string,
+): CollectedSlot {
   const staticAttributes: Record<string, string> = {}
   const dynamicAttributes = new Set<string>()
 
@@ -180,8 +194,13 @@ function describeSlotElement(
     if (attribute.type !== "JSXAttribute") continue
     if (attribute.name.type !== "JSXIdentifier") continue
     const name = attribute.name.name
-    if (name === "data-slot" || name === "className" || name === "class" || name === "children") continue
+    if (name === "data-slot" || name === "children") continue
     const value = attribute.value
+    if (name === "className" || name === "class") {
+      // 静的リテラルのみ記録する(cn(...) 式は analyzeCn の担当)
+      if (value?.type === "StringLiteral") staticAttributes["class"] = value.value
+      continue
+    }
     if (value === null || value === undefined) {
       staticAttributes[name] = ""
       continue

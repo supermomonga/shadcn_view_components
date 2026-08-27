@@ -1,0 +1,37 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "AspectRatio": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::AspectRatio",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "aspect-ratio",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "aspect-ratio",
+          "static_attributes": {},
+          "tag": "AspectRatioPrimitive.Root"
+        }
+      ]
+    }
+  },
+  "name": "aspect-ratio",
+  "registry_dependencies": [],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "a98905fa1d22bd47c697499b403aefff928a3d914d4accf182b34aa25b71ac63"
+  }
+}

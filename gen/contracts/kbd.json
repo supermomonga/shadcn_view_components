@@ -1,0 +1,59 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "Kbd": {
+      "classes_slot": "kbd",
+      "combinations": {
+        "": "pointer-events-none inline-flex h-5 w-fit min-w-5 items-center justify-center gap-1 rounded-sm bg-muted px-1 font-sans text-xs font-medium text-muted-foreground select-none [&_svg:not([class*='size-'])]:size-3 [[data-slot=tooltip-content]_&]:bg-background/20 [[data-slot=tooltip-content]_&]:text-background dark:[[data-slot=tooltip-content]_&]:bg-background/10"
+      },
+      "component_class": "Shadcn::Kbd",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "kbd",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "kbd",
+          "static_attributes": {},
+          "tag": "kbd"
+        }
+      ]
+    },
+    "KbdGroup": {
+      "classes_slot": "kbd-group",
+      "combinations": {
+        "": "inline-flex items-center gap-1"
+      },
+      "component_class": "Shadcn::Kbd::Group",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "kbd-group",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "kbd-group",
+          "static_attributes": {},
+          "tag": "kbd"
+        }
+      ]
+    }
+  },
+  "name": "kbd",
+  "registry_dependencies": [],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "3e55ec68c9c61e3a9ccc6a497a342e850ac039b5d8f8f2c94cc1e9213b0b4ee0"
+  }
+}

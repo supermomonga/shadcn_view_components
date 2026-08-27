@@ -13,7 +13,20 @@ Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 - 注: upstreamインデックスに列挙されているが404となるアイテム(questionnaire, toast)は
   「upstream側の不整合」として警告付きスキップ
 
-### 追加
+### 追加(Phase 1 — 表示のみコンポーネント)
+
+- 17アイテム / 60エクスポート: Badge, Alert, Card(+Header/Title/Description/Action/Content/Footer),
+  Avatar(+Image/Fallback/Badge/Group/Group::Count), Separator, Skeleton, Table(+7部位),
+  Label, Kbd(+Group), Spinner, Empty(+5部位), AspectRatio, Item(+9部位), Marker(+2部位),
+  Input, Textarea, Breadcrumb(+6部位)
+- 抽出器の拡張: cva defaultVariants 未指定時のパラメータ既定値、data-slot を持たない
+  ルート(spinner等)、cn を経ない静的className(table-container等)、classes_slot
+  (契約クラスがルート以外の要素に属する構造の検証対象特定)
+- 複合エクスポート対応の適合試験(registry.yml の exports リスト)と
+  class_mode: contains の allowances(upstream が実行時に別アイテムのクラスを合成する構造)
+- Lookbookプレビュー18種、コンポーネントスペック、targets/registry/generated 三方整合スペック
+
+### 追加(Phase 0)
 
 - 生成パイプライン: `rake shadcn:sync` / `extract` / `generate` / `update` / `check`
   (tools/extractor: Node + TypeScript + Babel AST + cva/tailwind-merge事前解決)

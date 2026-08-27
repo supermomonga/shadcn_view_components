@@ -12,7 +12,7 @@ import { emitThemeCss, type ThemeTokens } from "./emit/css.ts"
 import { readJsonFile, removeStaleFiles, sha256Hex } from "./normalize.ts"
 import { parseTsx } from "./parse/ast.ts"
 import { analyzeCn } from "./parse/cn.ts"
-import { discoverExports } from "./parse/context.ts"
+import { discoverExports, type FunctionLike } from "./parse/context.ts"
 import { collectSlots } from "./parse/slots.ts"
 import { extractCvaDefinitions } from "./parse/cva.ts"
 
@@ -105,6 +105,22 @@ export async function extractContracts(pipeline: PipelinePaths, only?: string[])
   return { contracts, skipped }
 }
 
+/** 関数パラメータの分割代入から、バリアントpropの既定値を取り出す(`{ variant = "default" }`)。 */
+function paramDefaults(fnNode: FunctionLike, cvaProps: string[]): Record<string, string> {
+  const defaults: Record<string, string> = {}
+  const first = fnNode.params[0]
+  if (!first || first.type !== "ObjectPattern") return defaults
+  for (const property of first.properties) {
+    if (property.type !== "ObjectProperty") continue
+    const key = property.key
+    const name = key.type === "Identifier" ? key.name : key.type === "StringLiteral" ? key.value : null
+    if (name === null || !cvaProps.includes(name)) continue
+    const value = property.value.type === "AssignmentPattern" ? property.value.right : property.value
+    if (value.type === "StringLiteral") defaults[name] = value.value
+  }
+  return defaults
+}
+
 async function extractContractFromItem(
   name: string,
   item: RegistryItem,
@@ -132,11 +148,17 @@ async function extractContractFromItem(
       const exportName = discovered.name
       exports[exportName] = {
         root_slot: slots.rootSlot,
+        classes_slot: cn.slot,
         component_class: names[exportName] ?? `Shadcn::${exportName}`,
         cva: {
           prop_names: definition ? Object.keys(definition.variants).sort() : [],
+          // 実効的な既定値 = 関数パラメータの既定値 ∪ cvaのdefaultVariants(cva側が優先)。
+          // marker のように defaultVariants を持たずパラメータ既定値で済ませる定形に対応する
           defaults: definition
-            ? Object.fromEntries(Object.entries(definition.defaults).sort(([a], [b]) => a.localeCompare(b)))
+            ? Object.fromEntries(
+                Object.entries({ ...paramDefaults(fnNode, cn.cvaProps), ...definition.defaults })
+                  .sort(([a], [b]) => a.localeCompare(b)),
+              )
             : {},
           compound: definition ? definition.compound : [],
         },

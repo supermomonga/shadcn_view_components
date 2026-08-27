@@ -14,10 +14,15 @@ Dir[File.expand_path("support/**/*.rb", __dir__)].each { |path| require path }
 REPO_ROOT = File.expand_path("..", __dir__)
 
 # ViewComponent 4 の TestHelpers は rendered_root_element を提供しないため
-# 薄いラッパを用意する(Nokogiriフラグメントの最初の要素)
+# 薄いラッパを用意する。context: "template" は thead/tr 等、単独では有効でない
+# コンテンツモデルの要素もそのまま解析するための指定
 module RenderedRoot
+  def rendered_fragment
+    Nokogiri::HTML5.fragment(rendered_content, context: "template")
+  end
+
   def rendered_root_element
-    Nokogiri::HTML5.fragment(rendered_content).at_xpath("./*[1]")
+    rendered_fragment.at_xpath("./*[1]")
   end
 end
 

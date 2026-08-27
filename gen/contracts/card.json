@@ -1,0 +1,169 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "Card": {
+      "classes_slot": "card",
+      "combinations": {
+        "": "flex flex-col gap-6 rounded-xl border bg-card py-6 text-card-foreground shadow-sm"
+      },
+      "component_class": "Shadcn::Card",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "card",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "card",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "CardAction": {
+      "classes_slot": "card-action",
+      "combinations": {
+        "": "col-start-2 row-span-2 row-start-1 self-start justify-self-end"
+      },
+      "component_class": "Shadcn::Card::Action",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "card-action",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "card-action",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "CardContent": {
+      "classes_slot": "card-content",
+      "combinations": {
+        "": "px-6"
+      },
+      "component_class": "Shadcn::Card::Content",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "card-content",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "card-content",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "CardDescription": {
+      "classes_slot": "card-description",
+      "combinations": {
+        "": "text-sm text-muted-foreground"
+      },
+      "component_class": "Shadcn::Card::Description",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "card-description",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "card-description",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "CardFooter": {
+      "classes_slot": "card-footer",
+      "combinations": {
+        "": "flex items-center px-6 [.border-t]:pt-6"
+      },
+      "component_class": "Shadcn::Card::Footer",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "card-footer",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "card-footer",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "CardHeader": {
+      "classes_slot": "card-header",
+      "combinations": {
+        "": "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6"
+      },
+      "component_class": "Shadcn::Card::Header",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "card-header",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "card-header",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "CardTitle": {
+      "classes_slot": "card-title",
+      "combinations": {
+        "": "leading-none font-semibold"
+      },
+      "component_class": "Shadcn::Card::Title",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "card-title",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "card-title",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    }
+  },
+  "name": "card",
+  "registry_dependencies": [],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "9c17ccab21e1a760af4cdea89c42bbbc1c17b4ad364bdd2caa457bc38c88e74d"
+  }
+}

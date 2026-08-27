@@ -8,32 +8,50 @@ accordion:
   pending: true
 
 alert:
-  pending: true
+  exports:
+    - { component: Shadcn::Alert, export: Alert }
+    - { component: Shadcn::Alert::Title, export: AlertTitle }
+    - { component: Shadcn::Alert::Description, export: AlertDescription }
 
 alert-dialog:
   pending: true
 
 aspect-ratio:
-  pending: true
+  exports:
+    - { component: Shadcn::AspectRatio, export: AspectRatio }
 
 attachment:
   pending: true
 
 avatar:
-  pending: true
+  exports:
+    - { component: Shadcn::Avatar, export: Avatar }
+    - { component: Shadcn::Avatar::Image, export: AvatarImage }
+    - { component: Shadcn::Avatar::Fallback, export: AvatarFallback }
+    - { component: Shadcn::Avatar::Badge, export: AvatarBadge }
+    - { component: Shadcn::Avatar::Group, export: AvatarGroup }
+    - { component: Shadcn::Avatar::Group::Count, export: AvatarGroupCount }
 
 badge:
-  pending: true
+  exports:
+    - { component: Shadcn::Badge, export: Badge }
 
 breadcrumb:
-  pending: true
+  exports:
+    - { component: Shadcn::Breadcrumb, export: Breadcrumb }
+    - { component: Shadcn::Breadcrumb::List, export: BreadcrumbList }
+    - { component: Shadcn::Breadcrumb::Item, export: BreadcrumbItem }
+    - { component: Shadcn::Breadcrumb::Link, export: BreadcrumbLink }
+    - { component: Shadcn::Breadcrumb::Page, export: BreadcrumbPage }
+    - { component: Shadcn::Breadcrumb::Separator, export: BreadcrumbSeparator }
+    - { component: Shadcn::Breadcrumb::Ellipsis, export: BreadcrumbEllipsis }
 
 bubble:
   pending: true
 
 button:
-  component: Shadcn::Button
-  export: Button
+  exports:
+    - { component: Shadcn::Button, export: Button }
 
 button-group:
   pending: true
@@ -42,7 +60,14 @@ calendar:
   pending: true
 
 card:
-  pending: true
+  exports:
+    - { component: Shadcn::Card, export: Card }
+    - { component: Shadcn::Card::Header, export: CardHeader }
+    - { component: Shadcn::Card::Title, export: CardTitle }
+    - { component: Shadcn::Card::Description, export: CardDescription }
+    - { component: Shadcn::Card::Action, export: CardAction }
+    - { component: Shadcn::Card::Content, export: CardContent }
+    - { component: Shadcn::Card::Footer, export: CardFooter }
 
 carousel:
   pending: true
@@ -78,7 +103,13 @@ dropdown-menu:
   pending: true
 
 empty:
-  pending: true
+  exports:
+    - { component: Shadcn::Empty, export: Empty }
+    - { component: Shadcn::Empty::Header, export: EmptyHeader }
+    - { component: Shadcn::Empty::Title, export: EmptyTitle }
+    - { component: Shadcn::Empty::Description, export: EmptyDescription }
+    - { component: Shadcn::Empty::Content, export: EmptyContent }
+    - { component: Shadcn::Empty::Media, export: EmptyMedia }
 
 field:
   pending: true
@@ -90,7 +121,8 @@ hover-card:
   pending: true
 
 input:
-  pending: true
+  exports:
+    - { component: Shadcn::Input, export: Input }
 
 input-group:
   pending: true
@@ -99,16 +131,32 @@ input-otp:
   pending: true
 
 item:
-  pending: true
+  exports:
+    - { component: Shadcn::Item, export: Item }
+    - { component: Shadcn::Item::Media, export: ItemMedia }
+    - { component: Shadcn::Item::Content, export: ItemContent }
+    - { component: Shadcn::Item::Actions, export: ItemActions }
+    - { component: Shadcn::Item::Group, export: ItemGroup }
+    - { component: Shadcn::Item::Separator, export: ItemSeparator }
+    - { component: Shadcn::Item::Title, export: ItemTitle }
+    - { component: Shadcn::Item::Description, export: ItemDescription }
+    - { component: Shadcn::Item::Header, export: ItemHeader }
+    - { component: Shadcn::Item::Footer, export: ItemFooter }
 
 kbd:
-  pending: true
+  exports:
+    - { component: Shadcn::Kbd, export: Kbd }
+    - { component: Shadcn::Kbd::Group, export: KbdGroup }
 
 label:
-  pending: true
+  exports:
+    - { component: Shadcn::Label, export: Label }
 
 marker:
-  pending: true
+  exports:
+    - { component: Shadcn::Marker, export: Marker }
+    - { component: Shadcn::Marker::Content, export: MarkerContent }
+    - { component: Shadcn::Marker::Icon, export: MarkerIcon }
 
 menubar:
   pending: true
@@ -147,7 +195,8 @@ select:
   pending: true
 
 separator:
-  pending: true
+  exports:
+    - { component: Shadcn::Separator, export: Separator }
 
 sheet:
   pending: true
@@ -156,7 +205,8 @@ sidebar:
   pending: true
 
 skeleton:
-  pending: true
+  exports:
+    - { component: Shadcn::Skeleton, export: Skeleton }
 
 slider:
   pending: true
@@ -165,19 +215,29 @@ sonner:
   pending: true
 
 spinner:
-  pending: true
+  exports:
+    - { component: Shadcn::Spinner, export: Spinner }
 
 switch:
   pending: true
 
 table:
-  pending: true
+  exports:
+    - { component: Shadcn::Table, export: Table }
+    - { component: Shadcn::Table::Header, export: TableHeader }
+    - { component: Shadcn::Table::Body, export: TableBody }
+    - { component: Shadcn::Table::Footer, export: TableFooter }
+    - { component: Shadcn::Table::Head, export: TableHead }
+    - { component: Shadcn::Table::Row, export: TableRow }
+    - { component: Shadcn::Table::Cell, export: TableCell }
+    - { component: Shadcn::Table::Caption, export: TableCaption }
 
 tabs:
   pending: true
 
 textarea:
-  pending: true
+  exports:
+    - { component: Shadcn::Textarea, export: Textarea }
 
 toggle:
   pending: true
