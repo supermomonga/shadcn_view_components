@@ -15,6 +15,8 @@ class PagesController < ApplicationController
 
   def popovers; end
 
+  def menus; end
+
   def carousel; end
 
   def form

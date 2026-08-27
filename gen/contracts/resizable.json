@@ -1,0 +1,81 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "ResizableHandle": {
+      "classes_slot": "resizable-handle",
+      "combinations": {
+        "": "relative flex w-px items-center justify-center bg-border after:absolute after:inset-y-0 after:left-1/2 after:w-1 after:-translate-x-1/2 focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:outline-hidden aria-[orientation=horizontal]:h-px aria-[orientation=horizontal]:w-full aria-[orientation=horizontal]:after:left-0 aria-[orientation=horizontal]:after:h-1 aria-[orientation=horizontal]:after:w-full aria-[orientation=horizontal]:after:translate-x-0 aria-[orientation=horizontal]:after:-translate-y-1/2 [&[aria-orientation=horizontal]>div]:rotate-90"
+      },
+      "component_class": "Shadcn::Resizable::Handle",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "resizable-handle",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "resizable-handle",
+          "static_attributes": {},
+          "tag": "ResizablePrimitive.Separator"
+        }
+      ]
+    },
+    "ResizablePanel": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::Resizable::Panel",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "resizable-panel",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "resizable-panel",
+          "static_attributes": {},
+          "tag": "ResizablePrimitive.Panel"
+        }
+      ]
+    },
+    "ResizablePanelGroup": {
+      "classes_slot": "resizable-panel-group",
+      "combinations": {
+        "": "flex h-full w-full aria-[orientation=vertical]:flex-col"
+      },
+      "component_class": "Shadcn::Resizable::PanelGroup",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "resizable-panel-group",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "resizable-panel-group",
+          "static_attributes": {},
+          "tag": "ResizablePrimitive.Group"
+        }
+      ]
+    }
+  },
+  "name": "resizable",
+  "registry_dependencies": [],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "47fb4c51b2674e7d8aeea87aa90a62cf22b9430cb8131473e4b62d473a6214cc"
+  }
+}

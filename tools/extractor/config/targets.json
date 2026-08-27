@@ -37,6 +37,9 @@
     "drawer",
     "popover",
     "hover-card",
-    "tooltip"
+    "tooltip",
+    "dropdown-menu",
+    "context-menu",
+    "resizable"
   ]
 }

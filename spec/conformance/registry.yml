@@ -112,8 +112,22 @@ command:
   pending: true
 
 context-menu:
-  pending: true
-
+  exports:
+    - { component: Shadcn::ContextMenu, export: ContextMenu }
+    - { component: Shadcn::ContextMenu::Trigger, export: ContextMenuTrigger }
+    - { component: Shadcn::ContextMenu::Portal, export: ContextMenuPortal }
+    - { component: Shadcn::ContextMenu::Content, export: ContextMenuContent }
+    - { component: Shadcn::ContextMenu::Group, export: ContextMenuGroup }
+    - { component: Shadcn::ContextMenu::Label, export: ContextMenuLabel }
+    - { component: Shadcn::ContextMenu::Item, export: ContextMenuItem }
+    - { component: Shadcn::ContextMenu::CheckboxItem, export: ContextMenuCheckboxItem }
+    - { component: Shadcn::ContextMenu::RadioGroup, export: ContextMenuRadioGroup }
+    - { component: Shadcn::ContextMenu::RadioItem, export: ContextMenuRadioItem }
+    - { component: Shadcn::ContextMenu::Separator, export: ContextMenuSeparator }
+    - { component: Shadcn::ContextMenu::Shortcut, export: ContextMenuShortcut }
+    - { component: Shadcn::ContextMenu::Sub, export: ContextMenuSub }
+    - { component: Shadcn::ContextMenu::SubTrigger, export: ContextMenuSubTrigger }
+    - { component: Shadcn::ContextMenu::SubContent, export: ContextMenuSubContent }
 dialog:
   exports:
     - { component: Shadcn::Dialog, export: Dialog }
@@ -143,8 +157,22 @@ drawer:
     - { component: Shadcn::Drawer::Title, export: DrawerTitle }
     - { component: Shadcn::Drawer::Description, export: DrawerDescription }
 dropdown-menu:
-  pending: true
-
+  exports:
+    - { component: Shadcn::DropdownMenu, export: DropdownMenu }
+    - { component: Shadcn::DropdownMenu::Trigger, export: DropdownMenuTrigger }
+    - { component: Shadcn::DropdownMenu::Portal, export: DropdownMenuPortal }
+    - { component: Shadcn::DropdownMenu::Content, export: DropdownMenuContent }
+    - { component: Shadcn::DropdownMenu::Group, export: DropdownMenuGroup }
+    - { component: Shadcn::DropdownMenu::Label, export: DropdownMenuLabel }
+    - { component: Shadcn::DropdownMenu::Item, export: DropdownMenuItem }
+    - { component: Shadcn::DropdownMenu::CheckboxItem, export: DropdownMenuCheckboxItem }
+    - { component: Shadcn::DropdownMenu::RadioGroup, export: DropdownMenuRadioGroup }
+    - { component: Shadcn::DropdownMenu::RadioItem, export: DropdownMenuRadioItem }
+    - { component: Shadcn::DropdownMenu::Separator, export: DropdownMenuSeparator }
+    - { component: Shadcn::DropdownMenu::Shortcut, export: DropdownMenuShortcut }
+    - { component: Shadcn::DropdownMenu::Sub, export: DropdownMenuSub }
+    - { component: Shadcn::DropdownMenu::SubTrigger, export: DropdownMenuSubTrigger }
+    - { component: Shadcn::DropdownMenu::SubContent, export: DropdownMenuSubContent }
 empty:
   exports:
     - { component: Shadcn::Empty, export: Empty }
@@ -252,8 +280,10 @@ radio-group:
     - { component: Shadcn::RadioGroup::Item, export: RadioGroupItem }
 
 resizable:
-  pending: true
-
+  exports:
+    - { component: Shadcn::Resizable::PanelGroup, export: ResizablePanelGroup }
+    - { component: Shadcn::Resizable::Panel, export: ResizablePanel }
+    - { component: Shadcn::Resizable::Handle, export: ResizableHandle }
 scroll-area:
   exports:
     - { component: Shadcn::ScrollArea, export: ScrollArea }

@@ -143,3 +143,52 @@ tooltip:
     attributes: [data-action, aria-describedby]
   TooltipContent:
     attributes: [role, hidden, data-state]
+dropdown-menu:
+  DropdownMenu:
+    attributes: [data-controller]
+  DropdownMenuTrigger:
+    attributes: [type, aria-haspopup, aria-expanded, data-action]
+  DropdownMenuContent:
+    attributes: [role, popover, tabindex, data-state, style]
+  DropdownMenuGroup:
+    attributes: [role]
+  DropdownMenuItem:
+    attributes: [role, tabindex, data-action, data-highlighted]
+  DropdownMenuCheckboxItem:
+    attributes: [role, tabindex, data-action, data-highlighted, aria-checked]
+  DropdownMenuRadioGroup:
+    attributes: [role]
+  DropdownMenuRadioItem:
+    attributes: [role, tabindex, data-action, data-highlighted, aria-checked]
+  DropdownMenuSubTrigger:
+    attributes: [role, tabindex, data-action, data-highlighted, aria-haspopup, aria-expanded]
+  DropdownMenuSubContent:
+    attributes: [role, popover, tabindex, data-state, style]
+context-menu:
+  ContextMenu:
+    attributes: [data-controller]
+  ContextMenuTrigger:
+    attributes: [data-action]
+  ContextMenuContent:
+    attributes: [role, popover, tabindex, data-state, style]
+  ContextMenuGroup:
+    attributes: [role]
+  ContextMenuItem:
+    attributes: [role, tabindex, data-action, data-highlighted]
+  ContextMenuCheckboxItem:
+    attributes: [role, tabindex, data-action, data-highlighted, aria-checked]
+  ContextMenuRadioGroup:
+    attributes: [role]
+  ContextMenuRadioItem:
+    attributes: [role, tabindex, data-action, data-highlighted, aria-checked]
+  ContextMenuSubTrigger:
+    attributes: [role, tabindex, data-action, data-highlighted, aria-haspopup, aria-expanded]
+  ContextMenuSubContent:
+    attributes: [role, popover, tabindex, data-state, style]
+resizable:
+  ResizablePanelGroup:
+    attributes: [role, style, data-controller]
+  ResizablePanel:
+    attributes: [style]
+  ResizableHandle:
+    attributes: [role, tabindex, style, aria-orientation, data-action]

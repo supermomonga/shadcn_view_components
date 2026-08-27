@@ -1,0 +1,360 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "ContextMenu": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::ContextMenu",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "context-menu",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "context-menu",
+          "static_attributes": {},
+          "tag": "ContextMenuPrimitive.Root"
+        }
+      ]
+    },
+    "ContextMenuCheckboxItem": {
+      "classes_slot": "context-menu-checkbox-item",
+      "combinations": {
+        "": "relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+      },
+      "component_class": "Shadcn::ContextMenu::CheckboxItem",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "context-menu-checkbox-item",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "checked"
+          ],
+          "name": "context-menu-checkbox-item",
+          "static_attributes": {},
+          "tag": "ContextMenuPrimitive.CheckboxItem"
+        }
+      ]
+    },
+    "ContextMenuContent": {
+      "classes_slot": "context-menu-content",
+      "combinations": {
+        "": "z-50 max-h-(--radix-context-menu-content-available-height) min-w-[8rem] origin-(--radix-context-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
+      },
+      "component_class": "Shadcn::ContextMenu::Content",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "",
+          "static_attributes": {},
+          "tag": "ContextMenuPrimitive.Portal"
+        },
+        {
+          "dynamic_attributes": [],
+          "name": "context-menu-content",
+          "static_attributes": {},
+          "tag": "ContextMenuPrimitive.Content"
+        }
+      ]
+    },
+    "ContextMenuGroup": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::ContextMenu::Group",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "context-menu-group",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "context-menu-group",
+          "static_attributes": {},
+          "tag": "ContextMenuPrimitive.Group"
+        }
+      ]
+    },
+    "ContextMenuItem": {
+      "classes_slot": "context-menu-item",
+      "combinations": {
+        "": "relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive dark:data-[variant=destructive]:focus:bg-destructive/20 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground data-[variant=destructive]:*:[svg]:text-destructive!"
+      },
+      "component_class": "Shadcn::ContextMenu::Item",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "context-menu-item",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "data-inset",
+            "data-variant"
+          ],
+          "name": "context-menu-item",
+          "static_attributes": {},
+          "tag": "ContextMenuPrimitive.Item"
+        }
+      ]
+    },
+    "ContextMenuLabel": {
+      "classes_slot": "context-menu-label",
+      "combinations": {
+        "": "px-2 py-1.5 text-sm font-medium text-foreground data-[inset]:pl-8"
+      },
+      "component_class": "Shadcn::ContextMenu::Label",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "context-menu-label",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "data-inset"
+          ],
+          "name": "context-menu-label",
+          "static_attributes": {},
+          "tag": "ContextMenuPrimitive.Label"
+        }
+      ]
+    },
+    "ContextMenuPortal": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::ContextMenu::Portal",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "context-menu-portal",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "context-menu-portal",
+          "static_attributes": {},
+          "tag": "ContextMenuPrimitive.Portal"
+        }
+      ]
+    },
+    "ContextMenuRadioGroup": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::ContextMenu::RadioGroup",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "context-menu-radio-group",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "context-menu-radio-group",
+          "static_attributes": {},
+          "tag": "ContextMenuPrimitive.RadioGroup"
+        }
+      ]
+    },
+    "ContextMenuRadioItem": {
+      "classes_slot": "context-menu-radio-item",
+      "combinations": {
+        "": "relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+      },
+      "component_class": "Shadcn::ContextMenu::RadioItem",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "context-menu-radio-item",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "context-menu-radio-item",
+          "static_attributes": {},
+          "tag": "ContextMenuPrimitive.RadioItem"
+        }
+      ]
+    },
+    "ContextMenuSeparator": {
+      "classes_slot": "context-menu-separator",
+      "combinations": {
+        "": "-mx-1 my-1 h-px bg-border"
+      },
+      "component_class": "Shadcn::ContextMenu::Separator",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "context-menu-separator",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "context-menu-separator",
+          "static_attributes": {},
+          "tag": "ContextMenuPrimitive.Separator"
+        }
+      ]
+    },
+    "ContextMenuShortcut": {
+      "classes_slot": "context-menu-shortcut",
+      "combinations": {
+        "": "ml-auto text-xs tracking-widest text-muted-foreground"
+      },
+      "component_class": "Shadcn::ContextMenu::Shortcut",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "context-menu-shortcut",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "context-menu-shortcut",
+          "static_attributes": {},
+          "tag": "span"
+        }
+      ]
+    },
+    "ContextMenuSub": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::ContextMenu::Sub",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "context-menu-sub",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "context-menu-sub",
+          "static_attributes": {},
+          "tag": "ContextMenuPrimitive.Sub"
+        }
+      ]
+    },
+    "ContextMenuSubContent": {
+      "classes_slot": "context-menu-sub-content",
+      "combinations": {
+        "": "z-50 min-w-[8rem] origin-(--radix-context-menu-content-transform-origin) overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-lg data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
+      },
+      "component_class": "Shadcn::ContextMenu::SubContent",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "context-menu-sub-content",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "context-menu-sub-content",
+          "static_attributes": {},
+          "tag": "ContextMenuPrimitive.SubContent"
+        }
+      ]
+    },
+    "ContextMenuSubTrigger": {
+      "classes_slot": "context-menu-sub-trigger",
+      "combinations": {
+        "": "flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground data-[inset]:pl-8 data-[state=open]:bg-accent data-[state=open]:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground"
+      },
+      "component_class": "Shadcn::ContextMenu::SubTrigger",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "context-menu-sub-trigger",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "data-inset"
+          ],
+          "name": "context-menu-sub-trigger",
+          "static_attributes": {},
+          "tag": "ContextMenuPrimitive.SubTrigger"
+        }
+      ]
+    },
+    "ContextMenuTrigger": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::ContextMenu::Trigger",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "context-menu-trigger",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "context-menu-trigger",
+          "static_attributes": {},
+          "tag": "ContextMenuPrimitive.Trigger"
+        }
+      ]
+    }
+  },
+  "name": "context-menu",
+  "registry_dependencies": [],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "14fa367c053721c9624394f3f8d9bd16c91bf0d1ca83af0d16f81f129ec5fc76"
+  }
+}

@@ -1,0 +1,362 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "DropdownMenu": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::DropdownMenu",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "dropdown-menu",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "dropdown-menu",
+          "static_attributes": {},
+          "tag": "DropdownMenuPrimitive.Root"
+        }
+      ]
+    },
+    "DropdownMenuCheckboxItem": {
+      "classes_slot": "dropdown-menu-checkbox-item",
+      "combinations": {
+        "": "relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+      },
+      "component_class": "Shadcn::DropdownMenu::CheckboxItem",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "dropdown-menu-checkbox-item",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "checked"
+          ],
+          "name": "dropdown-menu-checkbox-item",
+          "static_attributes": {},
+          "tag": "DropdownMenuPrimitive.CheckboxItem"
+        }
+      ]
+    },
+    "DropdownMenuContent": {
+      "classes_slot": "dropdown-menu-content",
+      "combinations": {
+        "": "z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
+      },
+      "component_class": "Shadcn::DropdownMenu::Content",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "",
+          "static_attributes": {},
+          "tag": "DropdownMenuPrimitive.Portal"
+        },
+        {
+          "dynamic_attributes": [
+            "sideOffset"
+          ],
+          "name": "dropdown-menu-content",
+          "static_attributes": {},
+          "tag": "DropdownMenuPrimitive.Content"
+        }
+      ]
+    },
+    "DropdownMenuGroup": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::DropdownMenu::Group",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "dropdown-menu-group",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "dropdown-menu-group",
+          "static_attributes": {},
+          "tag": "DropdownMenuPrimitive.Group"
+        }
+      ]
+    },
+    "DropdownMenuItem": {
+      "classes_slot": "dropdown-menu-item",
+      "combinations": {
+        "": "relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive dark:data-[variant=destructive]:focus:bg-destructive/20 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground data-[variant=destructive]:*:[svg]:text-destructive!"
+      },
+      "component_class": "Shadcn::DropdownMenu::Item",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "dropdown-menu-item",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "data-inset",
+            "data-variant"
+          ],
+          "name": "dropdown-menu-item",
+          "static_attributes": {},
+          "tag": "DropdownMenuPrimitive.Item"
+        }
+      ]
+    },
+    "DropdownMenuLabel": {
+      "classes_slot": "dropdown-menu-label",
+      "combinations": {
+        "": "px-2 py-1.5 text-sm font-medium data-[inset]:pl-8"
+      },
+      "component_class": "Shadcn::DropdownMenu::Label",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "dropdown-menu-label",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "data-inset"
+          ],
+          "name": "dropdown-menu-label",
+          "static_attributes": {},
+          "tag": "DropdownMenuPrimitive.Label"
+        }
+      ]
+    },
+    "DropdownMenuPortal": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::DropdownMenu::Portal",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "dropdown-menu-portal",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "dropdown-menu-portal",
+          "static_attributes": {},
+          "tag": "DropdownMenuPrimitive.Portal"
+        }
+      ]
+    },
+    "DropdownMenuRadioGroup": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::DropdownMenu::RadioGroup",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "dropdown-menu-radio-group",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "dropdown-menu-radio-group",
+          "static_attributes": {},
+          "tag": "DropdownMenuPrimitive.RadioGroup"
+        }
+      ]
+    },
+    "DropdownMenuRadioItem": {
+      "classes_slot": "dropdown-menu-radio-item",
+      "combinations": {
+        "": "relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+      },
+      "component_class": "Shadcn::DropdownMenu::RadioItem",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "dropdown-menu-radio-item",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "dropdown-menu-radio-item",
+          "static_attributes": {},
+          "tag": "DropdownMenuPrimitive.RadioItem"
+        }
+      ]
+    },
+    "DropdownMenuSeparator": {
+      "classes_slot": "dropdown-menu-separator",
+      "combinations": {
+        "": "-mx-1 my-1 h-px bg-border"
+      },
+      "component_class": "Shadcn::DropdownMenu::Separator",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "dropdown-menu-separator",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "dropdown-menu-separator",
+          "static_attributes": {},
+          "tag": "DropdownMenuPrimitive.Separator"
+        }
+      ]
+    },
+    "DropdownMenuShortcut": {
+      "classes_slot": "dropdown-menu-shortcut",
+      "combinations": {
+        "": "ml-auto text-xs tracking-widest text-muted-foreground"
+      },
+      "component_class": "Shadcn::DropdownMenu::Shortcut",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "dropdown-menu-shortcut",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "dropdown-menu-shortcut",
+          "static_attributes": {},
+          "tag": "span"
+        }
+      ]
+    },
+    "DropdownMenuSub": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::DropdownMenu::Sub",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "dropdown-menu-sub",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "dropdown-menu-sub",
+          "static_attributes": {},
+          "tag": "DropdownMenuPrimitive.Sub"
+        }
+      ]
+    },
+    "DropdownMenuSubContent": {
+      "classes_slot": "dropdown-menu-sub-content",
+      "combinations": {
+        "": "z-50 min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-lg data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
+      },
+      "component_class": "Shadcn::DropdownMenu::SubContent",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "dropdown-menu-sub-content",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "dropdown-menu-sub-content",
+          "static_attributes": {},
+          "tag": "DropdownMenuPrimitive.SubContent"
+        }
+      ]
+    },
+    "DropdownMenuSubTrigger": {
+      "classes_slot": "dropdown-menu-sub-trigger",
+      "combinations": {
+        "": "flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground data-[inset]:pl-8 data-[state=open]:bg-accent data-[state=open]:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground"
+      },
+      "component_class": "Shadcn::DropdownMenu::SubTrigger",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "dropdown-menu-sub-trigger",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "data-inset"
+          ],
+          "name": "dropdown-menu-sub-trigger",
+          "static_attributes": {},
+          "tag": "DropdownMenuPrimitive.SubTrigger"
+        }
+      ]
+    },
+    "DropdownMenuTrigger": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::DropdownMenu::Trigger",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "dropdown-menu-trigger",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "dropdown-menu-trigger",
+          "static_attributes": {},
+          "tag": "DropdownMenuPrimitive.Trigger"
+        }
+      ]
+    }
+  },
+  "name": "dropdown-menu",
+  "registry_dependencies": [],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "868829f37dd228e6fa5df8c5ecd6de671e8ef304210046b3cc07127165512583"
+  }
+}
