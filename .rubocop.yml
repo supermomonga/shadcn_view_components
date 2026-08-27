@@ -1,0 +1,82 @@
+# Use the plugin-based default config (rubocop ≥ 1.72 / Ruby 4.0)。
+plugins:
+  - rubocop-sorbet
+  - rubocop-packaging
+
+inherit_mode:
+  merge:
+    - Exclude
+
+AllCops:
+  NewCops: enable
+  SuggestExtensions: false
+  TargetRubyVersion: 4.0
+  Exclude:
+    - "vendor/**/*"
+    - "tmp/**/*"
+    - "spec/dummy/**/*"
+    - "gen/**/*"
+    - "node_modules/**/*"
+    - "tools/**/*"
+    - "sorbet/rbi/gems/**/*"
+    # 生成物: rubocop -a 相当の整形は抽出器のemitterが保証する(03 §6.1)ためlint対象外
+    - "lib/shadcn_view_components/generated/**/*"
+    - "app/assets/stylesheets/**/*"
+
+Sorbet/FalseSigil:
+  Enabled: false
+
+Sorbet/StrictSigil:
+  Enabled: true
+  # srb tc の対象(sorbet/config と同じく lib/app)に限定する。spec/ は型検査対象外(08-sorbet §6)
+  Include:
+    - "lib/**/*.rb"
+    - "app/**/*.rb"
+
+Style/ArgumentsForwarding:
+  # 名前付きrest-kwargs(**options)はSorbetのsigで型付けに必要
+  Enabled: false
+
+Lint/MissingSuper:
+  Exclude:
+    # ViewComponent::Base の initialize は ActionView::Base 由来で引数互換が無い。
+    # super を呼ばないのは ViewComponent コンポーネントの標準的な慣行
+    - "app/components/shadcn/base_component.rb"
+
+Packaging/RequireRelativeHardcodingLib:
+  # 開発時(gem未インストール状態)のrake実行は require_relative でなければ失敗する
+  Enabled: false
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Sorbet/ConstantsFromStrings:
+  # 生成された契約モジュールを名前で引くのは本ライブラリの設計そのもの(01-architecture §5)
+  Enabled: false
+
+Metrics/AbcSize:
+  Max: 20
+
+Metrics/MethodLength:
+  Max: 12
+
+Gemspec/DevelopmentDependencies:
+  # 仕様(01-architecture §3.1)どおり開発依存はgemspecに列挙する運用とする
+  Enabled: false
+
+Metrics/BlockLength:
+  Exclude:
+    - "Rakefile"
+    - "**/*.rake"
+    - "spec/**/*.rb"
+
+Layout/LineLength:
+  Max: 200
+  AllowedPatterns:
+    - "^\\s*#" # 生成物・コメントの長い行(URLやクラス文字列の説明)
+
+Style/DocumentationMethod:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false

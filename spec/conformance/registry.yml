@@ -1,0 +1,189 @@
+# 適合試験レジストリ(07-testing §3.2)。
+# コンポーネント追加時に1行追加するだけで全バリアント組み合わせの適合試験が走る。
+# pending: true の項目は vendor にあるが未実装のコンポーネント(負債の見える化 — 07 §6)。
+# upstream同期でアイテムが増減した場合、spec/contracts のカバレッジスペックがこのファイルの
+# 整合を検証する(新規アイテムの追加漏れ・廃止アイテムの削除忘れを検知)。
+
+accordion:
+  pending: true
+
+alert:
+  pending: true
+
+alert-dialog:
+  pending: true
+
+aspect-ratio:
+  pending: true
+
+attachment:
+  pending: true
+
+avatar:
+  pending: true
+
+badge:
+  pending: true
+
+breadcrumb:
+  pending: true
+
+bubble:
+  pending: true
+
+button:
+  component: Shadcn::Button
+  export: Button
+
+button-group:
+  pending: true
+
+calendar:
+  pending: true
+
+card:
+  pending: true
+
+carousel:
+  pending: true
+
+chart:
+  pending: true
+
+checkbox:
+  pending: true
+
+collapsible:
+  pending: true
+
+combobox:
+  pending: true
+
+command:
+  pending: true
+
+context-menu:
+  pending: true
+
+dialog:
+  pending: true
+
+direction:
+  pending: true
+
+drawer:
+  pending: true
+
+dropdown-menu:
+  pending: true
+
+empty:
+  pending: true
+
+field:
+  pending: true
+
+form:
+  pending: true
+
+hover-card:
+  pending: true
+
+input:
+  pending: true
+
+input-group:
+  pending: true
+
+input-otp:
+  pending: true
+
+item:
+  pending: true
+
+kbd:
+  pending: true
+
+label:
+  pending: true
+
+marker:
+  pending: true
+
+menubar:
+  pending: true
+
+message:
+  pending: true
+
+message-scroller:
+  pending: true
+
+native-select:
+  pending: true
+
+navigation-menu:
+  pending: true
+
+pagination:
+  pending: true
+
+popover:
+  pending: true
+
+progress:
+  pending: true
+
+radio-group:
+  pending: true
+
+resizable:
+  pending: true
+
+scroll-area:
+  pending: true
+
+select:
+  pending: true
+
+separator:
+  pending: true
+
+sheet:
+  pending: true
+
+sidebar:
+  pending: true
+
+skeleton:
+  pending: true
+
+slider:
+  pending: true
+
+sonner:
+  pending: true
+
+spinner:
+  pending: true
+
+switch:
+  pending: true
+
+table:
+  pending: true
+
+tabs:
+  pending: true
+
+textarea:
+  pending: true
+
+toggle:
+  pending: true
+
+toggle-group:
+  pending: true
+
+tooltip:
+  pending: true

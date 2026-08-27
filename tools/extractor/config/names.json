@@ -1,0 +1,20 @@
+{
+  "$comment": "upstreamエクスポート名 → Rubyクラス名(Shadcn::...)の明示的命名表。機械変換が非自明なものだけを列挙する(例: CardHeader → Shadcn::Card::Header)。記載がないエクスポートは Shadcn::<エクスポート名> そのまま(04-component-conventions §2)。",
+  "Card": "Shadcn::Card",
+  "CardHeader": "Shadcn::Card::Header",
+  "CardTitle": "Shadcn::Card::Title",
+  "CardDescription": "Shadcn::Card::Description",
+  "CardContent": "Shadcn::Card::Content",
+  "CardFooter": "Shadcn::Card::Footer",
+  "AlertDialog": "Shadcn::AlertDialog",
+  "AlertDialogAction": "Shadcn::AlertDialog::Action",
+  "AlertDialogCancel": "Shadcn::AlertDialog::Cancel",
+  "AlertDialogContent": "Shadcn::AlertDialog::Content",
+  "AlertDialogDescription": "Shadcn::AlertDialog::Description",
+  "AlertDialogFooter": "Shadcn::AlertDialog::Footer",
+  "AlertDialogHeader": "Shadcn::AlertDialog::Header",
+  "AlertDialogOverlay": "Shadcn::AlertDialog::Overlay",
+  "AlertDialogPortal": "Shadcn::AlertDialog::Portal",
+  "AlertDialogTitle": "Shadcn::AlertDialog::Title",
+  "AlertDialogTrigger": "Shadcn::AlertDialog::Trigger"
+}

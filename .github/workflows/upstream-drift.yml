@@ -1,0 +1,110 @@
+# 週次ドリフト検知 + 自動PR(09-ci-drift-detection §3)。
+#
+# - 毎週月曜 09:00 JST + 手動dispatch
+# - rake shadcn:update でsync+generate
+# - 適合試験は「結果に関わらず続行」。結果はPRのCI statusとして可視化される
+#   (赤でもPRを作る = 検知と修正を同じPRに集約)
+# - PR作成トークンは専用のGitHub App / fine-grained PAT (Secrets: SYNC_TOKEN) を推奨。
+#   未設定の場合は github.token にフォールバックする
+name: upstream-drift
+
+on:
+  schedule:
+    - cron: "0 0 * * 1" # 毎週月曜 09:00 JST
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync-and-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          # 差分が無ければ後続のcreate-pull-requestは何もしない
+          token: ${{ secrets.SYNC_TOKEN || github.token }}
+
+      - uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
+
+      - name: Install dependencies
+        run: |
+          bundle install
+          pnpm -C tools/extractor install --frozen-lockfile
+
+      - name: rake shadcn:update (sync + generate)
+        run: pnpm -C tools/extractor exec tsx src/cli.ts fetch && pnpm -C tools/extractor exec tsx src/cli.ts generate
+
+      - name: Detect upstream changes
+        id: changes
+        run: |
+          if git diff --quiet -- vendor gen lib/shadcn_view_components/generated app/assets/stylesheets; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run conformance specs (結果はPRのCIとして可視化。赤でも続行)
+        if: steps.changes.outputs.changed == 'true'
+        continue-on-error: true
+        run: bundle exec rspec spec/conformance --format progress
+
+      - name: Compose PR body
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          mkdir -p "$RUNNER_TEMP/pr"
+          {
+            echo "## upstream sync"
+            echo
+            echo "- 出所: $(ruby -rjson -e 'm = JSON.parse(File.read("vendor/shadcn/manifest.json")); r = m.dig("source", "upstream_release") || {}; puts [r["tag"], r["resolved_sha"]&.slice(0, 7), m["fetched_at"]].compact.join(" / ")')"
+            echo "- 変更サマリ:"
+            echo
+            echo '```'
+            git diff --stat -- vendor/shadcn | tail -20
+            echo '```'
+            echo
+            echo "### 契約差分(レビューの主対象)"
+            echo
+            echo '```'
+            git diff --stat -- gen/contracts | tail -20
+            echo '```'
+            echo
+            echo "### レビュー手順"
+            echo "1. gen/contracts/ のdiffを確認(クラス変更・スロット増減・バリアント増減)"
+            echo "2. CIの適合試験を確認:"
+            echo "   - 緑 → そのままマージ可能(クラス変更が自動反映されるだけ)"
+            echo "   - 赤 → 壊れたコンポーネントの修正をこのPRに追加コミット:"
+            echo "     - data-slot増減 → ERBテンプレート修正"
+            echo "     - バリアント増減 → kwargs・normalize対応"
+            echo "3. アイテム削除があった場合 → 対応コンポーネントのdeprecation判断"
+          } > "$RUNNER_TEMP/pr/body.md"
+
+      - name: Extract sync metadata for the PR title
+        if: steps.changes.outputs.changed == 'true'
+        id: meta
+        run: |
+          tag=$(ruby -rjson -e 'r = (JSON.parse(File.read("vendor/shadcn/manifest.json")).dig("source", "upstream_release") || {})["tag"] || "latest"; puts r')
+          echo "title=chore(upstream): sync shadcn/ui (${tag})" >> "$GITHUB_OUTPUT"
+
+      - name: Create / update the upstream-sync PR
+        if: steps.changes.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7
+        with:
+          # 固定ブランチ = upstream-sync PRは常に1件まで(09 §4)
+          branch: chore/upstream-sync
+          delete-branch: false
+          title: ${{ steps.meta.outputs.title }}
+          labels: |
+            upstream-sync
+            automated
+          body-path: ${{ runner.temp }}/pr/body.md
+          token: ${{ secrets.SYNC_TOKEN || github.token }}
+
+      - name: Close stale sync PR when upstream is already in sync
+        if: steps.changes.outputs.changed == 'false'
+        run: |
+          # 差分が無い場合、残っている古い自動PRがあれば閉じる(09 §3.2 [4])
+          gh pr close chore/upstream-sync --repo "$GITHUB_REPOSITORY" || true
+        env:
+          GH_TOKEN: ${{ secrets.SYNC_TOKEN || github.token }}

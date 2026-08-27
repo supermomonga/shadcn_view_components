@@ -1,0 +1,28 @@
+{
+  "name": "@shadcn-view-components/extractor",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "cli": "tsx src/cli.ts",
+    "tailwind:check": "tsx src/tailwind-check.ts"
+  },
+  "dependencies": {
+    "@babel/parser": "^7.28.0",
+    "@babel/traverse": "^7.28.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.3.1",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@babel/types": "^7.28.0",
+    "@tailwindcss/cli": "^4.1.0",
+    "@types/babel__traverse": "^7.20.0",
+    "@types/node": "^22.10.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.0"
+  }
+}

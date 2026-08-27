@@ -1,0 +1,9 @@
+--dir
+.
+--ignore=vendor
+--ignore=tools
+--ignore=spec/dummy
+--ignore=gen
+--ignore=spec
+--ignore=tmp
+--ignore=node_modules

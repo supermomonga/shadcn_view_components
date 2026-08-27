@@ -1,0 +1,4 @@
+gem:
+  # 依存gemのRBI生成。コミットしてCIで `tapioca gem --lint` 相当の検証を行う(08-sorbet §7)。
+  add_excludes:
+    - sorbet-static

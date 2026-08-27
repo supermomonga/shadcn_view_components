@@ -1,0 +1,4 @@
+{
+  "$comment": "抽出対象アイテムの明示的リスト。Phase 0 はButtonのみ(パイプライン実証)。Phaseが進むごとに実装済みコンポーネントを追加する。ここに含まれないvendorアイテムはextractの対象外(スキップとして報告)。未実装アイテムの負債は spec/conformance/registry.yml の pending で見える化する。",
+  "items": ["button"]
+}

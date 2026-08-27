@@ -1,0 +1,14 @@
+/.bundle/
+/vendor/bundle/
+/pkg/
+/spec/reports/
+/tmp/
+/log/
+/node_modules/
+/tools/extractor/node_modules/
+/coverage/
+/spec/dummy/log/
+/spec/dummy/tmp/
+/spec/dummy/storage/
+*.gem
+.DS_Store

@@ -1,0 +1,9 @@
+<main class="button-page">
+  <h1>Button</h1>
+  <form id="echo-form" action="/pages/echo" method="get">
+    <input type="text" name="q" value="submitted-from-button">
+    <%= render(Shadcn::Button.new) { "保存" } %>
+    <%= render(Shadcn::Button.new(variant: :outline, size: :sm)) { "キャンセル" } %>
+    <%= render(Shadcn::Button.new(tag: :a, href: "/pages/echo?q=link-clicked")) { "リンク" } %>
+  </form>
+</main>
