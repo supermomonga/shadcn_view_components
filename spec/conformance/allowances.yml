@@ -192,3 +192,31 @@ resizable:
     attributes: [style]
   ResizableHandle:
     attributes: [role, tabindex, style, aria-orientation, data-action]
+menubar:
+  Menubar:
+    attributes: [data-controller]
+  MenubarTrigger:
+    attributes: [type, aria-haspopup, aria-expanded, data-action]
+  MenubarContent:
+    attributes: [role, popover, tabindex, data-state, style]
+  MenubarGroup:
+    attributes: [role]
+  MenubarItem:
+    attributes: [role, tabindex, data-action, data-highlighted]
+  MenubarCheckboxItem:
+    attributes: [role, tabindex, data-action, data-highlighted, aria-checked]
+  MenubarRadioGroup:
+    attributes: [role]
+  MenubarRadioItem:
+    attributes: [role, tabindex, data-action, data-highlighted, aria-checked]
+  MenubarSubTrigger:
+    attributes: [role, tabindex, data-action, data-highlighted, aria-haspopup, aria-expanded]
+  MenubarSubContent:
+    attributes: [role, popover, tabindex, data-state, style]
+navigation-menu:
+  NavigationMenu:
+    attributes: [data-controller]
+  NavigationMenuTrigger:
+    attributes: [type, aria-haspopup, aria-expanded, data-action]
+  NavigationMenuContent:
+    attributes: [popover, data-state]

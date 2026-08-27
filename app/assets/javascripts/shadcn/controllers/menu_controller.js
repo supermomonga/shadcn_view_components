@@ -9,7 +9,8 @@ import { Controller } from "@hotwired/stimulus"
 // (popover の top layer 配下でも安定して動作させるため)
 export default class MenuController extends Controller {
   connect() {
-    this.menu = this.element.querySelector("[popover][role='menu']")
+    // navigation-menu の content は role=menu を持たないため popover 属性のみで探す
+    this.menu = this.element.querySelector("[popover]")
     if (this.menu) {
       this.onToggle = () => this.syncState()
       this.menu.addEventListener("toggle", this.onToggle)
@@ -71,7 +72,7 @@ export default class MenuController extends Controller {
   }
 
   toggleSub(event) {
-    const sub = event.currentTarget.closest("[data-slot$='-sub']")?.querySelector("[popover][role='menu']")
+    const sub = event.currentTarget.closest("[data-slot$='-sub']")?.querySelector("[popover]")
     sub?.togglePopover()
   }
 

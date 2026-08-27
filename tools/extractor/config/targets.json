@@ -40,6 +40,8 @@
     "tooltip",
     "dropdown-menu",
     "context-menu",
-    "resizable"
+    "resizable",
+    "menubar",
+    "navigation-menu"
   ]
 }

@@ -57,6 +57,25 @@ RSpec.describe "Menu and Resizable behavior", type: :system do
     expect(page).to have_selector("#context-content[data-state='closed']", visible: :all)
   end
 
+  it "opens a menubar menu from its trigger" do
+    visit "/pages/menus"
+
+    find("#menubar-file").click
+    expect(page.evaluate_script("document.querySelector('#menubar-file-content').matches(':popover-open')")).to be(true)
+    expect(find("#menubar-file")["aria-expanded"]).to eq("true")
+
+    find("#menubar-new").click
+    expect(page).to have_selector("#menubar-file-content[data-state='closed']", visible: :all)
+  end
+
+  it "opens a navigation-menu content from its trigger" do
+    visit "/pages/menus"
+
+    find("#nav-docs").click
+    expect(page.evaluate_script("document.querySelector('#nav-docs-content').matches(':popover-open')")).to be(true)
+    expect(page).to have_link("はじめに", href: "#intro")
+  end
+
   it "resizes panels by keyboard nudge on the handle" do
     visit "/pages/menus"
 

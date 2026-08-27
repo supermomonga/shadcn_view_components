@@ -185,10 +185,12 @@ function classifyCnArgument(
         call.cvaRef = argument.callee.name
         const variantPropNames = new Set(Object.keys(cvaDefinitions.get(argument.callee.name)!.variants))
         const options = argument.arguments[0]
+        // 引数無し呼び出し(navigationMenuTriggerStyle() 等)は cva 既定値のみの使用とみなす
         if (options && options.type === "ObjectExpression") {
           describeCvaOptions(options, variantPropNames, call, item, file, argument.loc?.start)
           return
         }
+        if (!options) return
         throw new ParseError(
           `cva reference '${argument.callee.name}' must be called with an inline object literal of variant props`,
           item, file, loc,

@@ -105,12 +105,19 @@ export async function extractContracts(pipeline: PipelinePaths, only?: string[])
   return { contracts, skipped }
 }
 
-/** 静的なだけのサブ要素cnを、そのスロットの static_attributes["class"] に合成する */
+/** 静的なだけのサブ要素cnを、そのスロットの static_attributes["class"] に合成する。
+ * 対象スロットが無い(data-slot を持たない外側ラッパー等)は、名前無しスロットとして
+ * 記録する — 手書き側がラッパー構造を再現できるようにするため */
 function attachSecondaryStaticClass(slots: Array<{ name: string, tag: string, static_attributes: Record<string, string>, dynamic_attributes: string[] }>, call: { slot: string, statics: string[] }): void {
   const slot = slots.find((candidate) => candidate.name === call.slot)
-  if (!slot) return
-  const existing = slot.static_attributes["class"]
-  slot.static_attributes["class"] = [existing, call.statics.join(" ")].filter(Boolean).join(" ")
+  if (slot) {
+    const existing = slot.static_attributes["class"]
+    slot.static_attributes["class"] = [existing, call.statics.join(" ")].filter(Boolean).join(" ")
+    return
+  }
+  if (call.slot === "") {
+    slots.push({ name: "", tag: "div", static_attributes: { class: call.statics.join(" ") }, dynamic_attributes: [] })
+  }
 }
 
 /** 関数パラメータの分割代入から、バリアントpropの既定値を取り出す(`{ variant = "default" }`)。 */
@@ -220,11 +227,13 @@ async function extractContractFromItem(
       const slots = collectSlots(ast, fnNode, name, file.path)
       const analysis = analyzeCn(ast, fnNode, cvaDefinitions, name, file.path)
 
-      // 主となるcn呼び出しの選別: ルート要素のもの > cvaを参照するもの > 最初のもの。
-      // cnを一切持たないコンポーネント(Accordion root 等)は空クラスとして扱う。
-      // 静的なだけのサブ要素のcn(switch の thumb 等)はスロットの static class に落とす
+      // 主となるcn呼び出しの選別: ルート要素のもの > cvaを参照するもの >
+      // data-slot を持つ要素のもの > 最初のもの。cnを一切持たないコンポーネント
+      // (Accordion root 等)は空クラスとして扱う。静的なだけのサブ要素のcn
+      // (switch の thumb 等)はスロットの static class に落とす
       const primary = analysis.calls.find((call) => call.slot === slots.rootSlot && slots.rootSlot !== "")
         ?? analysis.calls.find((call) => call.cvaRef !== null)
+        ?? analysis.calls.find((call) => call.slot !== "" && slots.slots.some((slot) => slot.name === call.slot))
         ?? analysis.calls[0] ?? null
       for (const call of analysis.calls) {
         if (call === primary) continue

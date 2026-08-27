@@ -238,8 +238,23 @@ marker:
     - { component: Shadcn::Marker::Icon, export: MarkerIcon }
 
 menubar:
-  pending: true
-
+  exports:
+    - { component: Shadcn::Menubar, export: Menubar }
+    - { component: Shadcn::Menubar::Menu, export: MenubarMenu }
+    - { component: Shadcn::Menubar::Trigger, export: MenubarTrigger }
+    - { component: Shadcn::Menubar::Portal, export: MenubarPortal }
+    - { component: Shadcn::Menubar::Content, export: MenubarContent }
+    - { component: Shadcn::Menubar::Group, export: MenubarGroup }
+    - { component: Shadcn::Menubar::Label, export: MenubarLabel }
+    - { component: Shadcn::Menubar::Item, export: MenubarItem }
+    - { component: Shadcn::Menubar::Shortcut, export: MenubarShortcut }
+    - { component: Shadcn::Menubar::CheckboxItem, export: MenubarCheckboxItem }
+    - { component: Shadcn::Menubar::RadioGroup, export: MenubarRadioGroup }
+    - { component: Shadcn::Menubar::RadioItem, export: MenubarRadioItem }
+    - { component: Shadcn::Menubar::Separator, export: MenubarSeparator }
+    - { component: Shadcn::Menubar::Sub, export: MenubarSub }
+    - { component: Shadcn::Menubar::SubTrigger, export: MenubarSubTrigger }
+    - { component: Shadcn::Menubar::SubContent, export: MenubarSubContent }
 message:
   pending: true
 
@@ -250,8 +265,15 @@ native-select:
   pending: true
 
 navigation-menu:
-  pending: true
-
+  exports:
+    - { component: Shadcn::NavigationMenu, export: NavigationMenu }
+    - { component: Shadcn::NavigationMenu::List, export: NavigationMenuList }
+    - { component: Shadcn::NavigationMenu::Item, export: NavigationMenuItem }
+    - { component: Shadcn::NavigationMenu::Content, export: NavigationMenuContent }
+    - { component: Shadcn::NavigationMenu::Trigger, export: NavigationMenuTrigger }
+    - { component: Shadcn::NavigationMenu::Link, export: NavigationMenuLink }
+    - { component: Shadcn::NavigationMenu::Indicator, export: NavigationMenuIndicator }
+    - { component: Shadcn::NavigationMenu::Viewport, export: NavigationMenuViewport }
 pagination:
   exports:
     - { component: Shadcn::Pagination, export: Pagination }

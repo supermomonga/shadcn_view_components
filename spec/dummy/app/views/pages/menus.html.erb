@@ -31,6 +31,34 @@
     <% end %>
   </section>
 
+  <section id="menubar-demo">
+    <%= render(Shadcn::Menubar.new(id: "menubar")) do %>
+      <%= render(Shadcn::Menubar::Menu.new) do %>
+        <%= render(Shadcn::Menubar::Trigger.new(id: "menubar-file")) { "ファイル" } %>
+        <%= render(Shadcn::Menubar::Content.new(id: "menubar-file-content")) do %>
+          <%= render(Shadcn::Menubar::Item.new(id: "menubar-new")) { "新規作成" } %>
+          <%= render(Shadcn::Menubar::Item.new(id: "menubar-save")) { "保存" } %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </section>
+
+  <section id="nav-demo">
+    <%= render(Shadcn::NavigationMenu.new(id: "nav")) do %>
+      <%= render(Shadcn::NavigationMenu::List.new) do %>
+        <%= render(Shadcn::NavigationMenu::Item.new) do %>
+          <%= render(Shadcn::NavigationMenu::Link.new(id: "nav-home", href: "#")) { "ホーム" } %>
+        <% end %>
+        <%= render(Shadcn::NavigationMenu::Item.new) do %>
+          <%= render(Shadcn::NavigationMenu::Trigger.new(id: "nav-docs")) { "ドキュメント" } %>
+          <%= render(Shadcn::NavigationMenu::Content.new(id: "nav-docs-content")) do %>
+            <%= render(Shadcn::NavigationMenu::Link.new(id: "nav-intro", href: "#intro")) { "はじめに" } %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </section>
+
   <section id="resizable-demo">
     <%= render(Shadcn::Resizable::PanelGroup.new(id: "resize-group", style: "display: flex; height: 120px; width: 100%; border: 1px solid #ccc")) do %>
       <%= render(Shadcn::Resizable::Panel.new(id: "panel-left")) do %>
