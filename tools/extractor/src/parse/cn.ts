@@ -156,10 +156,19 @@ function classifyCnArgument(
       }
       break
     }
-    case "LogicalExpression":
+    case "LogicalExpression": {
+      // `side === "right" && "inset-y-0 ..."` のような条件付き静的クラス。
+      // 識別子の既定値で評価し、成立するときのみ右辺を採用する(既定side等)。
+      // 解決できない形式は従来どおり右辺のみを静的として拾う
+      const conditional = staticConditional(argument, fileDefaults)
+      if (conditional !== null) {
+        if (conditional !== "") call.statics.push(conditional)
+        return
+      }
       // cn(cond && "x") のような条件は右辺のみを再帰的に分類する(静的側のみ採れる)
       classifyCnArgument(argument.right, call, cvaDefinitions, item, file, fileDefaults, loc)
       return
+    }
     case "ConditionalExpression": {
       // `orientation === "horizontal" ? A : B` の静的文字列分岐。
       // 識別子の既定値(当該関数またはファイル内ルートのパラメータ既定値)で
@@ -224,6 +233,35 @@ function resolveConditionalStatic(
   const matches = test.operator === "===" ? defaultValue === literal : defaultValue !== literal
   const chosen = matches ? node.consequent : node.alternate
   return chosen.type === "StringLiteral" ? chosen.value : null
+}
+
+/**
+ * `<identifier> === "literal" && "class"` を、識別子のファイルスコープ既定値で評価する。
+ * 成立する場合はそのクラス、不成立の場合は ""(採用しない)、解決不能なら null
+ */
+function staticConditional(
+  node: Extract<Node, { type: "LogicalExpression" }>,
+  fileDefaults: Map<string, string>,
+): string | null {
+  const test = node.left
+  if (node.operator !== "&&" || test.type !== "BinaryExpression") return null
+  if (test.operator !== "===" && test.operator !== "!==") return null
+  const { left, right } = test
+  let identifier: string | null = null
+  let literal: string | null = null
+  if (left.type === "Identifier" && right.type === "StringLiteral") {
+    identifier = left.name
+    literal = right.value
+  } else if (left.type === "StringLiteral" && right.type === "Identifier") {
+    identifier = right.name
+    literal = left.value
+  }
+  if (identifier === null || literal === null || node.right.type !== "StringLiteral") return null
+
+  const defaultValue = fileDefaults.get(identifier)
+  if (defaultValue === undefined) return null
+  const matches = test.operator === "===" ? defaultValue === literal : defaultValue !== literal
+  return matches ? node.right.value : ""
 }
 
 function describeCvaOptions(

@@ -32,6 +32,8 @@
     "pagination",
     "form",
     "dialog",
-    "alert-dialog"
+    "alert-dialog",
+    "sheet",
+    "drawer"
   ]
 }

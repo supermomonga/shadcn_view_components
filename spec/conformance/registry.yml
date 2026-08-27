@@ -131,8 +131,17 @@ direction:
   pending: true
 
 drawer:
-  pending: true
-
+  exports:
+    - { component: Shadcn::Drawer, export: Drawer }
+    - { component: Shadcn::Drawer::Trigger, export: DrawerTrigger }
+    - { component: Shadcn::Drawer::Close, export: DrawerClose }
+    - { component: Shadcn::Drawer::Portal, export: DrawerPortal }
+    - { component: Shadcn::Drawer::Overlay, export: DrawerOverlay }
+    - { component: Shadcn::Drawer::Content, export: DrawerContent }
+    - { component: Shadcn::Drawer::Header, export: DrawerHeader }
+    - { component: Shadcn::Drawer::Footer, export: DrawerFooter }
+    - { component: Shadcn::Drawer::Title, export: DrawerTitle }
+    - { component: Shadcn::Drawer::Description, export: DrawerDescription }
 dropdown-menu:
   pending: true
 
@@ -250,8 +259,15 @@ separator:
     - { component: Shadcn::Separator, export: Separator }
 
 sheet:
-  pending: true
-
+  exports:
+    - { component: Shadcn::Sheet, export: Sheet }
+    - { component: Shadcn::Sheet::Trigger, export: SheetTrigger }
+    - { component: Shadcn::Sheet::Close, export: SheetClose }
+    - { component: Shadcn::Sheet::Content, export: SheetContent }
+    - { component: Shadcn::Sheet::Header, export: SheetHeader }
+    - { component: Shadcn::Sheet::Footer, export: SheetFooter }
+    - { component: Shadcn::Sheet::Title, export: SheetTitle }
+    - { component: Shadcn::Sheet::Description, export: SheetDescription }
 sidebar:
   pending: true
 

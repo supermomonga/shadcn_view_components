@@ -11,6 +11,8 @@ class PagesController < ApplicationController
 
   def dialogs; end
 
+  def sheets; end
+
   def carousel; end
 
   def form

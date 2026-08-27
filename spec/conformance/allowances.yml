@@ -102,3 +102,21 @@ alert-dialog:
   AlertDialogCancel:
     class_mode: contains
     attributes: [type, data-action, data-state, aria-haspopup]
+sheet:
+  Sheet:
+    attributes: [data-controller]
+  SheetTrigger:
+    attributes: [type, aria-haspopup, aria-expanded, data-action]
+  SheetClose:
+    attributes: [type, data-action]
+  SheetContent:
+    attributes: [aria-modal, data-state]
+drawer:
+  Drawer:
+    attributes: [data-controller]
+  DrawerTrigger:
+    attributes: [type, aria-haspopup, aria-expanded, data-action]
+  DrawerClose:
+    attributes: [type, data-action]
+  DrawerContent:
+    attributes: [aria-modal, data-state, data-vaul-drawer-direction]

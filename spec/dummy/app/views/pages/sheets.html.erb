@@ -1,0 +1,44 @@
+<style>
+  dialog[data-slot='sheet-content'] {
+    position: fixed; top: 0; right: 0; height: 100%; width: 320px;
+    border-left: 1px solid #ccc; padding: 24px; margin: 0;
+  }
+  dialog[data-slot='sheet-content']::backdrop { background: rgb(0 0 0 / 0.5); }
+  dialog[data-slot='drawer-content'] {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    border-top: 1px solid #ccc; padding: 24px; margin: 0;
+  }
+  dialog[data-slot='drawer-content']::backdrop { background: rgb(0 0 0 / 0.5); }
+</style>
+<main class="sheet-page">
+  <h1>Sheet / Drawer</h1>
+
+  <section id="sheet-demo">
+    <%= render(Shadcn::Sheet.new) do %>
+      <%= render(Shadcn::Sheet::Trigger.new(id: "open-sheet")) { "シートを開く" } %>
+      <%= render(Shadcn::Sheet::Content.new(id: "demo-sheet")) do %>
+        <%= render(Shadcn::Sheet::Header.new) do %>
+          <%= render(Shadcn::Sheet::Title.new) { "シート見出し" } %>
+          <%= render(Shadcn::Sheet::Description.new) { "右側から出ます" } %>
+        <% end %>
+        <%= render(Shadcn::Sheet::Footer.new) do %>
+          <%= render(Shadcn::Sheet::Close.new(id: "close-sheet")) { "閉じる" } %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </section>
+
+  <section id="drawer-demo">
+    <%= render(Shadcn::Drawer.new) do %>
+      <%= render(Shadcn::Drawer::Trigger.new(id: "open-drawer")) { "ドロワーを開く" } %>
+      <%= render(Shadcn::Drawer::Content.new(id: "demo-drawer")) do %>
+        <%= render(Shadcn::Drawer::Header.new) do %>
+          <%= render(Shadcn::Drawer::Title.new) { "ドロワー見出し" } %>
+        <% end %>
+        <%= render(Shadcn::Drawer::Footer.new) do %>
+          <%= render(Shadcn::Drawer::Close.new(id: "close-drawer")) { "閉じる" } %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </section>
+</main>

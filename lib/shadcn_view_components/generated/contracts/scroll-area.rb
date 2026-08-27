@@ -39,7 +39,7 @@ module ShadcnViewComponents
 
       # キーはソート済みpropペア。値は事前解決済みの最終クラス文字列
       COMBINATIONS = T.let({
-        {} => "flex touch-none p-px transition-colors select-none w-2.5 border-l border-l-transparent h-2.5 flex-col border-t border-t-transparent"
+        {} => "flex touch-none p-px transition-colors select-none h-full w-2.5 border-l border-l-transparent"
       }.freeze, T::Hash[T::Hash[Symbol, Symbol], String])
 
       SLOTS = T.let([

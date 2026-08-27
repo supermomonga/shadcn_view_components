@@ -1,0 +1,197 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "Sheet": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::Sheet",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "sheet",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "sheet",
+          "static_attributes": {},
+          "tag": "SheetPrimitive.Root"
+        }
+      ]
+    },
+    "SheetClose": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::Sheet::Close",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "sheet-close",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "sheet-close",
+          "static_attributes": {},
+          "tag": "SheetPrimitive.Close"
+        }
+      ]
+    },
+    "SheetContent": {
+      "classes_slot": "sheet-content",
+      "combinations": {
+        "": "fixed z-50 flex flex-col gap-4 bg-background shadow-lg transition ease-in-out data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:animate-in data-[state=open]:duration-500 inset-y-0 right-0 h-full w-3/4 border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:max-w-sm"
+      },
+      "component_class": "Shadcn::Sheet::Content",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "",
+          "static_attributes": {},
+          "tag": "SheetPortal"
+        },
+        {
+          "dynamic_attributes": [],
+          "name": "sheet-content",
+          "static_attributes": {},
+          "tag": "SheetPrimitive.Content"
+        }
+      ]
+    },
+    "SheetDescription": {
+      "classes_slot": "sheet-description",
+      "combinations": {
+        "": "text-sm text-muted-foreground"
+      },
+      "component_class": "Shadcn::Sheet::Description",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "sheet-description",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "sheet-description",
+          "static_attributes": {},
+          "tag": "SheetPrimitive.Description"
+        }
+      ]
+    },
+    "SheetFooter": {
+      "classes_slot": "sheet-footer",
+      "combinations": {
+        "": "mt-auto flex flex-col gap-2 p-4"
+      },
+      "component_class": "Shadcn::Sheet::Footer",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "sheet-footer",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "sheet-footer",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "SheetHeader": {
+      "classes_slot": "sheet-header",
+      "combinations": {
+        "": "flex flex-col gap-1.5 p-4"
+      },
+      "component_class": "Shadcn::Sheet::Header",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "sheet-header",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "sheet-header",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "SheetTitle": {
+      "classes_slot": "sheet-title",
+      "combinations": {
+        "": "font-semibold text-foreground"
+      },
+      "component_class": "Shadcn::Sheet::Title",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "sheet-title",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "sheet-title",
+          "static_attributes": {},
+          "tag": "SheetPrimitive.Title"
+        }
+      ]
+    },
+    "SheetTrigger": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::Sheet::Trigger",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "sheet-trigger",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "sheet-trigger",
+          "static_attributes": {},
+          "tag": "SheetPrimitive.Trigger"
+        }
+      ]
+    }
+  },
+  "name": "sheet",
+  "registry_dependencies": [],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "fd833d0ddc967a52d78f42eff564219c5a17fc0df58b43bec1687f0b56177b7f"
+  }
+}
