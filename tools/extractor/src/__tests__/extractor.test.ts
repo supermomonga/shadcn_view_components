@@ -5,9 +5,10 @@ import { extractCvaDefinitions } from "../parse/cva.ts"
 import { analyzeCn } from "../parse/cn.ts"
 import { discoverExports } from "../parse/context.ts"
 import { collectSlots } from "../parse/slots.ts"
-import { resolveCnCombinations } from "../derive/combinations.ts"
+import { resolveCnCombinations, resolveConstrainedCombinations } from "../derive/combinations.ts"
 import { renderContractRuby } from "../emit/ruby.ts"
 import { renderThemeCss } from "../emit/css.ts"
+import { snakeCase } from "../normalize.ts"
 import type { Contract } from "../contract.ts"
 
 /**
@@ -127,7 +128,8 @@ describe("parse: cn", () => {
     const call = analysis.calls[0]!
     expect(call.slot).toBe("button")
     expect(call.cvaRef).toBe("buttonVariants")
-    expect(call.cvaProps.sort()).toEqual(["size", "variant"])
+    expect(call.cvaOptions.map((option) => option.prop).sort()).toEqual(["size", "variant"])
+    expect(call.cvaOptions.every((option) => option.kind === "passthrough")).toBe(true)
     expect(call.statics).toEqual([])
     expect(call.hasUserClass).toBe(true)
   })
@@ -158,6 +160,62 @@ describe("parse: cn", () => {
     expect(thumb.statics).toEqual(["pointer-events-none block rounded-full"])
     expect(thumb.hasUserClass).toBe(false)
   })
+
+  it("records conditional cva options (isActive ? \"outline\" : \"ghost\") as an exposed prop", () => {
+    const code = `
+      const buttonVariants = cva("inline-flex rounded-md", {
+        variants: {
+          variant: { ghost: "hover:bg-accent", outline: "border" },
+          size: { icon: "size-9", default: "h-9 px-4" },
+        },
+        defaultVariants: { variant: "default", size: "default" },
+      })
+      function PaginationLink({ className, isActive, size = "icon", ...props }) {
+        return (
+          <a
+            data-slot="pagination-link"
+            data-active={isActive}
+            className={cn(buttonVariants({ variant: isActive ? "outline" : "ghost", size }), className)}
+            {...props}
+          />
+        )
+      }
+      export { PaginationLink }
+    `
+    const ast = parseTsx(code)
+    const definitions = extractCvaDefinitions(ast, "pagination", "ui/pagination.tsx")
+    const exports = discoverExports(ast, "pagination", "ui/pagination.tsx")
+    const analysis = analyzeCn(ast, exports[0]!.functionNode!, definitions, "pagination", "ui/pagination.tsx")
+    const call = analysis.calls[0]!
+    expect(call.cvaRef).toBe("buttonVariants")
+    expect(call.cvaOptions).toEqual([
+      { prop: "variant", kind: "conditional", condition: "isActive", trueValue: "outline", falseValue: "ghost" },
+      { prop: "size", kind: "passthrough" },
+    ])
+  })
+
+  it("resolves orientation-style conditional statics using the file-scoped param default", () => {
+    const code = `
+      function Carousel({ orientation = "horizontal", className, ...props }) {
+        return <div data-slot="carousel" className={cn("relative", className)} {...props} />
+      }
+      function CarouselItem({ className, ...props }) {
+        return (
+          <div
+            data-slot="carousel-item"
+            className={cn("min-w-0 shrink-0 grow-0 basis-full", orientation === "horizontal" ? "pl-4" : "pt-4", className)}
+            {...props}
+          />
+        )
+      }
+      export { Carousel, CarouselItem }
+    `
+    const ast = parseTsx(code)
+    const definitions = extractCvaDefinitions(ast, "carousel", "ui/carousel.tsx")
+    const item = discoverExports(ast, "carousel", "ui/carousel.tsx").find((entry) => entry.name === "CarouselItem")!
+    const analysis = analyzeCn(ast, item.functionNode!, definitions, "carousel", "ui/carousel.tsx")
+    expect(analysis.calls[0]!.statics).toEqual(["min-w-0 shrink-0 grow-0 basis-full", "pl-4"])
+  })
 })
 
 describe("derive: combinations", () => {
@@ -180,6 +238,42 @@ describe("derive: combinations", () => {
 
   it("resolves static-only components to a single empty-key entry", () => {
     expect(resolveCnCombinations(null, ["p-4", "p-2"])).toEqual({ "": "p-2" })
+  })
+
+  it("enumerates constrained combinations with snake_cased conditional props", () => {
+    const definition = {
+      identifier: "buttonVariants",
+      base: "inline-flex rounded-md",
+      variants: {
+        variant: { ghost: "hover:bg-accent", outline: "border" },
+        size: { icon: "size-9", default: "h-9 px-4" },
+      },
+      compound: [],
+      defaults: { variant: "default", size: "default" },
+    }
+    const combinations = resolveConstrainedCombinations(definition, [], [
+      { prop: "variant", kind: "conditional", condition: "isActive", trueValue: "outline", falseValue: "ghost" },
+      { prop: "size", kind: "passthrough" },
+    ])
+    expect(Object.keys(combinations).sort()).toEqual([
+      "is_active=false&size=default",
+      "is_active=false&size=icon",
+      "is_active=true&size=default",
+      "is_active=true&size=icon",
+    ])
+    expect(combinations["is_active=true&size=icon"]).toContain("border")
+    expect(combinations["is_active=true&size=icon"]).toContain("size-9")
+    expect(combinations["is_active=false&size=icon"]).toContain("hover:bg-accent")
+
+    // 固定値は全組み合わせに適用され、契約側propには現れない
+    const fixed = resolveConstrainedCombinations(definition, [], [{ prop: "variant", kind: "fixed", value: "outline" }])
+    expect(Object.keys(fixed)).toEqual([""])
+    expect(fixed[""]).toContain("border")
+  })
+
+  it("snake_cases camelCase identifiers for Ruby kwargs", () => {
+    expect(snakeCase("isActive")).toBe("is_active")
+    expect(snakeCase("size")).toBe("size")
   })
 
   it("guards against combination explosion", () => {

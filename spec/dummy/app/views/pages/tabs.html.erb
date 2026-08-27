@@ -1,0 +1,13 @@
+<main class="tabs-page">
+  <h1>Tabs</h1>
+  <section id="account-tabs">
+    <%= render(Shadcn::Tabs.new(id: "demo-tabs")) do %>
+      <%= render(Shadcn::Tabs::List.new) do %>
+        <%= render(Shadcn::Tabs::Trigger.new(id: "trigger-account", value: "account", active: true)) { "アカウント" } %>
+        <%= render(Shadcn::Tabs::Trigger.new(id: "trigger-password", value: "password")) { "パスワード" } %>
+      <% end %>
+      <%= render(Shadcn::Tabs::Content.new(id: "panel-account", value: "account")) { "アカウント設定の内容" } %>
+      <%= render(Shadcn::Tabs::Content.new(id: "panel-password", value: "password")) { "パスワード変更の内容" } %>
+    <% end %>
+  </section>
+</main>

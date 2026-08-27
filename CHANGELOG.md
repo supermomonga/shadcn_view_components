@@ -13,6 +13,26 @@ Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 - 注: upstreamインデックスに列挙されているが404となるアイテム(questionnaire, toast)は
   「upstream側の不整合」として警告付きスキップ
 
+### 追加(Phase 2 wave2 — tabs/carousel/pagination/form)
+
+- 4アイテム / 22エクスポート: Tabs(+List/Trigger/Content), Carousel(+Content/Item/Previous/Next),
+  Pagination(+Content/Item/Link/Previous/Next/Ellipsis), Form(+Item/Label/Control/Description/Message)
+- 抽出器の拡張(条件付きバリアントの契約化):
+  - `cva({ variant: isActive ? "outline" : "ghost", size })` のような呼び出し側制約を
+    条件識別子の真偽2値 × passthrough全値域の組合せとして列挙(snake_case で契約側prop化)
+  - `orientation === "horizontal" ? A : B` の静的クラス分岐をファイルスコープの
+    パラメータ既定値で解決(carousel)
+  - 子コンポーネント経由でルートを描くエクスポート(PaginationPrevious/Next)は
+    同一アイテム内の兄弟エクスポートのルートスロットを継承
+  - コンポーネント参照タグへの variant/size 属性はDOM属性ではないため契約から除外
+  - JSXを返さないエクスポート(useFormField等)を契約対象から除外
+- Tabs: ARIA tabsパターン + roving tabindex(矢印キー移動・aria-selected・パネル hidden 切替)
+- Carousel: embla を使わない生スクロールでの再実装(ナビの有効化状態管理)
+- Form: Rails流の再解釈(aria-invalid/data-error 連携、Messageは本文が無ければ描かない)
+- Phase 2 のDoD: form_with統合スペック(送出・バリデーションエラー表示)、
+  キーボード操作スペック、JS無効時フォールバック分類の契約コメント化
+- Lookbookプレビュー4種追加(計30種)
+
 ### 追加(Phase 2 wave1 — フォーム部品・軽インタラクティブ)
 
 - 8アイテム / 17エクスポート: Accordion(+Item/Trigger/Content), Checkbox, Collapsible(+Trigger/Content),

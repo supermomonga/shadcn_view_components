@@ -4,6 +4,7 @@
 module Shadcn
   class Collapsible < BaseComponent
     # ネイティブな details(JS無しで開閉可 — 05-stimulus-hotwire §3)
+    # JS無効時フォールバック: Graceful(ネイティブ要素で成立)
     sig { override.returns(String) }
     def default_tag
       "details"

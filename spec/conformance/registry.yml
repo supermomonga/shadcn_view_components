@@ -74,7 +74,12 @@ card:
     - { component: Shadcn::Card::Footer, export: CardFooter }
 
 carousel:
-  pending: true
+  exports:
+    - { component: Shadcn::Carousel, export: Carousel }
+    - { component: Shadcn::Carousel::Content, export: CarouselContent }
+    - { component: Shadcn::Carousel::Item, export: CarouselItem }
+    - { component: Shadcn::Carousel::Previous, export: CarouselPrevious }
+    - { component: Shadcn::Carousel::Next, export: CarouselNext }
 
 chart:
   pending: true
@@ -123,7 +128,13 @@ field:
   pending: true
 
 form:
-  pending: true
+  exports:
+    - { component: Shadcn::Form::Item, export: FormItem }
+    - { component: Shadcn::Form::Label, export: FormLabel }
+    - { component: Shadcn::Form::Control, export: FormControl }
+    - { component: Shadcn::Form::Description, export: FormDescription }
+    # FormMessage は upstream と同じく「本文が無ければ描かない」ため、検証用コンテンツを与える
+    - { component: Shadcn::Form::Message, export: FormMessage, content: "必須項目です" }
 
 hover-card:
   pending: true
@@ -182,7 +193,14 @@ navigation-menu:
   pending: true
 
 pagination:
-  pending: true
+  exports:
+    - { component: Shadcn::Pagination, export: Pagination }
+    - { component: Shadcn::Pagination::Content, export: PaginationContent }
+    - { component: Shadcn::Pagination::Item, export: PaginationItem }
+    - { component: Shadcn::Pagination::Link, export: PaginationLink }
+    - { component: Shadcn::Pagination::Previous, export: PaginationPrevious }
+    - { component: Shadcn::Pagination::Next, export: PaginationNext }
+    - { component: Shadcn::Pagination::Ellipsis, export: PaginationEllipsis }
 
 popover:
   pending: true
@@ -246,7 +264,11 @@ table:
     - { component: Shadcn::Table::Caption, export: TableCaption }
 
 tabs:
-  pending: true
+  exports:
+    - { component: Shadcn::Tabs, export: Tabs }
+    - { component: Shadcn::Tabs::List, export: TabsList }
+    - { component: Shadcn::Tabs::Trigger, export: TabsTrigger }
+    - { component: Shadcn::Tabs::Content, export: TabsContent }
 
 textarea:
   exports:

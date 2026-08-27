@@ -1,0 +1,157 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "Carousel": {
+      "classes_slot": "carousel",
+      "combinations": {
+        "": "relative"
+      },
+      "component_class": "Shadcn::Carousel",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "value"
+          ],
+          "name": "",
+          "static_attributes": {},
+          "tag": "CarouselContext.Provider"
+        },
+        {
+          "dynamic_attributes": [
+            "onKeyDownCapture"
+          ],
+          "name": "carousel",
+          "static_attributes": {
+            "aria-roledescription": "carousel",
+            "role": "region"
+          },
+          "tag": "div"
+        }
+      ]
+    },
+    "CarouselContent": {
+      "classes_slot": "",
+      "combinations": {
+        "": "flex -ml-4"
+      },
+      "component_class": "Shadcn::Carousel::Content",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "carousel-content",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "ref"
+          ],
+          "name": "carousel-content",
+          "static_attributes": {
+            "class": "overflow-hidden"
+          },
+          "tag": "div"
+        }
+      ]
+    },
+    "CarouselItem": {
+      "classes_slot": "carousel-item",
+      "combinations": {
+        "": "min-w-0 shrink-0 grow-0 basis-full pl-4"
+      },
+      "component_class": "Shadcn::Carousel::Item",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "carousel-item",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "carousel-item",
+          "static_attributes": {
+            "aria-roledescription": "slide",
+            "role": "group"
+          },
+          "tag": "div"
+        }
+      ]
+    },
+    "CarouselNext": {
+      "classes_slot": "carousel-next",
+      "combinations": {
+        "": "absolute size-8 rounded-full top-1/2 -right-12 -translate-y-1/2"
+      },
+      "component_class": "Shadcn::Carousel::Next",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "carousel-next",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "disabled",
+            "onClick",
+            "size",
+            "variant"
+          ],
+          "name": "carousel-next",
+          "static_attributes": {},
+          "tag": "Button"
+        }
+      ]
+    },
+    "CarouselPrevious": {
+      "classes_slot": "carousel-previous",
+      "combinations": {
+        "": "absolute size-8 rounded-full top-1/2 -left-12 -translate-y-1/2"
+      },
+      "component_class": "Shadcn::Carousel::Previous",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "carousel-previous",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "disabled",
+            "onClick",
+            "size",
+            "variant"
+          ],
+          "name": "carousel-previous",
+          "static_attributes": {},
+          "tag": "Button"
+        }
+      ]
+    }
+  },
+  "name": "carousel",
+  "registry_dependencies": [
+    "button"
+  ],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "837845cac1f9ce00cc48445559b8a4c2ad3c6675f5afc40cd12947d69987e701"
+  }
+}

@@ -1,0 +1,28 @@
+<%# dummyアプリはTailwindをビルドしないため、カルーセルのスクロール検証に必要な
+    最小限のレイアウトだけ補う(契約クラスの描画自体には関与しない) %>
+<style>
+  #carousel [data-slot='carousel-content'] { overflow-x: auto; }
+  #carousel [data-slot='carousel-content'] > div { display: flex; }
+  #carousel [data-slot='carousel-item'] { flex: 0 0 192px; padding-left: 16px; }
+  #carousel [data-slot='carousel-item'] > div {
+    width: 176px; height: 160px; box-sizing: border-box;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid #ccc; border-radius: 6px;
+  }
+</style>
+<main class="carousel-page">
+  <h1>Carousel</h1>
+  <section id="demo-carousel">
+    <%= render(Shadcn::Carousel.new(id: "carousel", style: "width: 320px")) do %>
+      <%= render(Shadcn::Carousel::Content.new) do %>
+        <% %w[1 2 3 4 5 6].each do |n| %>
+          <%= render(Shadcn::Carousel::Item.new) do %>
+            <div>スライド<%= n %></div>
+          <% end %>
+        <% end %>
+      <% end %>
+      <%= render(Shadcn::Carousel::Previous.new(id: "carousel-prev")) %>
+      <%= render(Shadcn::Carousel::Next.new(id: "carousel-next")) %>
+    <% end %>
+  </section>
+</main>

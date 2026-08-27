@@ -46,6 +46,11 @@ export function combinationKey(options: Record<string, string>): string {
     .join("&")
 }
 
+/** upstreamのキャメルケース識別子(isActive等)を契約側prop名へ落とす(Ruby kwargs対応)。 */
+export function snakeCase(name: string): string {
+  return name.replace(/([a-z0-9])([A-Z])/g, "$1_$2").toLowerCase()
+}
+
 /** アトミック書き込み(一時ファイル→rename)。中断時に中途半端な生成物を残さない。 */
 export async function atomicWriteFile(filePath: string, content: string): Promise<void> {
   await mkdir(path.dirname(filePath), { recursive: true })

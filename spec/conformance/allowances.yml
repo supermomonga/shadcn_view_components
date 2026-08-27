@@ -43,3 +43,39 @@ toggle-group:
     attributes: [data-controller, data-type, style]
   ToggleGroupItem:
     attributes: [data-state, data-action, aria-pressed, type]
+pagination:
+  PaginationLink:
+    attributes: [href]
+  PaginationPrevious:
+    # Link(ghost/default)のクラスと Previous 固有クラスの実行時合成(upstreamと同構成)
+    class_mode: contains
+    attributes: [aria-label, href]
+  PaginationNext:
+    class_mode: contains
+    attributes: [aria-label, href]
+tabs:
+  Tabs:
+    attributes: [data-controller, data-orientation]
+  TabsList:
+    attributes: [role, aria-orientation]
+  TabsTrigger:
+    attributes: [role, aria-selected, tabindex, type, data-state, data-value, data-action]
+  TabsContent:
+    attributes: [role, data-value, hidden]
+carousel:
+  Carousel:
+    # ルートが Context.Provider の内側にある構造。role/aria-roledescription は
+    # 契約スロット(carousel div)由来だが、ルートスロット定義は Provider 側になるため許可リストへ
+    attributes: [data-controller, role, aria-roledescription]
+  CarouselPrevious:
+    # Button(outline/icon)のクラスとの実行時合成
+    class_mode: contains
+    attributes: [type, disabled, data-action, aria-hidden]
+  CarouselNext:
+    class_mode: contains
+    attributes: [type, disabled, data-action, aria-hidden]
+form:
+  FormLabel:
+    attributes: [for, data-error]
+  FormControl:
+    attributes: [id]

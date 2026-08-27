@@ -1,0 +1,30 @@
+<main class="form-page">
+  <h1>Form</h1>
+  <section id="subscribe-form">
+    <% if notice %>
+      <p id="form-notice"><%= notice %></p>
+    <% end %>
+    <%= form_with url: pages_form_path, method: :post, local: true do %>
+      <% if @email_error %>
+        <%= render(Shadcn::Alert.new(variant: :destructive)) do %>
+          <%= render(Shadcn::Alert::Title.new) { "送信できませんでした" } %>
+          <%= render(Shadcn::Alert::Description.new) { @email_error } %>
+        <% end %>
+      <% end %>
+      <%= render(Shadcn::Form::Item.new) do %>
+        <%= render(Shadcn::Form::Label.new(for: "subscribe-email", error: @email_error.present?)) { "メールアドレス" } %>
+        <%= render(Shadcn::Form::Control.new) do %>
+          <%= render(Shadcn::Input.new(
+            id: "subscribe-email",
+            name: "email",
+            type: "text",
+            aria: { invalid: @email_error.present?.to_s }
+          )) %>
+        <% end %>
+        <%= render(Shadcn::Form::Description.new) { "ニュースレターの送信先です" } %>
+        <%= render(Shadcn::Form::Message.new(id: "email-message", message: @email_error)) %>
+      <% end %>
+      <%= render(Shadcn::Button.new(type: "submit")) { "登録する" } %>
+    <% end %>
+  </section>
+</main>

@@ -3,7 +3,8 @@ import { clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 import type { CvaDefinition } from "../contract.ts"
-import { combinationKey } from "../normalize.ts"
+import { combinationKey, snakeCase } from "../normalize.ts"
+import type { CvaOption } from "../parse/cn.ts"
 
 /** 組み合わせ爆発のガード(03-extraction-codegen §8)。超えたら例外で打ち切り、個別対応へエスカレーション。 */
 export const MAX_COMBINATIONS = 1024
@@ -45,6 +46,85 @@ export function resolveCnCombinations(definition: CvaDefinition | null, statics:
     const key = combinationKey(combination)
     if (key in resolved) continue // 同一キーの重複(理論上ない)は最初を採用
     resolved[key] = value
+  }
+  return resolved
+}
+
+/** 露出する契約側prop(列挙値域と、cva呼び出しへの引数写像を持つ) */
+interface ExposedProp {
+  name: string
+  values: string[]
+  cvaArgs: Array<Record<string, string>>
+}
+
+/**
+ * cn 内の `cva({...})` が呼び出し側で値を制約している構成(pagination 等)。
+ * passthrough prop は全値域、条件付きprop(`isActive ? "outline" : "ghost"`)は
+ * 条件識別子を true/false の2値として列挙し、fixed prop は全組み合わせに定数適用する。
+ * 露出prop名は snake_case で契約化する(Ruby kwargs との対応のため)
+ */
+export function resolveConstrainedCombinations(
+  definition: CvaDefinition,
+  statics: string[],
+  options: CvaOption[],
+): Record<string, string> {
+  const fixedArgs: Record<string, string> = {}
+  const exposed: ExposedProp[] = []
+  for (const option of options) {
+    switch (option.kind) {
+      case "fixed":
+        fixedArgs[option.prop] = option.value
+        break
+      case "passthrough": {
+        const values = Object.keys(definition.variants[option.prop] ?? {}).sort()
+        if (values.length === 0) {
+          throw new Error(`passthrough cva prop '${option.prop}' does not exist in '${definition.identifier}'`)
+        }
+        exposed.push({
+          name: snakeCase(option.prop),
+          values,
+          cvaArgs: values.map((value) => ({ [option.prop]: value })),
+        })
+        break
+      }
+      case "conditional":
+        exposed.push({
+          name: snakeCase(option.condition),
+          values: ["true", "false"],
+          cvaArgs: [{ [option.prop]: option.trueValue }, { [option.prop]: option.falseValue }],
+        })
+        break
+    }
+  }
+
+  const base = [definition.base, ...statics].join(" ")
+  const resolver = cva(base, {
+    variants: definition.variants,
+    compoundVariants: definition.compound.map((entry) => ({ ...entry.when, class: entry.class })),
+    defaultVariants: definition.defaults,
+  })
+
+  let combinations: Array<Record<string, string>> = [{}] // 契約側の組合せ(露出propの値)
+  for (const prop of exposed) {
+    combinations = combinations.flatMap((current) =>
+      prop.values.map((value) => ({ ...current, [prop.name]: value }))
+    )
+    if (combinations.length > MAX_COMBINATIONS) {
+      throw new Error(`variant combination explosion: ${combinations.length} > ${MAX_COMBINATIONS}`)
+    }
+  }
+
+  const resolved: Record<string, string> = {}
+  for (const combination of combinations) {
+    // 契約側の組合せ値を cva 呼び出し引数へ写像して解決する
+    const args: Record<string, string> = { ...fixedArgs }
+    for (const prop of exposed) {
+      const valueIndex = prop.values.indexOf(combination[prop.name]!)
+      if (valueIndex >= 0) Object.assign(args, prop.cvaArgs[valueIndex]!)
+    }
+    const key = combinationKey(combination)
+    if (key in resolved) continue
+    resolved[key] = twMerge(clsx(resolver(args)))
   }
   return resolved
 }

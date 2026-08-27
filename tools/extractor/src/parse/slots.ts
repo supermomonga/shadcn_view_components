@@ -21,6 +21,22 @@ export interface SlotsAnalysis {
 }
 
 /**
+ * エクスポートされた関数がJSXを返すか(hooks や Provider 定数などの非コンポーネント出口の除外に使う)。
+ * 条件分岐のどれかがJSX要素を返せばtrueとする
+ */
+export function returnsJsx(ast: File, fnNode: FunctionLike): boolean {
+  let found = false
+  traverse(ast, {
+    ReturnStatement: (path) => {
+      if (found) return
+      if (path.getFunctionParent()?.node !== fnNode) return
+      if (firstJsxElement(path.node.argument) !== null) found = true
+    },
+  })
+  return found
+}
+
+/**
  * 1コンポーネントエクスポートに属するJSX要素の data-slot / タグ種別 / ARIA属性の収集
  * (03-extraction-codegen §3)。条件レンダリングの分岐も同じ走査で別スロット候補として拾われる。
  */

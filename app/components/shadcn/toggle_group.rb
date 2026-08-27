@@ -3,6 +3,8 @@
 
 module Shadcn
   class ToggleGroup < BaseComponent
+    # JS無効時フォールバック: Readable(選択状態は変わらないが内容の読み取りに支障無し)
+
     # 契約タグは ToggleGroupPrimitive.Root。排他制御は shadcn--toggle-group コントローラが担う
     CONTROLLER = "shadcn--toggle-group"
 

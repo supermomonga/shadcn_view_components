@@ -9,13 +9,14 @@ require "yaml"
 registry = YAML.safe_load_file(File.expand_path("registry.yml", __dir__))
 allowances = YAML.safe_load_file(File.expand_path("allowances.yml", __dir__)) || {}
 
-# レジストリエントリを [component_class, export_name] のペアへ正規化する。
-# 単純なアイテムは component/export、複合アイテムは exports: のリストで列挙する
+# レジストリエントリを [component_class, export_name, content] のペアへ正規化する。
+# 単純なアイテムは component/export、複合アイテムは exports: のリストで列挙する。
+# content は「本文が無ければ描かない」コンポーネント(Form::Message 等)への検証用入力
 def normalized_exports(entry)
   if entry["exports"]
-    entry["exports"].map { |export| [export.fetch("component"), export.fetch("export")] }
+    entry["exports"].map { |export| [export.fetch("component"), export.fetch("export"), export["content"]] }
   elsif entry["component"]
-    [[entry.fetch("component"), entry["export"]]]
+    [[entry.fetch("component"), entry.fetch("export"), nil]]
   else
     []
   end
@@ -24,7 +25,7 @@ end
 registry.reject { |_name, entry| entry["pending"] }.each do |name, entry|
   item_allowances = allowances[name] || {}
 
-  normalized_exports(entry).each do |component_name, export_name|
+  normalized_exports(entry).each do |component_name, export_name, export_content|
     component_class = component_name.constantize
     contract = ShadcnViewComponents::Contracts.const_get(component_name.delete_prefix("Shadcn::"))
     root_slot = contract::ROOT_SLOT
@@ -45,7 +46,11 @@ registry.reject { |_name, entry| entry["pending"] }.each do |name, entry|
     RSpec.describe "conformance: #{name}/#{export_name}", type: :conformance do
       contract::COMBINATIONS.each do |options, expected_classes|
         it "renders classes matching upstream for #{options.inspect}" do
-          render_inline(component_class.new(**options))
+          if export_content
+            render_inline(component_class.new(**options)) { export_content }
+          else
+            render_inline(component_class.new(**options))
+          end
 
           expected = split_structure ? root_static_class : expected_classes
 
@@ -79,7 +84,11 @@ registry.reject { |_name, entry| entry["pending"] }.each do |name, entry|
       end
 
       it "renders exactly the contract's data-slot set" do
-        render_inline(component_class.new)
+        if export_content
+          render_inline(component_class.new) { export_content }
+        else
+          render_inline(component_class.new)
+        end
 
         rendered_slots = rendered_fragment.css("[data-slot]").map { |node| node["data-slot"] }.uniq.sort
         contract_slots = contract::SLOTS.map { |slot| slot[:name] }.reject(&:empty?).sort

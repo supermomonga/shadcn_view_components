@@ -110,10 +110,11 @@ module Shadcn
     end
 
     # 契約由来の data 属性。ルートの data-slot は必ず出力する(04 §4.2)。
-    # ルートが data-slot を持たない契約(spinner等)では slot を出力しない
+    # ルートが data-slot を持たない契約(spinner等)では slot を出力しない。
+    # contract_root_slot の上書き(Carousel 等)に合わせて実要素のスロット名を使う
     sig { returns(T::Hash[Symbol, T.untyped]) }
     def contract_data_attributes
-      root_slot = self.class.contract.const_get(:ROOT_SLOT)
+      root_slot = T.cast(contract_root_slot[:name], T.nilable(String))
       root_slot.to_s.empty? ? {} : { slot: root_slot }
     end
 

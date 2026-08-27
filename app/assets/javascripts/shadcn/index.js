@@ -13,10 +13,14 @@
 // importmap環境ではdigest付きパス配下の相対importが解決できないため。
 // importmap非利用のホストは、本ファイルではなく各コントローラを直接importして
 // application.register すること(READMEのフォールバック手順参照)
+import CarouselController from "shadcn/controllers/carousel_controller"
+import TabsController from "shadcn/controllers/tabs_controller"
 import ToggleController from "shadcn/controllers/toggle_controller"
 import ToggleGroupController from "shadcn/controllers/toggle_group_controller"
 
 export function register(application) {
+  application.register("shadcn--carousel", CarouselController)
+  application.register("shadcn--tabs", TabsController)
   application.register("shadcn--toggle", ToggleController)
   application.register("shadcn--toggle-group", ToggleGroupController)
 }

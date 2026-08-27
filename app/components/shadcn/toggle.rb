@@ -5,6 +5,7 @@ module Shadcn
   class Toggle < BaseComponent
     # 契約タグは TogglePrimitive.Root。button + data-state + 小コントローラ
     # (shadcn--toggle)で開閉する(05-stimulus-hotwire §3「toggle = button + data-state」)
+    # JS無効時フォールバック: Readable(押下状態は変わらないが内容の読み取りに支障無し)
     CONTROLLER = "shadcn--toggle"
 
     # 契約タグは TogglePrimitive.Root。ネイティブな button として描く
