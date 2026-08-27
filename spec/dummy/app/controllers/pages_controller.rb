@@ -9,6 +9,8 @@ class PagesController < ApplicationController
 
   def tabs; end
 
+  def dialogs; end
+
   def carousel; end
 
   def form

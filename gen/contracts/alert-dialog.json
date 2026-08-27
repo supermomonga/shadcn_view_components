@@ -1,0 +1,307 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "AlertDialog": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::AlertDialog",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "alert-dialog",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "alert-dialog",
+          "static_attributes": {},
+          "tag": "AlertDialogPrimitive.Root"
+        }
+      ]
+    },
+    "AlertDialogAction": {
+      "classes_slot": "alert-dialog-action",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::AlertDialog::Action",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "size",
+            "variant"
+          ],
+          "name": "",
+          "static_attributes": {},
+          "tag": "Button"
+        },
+        {
+          "dynamic_attributes": [],
+          "name": "alert-dialog-action",
+          "static_attributes": {},
+          "tag": "AlertDialogPrimitive.Action"
+        }
+      ]
+    },
+    "AlertDialogCancel": {
+      "classes_slot": "alert-dialog-cancel",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::AlertDialog::Cancel",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "size",
+            "variant"
+          ],
+          "name": "",
+          "static_attributes": {},
+          "tag": "Button"
+        },
+        {
+          "dynamic_attributes": [],
+          "name": "alert-dialog-cancel",
+          "static_attributes": {},
+          "tag": "AlertDialogPrimitive.Cancel"
+        }
+      ]
+    },
+    "AlertDialogContent": {
+      "classes_slot": "alert-dialog-content",
+      "combinations": {
+        "": "group/alert-dialog-content fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border bg-background p-6 shadow-lg duration-200 data-[size=sm]:max-w-xs data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[size=default]:sm:max-w-lg"
+      },
+      "component_class": "Shadcn::AlertDialog::Content",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "",
+          "static_attributes": {},
+          "tag": "AlertDialogPortal"
+        },
+        {
+          "dynamic_attributes": [
+            "data-size"
+          ],
+          "name": "alert-dialog-content",
+          "static_attributes": {},
+          "tag": "AlertDialogPrimitive.Content"
+        }
+      ]
+    },
+    "AlertDialogDescription": {
+      "classes_slot": "alert-dialog-description",
+      "combinations": {
+        "": "text-sm text-muted-foreground"
+      },
+      "component_class": "Shadcn::AlertDialog::Description",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "alert-dialog-description",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "alert-dialog-description",
+          "static_attributes": {},
+          "tag": "AlertDialogPrimitive.Description"
+        }
+      ]
+    },
+    "AlertDialogFooter": {
+      "classes_slot": "alert-dialog-footer",
+      "combinations": {
+        "": "flex flex-col-reverse gap-2 group-data-[size=sm]/alert-dialog-content:grid group-data-[size=sm]/alert-dialog-content:grid-cols-2 sm:flex-row sm:justify-end"
+      },
+      "component_class": "Shadcn::AlertDialog::Footer",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "alert-dialog-footer",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "alert-dialog-footer",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "AlertDialogHeader": {
+      "classes_slot": "alert-dialog-header",
+      "combinations": {
+        "": "grid grid-rows-[auto_1fr] place-items-center gap-1.5 text-center has-data-[slot=alert-dialog-media]:grid-rows-[auto_auto_1fr] has-data-[slot=alert-dialog-media]:gap-x-6 sm:group-data-[size=default]/alert-dialog-content:place-items-start sm:group-data-[size=default]/alert-dialog-content:text-left sm:group-data-[size=default]/alert-dialog-content:has-data-[slot=alert-dialog-media]:grid-rows-[auto_1fr]"
+      },
+      "component_class": "Shadcn::AlertDialog::Header",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "alert-dialog-header",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "alert-dialog-header",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "AlertDialogMedia": {
+      "classes_slot": "alert-dialog-media",
+      "combinations": {
+        "": "mb-2 inline-flex size-16 items-center justify-center rounded-md bg-muted sm:group-data-[size=default]/alert-dialog-content:row-span-2 *:[svg:not([class*='size-'])]:size-8"
+      },
+      "component_class": "Shadcn::AlertDialog::Media",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "alert-dialog-media",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "alert-dialog-media",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "AlertDialogOverlay": {
+      "classes_slot": "alert-dialog-overlay",
+      "combinations": {
+        "": "fixed inset-0 z-50 bg-black/50 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0"
+      },
+      "component_class": "Shadcn::AlertDialog::Overlay",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "alert-dialog-overlay",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "alert-dialog-overlay",
+          "static_attributes": {},
+          "tag": "AlertDialogPrimitive.Overlay"
+        }
+      ]
+    },
+    "AlertDialogPortal": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::AlertDialog::Portal",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "alert-dialog-portal",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "alert-dialog-portal",
+          "static_attributes": {},
+          "tag": "AlertDialogPrimitive.Portal"
+        }
+      ]
+    },
+    "AlertDialogTitle": {
+      "classes_slot": "alert-dialog-title",
+      "combinations": {
+        "": "text-lg font-semibold sm:group-data-[size=default]/alert-dialog-content:group-has-data-[slot=alert-dialog-media]/alert-dialog-content:col-start-2"
+      },
+      "component_class": "Shadcn::AlertDialog::Title",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "alert-dialog-title",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "alert-dialog-title",
+          "static_attributes": {},
+          "tag": "AlertDialogPrimitive.Title"
+        }
+      ]
+    },
+    "AlertDialogTrigger": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::AlertDialog::Trigger",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "alert-dialog-trigger",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "alert-dialog-trigger",
+          "static_attributes": {},
+          "tag": "AlertDialogPrimitive.Trigger"
+        }
+      ]
+    }
+  },
+  "name": "alert-dialog",
+  "registry_dependencies": [
+    "button"
+  ],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "368c015d76c244729250e6445612e01dd4d053960c94fd1b9f2f4755e603ca93"
+  }
+}

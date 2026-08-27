@@ -33,6 +33,11 @@ Sorbet/StrictSigil:
     - "lib/**/*.rb"
     - "app/**/*.rb"
 
+# Sorbet/RedundantTLet は srb strict の「ivarsはT.let必須」と衝突する誤検知を
+# 出すため無効化(T.letの存否は srb tc が唯一の判定者)
+Sorbet/RedundantTLet:
+  Enabled: false
+
 Style/ArgumentsForwarding:
   # 名前付きrest-kwargs(**options)はSorbetのsigで型付けに必要
   Enabled: false

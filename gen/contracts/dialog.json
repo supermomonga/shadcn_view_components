@@ -1,0 +1,249 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "Dialog": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::Dialog",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "dialog",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "dialog",
+          "static_attributes": {},
+          "tag": "DialogPrimitive.Root"
+        }
+      ]
+    },
+    "DialogClose": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::Dialog::Close",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "dialog-close",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "dialog-close",
+          "static_attributes": {},
+          "tag": "DialogPrimitive.Close"
+        }
+      ]
+    },
+    "DialogContent": {
+      "classes_slot": "dialog-content",
+      "combinations": {
+        "": "fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border bg-background p-6 shadow-lg duration-200 outline-none data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 sm:max-w-lg"
+      },
+      "component_class": "Shadcn::Dialog::Content",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "dialog-portal",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "dialog-portal",
+          "static_attributes": {},
+          "tag": "DialogPortal"
+        },
+        {
+          "dynamic_attributes": [],
+          "name": "dialog-content",
+          "static_attributes": {},
+          "tag": "DialogPrimitive.Content"
+        },
+        {
+          "dynamic_attributes": [],
+          "name": "dialog-close",
+          "static_attributes": {
+            "class": "absolute top-4 right-4 rounded-xs opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+          },
+          "tag": "DialogPrimitive.Close"
+        }
+      ]
+    },
+    "DialogDescription": {
+      "classes_slot": "dialog-description",
+      "combinations": {
+        "": "text-sm text-muted-foreground"
+      },
+      "component_class": "Shadcn::Dialog::Description",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "dialog-description",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "dialog-description",
+          "static_attributes": {},
+          "tag": "DialogPrimitive.Description"
+        }
+      ]
+    },
+    "DialogFooter": {
+      "classes_slot": "dialog-footer",
+      "combinations": {
+        "": "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end"
+      },
+      "component_class": "Shadcn::Dialog::Footer",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "dialog-footer",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "dialog-footer",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "DialogHeader": {
+      "classes_slot": "dialog-header",
+      "combinations": {
+        "": "flex flex-col gap-2 text-center sm:text-left"
+      },
+      "component_class": "Shadcn::Dialog::Header",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "dialog-header",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "dialog-header",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "DialogOverlay": {
+      "classes_slot": "dialog-overlay",
+      "combinations": {
+        "": "fixed inset-0 z-50 bg-black/50 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0"
+      },
+      "component_class": "Shadcn::Dialog::Overlay",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "dialog-overlay",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "dialog-overlay",
+          "static_attributes": {},
+          "tag": "DialogPrimitive.Overlay"
+        }
+      ]
+    },
+    "DialogPortal": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::Dialog::Portal",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "dialog-portal",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "dialog-portal",
+          "static_attributes": {},
+          "tag": "DialogPrimitive.Portal"
+        }
+      ]
+    },
+    "DialogTitle": {
+      "classes_slot": "dialog-title",
+      "combinations": {
+        "": "text-lg leading-none font-semibold"
+      },
+      "component_class": "Shadcn::Dialog::Title",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "dialog-title",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "dialog-title",
+          "static_attributes": {},
+          "tag": "DialogPrimitive.Title"
+        }
+      ]
+    },
+    "DialogTrigger": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::Dialog::Trigger",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "dialog-trigger",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "dialog-trigger",
+          "static_attributes": {},
+          "tag": "DialogPrimitive.Trigger"
+        }
+      ]
+    }
+  },
+  "name": "dialog",
+  "registry_dependencies": [],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "ccac97bd420f36c08a7edf53abb237ab36685f6701ee83334ddbdf6839ae5981"
+  }
+}

@@ -1,0 +1,62 @@
+<%# ネイティブ <dialog> の ::backdrop でオーバーレイを代替する(dummyはTailwind無し) %>
+<style>
+  dialog[data-slot='dialog-content'], dialog[data-slot='alert-dialog-content'] {
+    border: 1px solid #ccc; border-radius: 8px; padding: 24px; margin: auto; min-width: 320px;
+  }
+  dialog[data-slot='dialog-content']::backdrop, dialog[data-slot='alert-dialog-content']::backdrop {
+    background: rgb(0 0 0 / 0.5);
+  }
+</style>
+<main class="dialog-page">
+  <h1>Dialogs</h1>
+
+  <section id="plain-dialog">
+    <%= render(Shadcn::Dialog.new) do %>
+      <%= render(Shadcn::Dialog::Trigger.new(id: "open-dialog")) { "ダイアログを開く" } %>
+      <%= render(Shadcn::Dialog::Content.new(id: "demo-dialog")) do %>
+        <%= render(Shadcn::Dialog::Header.new) do %>
+          <%= render(Shadcn::Dialog::Title.new) { "確認" } %>
+          <%= render(Shadcn::Dialog::Description.new) { "ネイティブdialogの挙動確認" } %>
+        <% end %>
+        <%= render(Shadcn::Dialog::Footer.new) do %>
+          <%= render(Shadcn::Dialog::Close.new(id: "close-dialog")) { "閉じる" } %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </section>
+
+  <section id="alert-dialog-demo">
+    <%= render(Shadcn::AlertDialog.new) do %>
+      <%= render(Shadcn::AlertDialog::Trigger.new(id: "open-alert")) { "削除の確認" } %>
+      <%= render(Shadcn::AlertDialog::Content.new(id: "demo-alert")) do %>
+        <%= render(Shadcn::AlertDialog::Header.new) do %>
+          <%= render(Shadcn::AlertDialog::Title.new) { "本当に削除しますか?" } %>
+          <%= render(Shadcn::AlertDialog::Description.new) { "取り消せません" } %>
+        <% end %>
+        <%= render(Shadcn::AlertDialog::Footer.new) do %>
+          <%= render(Shadcn::AlertDialog::Cancel.new(id: "cancel-alert")) { "キャンセル" } %>
+          <%= render(Shadcn::AlertDialog::Action.new(id: "confirm-alert")) { "削除する" } %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </section>
+
+  <section id="dialog-with-form">
+    <%= render(Shadcn::Dialog.new) do %>
+      <%= render(Shadcn::Dialog::Trigger.new(id: "open-form-dialog")) { "フォーム付きダイアログ" } %>
+      <%= render(Shadcn::Dialog::Content.new(id: "form-dialog")) do %>
+        <%= render(Shadcn::Dialog::Header.new) do %>
+          <%= render(Shadcn::Dialog::Title.new) { "登録" } %>
+        <% end %>
+        <%= form_with url: pages_form_path, method: :post do %>
+          <%= render(Shadcn::Input.new(name: "email", type: "text", aria: { label: "メールアドレス" })) %>
+          <%= render(Shadcn::Button.new(type: "submit")) { "送信" } %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </section>
+
+  <section id="outside">
+    <button id="outside-button" type="button">背景のボタン</button>
+  </section>
+</main>

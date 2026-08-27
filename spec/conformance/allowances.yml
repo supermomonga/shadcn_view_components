@@ -79,3 +79,26 @@ form:
     attributes: [for, data-error]
   FormControl:
     attributes: [id]
+dialog:
+  Dialog:
+    attributes: [data-controller]
+  DialogTrigger:
+    attributes: [type, aria-haspopup, aria-expanded, data-action]
+  DialogClose:
+    attributes: [type, data-action]
+  DialogContent:
+    attributes: [aria-modal, data-state, data-action]
+alert-dialog:
+  AlertDialog:
+    attributes: [data-controller]
+  AlertDialogTrigger:
+    attributes: [type, aria-haspopup, aria-expanded, data-action]
+  AlertDialogContent:
+    # ルートスロットが Portal 側に解決される構造のため、実要素の data-size は許可リストへ
+    attributes: [role, aria-modal, data-state, data-size]
+  AlertDialogAction:
+    class_mode: contains
+    attributes: [type, data-action, data-state, aria-haspopup]
+  AlertDialogCancel:
+    class_mode: contains
+    attributes: [type, data-action, data-state, aria-haspopup]

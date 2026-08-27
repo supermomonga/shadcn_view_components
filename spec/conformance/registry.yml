@@ -18,8 +18,19 @@ alert:
     - { component: Shadcn::Alert::Description, export: AlertDescription }
 
 alert-dialog:
-  pending: true
-
+  exports:
+    - { component: Shadcn::AlertDialog, export: AlertDialog }
+    - { component: Shadcn::AlertDialog::Trigger, export: AlertDialogTrigger }
+    - { component: Shadcn::AlertDialog::Portal, export: AlertDialogPortal }
+    - { component: Shadcn::AlertDialog::Overlay, export: AlertDialogOverlay }
+    - { component: Shadcn::AlertDialog::Content, export: AlertDialogContent }
+    - { component: Shadcn::AlertDialog::Header, export: AlertDialogHeader }
+    - { component: Shadcn::AlertDialog::Footer, export: AlertDialogFooter }
+    - { component: Shadcn::AlertDialog::Title, export: AlertDialogTitle }
+    - { component: Shadcn::AlertDialog::Description, export: AlertDialogDescription }
+    - { component: Shadcn::AlertDialog::Media, export: AlertDialogMedia }
+    - { component: Shadcn::AlertDialog::Action, export: AlertDialogAction }
+    - { component: Shadcn::AlertDialog::Cancel, export: AlertDialogCancel }
 aspect-ratio:
   exports:
     - { component: Shadcn::AspectRatio, export: AspectRatio }
@@ -104,7 +115,17 @@ context-menu:
   pending: true
 
 dialog:
-  pending: true
+  exports:
+    - { component: Shadcn::Dialog, export: Dialog }
+    - { component: Shadcn::Dialog::Trigger, export: DialogTrigger }
+    - { component: Shadcn::Dialog::Portal, export: DialogPortal }
+    - { component: Shadcn::Dialog::Close, export: DialogClose }
+    - { component: Shadcn::Dialog::Overlay, export: DialogOverlay }
+    - { component: Shadcn::Dialog::Content, export: DialogContent }
+    - { component: Shadcn::Dialog::Header, export: DialogHeader }
+    - { component: Shadcn::Dialog::Footer, export: DialogFooter }
+    - { component: Shadcn::Dialog::Title, export: DialogTitle }
+    - { component: Shadcn::Dialog::Description, export: DialogDescription }
 
 direction:
   pending: true

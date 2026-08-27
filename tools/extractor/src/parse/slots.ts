@@ -210,7 +210,8 @@ function describeElement(
     if (attribute.type !== "JSXAttribute") continue
     if (attribute.name.type !== "JSXIdentifier") continue
     const name = attribute.name.name
-    if (name === "data-slot" || name === "children") continue
+    // asChild は Radix の描画差し替えpropでDOM属性にはならない
+    if (name === "data-slot" || name === "children" || name === "asChild") continue
     const value = attribute.value
     if (name === "className" || name === "class") {
       // 静的リテラルのみ記録する(cn(...) 式は analyzeCn の担当)

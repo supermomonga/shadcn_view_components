@@ -295,9 +295,12 @@ async function extractContractFromItem(
 
   // ルートが子コンポーネント経由で描かれるエクスポート(PaginationPrevious 等)は、
   // 同一アイテム内の兄弟エクスポート(PaginationLink)のルートスロットを継承する。
-  // upstream のDOMは子コンポーネントのルート要素(<a data-slot="pagination-link">)になる
+  // upstream のDOMは子コンポーネントのルート要素(<a data-slot="pagination-link">)になる。
+  // 自分のJSX内に data-slot 要素を持つ場合(alert-dialog-content が overlay+content を
+  // 含む等)は継承しない — その要素群がこのエクスポートの描画結果になる
   for (const exportData of Object.values(exports)) {
     if (exportData.root_slot !== "") continue
+    if (!exportData.slots.every((slot) => slot.name === "")) continue
     const childRefTag = exportData.slots.find((slot) => slot.name === "")?.tag ?? ""
     const sibling = exports[childRefTag]
     if (!sibling || sibling === exportData || sibling.root_slot === "") continue

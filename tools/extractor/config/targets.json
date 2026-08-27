@@ -30,6 +30,8 @@
     "tabs",
     "carousel",
     "pagination",
-    "form"
+    "form",
+    "dialog",
+    "alert-dialog"
   ]
 }

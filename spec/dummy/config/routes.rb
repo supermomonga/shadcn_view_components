@@ -8,6 +8,7 @@ Dummy::Application.routes.draw do
   get "pages/toggles", to: "pages#toggles"
   get "pages/echo", to: "pages#echo"
   get "pages/tabs", to: "pages#tabs"
+  get "pages/dialogs", to: "pages#dialogs"
   get "pages/carousel", to: "pages#carousel"
   get "pages/form", to: "pages#form"
   post "pages/form", to: "pages#submit_form"
