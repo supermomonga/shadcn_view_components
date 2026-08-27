@@ -167,8 +167,10 @@ form:
     - { component: Shadcn::Form::Message, export: FormMessage, content: "必須項目です" }
 
 hover-card:
-  pending: true
-
+  exports:
+    - { component: Shadcn::HoverCard, export: HoverCard }
+    - { component: Shadcn::HoverCard::Trigger, export: HoverCardTrigger }
+    - { component: Shadcn::HoverCard::Content, export: HoverCardContent }
 input:
   exports:
     - { component: Shadcn::Input, export: Input }
@@ -233,8 +235,14 @@ pagination:
     - { component: Shadcn::Pagination::Ellipsis, export: PaginationEllipsis }
 
 popover:
-  pending: true
-
+  exports:
+    - { component: Shadcn::Popover, export: Popover }
+    - { component: Shadcn::Popover::Trigger, export: PopoverTrigger }
+    - { component: Shadcn::Popover::Content, export: PopoverContent }
+    - { component: Shadcn::Popover::Anchor, export: PopoverAnchor }
+    - { component: Shadcn::Popover::Header, export: PopoverHeader }
+    - { component: Shadcn::Popover::Title, export: PopoverTitle }
+    - { component: Shadcn::Popover::Description, export: PopoverDescription }
 progress:
   pending: true
 
@@ -321,4 +329,8 @@ toggle-group:
     - { component: Shadcn::ToggleGroup::Item, export: ToggleGroupItem }
 
 tooltip:
-  pending: true
+  exports:
+    - { component: Shadcn::Tooltip, export: Tooltip }
+    - { component: Shadcn::Tooltip::Provider, export: TooltipProvider }
+    - { component: Shadcn::Tooltip::Trigger, export: TooltipTrigger }
+    - { component: Shadcn::Tooltip::Content, export: TooltipContent }

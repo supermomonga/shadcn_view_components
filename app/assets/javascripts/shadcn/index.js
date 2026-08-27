@@ -15,14 +15,20 @@
 // application.register すること(READMEのフォールバック手順参照)
 import CarouselController from "shadcn/controllers/carousel_controller"
 import DialogController from "shadcn/controllers/dialog_controller"
+import HoverCardController from "shadcn/controllers/hover_card_controller"
+import PopoverController from "shadcn/controllers/popover_controller"
 import TabsController from "shadcn/controllers/tabs_controller"
 import ToggleController from "shadcn/controllers/toggle_controller"
+import TooltipController from "shadcn/controllers/tooltip_controller"
 import ToggleGroupController from "shadcn/controllers/toggle_group_controller"
 
 export function register(application) {
   application.register("shadcn--carousel", CarouselController)
   application.register("shadcn--dialog", DialogController)
+  application.register("shadcn--hover-card", HoverCardController)
+  application.register("shadcn--popover", PopoverController)
   application.register("shadcn--tabs", TabsController)
   application.register("shadcn--toggle", ToggleController)
   application.register("shadcn--toggle-group", ToggleGroupController)
+  application.register("shadcn--tooltip", TooltipController)
 }

@@ -71,6 +71,8 @@
   "FormItem": "Shadcn::Form::Item",
   "FormLabel": "Shadcn::Form::Label",
   "FormMessage": "Shadcn::Form::Message",
+  "HoverCardContent": "Shadcn::HoverCard::Content",
+  "HoverCardTrigger": "Shadcn::HoverCard::Trigger",
   "ItemActions": "Shadcn::Item::Actions",
   "ItemContent": "Shadcn::Item::Content",
   "ItemDescription": "Shadcn::Item::Description",
@@ -89,6 +91,12 @@
   "PaginationLink": "Shadcn::Pagination::Link",
   "PaginationNext": "Shadcn::Pagination::Next",
   "PaginationPrevious": "Shadcn::Pagination::Previous",
+  "PopoverAnchor": "Shadcn::Popover::Anchor",
+  "PopoverContent": "Shadcn::Popover::Content",
+  "PopoverDescription": "Shadcn::Popover::Description",
+  "PopoverHeader": "Shadcn::Popover::Header",
+  "PopoverTitle": "Shadcn::Popover::Title",
+  "PopoverTrigger": "Shadcn::Popover::Trigger",
   "RadioGroupItem": "Shadcn::RadioGroup::Item",
   "ScrollAreaCorner": "Shadcn::ScrollArea::Corner",
   "ScrollAreaThumb": "Shadcn::ScrollArea::Thumb",
@@ -112,5 +120,8 @@
   "TabsContent": "Shadcn::Tabs::Content",
   "TabsList": "Shadcn::Tabs::List",
   "TabsTrigger": "Shadcn::Tabs::Trigger",
-  "ToggleGroupItem": "Shadcn::ToggleGroup::Item"
+  "ToggleGroupItem": "Shadcn::ToggleGroup::Item",
+  "TooltipContent": "Shadcn::Tooltip::Content",
+  "TooltipProvider": "Shadcn::Tooltip::Provider",
+  "TooltipTrigger": "Shadcn::Tooltip::Trigger"
 }

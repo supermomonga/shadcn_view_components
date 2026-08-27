@@ -1,0 +1,90 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "HoverCard": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::HoverCard",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "hover-card",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "hover-card",
+          "static_attributes": {},
+          "tag": "HoverCardPrimitive.Root"
+        }
+      ]
+    },
+    "HoverCardContent": {
+      "classes_slot": "hover-card-content",
+      "combinations": {
+        "": "z-50 w-64 origin-(--radix-hover-card-content-transform-origin) rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-hidden data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
+      },
+      "component_class": "Shadcn::HoverCard::Content",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "hover-card-portal",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "hover-card-portal",
+          "static_attributes": {},
+          "tag": "HoverCardPrimitive.Portal"
+        },
+        {
+          "dynamic_attributes": [
+            "align",
+            "sideOffset"
+          ],
+          "name": "hover-card-content",
+          "static_attributes": {},
+          "tag": "HoverCardPrimitive.Content"
+        }
+      ]
+    },
+    "HoverCardTrigger": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::HoverCard::Trigger",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "hover-card-trigger",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "hover-card-trigger",
+          "static_attributes": {},
+          "tag": "HoverCardPrimitive.Trigger"
+        }
+      ]
+    }
+  },
+  "name": "hover-card",
+  "registry_dependencies": [],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "e0a2e6cf51ddf813c69ba0cbe0e1fc3c08a6d71b54a4c10231d1384f560e7150"
+  }
+}

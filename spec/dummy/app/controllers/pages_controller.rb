@@ -13,6 +13,8 @@ class PagesController < ApplicationController
 
   def sheets; end
 
+  def popovers; end
+
   def carousel; end
 
   def form

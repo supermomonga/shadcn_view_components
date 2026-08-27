@@ -1,0 +1,178 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "Popover": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::Popover",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "popover",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "popover",
+          "static_attributes": {},
+          "tag": "PopoverPrimitive.Root"
+        }
+      ]
+    },
+    "PopoverAnchor": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::Popover::Anchor",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "popover-anchor",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "popover-anchor",
+          "static_attributes": {},
+          "tag": "PopoverPrimitive.Anchor"
+        }
+      ]
+    },
+    "PopoverContent": {
+      "classes_slot": "popover-content",
+      "combinations": {
+        "": "z-50 w-72 origin-(--radix-popover-content-transform-origin) rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-hidden data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
+      },
+      "component_class": "Shadcn::Popover::Content",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "",
+          "static_attributes": {},
+          "tag": "PopoverPrimitive.Portal"
+        },
+        {
+          "dynamic_attributes": [
+            "align",
+            "sideOffset"
+          ],
+          "name": "popover-content",
+          "static_attributes": {},
+          "tag": "PopoverPrimitive.Content"
+        }
+      ]
+    },
+    "PopoverDescription": {
+      "classes_slot": "popover-description",
+      "combinations": {
+        "": "text-muted-foreground"
+      },
+      "component_class": "Shadcn::Popover::Description",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "popover-description",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "popover-description",
+          "static_attributes": {},
+          "tag": "p"
+        }
+      ]
+    },
+    "PopoverHeader": {
+      "classes_slot": "popover-header",
+      "combinations": {
+        "": "flex flex-col gap-1 text-sm"
+      },
+      "component_class": "Shadcn::Popover::Header",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "popover-header",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "popover-header",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "PopoverTitle": {
+      "classes_slot": "popover-title",
+      "combinations": {
+        "": "font-medium"
+      },
+      "component_class": "Shadcn::Popover::Title",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "popover-title",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "popover-title",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "PopoverTrigger": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::Popover::Trigger",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "popover-trigger",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "popover-trigger",
+          "static_attributes": {},
+          "tag": "PopoverPrimitive.Trigger"
+        }
+      ]
+    }
+  },
+  "name": "popover",
+  "registry_dependencies": [],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "8d175a27f00a8f01196eb587cf5a45728f4a81fdd467d7344640b62b339b29bd"
+  }
+}

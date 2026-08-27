@@ -1,0 +1,39 @@
+<style>
+  [popover][data-slot='popover-content'], [data-slot='hover-card-content'], [data-slot='tooltip-content'] {
+    border: 1px solid #ccc; border-radius: 8px; padding: 12px; background: #fff; max-width: 280px;
+  }
+  [data-slot='tooltip-content'] { background: #222; color: #fff; }
+</style>
+<main class="popover-page">
+  <h1>Popover / HoverCard / Tooltip</h1>
+
+  <section id="popover-demo">
+    <%= render(Shadcn::Popover.new) do %>
+      <%= render(Shadcn::Popover::Trigger.new(id: "popover-trigger")) { "ポップオーバー" } %>
+      <%= render(Shadcn::Popover::Content.new(id: "popover-content")) do %>
+        <%= render(Shadcn::Popover::Header.new) do %>
+          <%= render(Shadcn::Popover::Title.new) { "寸法" } %>
+          <%= render(Shadcn::Popover::Description.new) { "外側をクリックすると閉じます" } %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </section>
+
+  <section id="hover-card-demo">
+    <%= render(Shadcn::HoverCard.new) do %>
+      <%= render(Shadcn::HoverCard::Trigger.new(id: "hover-trigger", href: "#")) { "@rails" } %>
+      <%= render(Shadcn::HoverCard::Content.new(id: "hover-card-content")) do %>
+        Ruby on Rails のカード
+      <% end %>
+    <% end %>
+  </section>
+
+  <section id="tooltip-demo">
+    <%= render(Shadcn::Tooltip::Provider.new) do %>
+      <%= render(Shadcn::Tooltip.new) do %>
+        <%= render(Shadcn::Tooltip::Trigger.new(id: "tooltip-trigger")) { "ホバーしてね" } %>
+        <%= render(Shadcn::Tooltip::Content.new(id: "tooltip-content")) { "ツールチップの内容" } %>
+      <% end %>
+    <% end %>
+  </section>
+</main>

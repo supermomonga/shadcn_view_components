@@ -83,11 +83,8 @@ module Shadcn
       # upstream のドラッグハンドル(静的クラスは vaul 方向クラス付き)
       sig { returns(String) }
       def drag_handle
-        content_tag(
-          :div,
-          class: "mx-auto mt-4 hidden h-2 w-[100px] shrink-0 rounded-full bg-muted " \
-                 "group-data-[vaul-drawer-direction=bottom]/drawer-content:block"
-        )
+        content_tag(:div, class: "mx-auto mt-4 hidden h-2 w-[100px] shrink-0 rounded-full bg-muted " \
+                                 "group-data-[vaul-drawer-direction=bottom]/drawer-content:block") { "".html_safe }
       end
     end
 

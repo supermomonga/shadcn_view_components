@@ -120,3 +120,26 @@ drawer:
     attributes: [type, data-action]
   DrawerContent:
     attributes: [aria-modal, data-state, data-vaul-drawer-direction]
+popover:
+  Popover:
+    attributes: [data-controller]
+  PopoverTrigger:
+    attributes: [type, aria-expanded, aria-haspopup, data-action]
+  PopoverContent:
+    attributes: [popover, data-state, data-side-offset, style]
+hover-card:
+  HoverCard:
+    attributes: [data-controller]
+  HoverCardTrigger:
+    attributes: [data-action]
+  HoverCardContent:
+    attributes: [hidden, data-state, data-action, style]
+tooltip:
+  Tooltip:
+    attributes: [data-controller]
+  TooltipProvider:
+    attributes: []
+  TooltipTrigger:
+    attributes: [data-action, aria-describedby]
+  TooltipContent:
+    attributes: [role, hidden, data-state]
