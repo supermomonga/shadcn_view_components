@@ -13,6 +13,20 @@ Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 - 注: upstreamインデックスに列挙されているが404となるアイテム(questionnaire, toast)は
   「upstream側の不整合」として警告付きスキップ
 
+### 追加(Phase 2 wave1 — フォーム部品・軽インタラクティブ)
+
+- 8アイテム / 17エクスポート: Accordion(+Item/Trigger/Content), Checkbox, Collapsible(+Trigger/Content),
+  RadioGroup(+Item), ScrollArea(+Scrollbar), Switch, Toggle, ToggleGroup(+Item)
+- ネイティブ最優先設計(05 §3): checkbox/switch/radio は素のinput、accordion/collapsible は
+  `<details>`/`<summary>` でJS無し開閉(summaryはdetailsの直接子である必要がある)、
+  toggle/toggle-group は button + data-state + Stimulusコントローラ
+- Stimulusコントローラ(toggle / toggle-group)と `ShadcnViewComponents.register(application)`
+  登録ヘルパ、importmap環境でも解決できるベア指定子import
+- 抽出器の拡張: registryDependencies 経由のcva定義解決(toggle-group → toggleVariants)、
+  静的クラスのみのサブ要素cn(switch thumb)の static_attributes マージ
+- システムスペック(層3): data-state/aria-pressed遷移、単一排他、ネイティブdetails開閉
+- Lookbookプレビュー8種追加(計26種)
+
 ### 追加(Phase 1 — 表示のみコンポーネント)
 
 - 17アイテム / 60エクスポート: Badge, Alert, Card(+Header/Title/Description/Action/Content/Footer),

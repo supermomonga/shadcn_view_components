@@ -123,26 +123,40 @@ describe("parse: cn", () => {
     const exports = discoverExports(ast, "button", "ui/button.tsx")
     const button = exports.find((entry) => entry.name === "Button")!
     const analysis = analyzeCn(ast, button.functionNode!, definitions, "button", "ui/button.tsx")
-    expect(analysis.cvaRef).toBe("buttonVariants")
-    expect(analysis.cvaProps.sort()).toEqual(["size", "variant"])
-    expect(analysis.statics).toEqual([])
-    expect(analysis.hasUserClass).toBe(true)
+    expect(analysis.calls.length).toBe(1)
+    const call = analysis.calls[0]!
+    expect(call.slot).toBe("button")
+    expect(call.cvaRef).toBe("buttonVariants")
+    expect(call.cvaProps.sort()).toEqual(["size", "variant"])
+    expect(call.statics).toEqual([])
+    expect(call.hasUserClass).toBe(true)
   })
 
-  it("handles static-only components (no cva)", () => {
+  it("handles static-only components and separates secondary cn calls by element", () => {
     const code = `
-      function CardTitle({ className, ...props }) {
-        return <div data-slot="card-title" className={cn("text-lg font-semibold leading-none", className)} {...props} />
+      function Switch({ className, ...props }) {
+        return (
+          <SwitchPrimitive.Root data-slot="switch" className={cn("peer inline-flex", className)} {...props}>
+            <SwitchPrimitive.Thumb data-slot="switch-thumb" className={cn("pointer-events-none block rounded-full")} />
+          </SwitchPrimitive.Root>
+        )
       }
-      export { CardTitle }
+      export { Switch }
     `
     const ast = parseTsx(code)
-    const definitions = extractCvaDefinitions(ast, "card", "ui/card.tsx")
-    const exports = discoverExports(ast, "card", "ui/card.tsx")
-    const analysis = analyzeCn(ast, exports[0]!.functionNode!, definitions, "card", "ui/card.tsx")
-    expect(analysis.cvaRef).toBeNull()
-    expect(analysis.statics).toEqual(["text-lg font-semibold leading-none"])
-    expect(analysis.hasUserClass).toBe(true)
+    const definitions = extractCvaDefinitions(ast, "switch", "ui/switch.tsx")
+    const exports = discoverExports(ast, "switch", "ui/switch.tsx")
+    const analysis = analyzeCn(ast, exports[0]!.functionNode!, definitions, "switch", "ui/switch.tsx")
+    expect(analysis.calls.length).toBe(2)
+
+    const root = analysis.calls.find((call) => call.slot === "switch")!
+    expect(root.cvaRef).toBeNull()
+    expect(root.statics).toEqual(["peer inline-flex"])
+    expect(root.hasUserClass).toBe(true)
+
+    const thumb = analysis.calls.find((call) => call.slot === "switch-thumb")!
+    expect(thumb.statics).toEqual(["pointer-events-none block rounded-full"])
+    expect(thumb.hasUserClass).toBe(false)
   })
 })
 

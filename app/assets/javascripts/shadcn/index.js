@@ -5,11 +5,18 @@
 //   import { register } from "shadcn"
 //   register(application)
 //
-// Phase 0 はインタラクティブコンポーネント未実装のため登録対象はまだ無い。
-// コントローラ追加時の規約(05-stimulus-hotwire §2):
-//   import DialogController from "./controllers/dialog_controller"
-//   application.register("shadcn--dialog", DialogController)
+// コントローラ規約(05-stimulus-hotwire §2):
+//   識別子は shadcn--<component>、ターゲット名は data-slot と同一。
+//   コントローラはSSRされたDOMの属性・クラスを変化させるだけ(構造は再構築しない)。
+//
+// NOTE: コントローラのimportは pin名("shadcn/...")のベア指定子で行う。
+// importmap環境ではdigest付きパス配下の相対importが解決できないため。
+// importmap非利用のホストは、本ファイルではなく各コントローラを直接importして
+// application.register すること(READMEのフォールバック手順参照)
+import ToggleController from "shadcn/controllers/toggle_controller"
+import ToggleGroupController from "shadcn/controllers/toggle_group_controller"
 
 export function register(application) {
-  // application.register("shadcn--dialog", DialogController)
+  application.register("shadcn--toggle", ToggleController)
+  application.register("shadcn--toggle-group", ToggleGroupController)
 }

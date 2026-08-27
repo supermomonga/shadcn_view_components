@@ -133,9 +133,15 @@ module Shadcn
 
     sig { returns(T::Hash[Symbol, T.untyped]) }
     def contract_root_slot
-      slots = T.cast(contract.const_get(:SLOTS), T::Array[T::Hash[Symbol, T.untyped]])
       root_slot_name = T.cast(contract.const_get(:ROOT_SLOT), String)
-      slots.find { |slot| slot[:name] == root_slot_name } || slots.first || {}
+      contract_slot(root_slot_name)
+    end
+
+    # 契約のスロット定義を data-slot 名で引く
+    sig { params(slot_name: String).returns(T::Hash[Symbol, T.untyped]) }
+    def contract_slot(slot_name)
+      slots = T.cast(contract.const_get(:SLOTS), T::Array[T::Hash[Symbol, T.untyped]])
+      slots.find { |slot| slot[:name] == slot_name } || {}
     end
 
     # 契約の static_attributes を既定値として採用(利用者指定が優先 — 04 §6)。

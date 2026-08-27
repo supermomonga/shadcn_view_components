@@ -1,28 +1,34 @@
-import type { File, Node, ObjectExpression } from "@babel/types"
+import type { NodePath } from "@babel/traverse"
+import type { File, JSXAttribute, Node, ObjectExpression } from "@babel/types"
 
 import type { CvaDefinition } from "../contract.ts"
 import { ParseError } from "../errors.ts"
 import { traverse } from "./babel.ts"
 import type { FunctionLike } from "./context.ts"
 
-export interface CnAnalysis {
-  /** このコンポーネントが参照するcva定義の識別子(未参照なら null) */
-  cvaRef: string | null
-  /** cva呼び出しに渡されるバリアントprop名 */
-  cvaProps: string[]
-  /** cn() に静的に渡されるクラス文字列 */
-  statics: string[]
-  /** props.className(利用者上書き)がcnの引数に現れるか */
-  hasUserClass: boolean
-  /** cn を持つ要素の data-slot(無い場合は "")。契約クラスが属する要素の特定に使う */
-  slot: string
-}
-
 /**
  * `className={cn(A, B)}` をAST上で発見し、A/Bそれぞれの種別
  * (cva参照 / 文字列 / props.className)を記録する(03-extraction-codegen §3)。
  * `props.className` は「利用者上書き可能」の印として契約に反映される。
+ *
+ * 1関数に複数の cn 呼び出しがありうる(switch の root と thumb 等)ため、
+ * 呼び出し単位で収集する。契約の combinations になるのは「主」の呼び出し
+ * (ルート要素のもの)で、静的なだけのサブ要素の cn はそのスロットの
+ * static_attributes["class"] に落とす(pipeline で選別する)
  */
+export interface CnCall {
+  /** cn を持つ要素の data-slot(無い場合は "") */
+  slot: string
+  statics: string[]
+  cvaRef: string | null
+  cvaProps: string[]
+  hasUserClass: boolean
+}
+
+export interface CnAnalysis {
+  calls: CnCall[]
+}
+
 export function analyzeCn(
   ast: File,
   fnNode: FunctionLike,
@@ -30,7 +36,7 @@ export function analyzeCn(
   item: string,
   file: string,
 ): CnAnalysis {
-  const analysis: CnAnalysis = { cvaRef: null, cvaProps: [], statics: [], hasUserClass: false, slot: "" }
+  const calls: CnCall[] = []
 
   traverse(ast, {
     JSXAttribute: (path) => {
@@ -45,31 +51,35 @@ export function analyzeCn(
       const belongsToFunction = path.getFunctionParent()?.node === fnNode
       if (!belongsToFunction) return
 
+      const call: CnCall = { slot: slotOf(path), statics: [], cvaRef: null, cvaProps: [], hasUserClass: false }
       for (const argument of expression.arguments) {
-        classifyCnArgument(argument, analysis, cvaDefinitions, item, file, expression.loc?.start)
+        classifyCnArgument(argument, call, cvaDefinitions, item, file, expression.loc?.start)
       }
-
-      // このcnが属する要素の data-slot を記録する(複数ある場合は最初のもの)
-      if (analysis.slot === "") {
-        const element = path.findParent((parent) => parent.isJSXElement())
-        if (element?.node.type === "JSXElement") {
-          for (const attribute of element.node.openingElement.attributes) {
-            if (attribute.type !== "JSXAttribute" || attribute.name.type !== "JSXIdentifier") continue
-            if (attribute.name.name !== "data-slot") continue
-            const slotValue = attribute.value
-            if (slotValue?.type === "StringLiteral") analysis.slot = slotValue.value
-          }
-        }
-      }
+      calls.push(call)
     },
   })
 
-  return analysis
+  return { calls }
+}
+
+/** このcnが属する要素の data-slot(無い場合は "") */
+function slotOf(path: NodePath): string {
+  const element = path.findParent((parent) => parent.isJSXElement()) as
+    | { node: { openingElement: { attributes: Array<JSXAttribute> } } }
+    | null
+  if (!element) return ""
+  for (const attribute of element.node.openingElement.attributes) {
+    if (attribute.type !== "JSXAttribute") continue
+    if (attribute.name.type !== "JSXIdentifier" || attribute.name.name !== "data-slot") continue
+    const value = attribute.value
+    if (value?.type === "StringLiteral") return value.value
+  }
+  return ""
 }
 
 function classifyCnArgument(
   argument: Node,
-  analysis: CnAnalysis,
+  call: CnCall,
   cvaDefinitions: Map<string, CvaDefinition>,
   item: string,
   file: string,
@@ -78,39 +88,39 @@ function classifyCnArgument(
   if (argument === null || argument === undefined) return
   switch (argument.type) {
     case "StringLiteral":
-      analysis.statics.push(argument.value)
+      call.statics.push(argument.value)
       return
     case "TemplateLiteral":
       if (argument.expressions.length === 0 && argument.quasis.length === 1) {
-        analysis.statics.push(argument.quasis[0]!.value.cooked ?? argument.quasis[0]!.value.raw)
+        call.statics.push(argument.quasis[0]!.value.cooked ?? argument.quasis[0]!.value.raw)
         return
       }
       break
     case "Identifier":
       if (argument.name === "className") {
-        analysis.hasUserClass = true
+        call.hasUserClass = true
         return
       }
       break
     case "MemberExpression": {
       const sourceCode = memberPath(argument)
       if (sourceCode === "props.className" || sourceCode.endsWith(".className")) {
-        analysis.hasUserClass = true
+        call.hasUserClass = true
         return
       }
       break
     }
     case "LogicalExpression":
       // cn(cond && "x") のような条件は右辺のみを再帰的に分類する(静的側のみ採れる)
-      classifyCnArgument(argument.right, analysis, cvaDefinitions, item, file, loc)
+      classifyCnArgument(argument.right, call, cvaDefinitions, item, file, loc)
       return
     case "CallExpression": {
       if (argument.callee.type === "Identifier" && cvaDefinitions.has(argument.callee.name)) {
-        analysis.cvaRef = argument.callee.name
+        call.cvaRef = argument.callee.name
         const variantPropNames = new Set(Object.keys(cvaDefinitions.get(argument.callee.name)!.variants))
         const options = argument.arguments[0]
         if (options && options.type === "ObjectExpression") {
-          describeCvaOptions(options, variantPropNames, analysis)
+          describeCvaOptions(options, variantPropNames, call)
           return
         }
         throw new ParseError(
@@ -130,18 +140,18 @@ function classifyCnArgument(
   )
 }
 
-function describeCvaOptions(options: ObjectExpression, variantPropNames: Set<string>, analysis: CnAnalysis): void {
+function describeCvaOptions(options: ObjectExpression, variantPropNames: Set<string>, call: CnCall): void {
   for (const property of options.properties) {
     if (property.type !== "ObjectProperty") continue
     const key = property.key
     const name = key.type === "Identifier" ? key.name : key.type === "StringLiteral" ? key.value : null
     if (name === null) continue
     if (name === "className") {
-      analysis.hasUserClass = true
+      call.hasUserClass = true
       continue
     }
     if (variantPropNames.has(name)) {
-      analysis.cvaProps.push(name)
+      call.cvaProps.push(name)
     }
     // バリアントprop以外の静的オプションはPhase 0の対象外。未知キーは無視せず記録しない(将来対応)
   }

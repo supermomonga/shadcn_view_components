@@ -1,0 +1,113 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "Accordion": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::Accordion",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "accordion",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "accordion",
+          "static_attributes": {},
+          "tag": "AccordionPrimitive.Root"
+        }
+      ]
+    },
+    "AccordionContent": {
+      "classes_slot": "",
+      "combinations": {
+        "": "pt-0 pb-4"
+      },
+      "component_class": "Shadcn::Accordion::Content",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "accordion-content",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "accordion-content",
+          "static_attributes": {
+            "class": "overflow-hidden text-sm data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
+          },
+          "tag": "AccordionPrimitive.Content"
+        }
+      ]
+    },
+    "AccordionItem": {
+      "classes_slot": "accordion-item",
+      "combinations": {
+        "": "border-b last:border-b-0"
+      },
+      "component_class": "Shadcn::Accordion::Item",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "accordion-item",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "accordion-item",
+          "static_attributes": {},
+          "tag": "AccordionPrimitive.Item"
+        }
+      ]
+    },
+    "AccordionTrigger": {
+      "classes_slot": "accordion-trigger",
+      "combinations": {
+        "": "flex flex-1 items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180"
+      },
+      "component_class": "Shadcn::Accordion::Trigger",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "",
+          "static_attributes": {
+            "class": "flex"
+          },
+          "tag": "AccordionPrimitive.Header"
+        },
+        {
+          "dynamic_attributes": [],
+          "name": "accordion-trigger",
+          "static_attributes": {},
+          "tag": "AccordionPrimitive.Trigger"
+        }
+      ]
+    }
+  },
+  "name": "accordion",
+  "registry_dependencies": [],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "790f635c0e47827039af757da2122f5c9880816e17ceea5f785422253f3fdd9e"
+  }
+}

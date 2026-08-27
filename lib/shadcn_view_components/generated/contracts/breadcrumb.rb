@@ -10,6 +10,9 @@ module ShadcnViewComponents
     module Breadcrumb
       ROOT_SLOT = T.let("breadcrumb", String)
 
+      # 契約クラスが属する要素の data-slot(ルートがラッパー構造の場合)
+      CLASSES_SLOT = T.let("", String)
+
       DEFAULTS = T.let({}.freeze, T::Hash[Symbol, Symbol])
 
       VARIANTS = T.let({}.freeze, T::Hash[Symbol, T::Array[Symbol]])

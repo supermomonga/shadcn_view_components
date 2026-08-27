@@ -1,0 +1,81 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "Collapsible": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::Collapsible",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "collapsible",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "collapsible",
+          "static_attributes": {},
+          "tag": "CollapsiblePrimitive.Root"
+        }
+      ]
+    },
+    "CollapsibleContent": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::Collapsible::Content",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "collapsible-content",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "collapsible-content",
+          "static_attributes": {},
+          "tag": "CollapsiblePrimitive.CollapsibleContent"
+        }
+      ]
+    },
+    "CollapsibleTrigger": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::Collapsible::Trigger",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "collapsible-trigger",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "collapsible-trigger",
+          "static_attributes": {},
+          "tag": "CollapsiblePrimitive.CollapsibleTrigger"
+        }
+      ]
+    }
+  },
+  "name": "collapsible",
+  "registry_dependencies": [],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "aa6f1001c884bf26fc8794e88cedad8e0d356935c2f13baf5d20d53fd98413c1"
+  }
+}

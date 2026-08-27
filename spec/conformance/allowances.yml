@@ -20,4 +20,26 @@ item:
 spinner:
   Spinner:
     # lucide と同等のインラインSVGとして描画するためのSVG属性
-    attributes: [xmlns, viewBox, fill, stroke, stroke-width, stroke-linecap, stroke-linejoin]
+    attributes: [xmlns, viewBox, fill, stroke, stroke-width, stroke-linecap, stroke-linejoin, width, height]
+
+checkbox:
+  Checkbox:
+    # ネイティブinput化に伴う属性(05 §3)
+    attributes: [type]
+switch:
+  Switch:
+    attributes: [type, role]
+radio-group:
+  RadioGroup:
+    attributes: [role]
+  RadioGroupItem:
+    attributes: [type]
+toggle:
+  Toggle:
+    # shadcn--toggle コントローラの状態属性と button 既定の type
+    attributes: [data-controller, data-state, data-action, aria-pressed, type]
+toggle-group:
+  ToggleGroup:
+    attributes: [data-controller, data-type, style]
+  ToggleGroupItem:
+    attributes: [data-state, data-action, aria-pressed, type]

@@ -1,0 +1,67 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "RadioGroup": {
+      "classes_slot": "radio-group",
+      "combinations": {
+        "": "grid gap-3"
+      },
+      "component_class": "Shadcn::RadioGroup",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "radio-group",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "radio-group",
+          "static_attributes": {},
+          "tag": "RadioGroupPrimitive.Root"
+        }
+      ]
+    },
+    "RadioGroupItem": {
+      "classes_slot": "radio-group-item",
+      "combinations": {
+        "": "aspect-square size-4 shrink-0 rounded-full border border-input text-primary shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:bg-input/30 dark:aria-invalid:ring-destructive/40"
+      },
+      "component_class": "Shadcn::RadioGroup::Item",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "radio-group-item",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "radio-group-item",
+          "static_attributes": {},
+          "tag": "RadioGroupPrimitive.Item"
+        },
+        {
+          "dynamic_attributes": [],
+          "name": "radio-group-indicator",
+          "static_attributes": {
+            "class": "relative flex items-center justify-center"
+          },
+          "tag": "RadioGroupPrimitive.Indicator"
+        }
+      ]
+    }
+  },
+  "name": "radio-group",
+  "registry_dependencies": [],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "29c224b4e131d86173438f0604741281e41e18d241b277f21dcbed8e567e02d5"
+  }
+}

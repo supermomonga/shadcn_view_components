@@ -31,7 +31,9 @@ module Shadcn
           stroke: "currentColor",
           "stroke-width": "2",
           "stroke-linecap": "round",
-          "stroke-linejoin": "round"
+          "stroke-linejoin": "round",
+          width: "14",
+          height: "14"
         ) do
           raw(%(<path d="m9 18 6-6-6-6"/>))
         end
@@ -53,6 +55,8 @@ module Shadcn
                         "stroke-width": "2",
                         "stroke-linecap": "round",
                         "stroke-linejoin": "round",
+                        width: "16",
+                        height: "16",
                         class: "size-4"
                       ) do
                         raw(%(<circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>))

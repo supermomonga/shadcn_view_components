@@ -56,5 +56,15 @@
   "BreadcrumbLink": "Shadcn::Breadcrumb::Link",
   "BreadcrumbPage": "Shadcn::Breadcrumb::Page",
   "BreadcrumbSeparator": "Shadcn::Breadcrumb::Separator",
-  "BreadcrumbEllipsis": "Shadcn::Breadcrumb::Ellipsis"
+  "BreadcrumbEllipsis": "Shadcn::Breadcrumb::Ellipsis",
+  "AccordionItem": "Shadcn::Accordion::Item",
+  "AccordionTrigger": "Shadcn::Accordion::Trigger",
+  "AccordionContent": "Shadcn::Accordion::Content",
+  "RadioGroupItem": "Shadcn::RadioGroup::Item",
+  "CollapsibleTrigger": "Shadcn::Collapsible::Trigger",
+  "CollapsibleContent": "Shadcn::Collapsible::Content",
+  "ToggleGroupItem": "Shadcn::ToggleGroup::Item",
+  "ScrollAreaThumb": "Shadcn::ScrollArea::Thumb",
+  "ScrollAreaCorner": "Shadcn::ScrollArea::Corner",
+  "ScrollBar": "Shadcn::ScrollArea::Scrollbar"
 }

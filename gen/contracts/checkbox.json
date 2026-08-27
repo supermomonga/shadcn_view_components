@@ -1,0 +1,45 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "Checkbox": {
+      "classes_slot": "checkbox",
+      "combinations": {
+        "": "peer size-4 shrink-0 rounded-[4px] border border-input shadow-xs transition-shadow outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:bg-input/30 dark:aria-invalid:ring-destructive/40 dark:data-[state=checked]:bg-primary"
+      },
+      "component_class": "Shadcn::Checkbox",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "checkbox",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "checkbox",
+          "static_attributes": {},
+          "tag": "CheckboxPrimitive.Root"
+        },
+        {
+          "dynamic_attributes": [],
+          "name": "checkbox-indicator",
+          "static_attributes": {
+            "class": "grid place-content-center text-current transition-none"
+          },
+          "tag": "CheckboxPrimitive.Indicator"
+        }
+      ]
+    }
+  },
+  "name": "checkbox",
+  "registry_dependencies": [],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "ad6db414ee8b97c88734ff6f564f76902969108a3d0401535a95e900e67b5c35"
+  }
+}

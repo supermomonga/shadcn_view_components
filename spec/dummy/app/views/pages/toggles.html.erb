@@ -1,0 +1,19 @@
+<main class="toggle-page">
+  <h1>Toggles</h1>
+  <section id="single-toggle">
+    <%= render(Shadcn::Toggle.new(id: "toggle-bold", variant: :outline)) { "太字" } %>
+  </section>
+  <section id="toggle-group-single">
+    <%= render(Shadcn::ToggleGroup.new(id: "group-single", type: :single, variant: :outline)) do %>
+      <%= render(Shadcn::ToggleGroup::Item.new(id: "item-a", state: :on)) { "A" } %>
+      <%= render(Shadcn::ToggleGroup::Item.new(id: "item-b")) { "B" } %>
+      <%= render(Shadcn::ToggleGroup::Item.new(id: "item-c")) { "C" } %>
+    <% end %>
+  </section>
+  <section id="native-details">
+    <%= render(Shadcn::Accordion::Item.new) do %>
+      <%= render(Shadcn::Accordion::Trigger.new) { "アコーディオン見出し" } %>
+      <%= render(Shadcn::Accordion::Content.new) { "折りたたみ内容" } %>
+    <% end %>
+  </section>
+</main>

@@ -5,5 +5,6 @@ Dummy::Application.routes.draw do
 
   root "pages#button"
   get "pages/button", to: "pages#button"
+  get "pages/toggles", to: "pages#toggles"
   get "pages/echo", to: "pages#echo"
 end

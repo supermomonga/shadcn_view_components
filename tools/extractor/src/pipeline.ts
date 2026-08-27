@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises"
 import path from "node:path"
 
-import type { Contract, Export } from "./contract.ts"
+import type { Contract, CvaDefinition, Export } from "./contract.ts"
 import { ContractSchema } from "./contract.ts"
 import type { Manifest } from "./manifest.ts"
 import { ParseError } from "./errors.ts"
@@ -89,7 +89,7 @@ export async function extractContracts(pipeline: PipelinePaths, only?: string[])
     const item = JSON.parse(content) as RegistryItem
 
     try {
-      contracts.push(await extractContractFromItem(name, item, manifestItem.sha256, names))
+      contracts.push(await extractContractFromItem(pipeline.vendorDir, manifest, name, item, manifestItem.sha256, names))
     } catch (error) {
       failures.push(error)
     }
@@ -103,6 +103,14 @@ export async function extractContracts(pipeline: PipelinePaths, only?: string[])
   }
 
   return { contracts, skipped }
+}
+
+/** 静的なだけのサブ要素cnを、そのスロットの static_attributes["class"] に合成する */
+function attachSecondaryStaticClass(slots: Array<{ name: string, tag: string, static_attributes: Record<string, string>, dynamic_attributes: string[] }>, call: { slot: string, statics: string[] }): void {
+  const slot = slots.find((candidate) => candidate.name === call.slot)
+  if (!slot) return
+  const existing = slot.static_attributes["class"]
+  slot.static_attributes["class"] = [existing, call.statics.join(" ")].filter(Boolean).join(" ")
 }
 
 /** 関数パラメータの分割代入から、バリアントpropの既定値を取り出す(`{ variant = "default" }`)。 */
@@ -121,34 +129,87 @@ function paramDefaults(fnNode: FunctionLike, cvaProps: string[]): Record<string,
   return defaults
 }
 
+/**
+ * registryDependencies を辿って、依存アイテムが定義する cva も参照可能にする
+ * (toggle-group が toggle の toggleVariants を使う等のクロスアイテム構成)。
+ * 一段階のみ辿る(依存の依存は現状のupstreamに存在しない)。
+ */
+async function dependencyCvaDefinitions(
+  item: RegistryItem,
+  manifest: Manifest,
+  vendorDir: string,
+): Promise<Map<string, CvaDefinition>> {
+  const definitions = new Map<string, CvaDefinition>()
+  for (const dependency of item.registryDependencies ?? []) {
+    const manifestItem = manifest.items[dependency]
+    if (!manifestItem) continue
+    const dependencyItem = JSON.parse(
+      await readFile(path.join(vendorDir, manifestItem.path), "utf8"),
+    ) as RegistryItem
+    for (const file of dependencyItem.files ?? []) {
+      if (!file.path?.endsWith(".tsx") || typeof file.content !== "string") continue
+      for (const [identifier, definition] of extractCvaDefinitions(parseTsx(file.content), dependency, file.path)) {
+        definitions.set(identifier, definition)
+      }
+    }
+  }
+  return definitions
+}
+
 async function extractContractFromItem(
+  vendorDir: string,
+  manifest: Manifest,
   name: string,
   item: RegistryItem,
   itemSha: string,
   names: Record<string, string>,
 ): Promise<Contract> {
   const exports: Record<string, Export> = {}
+  const inheritedDefinitions = await dependencyCvaDefinitions(item, manifest, vendorDir)
 
   for (const file of item.files ?? []) {
     if (!file.path?.endsWith(".tsx") || typeof file.content !== "string") continue
     const ast = parseTsx(file.content)
-    const cvaDefinitions = extractCvaDefinitions(ast, name, file.path)
+    const cvaDefinitions = new Map([
+      ...inheritedDefinitions,
+      ...extractCvaDefinitions(ast, name, file.path),
+    ])
 
     for (const discovered of discoverExports(ast, name, file.path)) {
       const fnNode = discovered.functionNode
       if (!fnNode) continue // cva定義のみのエクスポート(buttonVariants等)は契約の対象外
       const slots = collectSlots(ast, fnNode, name, file.path)
-      const cn = analyzeCn(ast, fnNode, cvaDefinitions, name, file.path)
-      const definition = cn.cvaRef ? cvaDefinitions.get(cn.cvaRef) ?? null : null
-      if (cn.cvaRef && !definition) {
-        throw new ParseError(`cn() references unknown cva definition '${cn.cvaRef}'`, name, file.path)
+      const analysis = analyzeCn(ast, fnNode, cvaDefinitions, name, file.path)
+
+      // 主となるcn呼び出しの選別: ルート要素のもの > cvaを参照するもの > 最初のもの。
+      // cnを一切持たないコンポーネント(Accordion root 等)は空クラスとして扱う。
+      // 静的なだけのサブ要素のcn(switch の thumb 等)はスロットの static class に落とす
+      const primary = analysis.calls.find((call) => call.slot === slots.rootSlot && slots.rootSlot !== "")
+        ?? analysis.calls.find((call) => call.cvaRef !== null)
+        ?? analysis.calls[0] ?? null
+      for (const call of analysis.calls) {
+        if (call === primary) continue
+        if (call.cvaRef === null && !call.hasUserClass && call.statics.length > 0) {
+          attachSecondaryStaticClass(slots.slots, call)
+        } else {
+          throw new ParseError(
+            `unsupported secondary cn() call on '${call.slot || "(no data-slot)"}' ` +
+              "(only fully-static secondary classes are supported)",
+            name, file.path,
+          )
+        }
       }
 
-      const combinations = resolveCnCombinations(definition, cn.statics)
+      const definition = primary?.cvaRef ? cvaDefinitions.get(primary.cvaRef) ?? null : null
+      if (primary?.cvaRef && !definition) {
+        throw new ParseError(`cn() references unknown cva definition '${primary.cvaRef}'`, name, file.path)
+      }
+
+      const combinations = resolveCnCombinations(definition, primary?.statics ?? [])
       const exportName = discovered.name
       exports[exportName] = {
         root_slot: slots.rootSlot,
-        classes_slot: cn.slot,
+        classes_slot: primary?.slot ?? "",
         component_class: names[exportName] ?? `Shadcn::${exportName}`,
         cva: {
           prop_names: definition ? Object.keys(definition.variants).sort() : [],
@@ -156,7 +217,7 @@ async function extractContractFromItem(
           // marker のように defaultVariants を持たずパラメータ既定値で済ませる定形に対応する
           defaults: definition
             ? Object.fromEntries(
-                Object.entries({ ...paramDefaults(fnNode, cn.cvaProps), ...definition.defaults })
+                Object.entries({ ...paramDefaults(fnNode, primary?.cvaProps ?? []), ...definition.defaults })
                   .sort(([a], [b]) => a.localeCompare(b)),
               )
             : {},
@@ -164,7 +225,7 @@ async function extractContractFromItem(
         },
         combinations,
         slots: slots.slots,
-        passthrough_class: cn.hasUserClass,
+        passthrough_class: primary?.hasUserClass ?? false,
       }
     }
   }

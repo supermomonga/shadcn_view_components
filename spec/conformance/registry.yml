@@ -5,7 +5,11 @@
 # 整合を検証する(新規アイテムの追加漏れ・廃止アイテムの削除忘れを検知)。
 
 accordion:
-  pending: true
+  exports:
+    - { component: Shadcn::Accordion, export: Accordion }
+    - { component: Shadcn::Accordion::Item, export: AccordionItem }
+    - { component: Shadcn::Accordion::Trigger, export: AccordionTrigger }
+    - { component: Shadcn::Accordion::Content, export: AccordionContent }
 
 alert:
   exports:
@@ -76,10 +80,14 @@ chart:
   pending: true
 
 checkbox:
-  pending: true
+  exports:
+    - { component: Shadcn::Checkbox, export: Checkbox }
 
 collapsible:
-  pending: true
+  exports:
+    - { component: Shadcn::Collapsible, export: Collapsible }
+    - { component: Shadcn::Collapsible::Trigger, export: CollapsibleTrigger }
+    - { component: Shadcn::Collapsible::Content, export: CollapsibleContent }
 
 combobox:
   pending: true
@@ -183,13 +191,17 @@ progress:
   pending: true
 
 radio-group:
-  pending: true
+  exports:
+    - { component: Shadcn::RadioGroup, export: RadioGroup }
+    - { component: Shadcn::RadioGroup::Item, export: RadioGroupItem }
 
 resizable:
   pending: true
 
 scroll-area:
-  pending: true
+  exports:
+    - { component: Shadcn::ScrollArea, export: ScrollArea }
+    - { component: Shadcn::ScrollArea::Scrollbar, export: ScrollBar }
 
 select:
   pending: true
@@ -219,7 +231,8 @@ spinner:
     - { component: Shadcn::Spinner, export: Spinner }
 
 switch:
-  pending: true
+  exports:
+    - { component: Shadcn::Switch, export: Switch }
 
 table:
   exports:
@@ -240,10 +253,13 @@ textarea:
     - { component: Shadcn::Textarea, export: Textarea }
 
 toggle:
-  pending: true
+  exports:
+    - { component: Shadcn::Toggle, export: Toggle }
 
 toggle-group:
-  pending: true
+  exports:
+    - { component: Shadcn::ToggleGroup, export: ToggleGroup }
+    - { component: Shadcn::ToggleGroup::Item, export: ToggleGroupItem }
 
 tooltip:
   pending: true

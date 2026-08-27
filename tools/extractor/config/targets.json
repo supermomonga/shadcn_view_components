@@ -1,6 +1,7 @@
 {
-  "$comment": "抽出対象アイテムの明示的リスト。Phase 0 = Button(パイプライン実証)。Phase 1 = 表示のみコンポーネント(10-roadmap §3)。ここに含まれないvendorアイテムはextractの対象外(スキップとして報告)。未実装アイテムの負債は spec/conformance/registry.yml の pending で見える化する。",
+  "$comment": "抽出対象アイテムの明示的リスト。Phase 0 = Button、Phase 1 = 表示のみ、Phase 2 wave1 = フォーム系・軽インタラクティブ(10-roadmap §4)。ここに含まれないvendorアイテムはextractの対象外(スキップとして報告)。未実装アイテムの負債は spec/conformance/registry.yml の pending で見える化する。",
   "items": [
+    "accordion",
     "alert",
     "aspect-ratio",
     "avatar",
@@ -8,16 +9,23 @@
     "breadcrumb",
     "button",
     "card",
+    "checkbox",
+    "collapsible",
     "empty",
     "input",
     "item",
     "kbd",
     "label",
     "marker",
+    "radio-group",
+    "scroll-area",
     "separator",
     "skeleton",
     "spinner",
+    "switch",
     "table",
-    "textarea"
+    "textarea",
+    "toggle",
+    "toggle-group"
   ]
 }

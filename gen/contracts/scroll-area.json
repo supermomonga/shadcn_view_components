@@ -1,0 +1,77 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "ScrollArea": {
+      "classes_slot": "scroll-area",
+      "combinations": {
+        "": "relative"
+      },
+      "component_class": "Shadcn::ScrollArea",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "scroll-area",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "scroll-area",
+          "static_attributes": {},
+          "tag": "ScrollAreaPrimitive.Root"
+        },
+        {
+          "dynamic_attributes": [],
+          "name": "scroll-area-viewport",
+          "static_attributes": {
+            "class": "size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1"
+          },
+          "tag": "ScrollAreaPrimitive.Viewport"
+        }
+      ]
+    },
+    "ScrollBar": {
+      "classes_slot": "scroll-area-scrollbar",
+      "combinations": {
+        "": "flex touch-none p-px transition-colors select-none w-2.5 border-l border-l-transparent h-2.5 flex-col border-t border-t-transparent"
+      },
+      "component_class": "Shadcn::ScrollArea::Scrollbar",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "scroll-area-scrollbar",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "orientation"
+          ],
+          "name": "scroll-area-scrollbar",
+          "static_attributes": {},
+          "tag": "ScrollAreaPrimitive.ScrollAreaScrollbar"
+        },
+        {
+          "dynamic_attributes": [],
+          "name": "scroll-area-thumb",
+          "static_attributes": {
+            "class": "relative flex-1 rounded-full bg-border"
+          },
+          "tag": "ScrollAreaPrimitive.ScrollAreaThumb"
+        }
+      ]
+    }
+  },
+  "name": "scroll-area",
+  "registry_dependencies": [],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "2c2d62e213321a0c668beb6033cd6a4c87251d57f1825f1a122bff69b831e954"
+  }
+}

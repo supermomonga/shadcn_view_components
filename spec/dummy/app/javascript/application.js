@@ -4,6 +4,7 @@ import { Application } from "@hotwired/stimulus"
 import { register } from "shadcn"
 
 const application = Application.start()
+
 register(application)
 
 // システムスペック用マーカー: ESMチェーン(importmap → shadcnモジュール → register)が
