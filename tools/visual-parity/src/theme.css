@@ -1,0 +1,10 @@
+/*
+ * upstream側のスタイル入力。gem と同一のテーマトークン(shadcn.css)を読み込む。
+ * src/components/ui/(unpack.mjs が展開、gitignore 済み)は自動走査の対象外に
+ * なるため、明示的な @source で登録する。
+ */
+@import "tailwindcss";
+@import "../../../app/assets/stylesheets/shadcn/shadcn.css";
+
+@source "./components/ui/**/*.tsx";
+@source "./demos.tsx";

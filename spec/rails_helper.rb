@@ -36,6 +36,10 @@ RSpec.configure do |config|
   config.include RenderedRoot, type: :component
   config.include RenderedRoot, type: :conformance
 
+  # 見た目のupstreamパリティ検証(spec/visual)は重くNode/Vite依存のため、
+  # 通常の rspec では実行しない。rake parity:run が PARITY=1 を設定する
+  config.filter_run_excluding parity: true unless ENV["PARITY"]
+
   config.before do |example|
     driven_by :shadcn_cuprite if example.metadata[:type] == :system
   end

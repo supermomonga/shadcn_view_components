@@ -15,3 +15,8 @@ run = "bundle exec puma config.ru"
 [tasks.build-css]
 description = "Lookbook/dummy 用の静的スタイル(spec/dummy/app/assets/stylesheets/application.css)を再生成する"
 run = "tools/extractor/node_modules/.bin/tailwindcss -i spec/dummy/tailwind/input.css -o spec/dummy/app/assets/stylesheets/application.css"
+
+# 見た目の upstream パリティ検証(spec/visual)。React側のビルドと比較を含むため重い
+[tasks.parity]
+description = "upstream(React/Vite)とdummy(Lookbook)の描画をピクセル比較する(README 開発§参照)"
+run = "bundle exec rake parity:run"

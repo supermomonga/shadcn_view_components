@@ -1,0 +1,31 @@
+{
+  "name": "@shadcn-view-components/visual-parity",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "unpack": "node unpack.mjs",
+    "build": "pnpm run unpack && vite build",
+    "serve": "vite preview --host 127.0.0.1 --port 4173 --strictPort",
+    "compare": "node compare.mjs"
+  },
+  "dependencies": {
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.544.0",
+    "radix-ui": "^1.4.2",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "tailwind-merge": "^3.3.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "^4.5.0",
+    "pixelmatch": "^7.1.0",
+    "pngjs": "^7.0.0",
+    "tailwindcss": "^4.1.0",
+    "typescript": "^5.9.0",
+    "vite": "^6.3.0"
+  }
+}

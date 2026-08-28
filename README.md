@@ -122,7 +122,8 @@ bundle exec rspec spec/conformance     # 適合試験のみ(追従PRで最初に
 bundle exec rspec spec/system          # ふるまいのみ(Cuprite + Chrome)
 bundle exec srb tc                     # 型検査
 bundle exec rubocop                    # lint
-cd spec/dummy && bundle exec rails lookbook:server  # プレビュー(dummy経由)
+mise run lookbook                      # プレビュー(http://localhost:9292/lookbook)
+mise run build-css                     # Lookbook用の静的スタイル再生成
 ```
 
 ### 生成パイプライン
@@ -153,6 +154,29 @@ rake shadcn:check     # 決定論性検証(一時ディレクトリ生成とコ�
 ### 週次upstream追従
 
 `.github/workflows/upstream-drift.yml` が毎週月曜 09:00 JST に `rake shadcn:update` を実行し、差分があれば自動PR(`chore/upstream-sync`)を作成する。人間の仕事はPRのレビューと、赤い場合(適合試験が崩れた場合)の修正のみ。手動実行は workflow_dispatch から。
+
+### 見た目のupstreamパリティ検証(visual parity)
+
+各コンポーネントの見た目が元のshadcn/ui実装(vendor/shadcn のReact実装)と一致するかをピクセル比較で機械判定する仕組み。契約による「クラス文字列の一致」、コンポーネントspecによる「DOM構造の一致」の先にある最終段(「CSS適用結果を含めた見た目の一致」)を検証する。
+
+```bash
+bundle exec rake parity:run                      # または mise run parity
+PARITY_RATIO=0.01 bundle exec rake parity:run    # 閾値を1%に緩和(既定 0.5%)
+```
+
+仕組み: `vendor/shadcn` の tsx を `tools/visual-parity` で展開し、Vite + React で実際に描画(upstream側)。dummy の Lookbook プレビュー(うち側)と同じ Chromium(Cuprite)でスクリーンショットを撮り、pixelmatch で差分率を判定する。両側でアニメーションを停止し、同一ブラウザ・同一フォントで比較するため決定論的。
+
+- 成果物は `spec/visual/baselines/<demo>/`(ours.png / upstream.png / diff.png / report.json)。Commitして人間が差分画像を確認できる
+- 通常の `bundle exec rspec` では実行されない(`PARITY=1` が必要。重いため分離)
+- 初期セットは13シナリオ(うち11がピクセル完全一致、残り2件も0.06〜0.22%)
+
+**シナリオの追加手順**:
+
+1. 対象コンポーネントの Lookbook プレビュー(`spec/dummy/app/components/previews/shadcn/*_preview.rb`)を用意
+2. `tools/visual-parity/src/demos.tsx` に同じテキスト・props・並びのJSXデモを追加(キーは `<コンポーネント>/<シナリオ>`)
+3. `spec/visual/parity_spec.rb` の `SCENARIOS` に `[プレビューのパス, デモID]` を1行追加
+
+`tools/visual-parity/src/components/ui/`(展開したupstreamソース)と `dist/` は gitignore 済みで、`pnpm run unpack` / `vite build` が常に `vendor/shadcn` から再生成する(sha256検証つき)。
 
 ## トラブルシューティング
 
