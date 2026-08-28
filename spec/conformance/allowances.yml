@@ -308,3 +308,24 @@ sidebar:
     attributes: [type, aria-label, data-action]
   SidebarMenuSubButton:
     attributes: [data-active, aria-haspopup, aria-expanded]
+attachment:
+  AttachmentAction:
+    attributes: [type, aria-label, data-action]
+  AttachmentTrigger:
+    attributes: [type, aria-label, data-action]
+bubble:
+  Bubble: {}
+message: {}
+message-scroller:
+  MessageScroller:
+    attributes: [data-controller]
+  MessageScrollerViewport:
+    attributes: [tabindex]
+  MessageScrollerButton:
+    attributes: [type, hidden, data-action]
+chart:
+  ChartContainer:
+    attributes: []
+sonner:
+  Toaster:
+    attributes: [data-controller, aria-live]

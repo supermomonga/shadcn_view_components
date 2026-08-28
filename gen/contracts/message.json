@@ -1,0 +1,149 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "Message": {
+      "classes_slot": "message",
+      "combinations": {
+        "": "group/message relative flex w-full min-w-0 gap-2 text-sm data-[align=end]:flex-row-reverse"
+      },
+      "component_class": "Shadcn::Message",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "message",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "data-align"
+          ],
+          "name": "message",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "MessageAvatar": {
+      "classes_slot": "message-avatar",
+      "combinations": {
+        "": "flex w-fit min-w-8 shrink-0 items-center justify-center self-end overflow-hidden rounded-full bg-muted group-has-data-[slot=message-footer]/message:-translate-y-8"
+      },
+      "component_class": "Shadcn::Message::Avatar",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "message-avatar",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "message-avatar",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "MessageContent": {
+      "classes_slot": "message-content",
+      "combinations": {
+        "": "flex w-full min-w-0 flex-col gap-2.5 wrap-break-word group-data-[align=end]/message:*:data-slot:self-end"
+      },
+      "component_class": "Shadcn::Message::Content",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "message-content",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "message-content",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "MessageFooter": {
+      "classes_slot": "message-footer",
+      "combinations": {
+        "": "flex max-w-full min-w-0 items-center px-3 text-xs font-medium text-muted-foreground group-has-data-[variant=ghost]/message:px-0 group-data-[align=end]/message:justify-end"
+      },
+      "component_class": "Shadcn::Message::Footer",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "message-footer",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "message-footer",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "MessageGroup": {
+      "classes_slot": "message-group",
+      "combinations": {
+        "": "flex min-w-0 flex-col gap-2"
+      },
+      "component_class": "Shadcn::Message::Group",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "message-group",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "message-group",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "MessageHeader": {
+      "classes_slot": "message-header",
+      "combinations": {
+        "": "flex max-w-full min-w-0 items-center px-3 text-xs font-medium text-muted-foreground group-has-data-[variant=ghost]/message:px-0"
+      },
+      "component_class": "Shadcn::Message::Header",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "message-header",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "message-header",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    }
+  },
+  "name": "message",
+  "registry_dependencies": [],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "ef77507cbd5fc9f156542c26f836e45f180baef515f98600dea02d29e110b508"
+  }
+}

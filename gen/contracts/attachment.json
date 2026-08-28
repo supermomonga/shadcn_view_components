@@ -1,0 +1,242 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "Attachment": {
+      "classes_slot": "attachment",
+      "combinations": {
+        "orientation=horizontal&size=default": "group/attachment relative flex w-fit max-w-full shrink-0 flex-wrap rounded-xl border bg-card text-card-foreground transition-colors focus-within:ring-1 focus-within:ring-ring/50 has-[>a,>button]:hover:bg-muted/50 data-[state=error]:border-destructive/30 data-[state=idle]:border-dashed gap-2 text-sm has-data-[slot=attachment-content]:px-2.5 has-data-[slot=attachment-content]:py-2 has-data-[slot=attachment-media]:p-2 min-w-40 items-center",
+        "orientation=horizontal&size=sm": "group/attachment relative flex w-fit max-w-full shrink-0 flex-wrap rounded-xl border bg-card text-card-foreground transition-colors focus-within:ring-1 focus-within:ring-ring/50 has-[>a,>button]:hover:bg-muted/50 data-[state=error]:border-destructive/30 data-[state=idle]:border-dashed gap-2.5 text-xs has-data-[slot=attachment-content]:px-2 has-data-[slot=attachment-content]:py-1.5 has-data-[slot=attachment-media]:p-1.5 min-w-40 items-center",
+        "orientation=horizontal&size=xs": "group/attachment relative flex w-fit max-w-full shrink-0 flex-wrap border bg-card text-card-foreground transition-colors focus-within:ring-1 focus-within:ring-ring/50 has-[>a,>button]:hover:bg-muted/50 data-[state=error]:border-destructive/30 data-[state=idle]:border-dashed gap-1.5 rounded-lg text-xs has-data-[slot=attachment-content]:px-1.5 has-data-[slot=attachment-content]:py-1 has-data-[slot=attachment-media]:p-1 min-w-40 items-center",
+        "orientation=vertical&size=default": "group/attachment relative flex max-w-full min-w-0 shrink-0 flex-wrap rounded-xl border bg-card text-card-foreground transition-colors focus-within:ring-1 focus-within:ring-ring/50 has-[>a,>button]:hover:bg-muted/50 data-[state=error]:border-destructive/30 data-[state=idle]:border-dashed gap-2 text-sm has-data-[slot=attachment-content]:px-2.5 has-data-[slot=attachment-content]:py-2 has-data-[slot=attachment-media]:p-2 w-24 flex-col has-data-[slot=attachment-content]:w-30",
+        "orientation=vertical&size=sm": "group/attachment relative flex max-w-full min-w-0 shrink-0 flex-wrap rounded-xl border bg-card text-card-foreground transition-colors focus-within:ring-1 focus-within:ring-ring/50 has-[>a,>button]:hover:bg-muted/50 data-[state=error]:border-destructive/30 data-[state=idle]:border-dashed gap-2.5 text-xs has-data-[slot=attachment-content]:px-2 has-data-[slot=attachment-content]:py-1.5 has-data-[slot=attachment-media]:p-1.5 w-24 flex-col has-data-[slot=attachment-content]:w-30",
+        "orientation=vertical&size=xs": "group/attachment relative flex max-w-full min-w-0 shrink-0 flex-wrap border bg-card text-card-foreground transition-colors focus-within:ring-1 focus-within:ring-ring/50 has-[>a,>button]:hover:bg-muted/50 data-[state=error]:border-destructive/30 data-[state=idle]:border-dashed gap-1.5 rounded-lg text-xs has-data-[slot=attachment-content]:px-1.5 has-data-[slot=attachment-content]:py-1 has-data-[slot=attachment-media]:p-1 w-24 flex-col has-data-[slot=attachment-content]:w-30"
+      },
+      "component_class": "Shadcn::Attachment",
+      "cva": {
+        "compound": [],
+        "defaults": {
+          "orientation": "horizontal",
+          "size": "default"
+        },
+        "prop_names": [
+          "orientation",
+          "size"
+        ]
+      },
+      "passthrough_class": true,
+      "root_slot": "attachment",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "data-orientation",
+            "data-size",
+            "data-state"
+          ],
+          "name": "attachment",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "AttachmentAction": {
+      "classes_slot": "attachment-action",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::Attachment::Action",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "attachment-action",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "size",
+            "variant"
+          ],
+          "name": "attachment-action",
+          "static_attributes": {},
+          "tag": "Button"
+        }
+      ]
+    },
+    "AttachmentActions": {
+      "classes_slot": "attachment-actions",
+      "combinations": {
+        "": "relative z-20 flex shrink-0 items-center group-data-[orientation=vertical]/attachment:absolute group-data-[orientation=vertical]/attachment:top-3 group-data-[orientation=vertical]/attachment:right-3 group-data-[orientation=vertical]/attachment:gap-1"
+      },
+      "component_class": "Shadcn::Attachment::Actions",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "attachment-actions",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "attachment-actions",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "AttachmentContent": {
+      "classes_slot": "attachment-content",
+      "combinations": {
+        "": "max-w-full min-w-0 flex-1 leading-tight group-data-[orientation=vertical]/attachment:px-1"
+      },
+      "component_class": "Shadcn::Attachment::Content",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "attachment-content",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "attachment-content",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "AttachmentDescription": {
+      "classes_slot": "attachment-description",
+      "combinations": {
+        "": "mt-0.5 block min-w-0 truncate text-xs text-muted-foreground group-data-[state=error]/attachment:text-destructive/80 max-w-full"
+      },
+      "component_class": "Shadcn::Attachment::Description",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "attachment-description",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "attachment-description",
+          "static_attributes": {},
+          "tag": "span"
+        }
+      ]
+    },
+    "AttachmentGroup": {
+      "classes_slot": "attachment-group",
+      "combinations": {
+        "": "flex min-w-0 scroll-fade-x snap-x snap-mandatory scroll-px-1 scrollbar-none gap-3 overflow-x-auto overscroll-x-contain py-1 *:data-[slot=attachment]:flex-none *:data-[slot=attachment]:snap-start"
+      },
+      "component_class": "Shadcn::Attachment::Group",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "attachment-group",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "attachment-group",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "AttachmentMedia": {
+      "classes_slot": "attachment-media",
+      "combinations": {
+        "variant=icon": "relative flex aspect-square w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-muted text-foreground group-data-[orientation=vertical]/attachment:w-full group-data-[size=sm]/attachment:w-8 group-data-[size=xs]/attachment:w-7 group-data-[size=xs]/attachment:rounded-md group-data-[state=error]/attachment:bg-destructive/10 group-data-[state=error]/attachment:text-destructive group-data-[orientation=vertical]/attachment:*:data-[slot=spinner]:size-6! [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 group-data-[orientation=vertical]/attachment:[&_svg:not([class*='size-'])]:size-6 group-data-[size=xs]/attachment:[&_svg:not([class*='size-'])]:size-3.5",
+        "variant=image": "relative flex aspect-square w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-muted text-foreground group-data-[orientation=vertical]/attachment:w-full group-data-[size=sm]/attachment:w-8 group-data-[size=xs]/attachment:w-7 group-data-[size=xs]/attachment:rounded-md group-data-[state=error]/attachment:bg-destructive/10 group-data-[state=error]/attachment:text-destructive group-data-[orientation=vertical]/attachment:*:data-[slot=spinner]:size-6! [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 group-data-[orientation=vertical]/attachment:[&_svg:not([class*='size-'])]:size-6 group-data-[size=xs]/attachment:[&_svg:not([class*='size-'])]:size-3.5 opacity-60 group-data-[state=done]/attachment:opacity-100 group-data-[state=idle]/attachment:opacity-100 *:[img]:aspect-square *:[img]:w-full *:[img]:object-cover"
+      },
+      "component_class": "Shadcn::Attachment::Media",
+      "cva": {
+        "compound": [],
+        "defaults": {
+          "variant": "icon"
+        },
+        "prop_names": [
+          "variant"
+        ]
+      },
+      "passthrough_class": true,
+      "root_slot": "attachment-media",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "data-variant"
+          ],
+          "name": "attachment-media",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "AttachmentTitle": {
+      "classes_slot": "attachment-title",
+      "combinations": {
+        "": "block max-w-full min-w-0 truncate font-medium group-data-[state=processing]/attachment:shimmer group-data-[state=uploading]/attachment:shimmer"
+      },
+      "component_class": "Shadcn::Attachment::Title",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "attachment-title",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "attachment-title",
+          "static_attributes": {},
+          "tag": "span"
+        }
+      ]
+    },
+    "AttachmentTrigger": {
+      "classes_slot": "attachment-trigger",
+      "combinations": {
+        "": "absolute inset-0 z-10 outline-none"
+      },
+      "component_class": "Shadcn::Attachment::Trigger",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "attachment-trigger",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "type"
+          ],
+          "name": "attachment-trigger",
+          "static_attributes": {},
+          "tag": "button"
+        }
+      ]
+    }
+  },
+  "name": "attachment",
+  "registry_dependencies": [
+    "button"
+  ],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "6571b3537b397760bd4389d425a840b0e2885a8e255f78ee6ca7c0f90c4fa004"
+  }
+}

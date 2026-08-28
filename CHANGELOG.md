@@ -13,6 +13,19 @@ Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 - 注: upstreamインデックスに列挙されているが404となるアイテム(questionnaire, toast)は
   「upstream側の不整合」として警告付きスキップ
 
+### 追加(Phase 4 wave2/3 — 重量級)
+
+- sidebar(23エクスポート): Provider の data-state による開閉、Trigger/Rail、
+  メニュー階層(Menu/Sub)、Skeleton合成。Turboキャッシュ復帰相当の
+  再接続冪等性システムスペック付き(05 §6.2)
+- attachment(9)/bubble(4)/message(6)/message-scroller(6):
+  チャット・添付の静的構造。message-scroller は追従と「一番下へ」ボタン付き
+- chart(4): recharts に依存しない容器・凡例・ツールチップ構造
+  (描画はホストが選ぶ — 個別評価)
+- sonner(Toaster): shadcn:toast CustomEvent で通知を追加するStimulus実装
+- calendar は react-day-picker の実行時クラス合成のため静的抽出対象外とし、
+  個別評価として pending で明示(10-roadmap Phase 4)
+
 ### 追加(Phase 4 wave1 — 残存フォーム部品・コンテナ)
 
 - 9アイテム / 47エクスポート: Progress, Slider, NativeSelect(+OptGroup/Option),

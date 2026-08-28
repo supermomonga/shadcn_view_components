@@ -18,6 +18,7 @@ import CommandController from "shadcn/controllers/command_controller"
 import DialogController from "shadcn/controllers/dialog_controller"
 import HoverCardController from "shadcn/controllers/hover_card_controller"
 import MenuController from "shadcn/controllers/menu_controller"
+import MessageScrollerController from "shadcn/controllers/message_scroller_controller"
 import PopoverController from "shadcn/controllers/popover_controller"
 import ResizableController from "shadcn/controllers/resizable_controller"
 import SidebarController from "shadcn/controllers/sidebar_controller"
@@ -25,6 +26,7 @@ import TabsController from "shadcn/controllers/tabs_controller"
 import ToggleController from "shadcn/controllers/toggle_controller"
 import TooltipController from "shadcn/controllers/tooltip_controller"
 import ToggleGroupController from "shadcn/controllers/toggle_group_controller"
+import ToastController from "shadcn/controllers/toast_controller"
 
 export function register(application) {
   application.register("shadcn--carousel", CarouselController)
@@ -32,6 +34,7 @@ export function register(application) {
   application.register("shadcn--dialog", DialogController)
   application.register("shadcn--hover-card", HoverCardController)
   application.register("shadcn--menu", MenuController)
+  application.register("shadcn--message-scroller", MessageScrollerController)
   application.register("shadcn--popover", PopoverController)
   application.register("shadcn--resizable", ResizableController)
   application.register("shadcn--sidebar", SidebarController)
@@ -39,4 +42,5 @@ export function register(application) {
   application.register("shadcn--toggle", ToggleController)
   application.register("shadcn--toggle-group", ToggleGroupController)
   application.register("shadcn--tooltip", TooltipController)
+  application.register("shadcn--toast", ToastController)
 }

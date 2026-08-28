@@ -54,6 +54,12 @@
     "input-group",
     "button-group",
     "direction",
-    "sidebar"
+    "sidebar",
+    "attachment",
+    "bubble",
+    "message",
+    "message-scroller",
+    "chart",
+    "sonner"
   ]
 }

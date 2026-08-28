@@ -36,8 +36,16 @@ aspect-ratio:
     - { component: Shadcn::AspectRatio, export: AspectRatio }
 
 attachment:
-  pending: true
-
+  exports:
+    - { component: Shadcn::Attachment, export: Attachment }
+    - { component: Shadcn::Attachment::Group, export: AttachmentGroup }
+    - { component: Shadcn::Attachment::Media, export: AttachmentMedia }
+    - { component: Shadcn::Attachment::Content, export: AttachmentContent }
+    - { component: Shadcn::Attachment::Title, export: AttachmentTitle }
+    - { component: Shadcn::Attachment::Description, export: AttachmentDescription }
+    - { component: Shadcn::Attachment::Actions, export: AttachmentActions }
+    - { component: Shadcn::Attachment::Action, export: AttachmentAction }
+    - { component: Shadcn::Attachment::Trigger, export: AttachmentTrigger }
 avatar:
   exports:
     - { component: Shadcn::Avatar, export: Avatar }
@@ -62,8 +70,11 @@ breadcrumb:
     - { component: Shadcn::Breadcrumb::Ellipsis, export: BreadcrumbEllipsis }
 
 bubble:
-  pending: true
-
+  exports:
+    - { component: Shadcn::Bubble::Group, export: BubbleGroup }
+    - { component: Shadcn::Bubble, export: Bubble }
+    - { component: Shadcn::Bubble::Content, export: BubbleContent }
+    - { component: Shadcn::Bubble::Reactions, export: BubbleReactions }
 button:
   exports:
     - { component: Shadcn::Button, export: Button }
@@ -73,6 +84,8 @@ button-group:
     - { component: Shadcn::ButtonGroup, export: ButtonGroup }
     - { component: Shadcn::ButtonGroup::Separator, export: ButtonGroupSeparator }
     - { component: Shadcn::ButtonGroup::Text, export: ButtonGroupText }
+# calendar: react-day-picker の classNames 実行時合成(cn(defaultClassNames.*) 等)のため
+# 静的抽出の対象外。個別評価(10-roadmap Phase 4)— 表ベースの再実装で契約を手動策定する
 calendar:
   pending: true
 
@@ -94,9 +107,14 @@ carousel:
     - { component: Shadcn::Carousel::Previous, export: CarouselPrevious }
     - { component: Shadcn::Carousel::Next, export: CarouselNext }
 
+# ChartTooltip / ChartLegend は recharts コンポーネントの参照のみで
+# JSXを返さないため契約対象外(構造は TooltipContent/LegendContent が担う)
 chart:
-  pending: true
-
+  exports:
+    - { component: Shadcn::Chart::Container, export: ChartContainer }
+    - { component: Shadcn::Chart::TooltipContent, export: ChartTooltipContent }
+    - { component: Shadcn::Chart::LegendContent, export: ChartLegendContent }
+    - { component: Shadcn::Chart::Style, export: ChartStyle }
 checkbox:
   exports:
     - { component: Shadcn::Checkbox, export: Checkbox }
@@ -297,11 +315,21 @@ menubar:
     - { component: Shadcn::Menubar::SubTrigger, export: MenubarSubTrigger }
     - { component: Shadcn::Menubar::SubContent, export: MenubarSubContent }
 message:
-  pending: true
-
+  exports:
+    - { component: Shadcn::Message::Group, export: MessageGroup }
+    - { component: Shadcn::Message, export: Message }
+    - { component: Shadcn::Message::Avatar, export: MessageAvatar }
+    - { component: Shadcn::Message::Content, export: MessageContent }
+    - { component: Shadcn::Message::Footer, export: MessageFooter }
+    - { component: Shadcn::Message::Header, export: MessageHeader }
 message-scroller:
-  pending: true
-
+  exports:
+    - { component: Shadcn::MessageScroller, export: MessageScroller }
+    - { component: Shadcn::MessageScroller::Provider, export: MessageScrollerProvider }
+    - { component: Shadcn::MessageScroller::Viewport, export: MessageScrollerViewport }
+    - { component: Shadcn::MessageScroller::Content, export: MessageScrollerContent }
+    - { component: Shadcn::MessageScroller::Item, export: MessageScrollerItem }
+    - { component: Shadcn::MessageScroller::Button, export: MessageScrollerButton }
 native-select:
   exports:
     - { component: Shadcn::NativeSelect, export: NativeSelect }
@@ -413,8 +441,8 @@ slider:
   exports:
     - { component: Shadcn::Slider, export: Slider }
 sonner:
-  pending: true
-
+  exports:
+    - { component: Shadcn::Sonner::Toaster, export: Toaster }
 spinner:
   exports:
     - { component: Shadcn::Spinner, export: Spinner }
