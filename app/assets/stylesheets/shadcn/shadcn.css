@@ -113,3 +113,9 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 }
+
+/* (5) 実行時規則: 閉じた dialog/popover はユーティリティでも可視化しない */
+dialog:not([open]):not(:popover-open),
+[popover]:not(:popover-open):not(dialog[open]) {
+  display: none;
+}

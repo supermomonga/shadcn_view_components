@@ -75,6 +75,16 @@ export function renderThemeCss(theme: ThemeTokens, contracts: Contract[]): strin
     lines.push(css)
   }
 
+  // (5) ViewComponent実装の実行時規則。閉じたネイティブ dialog / popover は
+  // UA由来の display:none よりコンポーネント自身のユーティリティ(.flex等)が
+  // 優先されて可視化されるため、同じ規則を作者CSSとして先出ししておく
+  lines.push("")
+  lines.push("/* (5) 実行時規則: 閉じた dialog/popover はユーティリティでも可視化しない */")
+  lines.push("dialog:not([open]):not(:popover-open),")
+  lines.push("[popover]:not(:popover-open):not(dialog[open]) {")
+  lines.push("  display: none;")
+  lines.push("}")
+
   return `${lines.join("\n")}\n`
 }
 
