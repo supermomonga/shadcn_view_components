@@ -44,6 +44,15 @@
     "menubar",
     "navigation-menu",
     "command",
-    "combobox"
+    "combobox",
+    "progress",
+    "slider",
+    "native-select",
+    "input-otp",
+    "select",
+    "field",
+    "input-group",
+    "button-group",
+    "direction"
   ]
 }

@@ -1,0 +1,39 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "DirectionProvider": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::DirectionProvider",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "dir"
+          ],
+          "name": "",
+          "static_attributes": {},
+          "tag": "Direction.DirectionProvider"
+        }
+      ]
+    }
+  },
+  "name": "direction",
+  "registry_dependencies": [],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "1d840f47e820da56f2879b948533a3d2e3f9eb99b03f653487b9b877c4f88b1b"
+  }
+}

@@ -69,8 +69,10 @@ button:
     - { component: Shadcn::Button, export: Button }
 
 button-group:
-  pending: true
-
+  exports:
+    - { component: Shadcn::ButtonGroup, export: ButtonGroup }
+    - { component: Shadcn::ButtonGroup::Separator, export: ButtonGroupSeparator }
+    - { component: Shadcn::ButtonGroup::Text, export: ButtonGroupText }
 calendar:
   pending: true
 
@@ -164,8 +166,8 @@ dialog:
     - { component: Shadcn::Dialog::Description, export: DialogDescription }
 
 direction:
-  pending: true
-
+  exports:
+    - { component: Shadcn::DirectionProvider, export: DirectionProvider }
 drawer:
   exports:
     - { component: Shadcn::Drawer, export: Drawer }
@@ -205,8 +207,17 @@ empty:
     - { component: Shadcn::Empty::Media, export: EmptyMedia }
 
 field:
-  pending: true
-
+  exports:
+    - { component: Shadcn::Field, export: Field }
+    - { component: Shadcn::Field::Content, export: FieldContent }
+    - { component: Shadcn::Field::Description, export: FieldDescription }
+    - { component: Shadcn::Field::Error, export: FieldError }
+    - { component: Shadcn::Field::Group, export: FieldGroup }
+    - { component: Shadcn::Field::Label, export: FieldLabel }
+    - { component: Shadcn::Field::Legend, export: FieldLegend }
+    - { component: Shadcn::Field::Separator, export: FieldSeparator }
+    - { component: Shadcn::Field::Set, export: FieldSet }
+    - { component: Shadcn::Field::Title, export: FieldTitle }
 form:
   exports:
     - { component: Shadcn::Form::Item, export: FormItem }
@@ -226,11 +237,19 @@ input:
     - { component: Shadcn::Input, export: Input }
 
 input-group:
-  pending: true
-
+  exports:
+    - { component: Shadcn::InputGroup, export: InputGroup }
+    - { component: Shadcn::InputGroup::Addon, export: InputGroupAddon }
+    - { component: Shadcn::InputGroup::Button, export: InputGroupButton }
+    - { component: Shadcn::InputGroup::Input, export: InputGroupInput }
+    - { component: Shadcn::InputGroup::Textarea, export: InputGroupTextarea }
+    - { component: Shadcn::InputGroup::Text, export: InputGroupText }
 input-otp:
-  pending: true
-
+  exports:
+    - { component: Shadcn::InputOTP, export: InputOTP }
+    - { component: Shadcn::InputOTP::Group, export: InputOTPGroup }
+    - { component: Shadcn::InputOTP::Slot, export: InputOTPSlot }
+    - { component: Shadcn::InputOTP::Separator, export: InputOTPSeparator }
 item:
   exports:
     - { component: Shadcn::Item, export: Item }
@@ -284,8 +303,10 @@ message-scroller:
   pending: true
 
 native-select:
-  pending: true
-
+  exports:
+    - { component: Shadcn::NativeSelect, export: NativeSelect }
+    - { component: Shadcn::NativeSelect::OptGroup, export: NativeSelectOptGroup }
+    - { component: Shadcn::NativeSelect::Option, export: NativeSelectOption }
 navigation-menu:
   exports:
     - { component: Shadcn::NavigationMenu, export: NavigationMenu }
@@ -316,8 +337,8 @@ popover:
     - { component: Shadcn::Popover::Title, export: PopoverTitle }
     - { component: Shadcn::Popover::Description, export: PopoverDescription }
 progress:
-  pending: true
-
+  exports:
+    - { component: Shadcn::Progress, export: Progress }
 radio-group:
   exports:
     - { component: Shadcn::RadioGroup, export: RadioGroup }
@@ -334,8 +355,17 @@ scroll-area:
     - { component: Shadcn::ScrollArea::Scrollbar, export: ScrollBar }
 
 select:
-  pending: true
-
+  exports:
+    - { component: Shadcn::Select, export: Select }
+    - { component: Shadcn::Select::Trigger, export: SelectTrigger }
+    - { component: Shadcn::Select::Value, export: SelectValue }
+    - { component: Shadcn::Select::Content, export: SelectContent }
+    - { component: Shadcn::Select::Group, export: SelectGroup }
+    - { component: Shadcn::Select::Item, export: SelectItem }
+    - { component: Shadcn::Select::Label, export: SelectLabel }
+    - { component: Shadcn::Select::Separator, export: SelectSeparator }
+    - { component: Shadcn::Select::ScrollUpButton, export: SelectScrollUpButton }
+    - { component: Shadcn::Select::ScrollDownButton, export: SelectScrollDownButton }
 separator:
   exports:
     - { component: Shadcn::Separator, export: Separator }
@@ -358,8 +388,8 @@ skeleton:
     - { component: Shadcn::Skeleton, export: Skeleton }
 
 slider:
-  pending: true
-
+  exports:
+    - { component: Shadcn::Slider, export: Slider }
 sonner:
   pending: true
 

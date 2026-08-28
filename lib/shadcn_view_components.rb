@@ -13,3 +13,9 @@ require_relative "shadcn_view_components/classes"
 # 生成された契約モジュール(lib/shadcn_view_components/generated/contracts/*.rb)。
 # app/components の実装はこの定数のみを参照する(クラス文字列を手書きしない規約)。
 Dir[File.expand_path("shadcn_view_components/generated/contracts/*.rb", __dir__)].each { |path| require path }
+
+# Zeitwerk の autoload 用インフレクション(input_otp.rb → Shadcn::InputOTP)。
+# require 時点で登録する(エンジンのinitializerでは autoload セットアップに間に合わない場合がある)
+ActiveSupport::Inflector.inflections do |inflect|
+  inflect.acronym "OTP"
+end

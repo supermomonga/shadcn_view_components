@@ -1,0 +1,58 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "Slider": {
+      "classes_slot": "slider",
+      "combinations": {
+        "": "relative flex w-full touch-none items-center select-none data-[disabled]:opacity-50 data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-44 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col"
+      },
+      "component_class": "Shadcn::Slider",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "slider",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "defaultValue",
+            "max",
+            "min",
+            "value"
+          ],
+          "name": "slider",
+          "static_attributes": {},
+          "tag": "SliderPrimitive.Root"
+        },
+        {
+          "dynamic_attributes": [],
+          "name": "slider-track",
+          "static_attributes": {
+            "class": "relative grow overflow-hidden rounded-full bg-muted data-[orientation=horizontal]:h-1.5 data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1.5"
+          },
+          "tag": "SliderPrimitive.Track"
+        },
+        {
+          "dynamic_attributes": [],
+          "name": "slider-range",
+          "static_attributes": {
+            "class": "absolute bg-primary data-[orientation=horizontal]:h-full data-[orientation=vertical]:w-full"
+          },
+          "tag": "SliderPrimitive.Range"
+        }
+      ]
+    }
+  },
+  "name": "slider",
+  "registry_dependencies": [],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "ceeeaf0155a6757f5cc815d2f72849407334f4aefa5dfc69286a323603d7719c"
+  }
+}

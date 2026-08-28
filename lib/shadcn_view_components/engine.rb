@@ -7,6 +7,13 @@ module ShadcnViewComponents
   class Engine < ::Rails::Engine
     isolate_namespace ShadcnViewComponents
 
+    # InputOTP 等、キャメルバックの頭字語を含むコンポーネント定数の autoload 用
+    initializer "shadcn_view_components.inflections" do
+      ActiveSupport::Inflector.inflections(:all) do |inflect|
+        inflect.acronym "OTP"
+      end
+    end
+
     initializer "shadcn_view_components.assets" do |app|
       root = ShadcnViewComponents::Engine.root
       app.config.assets.paths << root.join("app/assets/stylesheets")

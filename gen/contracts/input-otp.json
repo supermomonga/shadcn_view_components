@@ -1,0 +1,109 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "InputOTP": {
+      "classes_slot": "input-otp",
+      "combinations": {
+        "": "disabled:cursor-not-allowed"
+      },
+      "component_class": "Shadcn::InputOTP",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "input-otp",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "containerClassName"
+          ],
+          "name": "input-otp",
+          "static_attributes": {},
+          "tag": "OTPInput"
+        }
+      ]
+    },
+    "InputOTPGroup": {
+      "classes_slot": "input-otp-group",
+      "combinations": {
+        "": "flex items-center"
+      },
+      "component_class": "Shadcn::InputOTP::Group",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "input-otp-group",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "input-otp-group",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "InputOTPSeparator": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::InputOTP::Separator",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "input-otp-separator",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "input-otp-separator",
+          "static_attributes": {
+            "role": "separator"
+          },
+          "tag": "div"
+        }
+      ]
+    },
+    "InputOTPSlot": {
+      "classes_slot": "input-otp-slot",
+      "combinations": {
+        "": "relative flex h-9 w-9 items-center justify-center border-y border-r border-input text-sm shadow-xs transition-all outline-none first:rounded-l-md first:border-l last:rounded-r-md aria-invalid:border-destructive data-[active=true]:z-10 data-[active=true]:border-ring data-[active=true]:ring-[3px] data-[active=true]:ring-ring/50 data-[active=true]:aria-invalid:border-destructive data-[active=true]:aria-invalid:ring-destructive/20 dark:bg-input/30 dark:data-[active=true]:aria-invalid:ring-destructive/40"
+      },
+      "component_class": "Shadcn::InputOTP::Slot",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "input-otp-slot",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "data-active"
+          ],
+          "name": "input-otp-slot",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    }
+  },
+  "name": "input-otp",
+  "registry_dependencies": [],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "432f9d236842fb76d54195b12c5bd32567dcc45671870d91753cd50341a29985"
+  }
+}

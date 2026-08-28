@@ -14,7 +14,7 @@
 
 ## ステータス
 
-Phase 0〜3(インフラ、表示のみ、フォーム部品、オーバーレイ・メニュー系)が完了。ロードマップは `docs.local/10-roadmap.md` 参照。
+Phase 0〜4(インフラ、表示のみ、フォーム部品、オーバーレイ・メニュー系、残存フォーム部品・コンテナ)が完了。重量級8アイテム(sidebar/calendar/chart/sonner ほか)は registry.yml で pending 管理。ロードマップは `docs.local/10-roadmap.md` 参照。
 
 - 提供コンポーネント(26アイテム / 全エクスポートが適合試験で検証済み):
   **Button, Badge, Alert, Card, Avatar, Separator, Skeleton, Table, Label, Kbd, Spinner,
@@ -22,7 +22,9 @@ Phase 0〜3(インフラ、表示のみ、フォーム部品、オーバーレ�
   Accordion, Checkbox, Collapsible, RadioGroup, ScrollArea, Switch, Toggle, ToggleGroup,
   Tabs, Carousel, Pagination, Form,
   Dialog, AlertDialog, Sheet, Drawer, Popover, HoverCard, Tooltip,
-  DropdownMenu, ContextMenu, Menubar, NavigationMenu, Command, Combobox, Resizable**
+  DropdownMenu, ContextMenu, Menubar, NavigationMenu, Command, Combobox, Resizable,
+  Progress, Slider, NativeSelect, InputOTP, Select, Field, InputGroup,
+  ButtonGroup, DirectionProvider**
 - インタラクティブふるまい(05 §3 ネイティブ最優先): toggle/toggle-group は Stimulus、
   accordion/collapsible は `<details>`/`<summary>`、dialog系は `<dialog>` + showModal、
   popover/tooltip/menu は Popover API

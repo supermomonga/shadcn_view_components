@@ -248,3 +248,38 @@ combobox:
     attributes: [type]
   ComboboxChip:
     attributes: [aria-label]
+progress:
+  Progress:
+    attributes: [role, aria-valuenow, aria-valuemin, aria-valuemax, style]
+slider:
+  Slider:
+    attributes: [role]
+native-select:
+  NativeSelect:
+    attributes: [data-slot]
+input-otp:
+  InputOTP:
+    attributes: [type, inputmode, maxlength, autocomplete, value]
+select:
+  Select:
+    attributes: [data-controller]
+  SelectTrigger:
+    attributes: [type, role, aria-haspopup, aria-expanded, data-action]
+  SelectContent:
+    attributes: [role, popover, data-state, style]
+  SelectItem:
+    attributes: [role, tabindex, data-value, aria-selected]
+field:
+  FieldLabel:
+    attributes: [for]
+input-group:
+  InputGroupButton:
+    class_mode: contains
+    attributes: [type, data-size, data-action, data-state, aria-haspopup]
+button-group:
+  ButtonGroupSeparator:
+    class_mode: contains
+    attributes: [role, aria-orientation, data-slot]
+direction:
+  DirectionProvider:
+    attributes: [dir]

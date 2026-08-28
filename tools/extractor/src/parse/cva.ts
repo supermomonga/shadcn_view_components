@@ -1,10 +1,11 @@
-import type { CallExpression, File, ObjectExpression, StringLiteral, TemplateLiteral, VariableDeclarator } from "@babel/types"
+import type { ArrayExpression, CallExpression, File, ObjectExpression, StringLiteral, TemplateLiteral, VariableDeclarator } from "@babel/types"
 
 import type { CvaDefinition } from "../contract.ts"
 import { ParseError } from "../errors.ts"
 import { traverse } from "./babel.ts"
 
-/** 静的に確定しないものは推測しない: 文字列リテラル(式なしテンプレートリテラル)のみ受け入れる。 */
+/** 静的に確定しないものは推測しない: 文字列リテラル(式なしテンプレートリテラル)のみ受け入れる。
+ * cva はバリアント値・compound クラスに文字列配列を許すため、配列は要素を連結して扱う(field等) */
 export function requireStaticString(
   node: unknown,
   item: string,
@@ -13,8 +14,13 @@ export function requireStaticString(
   loc?: { line: number, column: number },
 ): string {
   if (node !== null && node !== undefined && typeof node === "object") {
-    const n = node as StringLiteral | TemplateLiteral
+    const n = node as StringLiteral | TemplateLiteral | ArrayExpression
     if (n.type === "StringLiteral") return n.value
+    if (n.type === "ArrayExpression") {
+      return n.elements
+        .map((element) => requireStaticString(element, item, file, what, loc))
+        .join(" ")
+    }
     if (n.type === "TemplateLiteral" && n.expressions.length === 0 && n.quasis.length === 1) {
       return n.quasis[0]!.value.cooked ?? n.quasis[0]!.value.raw
     }

@@ -1,0 +1,47 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "Progress": {
+      "classes_slot": "progress",
+      "combinations": {
+        "": "relative h-2 w-full overflow-hidden rounded-full bg-primary/20"
+      },
+      "component_class": "Shadcn::Progress",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "progress",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "progress",
+          "static_attributes": {},
+          "tag": "ProgressPrimitive.Root"
+        },
+        {
+          "dynamic_attributes": [
+            "style"
+          ],
+          "name": "progress-indicator",
+          "static_attributes": {
+            "class": "h-full w-full flex-1 bg-primary transition-all"
+          },
+          "tag": "ProgressPrimitive.Indicator"
+        }
+      ]
+    }
+  },
+  "name": "progress",
+  "registry_dependencies": [],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "5fdd8ee9e86ec24214ddd960df7706f351d301fd46f72503f8da6674594b3b8e"
+  }
+}

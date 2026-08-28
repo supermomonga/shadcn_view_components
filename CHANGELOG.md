@@ -13,6 +13,22 @@ Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 - 注: upstreamインデックスに列挙されているが404となるアイテム(questionnaire, toast)は
   「upstream側の不整合」として警告付きスキップ
 
+### 追加(Phase 4 wave1 — 残存フォーム部品・コンテナ)
+
+- 9アイテム / 47エクスポート: Progress, Slider, NativeSelect(+OptGroup/Option),
+  InputOTP(+Group/Slot/Separator), Select(+Trigger/Value/Content/Group/Item/Label/
+  Separator/ScrollUp/ScrollDownButton), Field(+Content/Description/Error/Group/
+  Label/Legend/Separator/Set/Title), InputGroup(+Addon/Button/Input/Textarea/Text),
+  ButtonGroup(+Separator/Text), DirectionProvider
+- ネイティブ最優先の継続: slider は input[type=range]、native-select は素の
+  select/optgroup/option、select は Popover API listbox、input-otp は
+  autocomplete=one-time-code の素のinput
+- 抽出器: cva のバリアント値・compound における文字列配列の連結対応(field)
+- InputOTP 等、頭字語を含む定数名の autoload 用インフレクション(OTP)を
+  require 時に登録
+- 残る未実装は重量級8アイテム(sidebar/calendar/chart/sonner/attachment/bubble/
+  message/message-scroller)— registry.yml の pending で負債を可視化
+
 ### 追加(Phase 3 — オーバーレイ・メニュー系)
 
 - 14アイテム / 100以上のエクスポート:

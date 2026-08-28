@@ -1,0 +1,262 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "Field": {
+      "classes_slot": "field",
+      "combinations": {
+        "orientation=horizontal": "group/field flex w-full gap-3 data-[invalid=true]:text-destructive flex-row items-center [&>[data-slot=field-label]]:flex-auto has-[>[data-slot=field-content]]:items-start has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px",
+        "orientation=responsive": "group/field flex w-full gap-3 data-[invalid=true]:text-destructive flex-col @md/field-group:flex-row @md/field-group:items-center [&>*]:w-full @md/field-group:[&>*]:w-auto [&>.sr-only]:w-auto @md/field-group:[&>[data-slot=field-label]]:flex-auto @md/field-group:has-[>[data-slot=field-content]]:items-start @md/field-group:has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px",
+        "orientation=vertical": "group/field flex w-full gap-3 data-[invalid=true]:text-destructive flex-col [&>*]:w-full [&>.sr-only]:w-auto"
+      },
+      "component_class": "Shadcn::Field",
+      "cva": {
+        "compound": [],
+        "defaults": {
+          "orientation": "vertical"
+        },
+        "prop_names": [
+          "orientation"
+        ]
+      },
+      "passthrough_class": true,
+      "root_slot": "field",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "data-orientation"
+          ],
+          "name": "field",
+          "static_attributes": {
+            "role": "group"
+          },
+          "tag": "div"
+        }
+      ]
+    },
+    "FieldContent": {
+      "classes_slot": "field-content",
+      "combinations": {
+        "": "group/field-content flex flex-1 flex-col gap-1.5 leading-snug"
+      },
+      "component_class": "Shadcn::Field::Content",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "field-content",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "field-content",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "FieldDescription": {
+      "classes_slot": "field-description",
+      "combinations": {
+        "": "text-sm leading-normal font-normal text-muted-foreground group-has-[[data-orientation=horizontal]]/field:text-balance last:mt-0 nth-last-2:-mt-1 [[data-variant=legend]+&]:-mt-1.5 [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary"
+      },
+      "component_class": "Shadcn::Field::Description",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "field-description",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "field-description",
+          "static_attributes": {},
+          "tag": "p"
+        }
+      ]
+    },
+    "FieldError": {
+      "classes_slot": "field-error",
+      "combinations": {
+        "": "text-sm font-normal text-destructive"
+      },
+      "component_class": "Shadcn::Field::Error",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "field-error",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "field-error",
+          "static_attributes": {
+            "role": "alert"
+          },
+          "tag": "div"
+        }
+      ]
+    },
+    "FieldGroup": {
+      "classes_slot": "field-group",
+      "combinations": {
+        "": "group/field-group @container/field-group flex w-full flex-col gap-7 data-[slot=checkbox-group]:gap-3 [&>[data-slot=field-group]]:gap-4"
+      },
+      "component_class": "Shadcn::Field::Group",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "field-group",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "field-group",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "FieldLabel": {
+      "classes_slot": "field-label",
+      "combinations": {
+        "": "group/field-label peer/field-label flex w-fit gap-2 leading-snug group-data-[disabled=true]/field:opacity-50 has-[>[data-slot=field]]:w-full has-[>[data-slot=field]]:flex-col has-[>[data-slot=field]]:rounded-md has-[>[data-slot=field]]:border [&>*]:data-[slot=field]:p-4 has-data-[state=checked]:border-primary has-data-[state=checked]:bg-primary/5 dark:has-data-[state=checked]:bg-primary/10"
+      },
+      "component_class": "Shadcn::Field::Label",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "field-label",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "field-label",
+          "static_attributes": {},
+          "tag": "Label"
+        }
+      ]
+    },
+    "FieldLegend": {
+      "classes_slot": "field-legend",
+      "combinations": {
+        "": "mb-3 font-medium data-[variant=legend]:text-base data-[variant=label]:text-sm"
+      },
+      "component_class": "Shadcn::Field::Legend",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "field-legend",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "data-variant"
+          ],
+          "name": "field-legend",
+          "static_attributes": {},
+          "tag": "legend"
+        }
+      ]
+    },
+    "FieldSeparator": {
+      "classes_slot": "field-separator",
+      "combinations": {
+        "": "relative -my-2 h-5 text-sm group-data-[variant=outline]/field-group:-mb-2"
+      },
+      "component_class": "Shadcn::Field::Separator",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "field-separator",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "data-content"
+          ],
+          "name": "field-separator",
+          "static_attributes": {},
+          "tag": "div"
+        },
+        {
+          "dynamic_attributes": [],
+          "name": "field-separator-content",
+          "static_attributes": {
+            "class": "relative mx-auto block w-fit bg-background px-2 text-muted-foreground"
+          },
+          "tag": "span"
+        }
+      ]
+    },
+    "FieldSet": {
+      "classes_slot": "field-set",
+      "combinations": {
+        "": "flex flex-col gap-6 has-[>[data-slot=checkbox-group]]:gap-3 has-[>[data-slot=radio-group]]:gap-3"
+      },
+      "component_class": "Shadcn::Field::Set",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "field-set",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "field-set",
+          "static_attributes": {},
+          "tag": "fieldset"
+        }
+      ]
+    },
+    "FieldTitle": {
+      "classes_slot": "field-label",
+      "combinations": {
+        "": "flex w-fit items-center gap-2 text-sm leading-snug font-medium group-data-[disabled=true]/field:opacity-50"
+      },
+      "component_class": "Shadcn::Field::Title",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "field-label",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "field-label",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    }
+  },
+  "name": "field",
+  "registry_dependencies": [
+    "label",
+    "separator"
+  ],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "dfbc915f4a204a67aabb95ead903a16a66a68cc42f1669c2eceaf7cc504ca781"
+  }
+}

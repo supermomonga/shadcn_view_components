@@ -1,0 +1,95 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {},
+    "light": {}
+  },
+  "exports": {
+    "ButtonGroup": {
+      "classes_slot": "button-group",
+      "combinations": {
+        "orientation=horizontal": "flex w-fit items-stretch has-[>[data-slot=button-group]]:gap-2 [&>*]:focus-visible:relative [&>*]:focus-visible:z-10 has-[select[aria-hidden=true]:last-child]:[&>[data-slot=select-trigger]:last-of-type]:rounded-r-md [&>[data-slot=select-trigger]:not([class*='w-'])]:w-fit [&>input]:flex-1 [&>*:not(:first-child)]:rounded-l-none [&>*:not(:first-child)]:border-l-0 [&>*:not(:last-child)]:rounded-r-none",
+        "orientation=vertical": "flex w-fit items-stretch has-[>[data-slot=button-group]]:gap-2 [&>*]:focus-visible:relative [&>*]:focus-visible:z-10 has-[select[aria-hidden=true]:last-child]:[&>[data-slot=select-trigger]:last-of-type]:rounded-r-md [&>[data-slot=select-trigger]:not([class*='w-'])]:w-fit [&>input]:flex-1 flex-col [&>*:not(:first-child)]:rounded-t-none [&>*:not(:first-child)]:border-t-0 [&>*:not(:last-child)]:rounded-b-none"
+      },
+      "component_class": "Shadcn::ButtonGroup",
+      "cva": {
+        "compound": [],
+        "defaults": {
+          "orientation": "horizontal"
+        },
+        "prop_names": [
+          "orientation"
+        ]
+      },
+      "passthrough_class": true,
+      "root_slot": "button-group",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "data-orientation"
+          ],
+          "name": "button-group",
+          "static_attributes": {
+            "role": "group"
+          },
+          "tag": "div"
+        }
+      ]
+    },
+    "ButtonGroupSeparator": {
+      "classes_slot": "button-group-separator",
+      "combinations": {
+        "": "relative m-0! self-stretch bg-input data-[orientation=vertical]:h-auto"
+      },
+      "component_class": "Shadcn::ButtonGroup::Separator",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "button-group-separator",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "orientation"
+          ],
+          "name": "button-group-separator",
+          "static_attributes": {},
+          "tag": "Separator"
+        }
+      ]
+    },
+    "ButtonGroupText": {
+      "classes_slot": "",
+      "combinations": {
+        "": "flex items-center gap-2 rounded-md border bg-muted px-4 text-sm font-medium shadow-xs [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4"
+      },
+      "component_class": "Shadcn::ButtonGroup::Text",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    }
+  },
+  "name": "button-group",
+  "registry_dependencies": [
+    "button",
+    "separator"
+  ],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "539eb67158184aeaea575f27881cc2b33fd09c360a553c69de259b0f8e92afc9"
+  }
+}
