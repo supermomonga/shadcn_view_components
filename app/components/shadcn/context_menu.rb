@@ -3,162 +3,55 @@
 
 module Shadcn
   # 右クリックメニュー(10-roadmap Phase 3「context-menu = 同上(右クリック)」)。
-  # trigger の contextmenu イベントで開く点のみ dropdown-menu と異なる
+  # 実装は DropdownMenu を継承し、差分のみを上書きする:
+  # - Trigger は click ではなく contextmenu で showAt を呼ぶ
+  # - Content は右クリックイベント列の途中で light dismiss されないよう popover=manual
   # JS無効時フォールバック: Readable
-  class ContextMenu < BaseComponent
-    CONTROLLER = "shadcn--menu"
-
-    sig { override.returns(T::Hash[Symbol, T.untyped]) }
-    def contract_data_attributes
-      super.merge(controller: CONTROLLER)
-    end
-
-    class Trigger < BaseComponent
+  class ContextMenu < DropdownMenu
+    class Trigger < DropdownMenu::Trigger
+      # 右クリック(contextmenu)でポインタ位置に開く。button 既定の type 等は親に従う
       sig { override.returns(T::Hash[Symbol, T.untyped]) }
       def html_attributes
         attributes = super
-        merge_nested(attributes, :data, { action: "contextmenu->#{CONTROLLER}#showAt" })
+        merge_nested(attributes, :data, { action: "contextmenu->#{DropdownMenu::CONTROLLER}#showAt" })
         attributes
       end
     end
 
-    class Portal < BaseComponent
+    class Portal < DropdownMenu::Portal
       # 搬送のみの機能要素の実体化
     end
 
-    class Content < BaseComponent
-      # 右クリックで開く際、イベント列の途中でlight dismissされないよう manual にする
+    class Content < DropdownMenu::Content
+      # 右クリックで開く際、イベント列の途中で light dismiss されないよう manual にする
       sig { override.returns(T::Hash[Symbol, T.untyped]) }
       def html_attributes
         attributes = super
-        attributes[:role] = "menu"
         attributes[:popover] = "manual"
-        attributes[:tabindex] = "-1"
-        data = T.cast(attributes[:data], T.nilable(T::Hash[Symbol, T.untyped])) || {}
-        attributes[:data] = { state: "closed" }.merge(data)
         attributes
       end
     end
 
-    class Group < BaseComponent
-      sig { override.returns(T::Hash[Symbol, T.untyped]) }
-      def html_attributes
-        super.tap { |attributes| attributes[:role] = "group" }
-      end
-    end
+    class Group < DropdownMenu::Group; end
 
-    class Label < BaseComponent
-      # div
-    end
+    class Label < DropdownMenu::Label; end
 
-    class Item < BaseComponent
-      sig { override.returns(T::Hash[Symbol, T.untyped]) }
-      def html_attributes
-        attributes = super
-        attributes[:role] = "menuitem"
-        attributes[:tabindex] = "-1"
-        merge_nested(attributes, :data, { action: "#{CONTROLLER}#activate" })
-        attributes
-      end
-    end
+    class Item < DropdownMenu::Item; end
 
-    class CheckboxItem < Item
-      sig { params(checked: T::Boolean, args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
-      def initialize(checked: false, **args)
-        @checked = checked
-        super(**args)
-      end
+    class CheckboxItem < DropdownMenu::CheckboxItem; end
 
-      sig { override.returns(T::Hash[Symbol, T.untyped]) }
-      def html_attributes
-        attributes = super
-        attributes[:role] = "menuitemcheckbox"
-        merge_nested(attributes, :aria, { checked: @checked.to_s })
-        attributes
-      end
+    class RadioGroup < DropdownMenu::RadioGroup; end
 
-      sig { override.returns(String) }
-      def call
-        content_tag(tag, **html_attributes) do
-          safe_join([indicator, content])
-        end
-      end
+    class RadioItem < DropdownMenu::RadioItem; end
 
-      private
+    class Separator < DropdownMenu::Separator; end
 
-      sig { returns(String) }
-      def indicator
-        content_tag(:span, class: "pointer-events-none absolute left-2 flex size-3.5 items-center justify-center") do
-          return "".html_safe unless @checked
+    class Shortcut < DropdownMenu::Shortcut; end
 
-          content_tag(
-            :svg,
-            xmlns: "http://www.w3.org/2000/svg",
-            viewBox: "0 0 24 24",
-            fill: "none",
-            stroke: "currentColor",
-            "stroke-width": "2",
-            "stroke-linecap": "round",
-            "stroke-linejoin": "round",
-            width: "14",
-            height: "14",
-            class: "size-3.5"
-          ) do
-            raw(%(<path d="M20 6 9 17l-5-5"/>))
-          end
-        end
-      end
-    end
+    class Sub < DropdownMenu::Sub; end
 
-    class RadioGroup < BaseComponent
-      sig { override.returns(T::Hash[Symbol, T.untyped]) }
-      def html_attributes
-        super.tap { |attributes| attributes[:role] = "group" }
-      end
-    end
+    class SubTrigger < DropdownMenu::SubTrigger; end
 
-    class RadioItem < CheckboxItem
-      sig { override.returns(T::Hash[Symbol, T.untyped]) }
-      def html_attributes
-        attributes = super
-        attributes[:role] = "menuitemradio"
-        attributes
-      end
-
-      private
-
-      sig { returns(String) }
-      def indicator
-        content_tag(:span, class: "pointer-events-none absolute left-2 flex size-3.5 items-center justify-center") do
-          @checked ? content_tag(:span, class: "size-2 rounded-full bg-current") { "".html_safe } : "".html_safe
-        end
-      end
-    end
-
-    class Separator < BaseComponent
-      # div
-    end
-
-    class Shortcut < BaseComponent
-      # span
-    end
-
-    class Sub < BaseComponent
-      # ネストしたサブメニューのスコープ
-    end
-
-    class SubTrigger < Item
-      sig { override.returns(T::Hash[Symbol, T.untyped]) }
-      def html_attributes
-        attributes = super
-        merge_nested(attributes, :aria, { haspopup: "menu", expanded: "false" })
-        merge_nested(attributes, :data, { action: "#{CONTROLLER}#toggleSub" })
-        attributes
-      end
-    end
-
-    class SubContent < Content
-      # 親Contentと同じ構造
-    end
+    class SubContent < DropdownMenu::SubContent; end
   end
 end

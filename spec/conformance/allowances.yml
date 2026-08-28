@@ -168,7 +168,8 @@ context-menu:
   ContextMenu:
     attributes: [data-controller]
   ContextMenuTrigger:
-    attributes: [data-action]
+    # DropdownMenu::Trigger を継承するため button 既定の属性も出る
+    attributes: [type, aria-haspopup, aria-expanded, data-action]
   ContextMenuContent:
     attributes: [role, popover, tabindex, data-state, style]
   ContextMenuGroup:

@@ -3,130 +3,47 @@
 
 module Shadcn
   # メニューバー(10-roadmap Phase 3「menubar = 横断」)。
-  # 横並びのトリガー群がそれぞれメニューを開く。実装は dropdown-menu と同じ
-  # menu_controller(ARIA menu + Popover API)を流用する
+  # 横並びのトリガー群がそれぞれメニューを開く — 挙動は dropdown-menu と同一のため
+  # 実装は DropdownMenu を継承する(契約・data-slot は menubar 側の contract_path から
+  # 各自の ShadcnViewComponents::Contracts::Menubar::* を参照する)
   # JS無効時フォールバック: Readable
-  class Menubar < BaseComponent
-    CONTROLLER = "shadcn--menu"
-
-    sig { override.returns(T::Hash[Symbol, T.untyped]) }
-    def contract_data_attributes
-      super.merge(controller: CONTROLLER)
-    end
-
+  class Menubar < DropdownMenu
     class Menu < BaseComponent
       # トリガー+コンテンツのスコープ(div)
     end
 
-    class Trigger < BaseComponent
-      sig { override.returns(String) }
-      def default_tag
-        "button"
-      end
-
-      sig { override.returns(T::Hash[Symbol, T.untyped]) }
-      def html_attributes
-        attributes = super
-        attributes[:type] = "button" unless attributes.key?(:type)
-        merge_nested(attributes, :aria, { haspopup: "menu", expanded: "false" })
-        merge_nested(attributes, :data, { action: "#{CONTROLLER}#toggle" })
-        attributes
-      end
+    class Trigger < DropdownMenu::Trigger
+      # dropdown-menu のトリガーと同一(click でトグル)
     end
 
-    class Portal < BaseComponent
+    class Portal < DropdownMenu::Portal
       # 搬送のみの機能要素の実体化
     end
 
-    class Content < BaseComponent
-      sig { override.returns(T::Hash[Symbol, T.untyped]) }
-      def html_attributes
-        attributes = super
-        attributes[:role] = "menu"
-        attributes[:popover] = "auto"
-        attributes[:tabindex] = "-1"
-        data = T.cast(attributes[:data], T.nilable(T::Hash[Symbol, T.untyped])) || {}
-        attributes[:data] = { state: "closed" }.merge(data)
-        attributes
-      end
+    class Content < DropdownMenu::Content
+      # popover=auto の ARIA menu
     end
 
-    class Group < BaseComponent
-      sig { override.returns(T::Hash[Symbol, T.untyped]) }
-      def html_attributes
-        super.tap { |attributes| attributes[:role] = "group" }
-      end
-    end
+    class Group < DropdownMenu::Group; end
 
-    class Label < BaseComponent
-      # div
-    end
+    class Label < DropdownMenu::Label; end
 
-    class Item < BaseComponent
-      sig { override.returns(T::Hash[Symbol, T.untyped]) }
-      def html_attributes
-        attributes = super
-        attributes[:role] = "menuitem"
-        attributes[:tabindex] = "-1"
-        merge_nested(attributes, :data, { action: "#{CONTROLLER}#activate" })
-        attributes
-      end
-    end
+    class Item < DropdownMenu::Item; end
 
-    class CheckboxItem < Item
-      sig { params(checked: T::Boolean, args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
-      def initialize(checked: false, **args)
-        @checked = checked
-        super(**args)
-      end
+    class CheckboxItem < DropdownMenu::CheckboxItem; end
 
-      sig { override.returns(T::Hash[Symbol, T.untyped]) }
-      def html_attributes
-        attributes = super
-        attributes[:role] = "menuitemcheckbox"
-        merge_nested(attributes, :aria, { checked: @checked.to_s })
-        attributes
-      end
-    end
+    class RadioGroup < DropdownMenu::RadioGroup; end
 
-    class RadioGroup < BaseComponent
-      sig { override.returns(T::Hash[Symbol, T.untyped]) }
-      def html_attributes
-        super.tap { |attributes| attributes[:role] = "group" }
-      end
-    end
+    class RadioItem < DropdownMenu::RadioItem; end
 
-    class RadioItem < CheckboxItem
-      sig { override.returns(T::Hash[Symbol, T.untyped]) }
-      def html_attributes
-        super.tap { |attributes| attributes[:role] = "menuitemradio" }
-      end
-    end
+    class Separator < DropdownMenu::Separator; end
 
-    class Separator < BaseComponent
-      # div
-    end
+    class Shortcut < DropdownMenu::Shortcut; end
 
-    class Shortcut < BaseComponent
-      # span
-    end
+    class Sub < DropdownMenu::Sub; end
 
-    class Sub < BaseComponent
-      # ネストしたサブメニューのスコープ
-    end
+    class SubTrigger < DropdownMenu::SubTrigger; end
 
-    class SubTrigger < Item
-      sig { override.returns(T::Hash[Symbol, T.untyped]) }
-      def html_attributes
-        attributes = super
-        merge_nested(attributes, :aria, { haspopup: "menu", expanded: "false" })
-        merge_nested(attributes, :data, { action: "#{CONTROLLER}#toggleSub" })
-        attributes
-      end
-    end
-
-    class SubContent < Content
-      # 親Contentと同じ構造
-    end
+    class SubContent < DropdownMenu::SubContent; end
   end
 end
