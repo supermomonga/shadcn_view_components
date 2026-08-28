@@ -14,15 +14,18 @@
 
 ## ステータス
 
-Phase 0(インフラ + パイプライン実証)、Phase 1(表示のみコンポーネント)、Phase 2(フォーム部品・軽インタラクティブ)が完了。ロードマップは `docs.local/10-roadmap.md` 参照。
+Phase 0〜3(インフラ、表示のみ、フォーム部品、オーバーレイ・メニュー系)が完了。ロードマップは `docs.local/10-roadmap.md` 参照。
 
 - 提供コンポーネント(26アイテム / 全エクスポートが適合試験で検証済み):
   **Button, Badge, Alert, Card, Avatar, Separator, Skeleton, Table, Label, Kbd, Spinner,
   Empty, AspectRatio, Item, Marker, Input, Textarea, Breadcrumb,
   Accordion, Checkbox, Collapsible, RadioGroup, ScrollArea, Switch, Toggle, ToggleGroup,
-  Tabs, Carousel, Pagination, Form**
-- インタラクティブふるまい: toggle/toggle-group は Stimulusコントローラ、
-  accordion/collapsible は `<details>`/`<summary>` によるJS無し開閉(05 §3 ネイティブ最優先)
+  Tabs, Carousel, Pagination, Form,
+  Dialog, AlertDialog, Sheet, Drawer, Popover, HoverCard, Tooltip,
+  DropdownMenu, ContextMenu, Menubar, NavigationMenu, Command, Combobox, Resizable**
+- インタラクティブふるまい(05 §3 ネイティブ最優先): toggle/toggle-group は Stimulus、
+  accordion/collapsible は `<details>`/`<summary>`、dialog系は `<dialog>` + showModal、
+  popover/tooltip/menu は Popover API
 - upstream 出所: `vendor/shadcn/manifest.json` が唯一の真実の源(現在: shadcn@4.19.0 系)
 
 ## インストール

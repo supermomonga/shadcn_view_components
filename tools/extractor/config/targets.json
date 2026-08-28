@@ -42,6 +42,8 @@
     "context-menu",
     "resizable",
     "menubar",
-    "navigation-menu"
+    "navigation-menu",
+    "command",
+    "combobox"
   ]
 }

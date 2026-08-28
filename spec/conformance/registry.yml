@@ -106,11 +106,33 @@ collapsible:
     - { component: Shadcn::Collapsible::Content, export: CollapsibleContent }
 
 combobox:
-  pending: true
-
+  exports:
+    - { component: Shadcn::Combobox::Input, export: ComboboxInput }
+    - { component: Shadcn::Combobox::Trigger, export: ComboboxTrigger }
+    - { component: Shadcn::Combobox::Content, export: ComboboxContent }
+    - { component: Shadcn::Combobox::List, export: ComboboxList }
+    - { component: Shadcn::Combobox::Item, export: ComboboxItem }
+    - { component: Shadcn::Combobox::Group, export: ComboboxGroup }
+    - { component: Shadcn::Combobox::Label, export: ComboboxLabel }
+    - { component: Shadcn::Combobox::Empty, export: ComboboxEmpty }
+    - { component: Shadcn::Combobox::Separator, export: ComboboxSeparator }
+    - { component: Shadcn::Combobox::Collection, export: ComboboxCollection }
+    - { component: Shadcn::Combobox::Value, export: ComboboxValue }
+    - { component: Shadcn::Combobox::Chips, export: ComboboxChips }
+    - { component: Shadcn::Combobox::Chip, export: ComboboxChip }
+    - { component: Shadcn::Combobox::ChipsInput, export: ComboboxChipsInput }
 command:
-  pending: true
-
+  exports:
+    - { component: Shadcn::Command, export: Command }
+    # Dialog合成は子スロットが増えるため superset
+    - { component: Shadcn::Command::Dialog, export: CommandDialog }
+    - { component: Shadcn::Command::Input, export: CommandInput }
+    - { component: Shadcn::Command::List, export: CommandList }
+    - { component: Shadcn::Command::Empty, export: CommandEmpty }
+    - { component: Shadcn::Command::Group, export: CommandGroup }
+    - { component: Shadcn::Command::Item, export: CommandItem }
+    - { component: Shadcn::Command::Separator, export: CommandSeparator }
+    - { component: Shadcn::Command::Shortcut, export: CommandShortcut }
 context-menu:
   exports:
     - { component: Shadcn::ContextMenu, export: ContextMenu }

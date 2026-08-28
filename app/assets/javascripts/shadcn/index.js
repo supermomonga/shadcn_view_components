@@ -14,6 +14,7 @@
 // importmap非利用のホストは、本ファイルではなく各コントローラを直接importして
 // application.register すること(READMEのフォールバック手順参照)
 import CarouselController from "shadcn/controllers/carousel_controller"
+import CommandController from "shadcn/controllers/command_controller"
 import DialogController from "shadcn/controllers/dialog_controller"
 import HoverCardController from "shadcn/controllers/hover_card_controller"
 import MenuController from "shadcn/controllers/menu_controller"
@@ -26,6 +27,7 @@ import ToggleGroupController from "shadcn/controllers/toggle_group_controller"
 
 export function register(application) {
   application.register("shadcn--carousel", CarouselController)
+  application.register("shadcn--command", CommandController)
   application.register("shadcn--dialog", DialogController)
   application.register("shadcn--hover-card", HoverCardController)
   application.register("shadcn--menu", MenuController)

@@ -13,6 +13,31 @@ Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 - 注: upstreamインデックスに列挙されているが404となるアイテム(questionnaire, toast)は
   「upstream側の不整合」として警告付きスキップ
 
+### 追加(Phase 3 — オーバーレイ・メニュー系)
+
+- 14アイテム / 100以上のエクスポート:
+  Dialog, AlertDialog, Sheet, Drawer, Popover, HoverCard, Tooltip,
+  DropdownMenu, ContextMenu, Menubar, NavigationMenu, Command, Combobox, Resizable
+- ネイティブ最優先の本番(05 §3 / 10-roadmap Phase 3):
+  - dialog系は `<dialog>` + showModal(フォーカストラップ・背景inert・EscClose・
+    フォーカス復帰はネイティブ提供。alertdialog は cancel抑止)
+  - popover/tooltip/menu は Popover API(light dismiss)。context-menu は
+    右クリック位置に popover=manual で開く(イベント列の競合回避)
+  - resizable はドラッグ + 矢印キーによるパネル配分
+  - command/combobox は SSR済みリストのフィルタ(value+本文照合、
+    矢印/Home/End/Enter、空グループ畳み込み、empty表示)
+- Stimulusコントローラ: dialog / popover / hover-card / tooltip / menu /
+  resizable / command(計8個、register()で一括登録)
+- 抽出器の拡張: 引数なしcva呼び出し、`side === "right" && "クラス"` 形式の
+  条件付き静的クラス解決、兄弟エクスポートのルート継承条件の厳密化、
+  asChild のDOM属性除外、JSXを返さないエクスポート除外、名前無しラッパーの
+  スロット記録
+- 適合試験: 合成コンポーネント向け slots_mode: superset、
+  静的クラスのみの契約向けフォールバック検証
+- turbo:submit-end 標準フック(dialog内フォーム送信で閉じる)
+- システムスペック: 開閉/Esc/inert(Tabトラップ)/フォーカス復帰/
+  light dismiss/hover intent/矢印キー/右クリック/ドラッグ・ナッジ/フィルタ
+
 ### 追加(Phase 2 wave2 — tabs/carousel/pagination/form)
 
 - 4アイテム / 22エクスポート: Tabs(+List/Trigger/Content), Carousel(+Content/Item/Previous/Next),

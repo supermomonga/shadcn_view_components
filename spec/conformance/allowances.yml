@@ -220,3 +220,31 @@ navigation-menu:
     attributes: [type, aria-haspopup, aria-expanded, data-action]
   NavigationMenuContent:
     attributes: [popover, data-state]
+command:
+  Command:
+    attributes: [data-controller]
+  CommandDialog:
+    # Dialog合成: 契約スロットは無いが、子のdialog/commandスロットが現れる
+    slots_mode: superset
+    attributes: [data-controller]
+  CommandInput:
+    attributes: [type, aria-label, data-action]
+  CommandItem:
+    attributes: [role, tabindex, data-value, data-selected, aria-selected, data-action]
+  CommandEmpty:
+    attributes: [hidden]
+combobox:
+  ComboboxInput:
+    attributes: [type, role, aria-expanded, aria-haspopup, data-action]
+  ComboboxTrigger:
+    attributes: [type, data-action, aria-label]
+  ComboboxContent:
+    attributes: [role, popover, data-state]
+  ComboboxItem:
+    attributes: [role, tabindex, data-value, data-selected, aria-selected]
+  ComboboxEmpty:
+    attributes: [hidden]
+  ComboboxChipsInput:
+    attributes: [type]
+  ComboboxChip:
+    attributes: [aria-label]

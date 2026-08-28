@@ -1,0 +1,37 @@
+<style>
+  [data-slot='command-input-wrapper'] { display: flex; gap: 8px; align-items: center; padding: 8px; border-bottom: 1px solid #ccc; }
+  [data-slot='command-list'] { padding: 8px; min-height: 120px; }
+  [data-slot='command-item'], [data-slot='combobox-item'] { padding: 6px 8px; border-radius: 4px; cursor: default; }
+  [data-selected='true'] { background: #eee; }
+  [popover] { border: 1px solid #ccc; border-radius: 8px; background: #fff; padding: 4px; min-width: 220px; }
+</style>
+<main class="command-page">
+  <h1>Command / Combobox</h1>
+
+  <section id="command-demo">
+    <%= render(Shadcn::Command.new(id: "command")) do %>
+      <%= render(Shadcn::Command::Input.new(id: "command-input")) %>
+      <%= render(Shadcn::Command::List.new) do %>
+        <%= render(Shadcn::Command::Empty.new(id: "command-empty")) { "結果が見つかりません" } %>
+        <%= render(Shadcn::Command::Group.new) do %>
+          <%= render(Shadcn::Command::Item.new(id: "item-copy", value: "copy")) { "コピー" } %>
+          <%= render(Shadcn::Command::Item.new(id: "item-paste", value: "paste")) { "貼り付け" } %>
+          <%= render(Shadcn::Command::Item.new(id: "item-cut", value: "cut")) { "切り取り" } %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </section>
+
+  <section id="combobox-demo">
+    <%= render(Shadcn::Combobox.new(id: "combobox")) do %>
+      <%= render(Shadcn::Combobox::Input.new(id: "combobox-input")) %>
+      <%= render(Shadcn::Combobox::Content.new(id: "combobox-content")) do %>
+        <%= render(Shadcn::Combobox::List.new) do %>
+          <%= render(Shadcn::Combobox::Empty.new(id: "combobox-empty")) { "見つかりません" } %>
+          <%= render(Shadcn::Combobox::Item.new(id: "cb-rails", value: "rails")) { "Ruby on Rails" } %>
+          <%= render(Shadcn::Combobox::Item.new(id: "cb-hanami", value: "hanami")) { "Hanami" } %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </section>
+</main>

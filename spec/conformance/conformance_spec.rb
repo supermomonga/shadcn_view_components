@@ -42,6 +42,7 @@ registry.reject { |_name, entry| entry["pending"] }.each do |name, entry|
     export_allowances = item_allowances[export_name] || {}
     allowed_extra = export_allowances["attributes"] || []
     class_contains = export_allowances["class_mode"] == "contains"
+    slots_superset = export_allowances["slots_mode"] == "superset"
 
     RSpec.describe "conformance: #{name}/#{export_name}", type: :conformance do
       contract::COMBINATIONS.each do |options, expected_classes|
@@ -52,7 +53,13 @@ registry.reject { |_name, entry| entry["pending"] }.each do |name, entry|
             render_inline(component_class.new(**options))
           end
 
-          expected = split_structure ? root_static_class : expected_classes
+          # クラスが cn でなく静的className として記録された契約(コンボ "" + ルート静的クラス)
+          static_only = !split_structure && expected_classes.to_s.empty? && !root_static_class.empty?
+          expected = if split_structure || static_only
+                       root_static_class
+                     else
+                       expected_classes
+                     end
 
           # classes_slot が示す要素を検証対象にする(単一要素ならルートと一致する)
           target = if classes_slot.to_s.empty?
@@ -93,7 +100,12 @@ registry.reject { |_name, entry| entry["pending"] }.each do |name, entry|
         rendered_slots = rendered_fragment.css("[data-slot]").map { |node| node["data-slot"] }.uniq.sort
         contract_slots = contract::SLOTS.map { |slot| slot[:name] }.reject(&:empty?).sort
 
-        expect(rendered_slots).to eq(contract_slots)
+        # superset 許可(合成コンポーネント): 契約スロットが全て現れればよい
+        if slots_superset
+          expect(rendered_slots & contract_slots).to eq(contract_slots)
+        else
+          expect(rendered_slots).to eq(contract_slots)
+        end
       end
     end
   end
