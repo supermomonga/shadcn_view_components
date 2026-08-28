@@ -299,11 +299,25 @@ module Shadcn
     end
 
     class MenuSubButton < BaseComponent
-      # a相当(tag: で差し替え可)。isActive は data-active で表現
-      sig { params(active: T::Boolean, args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
-      def initialize(active: false, **args)
+      # a相当(tag: で差し替え可)。isActive は data-active で表現。
+      # size は enum ガード(size === "sm" && ...)の露出prop
+      sig do
+        params(
+          size: T.any(Symbol, String),
+          active: T::Boolean,
+          args: T::Hash[Symbol, T.untyped]
+        ).void.checked(:never)
+      end
+      def initialize(size: ShadcnViewComponents::Contracts::Sidebar::MenuSubButton::DEFAULTS.fetch(:size),
+                     active: false, **args)
+        @size = T.let(normalize_option(:size, size), Symbol)
         @active = active
         super(**args)
+      end
+
+      sig { override.returns(T::Hash[Symbol, VariantOption]) }
+      def variant_options
+        { size: @size }
       end
 
       sig { override.returns(String) }

@@ -23,7 +23,21 @@ module Shadcn
 
     class Scrollbar < BaseComponent
       # ネイティブCSSスクロールでは独自スクロールバー部品は不要。契約構造を保つため
-      # 描画するが、表示はCSSスクロールバーが担う
+      # 描画するが、表示はCSSスクロールバーが担う。
+      # orientation は enum ガード(orientation === "horizontal" && ...)の露出prop
+      sig do
+        params(orientation: T.any(Symbol, String), args: T::Hash[Symbol, T.untyped]).void.checked(:never)
+      end
+      def initialize(orientation: ShadcnViewComponents::Contracts::ScrollArea::Scrollbar::DEFAULTS.fetch(:orientation), **args)
+        @orientation = T.let(normalize_option(:orientation, orientation), Symbol)
+        super(**args)
+      end
+
+      sig { override.returns(T::Hash[Symbol, VariantOption]) }
+      def variant_options
+        { orientation: @orientation }
+      end
+
       sig { override.returns(String) }
       def call
         content_tag(tag, **html_attributes) do

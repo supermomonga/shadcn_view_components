@@ -44,13 +44,25 @@ module Shadcn
     end
 
     class Content < BaseComponent
-      # 契約のクラス列は upstream の既定 side(right)を事前解決したもの。
-      # 他の side は契約外クラスのため、利用者クラスで追加する(04 §7: クラスの
-      # 二重管理を避けるため本gem側では保持しない)
-      sig { params(show_close_button: T::Boolean, args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
-      def initialize(show_close_button: true, **args)
+      # side は enum ガード(side === "right" && "...")を露出prop化した契約を持つ。
+      # 4枝すべてのクラスが組み合わせとして事前解決済み
+      sig do
+        params(
+          side: T.any(Symbol, String),
+          show_close_button: T::Boolean,
+          args: T::Hash[Symbol, T.untyped]
+        ).void.checked(:never)
+      end
+      def initialize(side: ShadcnViewComponents::Contracts::Sheet::Content::DEFAULTS.fetch(:side),
+                     show_close_button: true, **args)
+        @side = T.let(normalize_option(:side, side), Symbol)
         @show_close_button = show_close_button
         super(**args)
+      end
+
+      sig { override.returns(T::Hash[Symbol, VariantOption]) }
+      def variant_options
+        { side: @side }
       end
 
       sig { override.returns(String) }
@@ -64,7 +76,7 @@ module Shadcn
 
       sig { returns(T::Hash[Symbol, T.untyped]) }
       def content_attributes
-        attributes = @html_args.merge(class: self.class.classes(extra: @user_class))
+        attributes = @html_args.merge(class: self.class.classes(extra: @user_class, **variant_options))
         data = T.cast(attributes[:data], T.nilable(T::Hash[Symbol, T.untyped])) || {}
         attributes[:data] = { slot: "sheet-content", state: "closed" }.merge(data)
         aria = T.cast(attributes[:aria], T.nilable(T::Hash[Symbol, T.untyped])) || {}

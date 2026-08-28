@@ -169,6 +169,72 @@ function constrainedExportProps(
   }
 }
 
+/** cva由来の露出propとガード由来の露出propを統合する */
+function mergeProps(
+  base: { propNames: string[], defaults: Record<string, string> },
+  guardInfo: { propNames: string[], defaults: Record<string, string> } | null,
+): { propNames: string[], defaults: Record<string, string> } {
+  if (!guardInfo) return base
+  return {
+    propNames: [...new Set([...base.propNames, ...guardInfo.propNames])].sort(),
+    defaults: Object.fromEntries(
+      Object.entries({ ...base.defaults, ...guardInfo.defaults }).sort(([a], [b]) => a.localeCompare(b)),
+    ),
+  }
+}
+
+/**
+ * enum ガード(`side === "right" && "..."`)を契約側propとして露出する。
+ * 値域 = ガードに現れた値々 ∪ パラメータ既定値(既定値に対応するガードが無い
+ * 場合は「追加クラスなし」の値として補完する)。既定値が静的に取れない識別子は
+ * エスカレートする(既定枝だけを黙って契約化しないため)
+ */
+function guardExportProps(
+  guards: Array<{ identifier: string, value: string, classes: string }>,
+  fnNode: FunctionLike,
+  item: string,
+  file: string,
+): { propNames: string[], defaults: Record<string, string>, guardProps: Map<string, string[]>,
+    resolvedGuards: Array<{ identifier: string, value: string, classes: string }> } {
+  const byIdentifier = new Map<string, Set<string>>()
+  for (const guard of guards) {
+    if (!byIdentifier.has(guard.identifier)) byIdentifier.set(guard.identifier, new Set())
+    byIdentifier.get(guard.identifier)!.add(guard.value)
+  }
+
+  const parameterDefaults = paramDefaults(fnNode, [...byIdentifier.keys()])
+  const propNames: string[] = []
+  const defaults: Record<string, string> = {}
+  const guardProps = new Map<string, string[]>()
+  const resolvedGuards = [...guards]
+  for (const [identifier, values] of byIdentifier) {
+    const defaultValue = parameterDefaults[identifier]
+    if (defaultValue === undefined) {
+      throw new ParseError(
+        `enum guard '${identifier}' has no parameter default ` +
+          "(the non-default branches would be lost; add a default upstream or escalate)",
+        item, file,
+      )
+    }
+    values.add(defaultValue)
+    // 既定値に対応するガード枝が無いときは「追加クラスなし」の枝として補完する
+    // (select の position=item-aligned 等)
+    if (![...values].every((value) => guards.some((guard) => guard.identifier === identifier && guard.value === value))) {
+      resolvedGuards.push({ identifier, value: defaultValue, classes: "" })
+    }
+    const name = snakeCase(identifier)
+    propNames.push(name)
+    defaults[name] = defaultValue
+    guardProps.set(name, [...values].sort())
+  }
+  return {
+    propNames: propNames.sort(),
+    defaults: Object.fromEntries(Object.entries(defaults).sort(([a], [b]) => a.localeCompare(b))),
+    guardProps,
+    resolvedGuards,
+  }
+}
+
 /** Reactコンポーネント参照タグ(大文字開始 or ドット付き)かどうか */
 function isComponentTag(tag: string): boolean {
   return tag !== "" && (/^[A-Z]/.test(tag) || tag.includes("."))
@@ -260,25 +326,52 @@ async function extractContractFromItem(
         throw new ParseError(`cn() references unknown cva definition '${primary.cvaRef}'`, name, file.path)
       }
 
-      // cva(...) が呼び出し側で値を制約しているときは制約どおりの組合せを列挙する
+      // cva(...) が呼び出し側で値を制約しているとき、および enum ガード
+      // (side === "right" && "...")を持つときは制約どおりの組合せを列挙する
       // (button等の全値渡しは従来の全列挙と同一の結果になる)
+      const guards = primary?.guards ?? []
+      const guardInfo = guards.length > 0 ? guardExportProps(guards, fnNode, name, file.path) : null
+      if (guardInfo) {
+        const collisions = guardInfo.propNames.filter((prop) =>
+          exposedPropNames(primary?.cvaOptions ?? []).map(snakeCase).includes(prop))
+        if (collisions.length > 0) {
+          throw new ParseError(`guard prop collides with cva option: ${collisions.join(", ")}`, name, file.path)
+        }
+      }
       const constrained = definition !== null && primary !== null && primary.cvaOptions.length > 0
-      const combinations = constrained && definition && primary
-        ? resolveConstrainedCombinations(definition, primary.statics, primary.cvaOptions)
+      const guarded = guardInfo !== null
+      const combinations = primary && (constrained || guarded)
+        ? resolveConstrainedCombinations(definition, primary.statics, primary.cvaOptions,
+            guardInfo ? guardInfo.resolvedGuards : guards)
         : resolveCnCombinations(definition, primary?.statics ?? [])
-      const props = constrained && definition && primary
-        ? constrainedExportProps(definition, fnNode, primary.cvaOptions)
-        : {
-            propNames: definition ? Object.keys(definition.variants).sort() : [],
-            // 実効的な既定値 = 関数パラメータの既定値 ∪ cvaのdefaultVariants(cva側が優先)。
-            // marker のように defaultVariants を持たずパラメータ既定値で済ませる定形に対応する
-            defaults: definition
-              ? Object.fromEntries(
-                  Object.entries({ ...paramDefaults(fnNode, exposedPropNames(primary?.cvaOptions ?? [])), ...definition.defaults })
-                    .sort(([a], [b]) => a.localeCompare(b)),
-                )
-              : {},
-          }
+      const props = primary && constrained && definition
+        ? mergeProps(constrainedExportProps(definition, fnNode, primary.cvaOptions), guardInfo)
+        : primary && guarded
+          ? mergeProps(
+              {
+                propNames: definition ? Object.keys(definition.variants).sort() : [],
+                // 実効的な既定値 = 関数パラメータの既定値 ∪ cvaのdefaultVariants(cva側が優先)。
+                // marker のように defaultVariants を持たずパラメータ既定値で済ませる定形に対応する
+                defaults: definition
+                  ? Object.fromEntries(
+                      Object.entries(
+                        { ...paramDefaults(fnNode, exposedPropNames(primary.cvaOptions)), ...definition.defaults },
+                      ).sort(([a], [b]) => a.localeCompare(b)),
+                    )
+                  : {},
+              },
+              guardInfo,
+            )
+          : {
+              propNames: definition ? Object.keys(definition.variants).sort() : [],
+              defaults: definition
+                ? Object.fromEntries(
+                    Object.entries(
+                      { ...paramDefaults(fnNode, exposedPropNames(primary?.cvaOptions ?? [])), ...definition.defaults },
+                    ).sort(([a], [b]) => a.localeCompare(b)),
+                  )
+                : {},
+            }
       const exportName = discovered.name
       exports[exportName] = {
         root_slot: slots.rootSlot,

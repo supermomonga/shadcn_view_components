@@ -38,13 +38,18 @@
     "ScrollBar": {
       "classes_slot": "scroll-area-scrollbar",
       "combinations": {
-        "": "flex touch-none p-px transition-colors select-none h-full w-2.5 border-l border-l-transparent"
+        "orientation=horizontal": "flex touch-none p-px transition-colors select-none h-2.5 flex-col border-t border-t-transparent",
+        "orientation=vertical": "flex touch-none p-px transition-colors select-none h-full w-2.5 border-l border-l-transparent"
       },
       "component_class": "Shadcn::ScrollArea::Scrollbar",
       "cva": {
         "compound": [],
-        "defaults": {},
-        "prop_names": []
+        "defaults": {
+          "orientation": "vertical"
+        },
+        "prop_names": [
+          "orientation"
+        ]
       },
       "passthrough_class": true,
       "root_slot": "scroll-area-scrollbar",

@@ -35,7 +35,21 @@ module Shadcn
     end
 
     class Content < BaseComponent
-      # 契約スロット構成: 名前無しラッパー(portal相当) > select-content
+      # 契約スロット構成: 名前無しラッパー(portal相当) > select-content。
+      # position は enum ガード(position === "popper" && ...)の露出prop
+      sig do
+        params(position: T.any(Symbol, String), args: T::Hash[Symbol, T.untyped]).void.checked(:never)
+      end
+      def initialize(position: ShadcnViewComponents::Contracts::Select::Content::DEFAULTS.fetch(:position), **args)
+        @position = T.let(normalize_option(:position, position), Symbol)
+        super(**args)
+      end
+
+      sig { override.returns(T::Hash[Symbol, VariantOption]) }
+      def variant_options
+        { position: @position }
+      end
+
       sig { override.returns(String) }
       def call
         content_tag(:div, class: wrapper_class) do
@@ -45,7 +59,7 @@ module Shadcn
 
       sig { returns(T::Hash[Symbol, T.untyped]) }
       def content_attributes
-        attributes = @html_args.merge(class: self.class.classes(extra: @user_class))
+        attributes = @html_args.merge(class: self.class.classes(extra: @user_class, **variant_options))
         attributes[:role] = "listbox"
         attributes[:popover] = "auto"
         data = T.cast(attributes[:data], T.nilable(T::Hash[Symbol, T.untyped])) || {}

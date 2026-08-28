@@ -23,7 +23,16 @@ export interface CnCall {
   cvaRef: string | null
   /** cva(...) 呼び出し時のオプション(呼び出し側での値の与え方) */
   cvaOptions: CvaOption[]
+  /** `side === "right" && "クラス"` 形式の列挙可能なガード(露出prop化される) */
+  guards: GuardEntry[]
   hasUserClass: boolean
+}
+
+/** cn 内の enum ガード1件(`<identifier> === "value" && "classes"`) */
+export interface GuardEntry {
+  identifier: string
+  value: string
+  classes: string
 }
 
 /**
@@ -50,7 +59,11 @@ export function analyzeCn(
   file: string,
 ): CnAnalysis {
   const calls: CnCall[] = []
+  // 対象関数自身のパラメータ既定値を最優先にする(同名パラメータがファイル内の
+  // 別関数にある場合の誤解決防止 — carousel の orientation 等のコンテキスト値は
+  // ファイルスコープのフォールバックで補う)
   const fileDefaults = collectFileScopedDefaults(ast)
+  collectParamDefaults(fnNode.params, fileDefaults, { override: true })
 
   traverse(ast, {
     JSXAttribute: (path) => {
@@ -65,7 +78,7 @@ export function analyzeCn(
       const belongsToFunction = path.getFunctionParent()?.node === fnNode
       if (!belongsToFunction) return
 
-      const call: CnCall = { slot: slotOf(path), statics: [], cvaRef: null, cvaOptions: [], hasUserClass: false }
+      const call: CnCall = { slot: slotOf(path), statics: [], cvaRef: null, cvaOptions: [], guards: [], hasUserClass: false }
       for (const argument of expression.arguments) {
         classifyCnArgument(argument, call, cvaDefinitions, item, file, fileDefaults, expression.loc?.start)
       }
@@ -82,8 +95,8 @@ export function analyzeCn(
  * パラメータに現れないため、ルートコンポーネントの既定値(`orientation = "horizontal"`)
  * をファイルスコープのフォールバックとして使う
  */
-function collectFileScopedDefaults(ast: File): Map<string, string> {
-  const defaults = new Map<string, string>()
+function collectFileScopedDefaults(ast: File): FileDefaults {
+  const defaults: FileDefaults = new Map()
   traverse(ast, {
     FunctionDeclaration: (path) => collectParamDefaults(path.node.params, defaults),
     FunctionExpression: (path) => collectParamDefaults(path.node.params, defaults),
@@ -93,7 +106,10 @@ function collectFileScopedDefaults(ast: File): Map<string, string> {
   return defaults
 }
 
-function collectParamDefaults(params: readonly Node[], defaults: Map<string, string>): void {
+/** パラメータ既定値の表: 文字列(enum ガード/ternary解決用)と真偽値(bareガード用)を保持 */
+export type FileDefaults = Map<string, string | boolean>
+
+function collectParamDefaults(params: readonly Node[], defaults: FileDefaults, options: { override?: boolean } = {}): void {
   for (const param of params) {
     if (param.type !== "ObjectPattern") continue
     for (const property of param.properties) {
@@ -102,7 +118,11 @@ function collectParamDefaults(params: readonly Node[], defaults: Map<string, str
       const name = key.type === "Identifier" ? key.name : key.type === "StringLiteral" ? key.value : null
       if (name === null) continue
       const value = property.value.type === "AssignmentPattern" ? property.value.right : property.value
-      if (value.type === "StringLiteral" && !defaults.has(name)) defaults.set(name, value.value)
+      if (value.type === "StringLiteral" && (options.override || !defaults.has(name))) {
+        defaults.set(name, value.value)
+      } else if (value.type === "BooleanLiteral" && (options.override || !defaults.has(name))) {
+        defaults.set(name, value.value)
+      }
     }
   }
 }
@@ -128,7 +148,7 @@ function classifyCnArgument(
   cvaDefinitions: Map<string, CvaDefinition>,
   item: string,
   file: string,
-  fileDefaults: Map<string, string>,
+  fileDefaults: FileDefaults,
   loc?: { line: number, column: number },
 ): void {
   if (argument === null || argument === undefined) return
@@ -157,15 +177,35 @@ function classifyCnArgument(
       break
     }
     case "LogicalExpression": {
-      // `side === "right" && "inset-y-0 ..."` のような条件付き静的クラス。
-      // 識別子の既定値で評価し、成立するときのみ右辺を採用する(既定side等)。
-      // 解決できない形式は従来どおり右辺のみを静的として拾う
+      // `side === "right" && "inset-y-0 ..."` の列挙可能なガード。
+      // 既定枝だけを静的に崩すのではなく、識別子を露出propとして全枝を契約化する
+      // (sheet の side 4値等。pagination の cva conditional と同じ思想)
+      const guard = enumGuard(argument)
+      if (guard !== null) {
+        call.guards.push(guard)
+        return
+      }
+      // `!==` 比較のガードは値域が静的に確定しないため既定値で評価する
       const conditional = staticConditional(argument, fileDefaults)
       if (conditional !== null) {
         if (conditional !== "") call.statics.push(conditional)
         return
       }
-      // cn(cond && "x") のような条件は右辺のみを再帰的に分類する(静的側のみ採れる)
+      // cn(showOnHover && "x") の bare 識別子条件は boolean 既定値で評価する。
+      // 既定値が不明なまま右辺を採用すると偽陽性になるためエスカレートする
+      if (argument.left.type === "Identifier" && argument.left.name !== "className") {
+        const truthy = evalStaticTest(argument.left, fileDefaults)
+        if (truthy === null) {
+          throw new ParseError(
+            `bare identifier guard '${argument.left.name}' has no static default ` +
+              "(add a parameter default or restructure upstream)",
+            item, file, loc,
+          )
+        }
+        if (truthy) call.statics.push(...staticStrings(argument.right, item, file, loc))
+        return
+      }
+      // cn(cond && "x") のそれ以外の条件は右辺のみを再帰的に分類する(静的側のみ採れる)
       classifyCnArgument(argument.right, call, cvaDefinitions, item, file, fileDefaults, loc)
       return
     }
@@ -213,7 +253,11 @@ function classifyCnArgument(
  * `<id> === "lit"` / `<id> !== "lit"` とそれらの && / || 結合を扱う。
  * 解決できない(既定値が無い等)場合は null
  */
-function evalStaticTest(test: Node, fileDefaults: Map<string, string>): boolean | null {
+function evalStaticTest(test: Node, fileDefaults: FileDefaults): boolean | null {
+  if (test.type === "Identifier") {
+    const defaultValue = fileDefaults.get(test.name)
+    return typeof defaultValue === "boolean" ? defaultValue : null
+  }
   if (test.type === "LogicalExpression") {
     const left = evalStaticTest(test.left, fileDefaults)
     const right = evalStaticTest(test.right, fileDefaults)
@@ -233,7 +277,7 @@ function evalStaticTest(test: Node, fileDefaults: Map<string, string>): boolean 
   }
   if (identifier === null || literal === null) return null
   const defaultValue = fileDefaults.get(identifier)
-  if (defaultValue === undefined) return null
+  if (typeof defaultValue !== "string") return null
   return test.operator === "===" ? defaultValue === literal : defaultValue !== literal
 }
 
@@ -243,7 +287,7 @@ function evalStaticTest(test: Node, fileDefaults: Map<string, string>): boolean 
  */
 function resolveConditionalStatic(
   node: Extract<Node, { type: "ConditionalExpression" }>,
-  fileDefaults: Map<string, string>,
+  fileDefaults: FileDefaults,
 ): string | null {
   const matches = evalStaticTest(node.test, fileDefaults)
   if (matches === null) return null
@@ -251,15 +295,50 @@ function resolveConditionalStatic(
   return chosen.type === "StringLiteral" ? chosen.value : null
 }
 
+/** cn 引数の静的文字列を取り出す(bare ガードの右辺用。文字列でなければ ParseError) */
+function staticStrings(
+  node: Node,
+  item: string,
+  file: string,
+  loc?: { line: number, column: number },
+): string[] {
+  if (node.type === "StringLiteral") return [node.value]
+  throw new ParseError(`unsupported guard value: ${String(node.type)}`, item, file, loc)
+}
+
 /**
- * `<identifier> === "literal" && "class"` を、識別子のファイルスコープ既定値で評価する。
+ * `<identifier> === "literal" && "classes"` 形式のガードを1件取り出す。
+ * 値域が列挙可能な === ガードのみ。それ以外(&& 以外の演算子や右辺が文字列でない
+ * 場合)は null
+ */
+function enumGuard(node: Extract<Node, { type: "LogicalExpression" }>): GuardEntry | null {
+  if (node.operator !== "&&") return null
+  if (node.left.type !== "BinaryExpression" || node.left.operator !== "===") return null
+  const { left, right } = node.left
+  let identifier: string | null = null
+  let value: string | null = null
+  if (left.type === "Identifier" && right.type === "StringLiteral") {
+    identifier = left.name
+    value = right.value
+  } else if (left.type === "StringLiteral" && right.type === "Identifier") {
+    identifier = right.name
+    value = left.value
+  }
+  if (identifier === null || value === null) return null
+  if (node.right.type !== "StringLiteral") return null
+  return { identifier, value, classes: node.right.value }
+}
+
+/**
+ * `!==` ガード(`<identifier> !== "literal" && "class"`)を識別子の既定値で評価する。
  * 成立する場合はそのクラス、不成立の場合は ""(採用しない)、解決不能なら null
  */
 function staticConditional(
   node: Extract<Node, { type: "LogicalExpression" }>,
-  fileDefaults: Map<string, string>,
+  fileDefaults: FileDefaults,
 ): string | null {
   if (node.operator !== "&&" || node.right.type !== "StringLiteral") return null
+  if (node.left.type !== "BinaryExpression" || node.left.operator !== "!==") return null
   const matches = evalStaticTest(node.left, fileDefaults)
   if (matches === null) return null
   return matches ? node.right.value : ""

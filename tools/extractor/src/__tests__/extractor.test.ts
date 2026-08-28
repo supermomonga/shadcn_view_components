@@ -194,6 +194,65 @@ describe("parse: cn", () => {
     ])
   })
 
+  it("exposes enum guards (side === \"right\" && \"...\") as contract props with all branches", () => {
+    const code = `
+      function SheetContent({ className, children, side = "right", showCloseButton = true, ...props }) {
+        return (
+          <div
+            data-slot="sheet-content"
+            className={cn(
+              "fixed z-50 flex flex-col",
+              side === "right" && "inset-y-0 right-0 w-3/4",
+              side === "left" && "inset-y-0 left-0 w-3/4",
+              side === "top" && "inset-x-0 top-0 h-auto",
+              className
+            )}
+            {...props}
+          />
+        )
+      }
+      export { SheetContent }
+    `
+    const ast = parseTsx(code)
+    const definitions = extractCvaDefinitions(ast, "sheet", "ui/sheet.tsx")
+    const exports = discoverExports(ast, "sheet", "ui/sheet.tsx")
+    const analysis = analyzeCn(ast, exports[0]!.functionNode!, definitions, "sheet", "ui/sheet.tsx")
+    const call = analysis.calls[0]!
+    expect(call.guards.map((guard) => [guard.identifier, guard.value])).toEqual([
+      ["side", "right"],
+      ["side", "left"],
+      ["side", "top"],
+    ])
+
+    const combinations = resolveConstrainedCombinations(null, ["fixed z-50 flex flex-col"], [], call.guards)
+    expect(Object.keys(combinations).sort()).toEqual(["side=left", "side=right", "side=top"])
+    expect(combinations["side=right"]).toContain("right-0")
+    expect(combinations["side=left"]).toContain("left-0")
+    expect(combinations["side=top"]).toContain("top-0")
+    expect(combinations["side=top"]).not.toContain("right-0")
+  })
+
+  it("evaluates bare identifier guards (showOnHover && \"...\") against boolean defaults", () => {
+    const code = `
+      function MenuAction({ className, showOnHover = false, ...props }) {
+        return (
+          <div
+            data-slot="menu-action"
+            className={cn("absolute top-1 right-1", showOnHover && "md:opacity-0", className)}
+            {...props}
+          />
+        )
+      }
+      export { MenuAction }
+    `
+    const ast = parseTsx(code)
+    const definitions = extractCvaDefinitions(ast, "menu", "ui/menu.tsx")
+    const exports = discoverExports(ast, "menu", "ui/menu.tsx")
+    const analysis = analyzeCn(ast, exports[0]!.functionNode!, definitions, "menu", "ui/menu.tsx")
+    // 既定 false のため偽陽性クラスは採られない
+    expect(analysis.calls[0]!.statics).toEqual(["absolute top-1 right-1"])
+  })
+
   it("resolves orientation-style conditional statics using the file-scoped param default", () => {
     const code = `
       function Carousel({ orientation = "horizontal", className, ...props }) {

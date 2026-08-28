@@ -4,7 +4,7 @@ import { twMerge } from "tailwind-merge"
 
 import type { CvaDefinition } from "../contract.ts"
 import { combinationKey, snakeCase } from "../normalize.ts"
-import type { CvaOption } from "../parse/cn.ts"
+import type { CvaOption, GuardEntry } from "../parse/cn.ts"
 
 /** 組み合わせ爆発のガード(03-extraction-codegen §8)。超えたら例外で打ち切り、個別対応へエスカレーション。 */
 export const MAX_COMBINATIONS = 1024
@@ -60,16 +60,50 @@ interface ExposedProp {
   cvaArgs: Array<Record<string, string>>
 }
 
+/** 露出する契約側prop(列挙値域と、cva呼び出しへの引数写像を持つ) */
+interface ExposedProp {
+  name: string
+  values: string[]
+  cvaArgs: Array<Record<string, string>>
+}
+
+/** enum ガード(`side === "right" && "..."`)由来の露出軸(値ごとの追加クラスを持つ) */
+interface GuardAxis {
+  name: string
+  values: string[]
+  classes: string[]
+}
+
+function guardAxes(guards: GuardEntry[]): GuardAxis[] {
+  const byIdentifier = new Map<string, Map<string, string>>()
+  for (const guard of guards) {
+    let values = byIdentifier.get(guard.identifier)
+    if (!values) {
+      values = new Map()
+      byIdentifier.set(guard.identifier, values)
+    }
+    values.set(guard.value, guard.classes)
+  }
+  return [...byIdentifier.entries()].map(([identifier, values]) => ({
+    name: snakeCase(identifier),
+    values: [...values.keys()].sort(),
+    classes: [...values.keys()].sort().map((value) => values.get(value) ?? ""),
+  }))
+}
+
 /**
- * cn 内の `cva({...})` が呼び出し側で値を制約している構成(pagination 等)。
+ * cn 内の `cva({...})` が呼び出し側で値を制約している構成(pagination 等)と、
+ * `side === "right" && "..."` 形式の enum ガード(sheet 等)を契約化する。
  * passthrough prop は全値域、条件付きprop(`isActive ? "outline" : "ghost"`)は
  * 条件識別子を true/false の2値として列挙し、fixed prop は全組み合わせに定数適用する。
+ * ガード軸の既定値はパイプライン側で values に補完済みである前提。
  * 露出prop名は snake_case で契約化する(Ruby kwargs との対応のため)
  */
 export function resolveConstrainedCombinations(
-  definition: CvaDefinition,
+  definition: CvaDefinition | null,
   statics: string[],
   options: CvaOption[],
+  guards: GuardEntry[] = [],
 ): Record<string, string> {
   const fixedArgs: Record<string, string> = {}
   const exposed: ExposedProp[] = []
@@ -79,9 +113,9 @@ export function resolveConstrainedCombinations(
         fixedArgs[option.prop] = option.value
         break
       case "passthrough": {
-        const values = Object.keys(definition.variants[option.prop] ?? {}).sort()
+        const values = Object.keys(definition?.variants[option.prop] ?? {}).sort()
         if (values.length === 0) {
-          throw new Error(`passthrough cva prop '${option.prop}' does not exist in '${definition.identifier}'`)
+          throw new Error(`passthrough cva prop '${option.prop}' does not exist in '${definition?.identifier ?? "(none)"}'`)
         }
         exposed.push({
           name: snakeCase(option.prop),
@@ -100,12 +134,15 @@ export function resolveConstrainedCombinations(
     }
   }
 
-  const resolver = cva(definition.base, {
-    variants: definition.variants,
-    compoundVariants: definition.compound.map((entry) => ({ ...entry.when, class: entry.class })),
-    defaultVariants: definition.defaults,
-  })
+  const resolver = definition
+    ? cva(definition.base, {
+        variants: definition.variants,
+        compoundVariants: definition.compound.map((entry) => ({ ...entry.when, class: entry.class })),
+        defaultVariants: definition.defaults,
+      })
+    : null
 
+  const axes = guardAxes(guards)
   let combinations: Array<Record<string, string>> = [{}] // 契約側の組合せ(露出propの値)
   for (const prop of exposed) {
     combinations = combinations.flatMap((current) =>
@@ -115,18 +152,30 @@ export function resolveConstrainedCombinations(
       throw new Error(`variant combination explosion: ${combinations.length} > ${MAX_COMBINATIONS}`)
     }
   }
+  for (const axis of axes) {
+    combinations = combinations.flatMap((current) =>
+      axis.values.map((value) => ({ ...current, [axis.name]: value }))
+    )
+    if (combinations.length > MAX_COMBINATIONS) {
+      throw new Error(`variant combination explosion: ${combinations.length} > ${MAX_COMBINATIONS}`)
+    }
+  }
 
   const resolved: Record<string, string> = {}
   for (const combination of combinations) {
-    // 契約側の組合せ値を cva 呼び出し引数へ写像して解決する
+    // 契約側の組合せ値を cva 呼び出し引数へ写像して解決する。
+    // ガード由来の追加クラスは upstream の引数順どおり静的クラスの後に連結する
     const args: Record<string, string> = { ...fixedArgs }
     for (const prop of exposed) {
       const valueIndex = prop.values.indexOf(combination[prop.name]!)
       if (valueIndex >= 0) Object.assign(args, prop.cvaArgs[valueIndex]!)
     }
+    const guardClasses = axes
+      .map((axis) => axis.classes[axis.values.indexOf(combination[axis.name]!)] ?? "")
+      .filter((classes) => classes !== "")
     const key = combinationKey(combination)
     if (key in resolved) continue
-    resolved[key] = twMerge(clsx(resolver(args), statics.join(" ")))
+    resolved[key] = twMerge(clsx(resolver ? resolver(args) : "", statics.join(" "), guardClasses.join(" ")))
   }
   return resolved
 }

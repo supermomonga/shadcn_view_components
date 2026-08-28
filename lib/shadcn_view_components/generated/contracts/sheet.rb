@@ -64,13 +64,16 @@ module ShadcnViewComponents
       # 契約クラスが属する要素の data-slot(ルートがラッパー構造の場合)
       CLASSES_SLOT = T.let("sheet-content", String)
 
-      DEFAULTS = T.let({}.freeze, T::Hash[Symbol, Symbol])
+      DEFAULTS = T.let({ side: :right }.freeze, T::Hash[Symbol, Symbol])
 
-      VARIANTS = T.let({}.freeze, T::Hash[Symbol, T::Array[Symbol]])
+      VARIANTS = T.let({ side: [:bottom, :left, :right, :top] }.freeze, T::Hash[Symbol, T::Array[Symbol]])
 
       # キーはソート済みpropペア。値は事前解決済みの最終クラス文字列
       COMBINATIONS = T.let({
-        {} => "fixed z-50 flex flex-col gap-4 bg-background shadow-lg transition ease-in-out data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:animate-in data-[state=open]:duration-500 inset-y-0 right-0 h-full w-3/4 border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:max-w-sm"
+        { side: :bottom } => "fixed z-50 flex flex-col gap-4 bg-background shadow-lg transition ease-in-out data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:animate-in data-[state=open]:duration-500 inset-x-0 bottom-0 h-auto border-t data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
+        { side: :left } => "fixed z-50 flex flex-col gap-4 bg-background shadow-lg transition ease-in-out data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:animate-in data-[state=open]:duration-500 inset-y-0 left-0 h-full w-3/4 border-r data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left sm:max-w-sm",
+        { side: :right } => "fixed z-50 flex flex-col gap-4 bg-background shadow-lg transition ease-in-out data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:animate-in data-[state=open]:duration-500 inset-y-0 right-0 h-full w-3/4 border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:max-w-sm",
+        { side: :top } => "fixed z-50 flex flex-col gap-4 bg-background shadow-lg transition ease-in-out data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:animate-in data-[state=open]:duration-500 inset-x-0 top-0 h-auto border-b data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top"
       }.freeze, T::Hash[T::Hash[Symbol, Symbol], String])
 
       SLOTS = T.let([

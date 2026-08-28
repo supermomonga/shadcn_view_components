@@ -33,13 +33,14 @@ module ShadcnViewComponents
       module Scrollbar
       ROOT_SLOT = T.let("scroll-area-scrollbar", String)
 
-      DEFAULTS = T.let({}.freeze, T::Hash[Symbol, Symbol])
+      DEFAULTS = T.let({ orientation: :vertical }.freeze, T::Hash[Symbol, Symbol])
 
-      VARIANTS = T.let({}.freeze, T::Hash[Symbol, T::Array[Symbol]])
+      VARIANTS = T.let({ orientation: [:horizontal, :vertical] }.freeze, T::Hash[Symbol, T::Array[Symbol]])
 
       # キーはソート済みpropペア。値は事前解決済みの最終クラス文字列
       COMBINATIONS = T.let({
-        {} => "flex touch-none p-px transition-colors select-none h-full w-2.5 border-l border-l-transparent"
+        { orientation: :horizontal } => "flex touch-none p-px transition-colors select-none h-2.5 flex-col border-t border-t-transparent",
+        { orientation: :vertical } => "flex touch-none p-px transition-colors select-none h-full w-2.5 border-l border-l-transparent"
       }.freeze, T::Hash[T::Hash[Symbol, Symbol], String])
 
       SLOTS = T.let([
