@@ -13,6 +13,8 @@ module Shadcn
     end
 
     class Trigger < BaseComponent
+      include Shadcn::ButtonStyled
+
       sig { override.returns(String) }
       def default_tag
         "button"
@@ -20,7 +22,7 @@ module Shadcn
 
       sig { override.returns(T::Hash[Symbol, T.untyped]) }
       def html_attributes
-        attributes = super
+        attributes = apply_button_styling(super)
         attributes[:type] = "button" unless attributes.key?(:type)
         merge_nested(attributes, :aria, { haspopup: "dialog", expanded: "false" })
         merge_nested(attributes, :data, { action: "#{CONTROLLER}#show" })

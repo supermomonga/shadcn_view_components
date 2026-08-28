@@ -17,9 +17,11 @@ module Shadcn
     end
 
     class Trigger < BaseComponent
+      include Shadcn::ButtonStyled
+
       sig { override.returns(T::Hash[Symbol, T.untyped]) }
       def html_attributes
-        attributes = super
+        attributes = apply_button_styling(super)
         merge_nested(attributes, :data, {
                        action: "mouseenter->#{CONTROLLER}#show mouseleave->#{CONTROLLER}#hide focus->#{CONTROLLER}#show blur->#{CONTROLLER}#hide"
                      })
