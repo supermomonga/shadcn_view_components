@@ -283,3 +283,28 @@ button-group:
 direction:
   DirectionProvider:
     attributes: [dir]
+sidebar:
+  Sidebar:
+    attributes: [data-state]
+  SidebarProvider:
+    attributes: [data-controller, data-state]
+  SidebarTrigger:
+    attributes: [type, aria-expanded, aria-label, data-action]
+  SidebarRail:
+    attributes: [type, tabindex, aria-label, data-action]
+  SidebarInput:
+    class_mode: contains
+    attributes: [type, data-action, aria-invalid]
+  SidebarSeparator:
+    class_mode: contains
+    attributes: [role, aria-orientation, data-slot, data-sidebar, data-orientation]
+  SidebarMenuButton:
+    attributes: [type, data-active, aria-haspopup, aria-expanded, data-action]
+  SidebarMenuSkeleton:
+    # 内側に Skeleton(別アイテム)を描くため子スロットが増える
+    slots_mode: superset
+    attributes: [data-sidebar]
+  SidebarMenuAction:
+    attributes: [type, aria-label, data-action]
+  SidebarMenuSubButton:
+    attributes: [data-active, aria-haspopup, aria-expanded]

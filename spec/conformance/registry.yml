@@ -381,8 +381,30 @@ sheet:
     - { component: Shadcn::Sheet::Title, export: SheetTitle }
     - { component: Shadcn::Sheet::Description, export: SheetDescription }
 sidebar:
-  pending: true
-
+  exports:
+    - { component: Shadcn::Sidebar, export: Sidebar }
+    - { component: Shadcn::Sidebar::Provider, export: SidebarProvider }
+    - { component: Shadcn::Sidebar::Trigger, export: SidebarTrigger }
+    - { component: Shadcn::Sidebar::Rail, export: SidebarRail }
+    - { component: Shadcn::Sidebar::Inset, export: SidebarInset }
+    - { component: Shadcn::Sidebar::Input, export: SidebarInput }
+    - { component: Shadcn::Sidebar::Header, export: SidebarHeader }
+    - { component: Shadcn::Sidebar::Footer, export: SidebarFooter }
+    - { component: Shadcn::Sidebar::Separator, export: SidebarSeparator }
+    - { component: Shadcn::Sidebar::Content, export: SidebarContent }
+    - { component: Shadcn::Sidebar::Group, export: SidebarGroup }
+    - { component: Shadcn::Sidebar::GroupLabel, export: SidebarGroupLabel }
+    - { component: Shadcn::Sidebar::GroupAction, export: SidebarGroupAction }
+    - { component: Shadcn::Sidebar::GroupContent, export: SidebarGroupContent }
+    - { component: Shadcn::Sidebar::Menu, export: SidebarMenu }
+    - { component: Shadcn::Sidebar::MenuItem, export: SidebarMenuItem }
+    - { component: Shadcn::Sidebar::MenuButton, export: SidebarMenuButton }
+    - { component: Shadcn::Sidebar::MenuAction, export: SidebarMenuAction }
+    - { component: Shadcn::Sidebar::MenuBadge, export: SidebarMenuBadge }
+    - { component: Shadcn::Sidebar::MenuSkeleton, export: SidebarMenuSkeleton }
+    - { component: Shadcn::Sidebar::MenuSub, export: SidebarMenuSub }
+    - { component: Shadcn::Sidebar::MenuSubItem, export: SidebarMenuSubItem }
+    - { component: Shadcn::Sidebar::MenuSubButton, export: SidebarMenuSubButton }
 skeleton:
   exports:
     - { component: Shadcn::Skeleton, export: Skeleton }

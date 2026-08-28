@@ -1,0 +1,678 @@
+{
+  "css": "",
+  "css_vars": {
+    "dark": {
+      "sidebar-accent": "240 3.7% 15.9%",
+      "sidebar-accent-foreground": "240 4.8% 95.9%",
+      "sidebar-background": "240 5.9% 10%",
+      "sidebar-border": "240 3.7% 15.9%",
+      "sidebar-foreground": "240 4.8% 95.9%",
+      "sidebar-primary": "224.3 76.3% 48%",
+      "sidebar-primary-foreground": "0 0% 100%",
+      "sidebar-ring": "217.2 91.2% 59.8%"
+    },
+    "light": {
+      "sidebar-accent": "240 4.8% 95.9%",
+      "sidebar-accent-foreground": "240 5.9% 10%",
+      "sidebar-background": "0 0% 98%",
+      "sidebar-border": "220 13% 91%",
+      "sidebar-foreground": "240 5.3% 26.1%",
+      "sidebar-primary": "240 5.9% 10%",
+      "sidebar-primary-foreground": "0 0% 98%",
+      "sidebar-ring": "217.2 91.2% 59.8%"
+    }
+  },
+  "exports": {
+    "Sidebar": {
+      "classes_slot": "sidebar",
+      "combinations": {
+        "": "flex h-full w-(--sidebar-width) flex-col bg-sidebar text-sidebar-foreground"
+      },
+      "component_class": "Shadcn::Sidebar",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "sidebar",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "sidebar",
+          "static_attributes": {},
+          "tag": "div"
+        },
+        {
+          "dynamic_attributes": [
+            "side",
+            "style"
+          ],
+          "name": "sidebar",
+          "static_attributes": {
+            "class": "w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden",
+            "data-mobile": "true",
+            "data-sidebar": "sidebar"
+          },
+          "tag": "SheetContent"
+        },
+        {
+          "dynamic_attributes": [
+            "data-collapsible",
+            "data-side",
+            "data-state",
+            "data-variant"
+          ],
+          "name": "sidebar",
+          "static_attributes": {
+            "class": "group peer hidden text-sidebar-foreground md:block"
+          },
+          "tag": "div"
+        },
+        {
+          "dynamic_attributes": [],
+          "name": "sidebar-gap",
+          "static_attributes": {
+            "class": "relative w-(--sidebar-width) bg-transparent transition-[width] duration-200 ease-linear group-data-[collapsible=offcanvas]:w-0 group-data-[side=right]:rotate-180 group-data-[collapsible=icon]:w-(--sidebar-width-icon)"
+          },
+          "tag": "div"
+        },
+        {
+          "dynamic_attributes": [],
+          "name": "sidebar-container",
+          "static_attributes": {
+            "class": "fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear md:flex left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)] group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l"
+          },
+          "tag": "div"
+        },
+        {
+          "dynamic_attributes": [],
+          "name": "sidebar-inner",
+          "static_attributes": {
+            "class": "flex h-full w-full flex-col bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow-sm",
+            "data-sidebar": "sidebar"
+          },
+          "tag": "div"
+        }
+      ]
+    },
+    "SidebarContent": {
+      "classes_slot": "sidebar-content",
+      "combinations": {
+        "": "flex min-h-0 flex-1 flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden"
+      },
+      "component_class": "Shadcn::Sidebar::Content",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "sidebar-content",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "sidebar-content",
+          "static_attributes": {
+            "data-sidebar": "content"
+          },
+          "tag": "div"
+        }
+      ]
+    },
+    "SidebarFooter": {
+      "classes_slot": "sidebar-footer",
+      "combinations": {
+        "": "flex flex-col gap-2 p-2"
+      },
+      "component_class": "Shadcn::Sidebar::Footer",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "sidebar-footer",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "sidebar-footer",
+          "static_attributes": {
+            "data-sidebar": "footer"
+          },
+          "tag": "div"
+        }
+      ]
+    },
+    "SidebarGroup": {
+      "classes_slot": "sidebar-group",
+      "combinations": {
+        "": "relative flex w-full min-w-0 flex-col p-2"
+      },
+      "component_class": "Shadcn::Sidebar::Group",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "sidebar-group",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "sidebar-group",
+          "static_attributes": {
+            "data-sidebar": "group"
+          },
+          "tag": "div"
+        }
+      ]
+    },
+    "SidebarGroupAction": {
+      "classes_slot": "sidebar-group-action",
+      "combinations": {
+        "": "absolute top-3.5 right-3 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-sidebar-foreground ring-sidebar-ring outline-hidden transition-transform hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0 after:absolute after:-inset-2 md:after:hidden group-data-[collapsible=icon]:hidden"
+      },
+      "component_class": "Shadcn::Sidebar::GroupAction",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "sidebar-group-action",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "sidebar-group-action",
+          "static_attributes": {
+            "data-sidebar": "group-action"
+          },
+          "tag": "a"
+        }
+      ]
+    },
+    "SidebarGroupContent": {
+      "classes_slot": "sidebar-group-content",
+      "combinations": {
+        "": "w-full text-sm"
+      },
+      "component_class": "Shadcn::Sidebar::GroupContent",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "sidebar-group-content",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "sidebar-group-content",
+          "static_attributes": {
+            "data-sidebar": "group-content"
+          },
+          "tag": "div"
+        }
+      ]
+    },
+    "SidebarGroupLabel": {
+      "classes_slot": "sidebar-group-label",
+      "combinations": {
+        "": "flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium text-sidebar-foreground/70 ring-sidebar-ring outline-hidden transition-[margin,opacity] duration-200 ease-linear focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0 group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0"
+      },
+      "component_class": "Shadcn::Sidebar::GroupLabel",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "sidebar-group-label",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "sidebar-group-label",
+          "static_attributes": {
+            "data-sidebar": "group-label"
+          },
+          "tag": "a"
+        }
+      ]
+    },
+    "SidebarHeader": {
+      "classes_slot": "sidebar-header",
+      "combinations": {
+        "": "flex flex-col gap-2 p-2"
+      },
+      "component_class": "Shadcn::Sidebar::Header",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "sidebar-header",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "sidebar-header",
+          "static_attributes": {
+            "data-sidebar": "header"
+          },
+          "tag": "div"
+        }
+      ]
+    },
+    "SidebarInput": {
+      "classes_slot": "sidebar-input",
+      "combinations": {
+        "": "h-8 w-full bg-background shadow-none"
+      },
+      "component_class": "Shadcn::Sidebar::Input",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "sidebar-input",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "sidebar-input",
+          "static_attributes": {
+            "data-sidebar": "input"
+          },
+          "tag": "Input"
+        }
+      ]
+    },
+    "SidebarInset": {
+      "classes_slot": "sidebar-inset",
+      "combinations": {
+        "": "relative flex w-full flex-1 flex-col bg-background md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2"
+      },
+      "component_class": "Shadcn::Sidebar::Inset",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "sidebar-inset",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "sidebar-inset",
+          "static_attributes": {},
+          "tag": "main"
+        }
+      ]
+    },
+    "SidebarMenu": {
+      "classes_slot": "sidebar-menu",
+      "combinations": {
+        "": "flex w-full min-w-0 flex-col gap-1"
+      },
+      "component_class": "Shadcn::Sidebar::Menu",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "sidebar-menu",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "sidebar-menu",
+          "static_attributes": {
+            "data-sidebar": "menu"
+          },
+          "tag": "ul"
+        }
+      ]
+    },
+    "SidebarMenuAction": {
+      "classes_slot": "sidebar-menu-action",
+      "combinations": {
+        "": "absolute top-1.5 right-1 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-sidebar-foreground ring-sidebar-ring outline-hidden transition-transform peer-hover/menu-button:text-sidebar-accent-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0 after:absolute after:-inset-2 md:after:hidden peer-data-[size=sm]/menu-button:top-1 peer-data-[size=default]/menu-button:top-1.5 peer-data-[size=lg]/menu-button:top-2.5 group-data-[collapsible=icon]:hidden group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 peer-data-[active=true]/menu-button:text-sidebar-accent-foreground data-[state=open]:opacity-100 md:opacity-0"
+      },
+      "component_class": "Shadcn::Sidebar::MenuAction",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "sidebar-menu-action",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "sidebar-menu-action",
+          "static_attributes": {
+            "data-sidebar": "menu-action"
+          },
+          "tag": "a"
+        }
+      ]
+    },
+    "SidebarMenuBadge": {
+      "classes_slot": "sidebar-menu-badge",
+      "combinations": {
+        "": "pointer-events-none absolute right-1 flex h-5 min-w-5 items-center justify-center rounded-md px-1 text-xs font-medium text-sidebar-foreground tabular-nums select-none peer-hover/menu-button:text-sidebar-accent-foreground peer-data-[active=true]/menu-button:text-sidebar-accent-foreground peer-data-[size=sm]/menu-button:top-1 peer-data-[size=default]/menu-button:top-1.5 peer-data-[size=lg]/menu-button:top-2.5 group-data-[collapsible=icon]:hidden"
+      },
+      "component_class": "Shadcn::Sidebar::MenuBadge",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "sidebar-menu-badge",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "sidebar-menu-badge",
+          "static_attributes": {
+            "data-sidebar": "menu-badge"
+          },
+          "tag": "div"
+        }
+      ]
+    },
+    "SidebarMenuButton": {
+      "classes_slot": "sidebar-menu-button",
+      "combinations": {
+        "size=default&variant=default": "peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left ring-sidebar-ring outline-hidden transition-[width,height,padding] group-has-data-[sidebar=menu-action]/menu-item:pr-8 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground h-8 text-sm",
+        "size=default&variant=outline": "peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left ring-sidebar-ring outline-hidden transition-[width,height,padding] group-has-data-[sidebar=menu-action]/menu-item:pr-8 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 bg-background shadow-[0_0_0_1px_var(--sidebar-border)] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_var(--sidebar-accent)] h-8 text-sm",
+        "size=lg&variant=default": "peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left ring-sidebar-ring outline-hidden transition-[width,height,padding] group-has-data-[sidebar=menu-action]/menu-item:pr-8 group-data-[collapsible=icon]:size-8! focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground h-12 text-sm group-data-[collapsible=icon]:p-0!",
+        "size=lg&variant=outline": "peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left ring-sidebar-ring outline-hidden transition-[width,height,padding] group-has-data-[sidebar=menu-action]/menu-item:pr-8 group-data-[collapsible=icon]:size-8! focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 bg-background shadow-[0_0_0_1px_var(--sidebar-border)] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_var(--sidebar-accent)] h-12 text-sm group-data-[collapsible=icon]:p-0!",
+        "size=sm&variant=default": "peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left ring-sidebar-ring outline-hidden transition-[width,height,padding] group-has-data-[sidebar=menu-action]/menu-item:pr-8 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground h-7 text-xs",
+        "size=sm&variant=outline": "peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left ring-sidebar-ring outline-hidden transition-[width,height,padding] group-has-data-[sidebar=menu-action]/menu-item:pr-8 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 bg-background shadow-[0_0_0_1px_var(--sidebar-border)] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_var(--sidebar-accent)] h-7 text-xs"
+      },
+      "component_class": "Shadcn::Sidebar::MenuButton",
+      "cva": {
+        "compound": [],
+        "defaults": {
+          "size": "default",
+          "variant": "default"
+        },
+        "prop_names": [
+          "size",
+          "variant"
+        ]
+      },
+      "passthrough_class": true,
+      "root_slot": "",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "",
+          "static_attributes": {},
+          "tag": "Tooltip"
+        },
+        {
+          "dynamic_attributes": [
+            "data-active",
+            "data-size"
+          ],
+          "name": "sidebar-menu-button",
+          "static_attributes": {
+            "data-sidebar": "menu-button"
+          },
+          "tag": "a"
+        }
+      ]
+    },
+    "SidebarMenuItem": {
+      "classes_slot": "sidebar-menu-item",
+      "combinations": {
+        "": "group/menu-item relative"
+      },
+      "component_class": "Shadcn::Sidebar::MenuItem",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "sidebar-menu-item",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "sidebar-menu-item",
+          "static_attributes": {
+            "data-sidebar": "menu-item"
+          },
+          "tag": "li"
+        }
+      ]
+    },
+    "SidebarMenuSkeleton": {
+      "classes_slot": "sidebar-menu-skeleton",
+      "combinations": {
+        "": "flex h-8 items-center gap-2 rounded-md px-2"
+      },
+      "component_class": "Shadcn::Sidebar::MenuSkeleton",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "sidebar-menu-skeleton",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "sidebar-menu-skeleton",
+          "static_attributes": {
+            "data-sidebar": "menu-skeleton"
+          },
+          "tag": "div"
+        }
+      ]
+    },
+    "SidebarMenuSub": {
+      "classes_slot": "sidebar-menu-sub",
+      "combinations": {
+        "": "mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l border-sidebar-border px-2.5 py-0.5 group-data-[collapsible=icon]:hidden"
+      },
+      "component_class": "Shadcn::Sidebar::MenuSub",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "sidebar-menu-sub",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "sidebar-menu-sub",
+          "static_attributes": {
+            "data-sidebar": "menu-sub"
+          },
+          "tag": "ul"
+        }
+      ]
+    },
+    "SidebarMenuSubButton": {
+      "classes_slot": "sidebar-menu-sub-button",
+      "combinations": {
+        "": "flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 text-sidebar-foreground ring-sidebar-ring outline-hidden hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-sidebar-accent-foreground data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground group-data-[collapsible=icon]:hidden"
+      },
+      "component_class": "Shadcn::Sidebar::MenuSubButton",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "sidebar-menu-sub-button",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "data-active",
+            "data-size"
+          ],
+          "name": "sidebar-menu-sub-button",
+          "static_attributes": {
+            "data-sidebar": "menu-sub-button"
+          },
+          "tag": "a"
+        }
+      ]
+    },
+    "SidebarMenuSubItem": {
+      "classes_slot": "sidebar-menu-sub-item",
+      "combinations": {
+        "": "group/menu-sub-item relative"
+      },
+      "component_class": "Shadcn::Sidebar::MenuSubItem",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "sidebar-menu-sub-item",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "sidebar-menu-sub-item",
+          "static_attributes": {
+            "data-sidebar": "menu-sub-item"
+          },
+          "tag": "li"
+        }
+      ]
+    },
+    "SidebarProvider": {
+      "classes_slot": "sidebar-wrapper",
+      "combinations": {
+        "": "group/sidebar-wrapper flex min-h-svh w-full has-data-[variant=inset]:bg-sidebar"
+      },
+      "component_class": "Shadcn::Sidebar::Provider",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "value"
+          ],
+          "name": "",
+          "static_attributes": {},
+          "tag": "SidebarContext.Provider"
+        },
+        {
+          "dynamic_attributes": [
+            "style"
+          ],
+          "name": "sidebar-wrapper",
+          "static_attributes": {},
+          "tag": "div"
+        }
+      ]
+    },
+    "SidebarRail": {
+      "classes_slot": "sidebar-rail",
+      "combinations": {
+        "": "absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] hover:after:bg-sidebar-border sm:flex in-data-[side=left]:cursor-w-resize in-data-[side=right]:cursor-e-resize [[data-side=left][data-state=collapsed]_&]:cursor-e-resize [[data-side=right][data-state=collapsed]_&]:cursor-w-resize group-data-[collapsible=offcanvas]:translate-x-0 group-data-[collapsible=offcanvas]:after:left-full hover:group-data-[collapsible=offcanvas]:bg-sidebar [[data-side=left][data-collapsible=offcanvas]_&]:-right-2 [[data-side=right][data-collapsible=offcanvas]_&]:-left-2"
+      },
+      "component_class": "Shadcn::Sidebar::Rail",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "sidebar-rail",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "onClick",
+            "tabIndex"
+          ],
+          "name": "sidebar-rail",
+          "static_attributes": {
+            "aria-label": "Toggle Sidebar",
+            "data-sidebar": "rail",
+            "title": "Toggle Sidebar"
+          },
+          "tag": "button"
+        }
+      ]
+    },
+    "SidebarSeparator": {
+      "classes_slot": "sidebar-separator",
+      "combinations": {
+        "": "mx-2 w-auto bg-sidebar-border"
+      },
+      "component_class": "Shadcn::Sidebar::Separator",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "sidebar-separator",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "sidebar-separator",
+          "static_attributes": {
+            "data-sidebar": "separator"
+          },
+          "tag": "Separator"
+        }
+      ]
+    },
+    "SidebarTrigger": {
+      "classes_slot": "sidebar-trigger",
+      "combinations": {
+        "": "size-7"
+      },
+      "component_class": "Shadcn::Sidebar::Trigger",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "sidebar-trigger",
+      "slots": [
+        {
+          "dynamic_attributes": [
+            "onClick"
+          ],
+          "name": "sidebar-trigger",
+          "static_attributes": {
+            "data-sidebar": "trigger"
+          },
+          "tag": "Button"
+        }
+      ]
+    }
+  },
+  "name": "sidebar",
+  "registry_dependencies": [
+    "button",
+    "separator",
+    "sheet",
+    "tooltip",
+    "input",
+    "use-mobile",
+    "skeleton"
+  ],
+  "schema_version": 1,
+  "source": {
+    "item_sha256": "11608b8b89a3aadc9acd0b5fb2331f28ef4292038e872026bf4f46fe67623a6e"
+  }
+}

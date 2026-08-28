@@ -14,7 +14,7 @@ module Shadcn
       params(
         orientation: T.any(Symbol, String),
         args: T::Hash[Symbol, T.untyped]
-      ).void
+      ).void.checked(:never)
     end
     def initialize(orientation: "horizontal", **args)
       @orientation = T.let(orientation.to_s, String)

@@ -209,14 +209,17 @@ function classifyCnArgument(
 }
 
 /**
- * `<identifier> === "literal" ? "A" : "B"` を、識別子のファイルスコープ既定値で評価する。
- * 解決できない(既定値が無い/分岐が文字列でない)場合は null
+ * テスト式を識別子のファイルスコープ既定値で評価する。
+ * `<id> === "lit"` / `<id> !== "lit"` とそれらの && / || 結合を扱う。
+ * 解決できない(既定値が無い等)場合は null
  */
-function resolveConditionalStatic(
-  node: Extract<Node, { type: "ConditionalExpression" }>,
-  fileDefaults: Map<string, string>,
-): string | null {
-  const test = node.test
+function evalStaticTest(test: Node, fileDefaults: Map<string, string>): boolean | null {
+  if (test.type === "LogicalExpression") {
+    const left = evalStaticTest(test.left, fileDefaults)
+    const right = evalStaticTest(test.right, fileDefaults)
+    if (left === null || right === null) return null
+    return test.operator === "&&" ? left && right : left || right
+  }
   if (test.type !== "BinaryExpression" || (test.operator !== "===" && test.operator !== "!==")) return null
   const { left, right } = test
   let identifier: string | null = null
@@ -229,10 +232,21 @@ function resolveConditionalStatic(
     literal = left.value
   }
   if (identifier === null || literal === null) return null
-
   const defaultValue = fileDefaults.get(identifier)
   if (defaultValue === undefined) return null
-  const matches = test.operator === "===" ? defaultValue === literal : defaultValue !== literal
+  return test.operator === "===" ? defaultValue === literal : defaultValue !== literal
+}
+
+/**
+ * 条件式(`<id> === "literal" ? ... : ...` やその && / || 結合)を、識別子の
+ * ファイルスコープ既定値で評価する。解決できない場合は null
+ */
+function resolveConditionalStatic(
+  node: Extract<Node, { type: "ConditionalExpression" }>,
+  fileDefaults: Map<string, string>,
+): string | null {
+  const matches = evalStaticTest(node.test, fileDefaults)
+  if (matches === null) return null
   const chosen = matches ? node.consequent : node.alternate
   return chosen.type === "StringLiteral" ? chosen.value : null
 }
@@ -245,24 +259,9 @@ function staticConditional(
   node: Extract<Node, { type: "LogicalExpression" }>,
   fileDefaults: Map<string, string>,
 ): string | null {
-  const test = node.left
-  if (node.operator !== "&&" || test.type !== "BinaryExpression") return null
-  if (test.operator !== "===" && test.operator !== "!==") return null
-  const { left, right } = test
-  let identifier: string | null = null
-  let literal: string | null = null
-  if (left.type === "Identifier" && right.type === "StringLiteral") {
-    identifier = left.name
-    literal = right.value
-  } else if (left.type === "StringLiteral" && right.type === "Identifier") {
-    identifier = right.name
-    literal = left.value
-  }
-  if (identifier === null || literal === null || node.right.type !== "StringLiteral") return null
-
-  const defaultValue = fileDefaults.get(identifier)
-  if (defaultValue === undefined) return null
-  const matches = test.operator === "===" ? defaultValue === literal : defaultValue !== literal
+  if (node.operator !== "&&" || node.right.type !== "StringLiteral") return null
+  const matches = evalStaticTest(node.left, fileDefaults)
+  if (matches === null) return null
   return matches ? node.right.value : ""
 }
 

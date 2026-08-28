@@ -98,7 +98,7 @@ registry.reject { |_name, entry| entry["pending"] }.each do |name, entry|
         end
 
         rendered_slots = rendered_fragment.css("[data-slot]").map { |node| node["data-slot"] }.uniq.sort
-        contract_slots = contract::SLOTS.map { |slot| slot[:name] }.reject(&:empty?).sort
+        contract_slots = contract::SLOTS.map { |slot| slot[:name] }.reject(&:empty?).uniq.sort
 
         # superset 許可(合成コンポーネント): 契約スロットが全て現れればよい
         if slots_superset

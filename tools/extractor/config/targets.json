@@ -53,6 +53,7 @@
     "field",
     "input-group",
     "button-group",
-    "direction"
+    "direction",
+    "sidebar"
   ]
 }

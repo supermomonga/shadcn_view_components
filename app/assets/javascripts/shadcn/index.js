@@ -20,6 +20,7 @@ import HoverCardController from "shadcn/controllers/hover_card_controller"
 import MenuController from "shadcn/controllers/menu_controller"
 import PopoverController from "shadcn/controllers/popover_controller"
 import ResizableController from "shadcn/controllers/resizable_controller"
+import SidebarController from "shadcn/controllers/sidebar_controller"
 import TabsController from "shadcn/controllers/tabs_controller"
 import ToggleController from "shadcn/controllers/toggle_controller"
 import TooltipController from "shadcn/controllers/tooltip_controller"
@@ -33,6 +34,7 @@ export function register(application) {
   application.register("shadcn--menu", MenuController)
   application.register("shadcn--popover", PopoverController)
   application.register("shadcn--resizable", ResizableController)
+  application.register("shadcn--sidebar", SidebarController)
   application.register("shadcn--tabs", TabsController)
   application.register("shadcn--toggle", ToggleController)
   application.register("shadcn--toggle-group", ToggleGroupController)

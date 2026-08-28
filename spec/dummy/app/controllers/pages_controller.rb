@@ -19,6 +19,8 @@ class PagesController < ApplicationController
 
   def commands; end
 
+  def sidebar; end
+
   def carousel; end
 
   def form

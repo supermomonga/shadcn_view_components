@@ -233,11 +233,18 @@ async function extractContractFromItem(
       // (switch の thumb 等)はスロットの static class に落とす
       const primary = analysis.calls.find((call) => call.slot === slots.rootSlot && slots.rootSlot !== "")
         ?? analysis.calls.find((call) => call.cvaRef !== null)
+        // 利用者上書き(className)を持つ要素のcnを優先する(sidebar の container 等。
+        // クラス契約は className が流れる要素に紐づくため)
+        ?? analysis.calls.find((call) => call.hasUserClass && call.slot !== "" && slots.slots.some((slot) => slot.name === call.slot))
         ?? analysis.calls.find((call) => call.slot !== "" && slots.slots.some((slot) => slot.name === call.slot))
         ?? analysis.calls[0] ?? null
       for (const call of analysis.calls) {
         if (call === primary) continue
-        if (call.cvaRef === null && !call.hasUserClass && call.statics.length > 0) {
+        // 主以外のcnは、そのスロットの静的クラスとして記録する。
+        // className を含む場合(sidebar-container 等)は「この要素にも利用者クラスが
+        // 流れる」ことを意味するが、クラス契約は主呼び出し側に紐づけるため
+        // 静的側のみ採用する(手書き側が各要素に配る)
+        if (call.cvaRef === null && call.statics.length > 0) {
           attachSecondaryStaticClass(slots.slots, call)
         } else {
           throw new ParseError(

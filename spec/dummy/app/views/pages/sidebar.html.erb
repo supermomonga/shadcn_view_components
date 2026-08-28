@@ -1,0 +1,31 @@
+<style>
+  [data-slot='sidebar-wrapper'] { display: flex; min-height: 200px; }
+  [data-slot='sidebar-gap'] { width: 256px; }
+  [data-slot='sidebar-container'] { position: static; width: 256px; }
+  [data-slot='sidebar-inner'] { display: flex; flex-direction: column; width: 100%; }
+  [data-slot='sidebar-container'][data-hidden='true'] { display: none; }
+</style>
+<main class="sidebar-page">
+  <h1>Sidebar</h1>
+  <section id="sidebar-demo">
+    <%= render(Shadcn::Sidebar::Provider.new(id: "sidebar-provider")) do %>
+      <%= render(Shadcn::Sidebar.new(id: "demo-sidebar")) do %>
+        <%= render(Shadcn::Sidebar::Content.new) do %>
+          <%= render(Shadcn::Sidebar::Group.new) do %>
+            <%= render(Shadcn::Sidebar::GroupLabel.new) { "アプリケーション" } %>
+            <%= render(Shadcn::Sidebar::GroupContent.new) do %>
+              <%= render(Shadcn::Sidebar::Menu.new) do %>
+                <%= render(Shadcn::Sidebar::MenuItem.new) do %>
+                  <%= render(Shadcn::Sidebar::MenuButton.new(id: "menu-settings")) { "設定" } %>
+                <% end %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+      <%= render(Shadcn::Sidebar::Inset.new) do %>
+        <%= render(Shadcn::Sidebar::Trigger.new(id: "sidebar-trigger")) %>
+      <% end %>
+    <% end %>
+  </section>
+</main>
