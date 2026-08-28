@@ -1,0 +1,19 @@
+<style>
+  [data-slot='calendar'] table { border-collapse: collapse; }
+  [data-slot='calendar'] tr { display: flex; }
+  [data-slot='calendar'] th, [data-slot='calendar'] td { flex: 1; min-width: 36px; }
+  [data-slot='calendar'] td[data-today='true'] { background: #eee; border-radius: 6px; }
+  [data-slot='calendar'] td[data-outside='true'] { opacity: 0.5; }
+  [data-slot='calendar'] button[data-selected-single='true'] { background: #111; color: #fff; border-radius: 6px; }
+</style>
+<main class="calendar-page">
+  <h1>Calendar</h1>
+  <section id="calendar-demo">
+    <%= render(Shadcn::Calendar.new(
+      id: "demo-calendar",
+      month: @month,
+      selected: Date.new(2026, 8, 27),
+      month_path: "/pages/calendar"
+    )) %>
+  </section>
+</main>

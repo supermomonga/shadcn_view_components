@@ -13,6 +13,16 @@ Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 - 注: upstreamインデックスに列挙されているが404となるアイテム(questionnaire, toast)は
   「upstream側の不整合」として警告付きスキップ
 
+### 追加(Phase 4 最終 — calendar の個別評価)
+
+- Calendar(+DayButton): react-day-picker に依存しない月テーブル(年月キャプション・
+  曜行・日付ボタン・前後月への GET リンク)。完全JSレス(Graceful)
+- 契約は lib/shadcn_view_components/contracts/calendar.rb に個別契約として
+  手動で保守(クラス値は tools/extractor と同一の cva + tailwind-merge で事前解決。
+  生成物とは異なり rake shadcn:generate の対象外)
+- 整合スペック: registry と targets.json + 個別契約の三方比較に拡張
+- これにより vendor 61アイテムすべてが実装(適合試験対象)
+
 ### 追加(Phase 4 wave2/3 — 重量級)
 
 - sidebar(23エクスポート): Provider の data-state による開閉、Trigger/Rail、

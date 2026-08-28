@@ -84,10 +84,13 @@ button-group:
     - { component: Shadcn::ButtonGroup, export: ButtonGroup }
     - { component: Shadcn::ButtonGroup::Separator, export: ButtonGroupSeparator }
     - { component: Shadcn::ButtonGroup::Text, export: ButtonGroupText }
-# calendar: react-day-picker の classNames 実行時合成(cn(defaultClassNames.*) 等)のため
-# 静的抽出の対象外。個別評価(10-roadmap Phase 4)— 表ベースの再実装で契約を手動策定する
+# calendar: react-day-picker の classNames 実行時合成のため静的抽出の対象外。
+# 個別評価(10-roadmap Phase 4)— 契約は lib/shadcn_view_components/contracts/calendar.rb
+# に手動で保守する(クラス値は tools/extractor と同一の cva+tailwind-merge で事前解決)
 calendar:
-  pending: true
+  exports:
+    - { component: Shadcn::Calendar, export: Calendar }
+    - { component: Shadcn::Calendar::DayButton, export: CalendarDayButton }
 
 card:
   exports:

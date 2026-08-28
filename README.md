@@ -14,7 +14,7 @@
 
 ## ステータス
 
-Phase 0〜4 完了(vendor 61アイテム中60を実装、calendarのみ個別評価として pending)。ロードマップは `docs.local/10-roadmap.md` 参照。
+Phase 0〜4 完了 — vendor の全61アイテムを実装(calendar は個別契約として提供)。ロードマップは `docs.local/10-roadmap.md` 参照。
 
 - 提供コンポーネント(26アイテム / 全エクスポートが適合試験で検証済み):
   **Button, Badge, Alert, Card, Avatar, Separator, Skeleton, Table, Label, Kbd, Spinner,
@@ -25,9 +25,11 @@ Phase 0〜4 完了(vendor 61アイテム中60を実装、calendarのみ個別評
   DropdownMenu, ContextMenu, Menubar, NavigationMenu, Command, Combobox, Resizable,
   Progress, Slider, NativeSelect, InputOTP, Select, Field, InputGroup,
   ButtonGroup, DirectionProvider,
-  Sidebar, Attachment, Bubble, Message, MessageScroller, Chart, Sonner(Toaster)**
-- calendar は react-day-picker の実行時クラス合成のため静的抽出の対象外
-  (個別評価 — registry.yml で明示)
+  Sidebar, Attachment, Bubble, Message, MessageScroller, Chart, Sonner(Toaster),
+  Calendar**
+- calendar は react-day-picker の実行時クラス合成のため静的抽出の対象外。
+  契約は lib/shadcn_view_components/contracts/calendar.rb に個別契約として保守し、
+  コンポーネントは月テーブル(年月ナビ・日付ボタン)として提供する
 - インタラクティブふるまい(05 §3 ネイティブ最優先): toggle/toggle-group は Stimulus、
   accordion/collapsible は `<details>`/`<summary>`、dialog系は `<dialog>` + showModal、
   popover/tooltip/menu は Popover API

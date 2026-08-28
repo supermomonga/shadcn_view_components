@@ -14,6 +14,7 @@ Dummy::Application.routes.draw do
   get "pages/menus", to: "pages#menus"
   get "pages/commands", to: "pages#commands"
   get "pages/sidebar", to: "pages#sidebar"
+  get "pages/calendar", to: "pages#calendar"
   get "pages/carousel", to: "pages#carousel"
   get "pages/form", to: "pages#form"
   post "pages/form", to: "pages#submit_form"

@@ -109,7 +109,13 @@ RSpec.describe "generated outputs integrity", type: :conformance do
       implemented = registry.reject { |_name, entry| entry["pending"] }.keys.sort
       generated = Dir[File.join(GEN_JSON_DIR, "*.json")].map { |f| File.basename(f, ".json") }.sort
 
-      expect(implemented).to eq(targets), "registry.yml と tools/extractor/config/targets.json が乖離している"
+      # 個別評価ルートのアイテム(upstream が静的抽出の対象外)。契約は
+      # lib/shadcn_view_components/contracts/<name>.rb に手動で保守される
+      individual = Dir[File.join(REPO_ROOT, "lib/shadcn_view_components/contracts/*.rb")]
+                   .map { |f| File.basename(f, ".rb") }.sort
+
+      expect(implemented).to eq((targets + individual).uniq.sort),
+                             "registry.yml と targets.json + 個別契約が乖離している"
       expect(generated).to eq(targets), "gen/contracts と targets.json が乖離している"
     end
 

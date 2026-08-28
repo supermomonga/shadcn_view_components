@@ -329,3 +329,10 @@ chart:
 sonner:
   Toaster:
     attributes: [data-controller, aria-live]
+calendar:
+  Calendar:
+    # 内側に DayButton を描く合成構造のため子スロットが増える
+    slots_mode: superset
+    attributes: []
+  CalendarDayButton:
+    attributes: [type, tabindex, data-day, data-selected-single, data-today, data-outside]

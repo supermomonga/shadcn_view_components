@@ -22,6 +22,9 @@ AllCops:
     # 生成物: rubocop -a 相当の整形は抽出器のemitterが保証する(03 §6.1)ためlint対象外
     - "lib/shadcn_view_components/generated/**/*"
     - "app/assets/stylesheets/**/*"
+    # 個別契約(calendar): 生成物と同じ定形(sig + module_function def)を
+    # 手動で保守するため Style/ModuleFunction の自動整形対象外にする
+    - "lib/shadcn_view_components/contracts/**/*"
 
 Sorbet/FalseSigil:
   Enabled: false
