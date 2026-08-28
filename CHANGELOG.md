@@ -13,6 +13,23 @@ Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 - 注: upstreamインデックスに列挙されているが404となるアイテム(questionnaire, toast)は
   「upstream側の不整合」として警告付きスキップ
 
+### レビュー対応(実装後)
+
+3エージェントによるコードレビュー(Ruby実装・抽出器・テスト/JS)の指摘を
+8コミットで修正。主要なもの:
+
+- 抽出器: cn() 引数順序の保全(tailwind-merge の後勝ちを upstream と同一に)、
+  enum ガード(side === "right" && ...)の露出prop化、boolean 既定値による
+  偽陽性クラスの除去、依存アイテムの sha256 検証、defaults 優先順位の統一、
+  ソート比較器のコードユニット順統一、check のオプション拒否など
+- コンポーネント: void要素ヘルパ(void_tag)統一、利用者 data/aria/style の
+  マージ規約適用漏れ一括解消、NativeSelect のフォーム属性送達、
+  Pagination::Link の Boolean 受け、Combobox インジケータの hidden 化など
+- JS/スペック: キー操作二重発火の解消、calendar スペックの時限爆弾解消、
+  非同期イベント後の再試行付き検証への統一、showAt クランプ修正、
+  disconnect のリスナー除去漏れ解消
+- 重複削減: メニュートリオ(dropdown/context/menubar)を継承で 476→217行に畳み込み
+
 ### 追加(Phase 4 最終 — calendar の個別評価)
 
 - Calendar(+DayButton): react-day-picker に依存しない月テーブル(年月キャプション・
