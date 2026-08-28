@@ -236,6 +236,29 @@ describe("derive: combinations", () => {
     expect(combinations["size=default&variant=default"]).toContain("rounded-md")
   })
 
+  it("appends statics AFTER the cva output so conflicts resolve like upstream cn(...)", () => {
+    // upstream: cn(cvaOut, "w-auto px-3") — 静的クラスが後勝ちする(引数順序の再現)。
+    // 退行すると静的クラスが base 側に繰り込まれ、バリアントの px-2 が勝ってしまう
+    const def = {
+      identifier: "toggleVariants",
+      base: "inline-flex",
+      variants: { size: { default: "h-9 px-2", sm: "h-8 px-1.5" } },
+      compound: [],
+      defaults: { size: "default" },
+    }
+    const combinations = resolveCnCombinations(def, ["w-auto min-w-0 shrink-0 px-3"])
+    expect(combinations["size=default"]).toContain("px-3")
+    expect(combinations["size=default"]).not.toContain("px-2")
+    expect(combinations["size=sm"]).not.toContain("px-1.5")
+
+    const constrained = resolveConstrainedCombinations(def, ["w-auto px-3"], [
+      { prop: "size", kind: "passthrough" },
+    ])
+    expect(Object.keys(constrained).sort()).toEqual(["size=default", "size=sm"])
+    expect(constrained["size=default"]).toContain("px-3")
+    expect(constrained["size=sm"]).not.toContain("px-1.5")
+  })
+
   it("resolves static-only components to a single empty-key entry", () => {
     expect(resolveCnCombinations(null, ["p-4", "p-2"])).toEqual({ "": "p-2" })
   })

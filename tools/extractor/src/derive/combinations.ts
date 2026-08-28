@@ -30,10 +30,13 @@ export function enumerateCombinations(variants: Record<string, Record<string, st
  * バリアントの全組み合わせを列挙し、upstreamと同一の cva + tailwind-merge を
  * Node上で実行して最終クラス文字列を事前解決する。
  * Rubyランタイムは辞書引きするだけになる。
+ *
+ * クラスの連結順は upstream の cn(...) と同じ「cva出力 → 静的クラス列」順を維持する。
+ * tailwind-merge は後勝ちのため、静的クラスを cva base 側に繰り込むと
+ * 競合時の勝者が実機と逆転する(toggle-group の px-3 欠落が実例)
  */
 export function resolveCnCombinations(definition: CvaDefinition | null, statics: string[]): Record<string, string> {
-  const base = definition ? [definition.base, ...statics].join(" ") : statics.join(" ")
-  const resolver = cva(base, {
+  const resolver = cva(definition?.base ?? "", {
     variants: definition?.variants ?? {},
     compoundVariants: definition?.compound.map((entry) => ({ ...entry.when, class: entry.class })) ?? [],
     defaultVariants: definition?.defaults ?? {},
@@ -42,7 +45,7 @@ export function resolveCnCombinations(definition: CvaDefinition | null, statics:
   const combinations = definition ? enumerateCombinations(definition.variants) : [{}]
   const resolved: Record<string, string> = {}
   for (const combination of combinations) {
-    const value = twMerge(clsx(resolver(combination)))
+    const value = twMerge(clsx(resolver(combination), statics.join(" ")))
     const key = combinationKey(combination)
     if (key in resolved) continue // 同一キーの重複(理論上ない)は最初を採用
     resolved[key] = value
@@ -97,8 +100,7 @@ export function resolveConstrainedCombinations(
     }
   }
 
-  const base = [definition.base, ...statics].join(" ")
-  const resolver = cva(base, {
+  const resolver = cva(definition.base, {
     variants: definition.variants,
     compoundVariants: definition.compound.map((entry) => ({ ...entry.when, class: entry.class })),
     defaultVariants: definition.defaults,
@@ -124,7 +126,7 @@ export function resolveConstrainedCombinations(
     }
     const key = combinationKey(combination)
     if (key in resolved) continue
-    resolved[key] = twMerge(clsx(resolver(args)))
+    resolved[key] = twMerge(clsx(resolver(args), statics.join(" ")))
   }
   return resolved
 }
