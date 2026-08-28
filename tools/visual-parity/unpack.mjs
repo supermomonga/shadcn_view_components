@@ -3,6 +3,11 @@
  * src/components/ui/ へ展開する。各ファイルの sha256 も検証する。
  * 決定論的: アイテム名の辞書順で処理し、出力は元ソース+改行のみ。
  *
+ * import パスの書き換えについて: upstream の相互参照は
+ * "@/registry/new-york-v4/ui/<name>" 形式だが、shadcn CLI がホストへ
+ * インストールする際にもパスは書き換えられるため、ここでも展開先の
+ * "@/components/ui/<name>" へ機械的に置換する(sha256検証は書き換え前に対して行う)。
+ *
  * 実行: pnpm run unpack  (vite build の前に自動実行される)
  * 引数付きで実行すると指定アイテムのみ展開する: node unpack.mjs button badge
  */
@@ -13,6 +18,10 @@ import { createHash } from "node:crypto"
 const REPO_ROOT = new URL("../../", import.meta.url).pathname
 const ITEMS_DIR = join(REPO_ROOT, "vendor/shadcn/registry/items")
 const OUT_DIR = join(REPO_ROOT, "tools/visual-parity/src/components/ui")
+
+function rewriteImports(content) {
+  return content.replaceAll("@/registry/new-york-v4/ui/", "@/components/ui/")
+}
 
 async function run() {
   const only = process.argv.slice(2)
@@ -30,7 +39,7 @@ async function run() {
       if (entry.sha256 && digest !== entry.sha256) {
         throw new Error(`sha256 mismatch: ${file} / ${entry.path}`)
       }
-      await writeFile(join(OUT_DIR, basename(entry.path)), `${entry.content}\n`, "utf8")
+      await writeFile(join(OUT_DIR, basename(entry.path)), `${rewriteImports(entry.content)}\n`, "utf8")
       count += 1
     }
   }

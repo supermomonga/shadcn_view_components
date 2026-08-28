@@ -6,5 +6,12 @@
 @import "tailwindcss";
 @import "../../../app/assets/stylesheets/shadcn/shadcn.css";
 
+/* 比較の決定論性のためフォントスタックを両側で同一に固定する
+   (dummy側の spec/dummy/tailwind/input.css と同じ定義) */
+@theme {
+  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
 @source "./components/ui/**/*.tsx";
 @source "./demos.tsx";
