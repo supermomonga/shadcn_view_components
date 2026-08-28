@@ -35,7 +35,6 @@ RSpec.configure do |config|
   config.include ViewComponent::TestHelpers, type: :conformance
   config.include RenderedRoot, type: :component
   config.include RenderedRoot, type: :conformance
-  config.include StimulusHelpers, type: :system
 
   config.before do |example|
     driven_by :shadcn_cuprite if example.metadata[:type] == :system

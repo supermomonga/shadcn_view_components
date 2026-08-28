@@ -64,7 +64,8 @@ export default class CommandController extends Controller {
   }
 
   highlight(item) {
-    for (const candidate of this.visibleItems) {
+    // 非表示項目も含めて走査する(絞り込みで隠れた項目に選択状態が残留しないように)
+    for (const candidate of this.items) {
       const selected = candidate === item
       candidate.dataset.selected = selected ? "true" : "false"
       if (selected) candidate.setAttribute("aria-selected", "true")

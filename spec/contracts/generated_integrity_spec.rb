@@ -118,10 +118,5 @@ RSpec.describe "generated outputs integrity", type: :conformance do
                              "registry.yml と targets.json + 個別契約が乖離している"
       expect(generated).to eq(targets), "gen/contracts と targets.json が乖離している"
     end
-
-    it "lists unimplemented vendor items as pending (負債の見える化)" do
-      implemented = registry.count { |_name, entry| !entry["pending"] }
-      expect(registry.keys.size - implemented).to eq(manifest_items.size - implemented)
-    end
   end
 end

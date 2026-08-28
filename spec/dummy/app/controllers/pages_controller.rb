@@ -22,8 +22,9 @@ class PagesController < ApplicationController
   def sidebar; end
 
   def calendar
-    parsed = Date.parse("#{params[:month]}-01") rescue Date.current.beginning_of_month
-    @month = parsed
+    @month = Date.parse("#{params[:month]}-01")
+  rescue ArgumentError, TypeError, Date::Error
+    @month = Date.current.beginning_of_month
   end
 
   def carousel; end

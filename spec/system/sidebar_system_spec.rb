@@ -7,17 +7,16 @@ RSpec.describe "Sidebar behavior", type: :system do
   it "toggles data-state and aria-expanded via the trigger" do
     visit "/pages/sidebar"
 
-    provider = find("#sidebar-provider")
-    expect(provider["data-state"]).to eq("open")
-    expect(find("#demo-sidebar")["data-state"]).to eq("open")
+    expect(page).to have_selector("#sidebar-provider[data-state='open']")
+    expect(page).to have_selector("#demo-sidebar[data-state='open']")
 
     find("#sidebar-trigger").click
-    expect(provider["data-state"]).to eq("closed")
-    expect(find("#demo-sidebar")["data-state"]).to eq("closed")
-    expect(find("#sidebar-trigger")["aria-expanded"]).to eq("false")
+    expect(page).to have_selector("#sidebar-provider[data-state='closed']")
+    expect(page).to have_selector("#demo-sidebar[data-state='closed']")
+    expect(page).to have_selector("#sidebar-trigger[aria-expanded='false']")
 
     find("#sidebar-trigger").click
-    expect(provider["data-state"]).to eq("open")
+    expect(page).to have_selector("#sidebar-provider[data-state='open']")
   end
 
   it "survives a cache-restored DOM reconnection (Turbo cache 相当)" do
@@ -33,10 +32,11 @@ RSpec.describe "Sidebar behavior", type: :system do
       const restored = original.cloneNode(true)
       original.replaceWith(restored)
     JS
-    expect(find("#sidebar-provider")["data-state"]).to eq("closed")
+    expect(page).to have_selector("#sidebar-provider[data-state='closed']")
 
+    # 再接続(Stimulus の MutationObserver)は非同期のため、切替結果は再試行付きで検証する
     find("#sidebar-trigger").click
-    expect(find("#sidebar-provider")["data-state"]).to eq("open")
-    expect(find("#sidebar-trigger")["aria-expanded"]).to eq("true")
+    expect(page).to have_selector("#sidebar-provider[data-state='open']")
+    expect(page).to have_selector("#sidebar-trigger[aria-expanded='true']")
   end
 end

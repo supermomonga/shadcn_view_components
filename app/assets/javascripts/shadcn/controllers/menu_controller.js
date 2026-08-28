@@ -60,9 +60,21 @@ export default class MenuController extends Controller {
     const style = this.menu.style
     style.position = "fixed"
     style.margin = "0"
-    style.left = `${Math.min(event.clientX, window.innerWidth - this.menu.offsetWidth - 8)}px`
-    style.top = `${Math.min(event.clientY, window.innerHeight - this.menu.offsetHeight - 8)}px`
+    style.left = `${event.clientX}px`
+    style.top = `${event.clientY}px`
     this.show()
+    this.clampIntoViewport()
+  }
+
+  // 開いた後(popover=manual は display が復帰してから)にビューポート内へ収める。
+  // 閉じた状態の offsetWidth は 0 のため、クランプは show の後にしか計算できない
+  clampIntoViewport() {
+    if (!this.menu) return
+    const style = this.menu.style
+    const left = Math.min(parseFloat(style.left), window.innerWidth - this.menu.offsetWidth - 8)
+    const top = Math.min(parseFloat(style.top), window.innerHeight - this.menu.offsetHeight - 8)
+    style.left = `${Math.max(8, left)}px`
+    style.top = `${Math.max(8, top)}px`
   }
 
   // popover="manual" のcontent(右クリック)を開く。外側のpointerdownで閉じる
