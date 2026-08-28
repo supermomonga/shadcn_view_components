@@ -11,8 +11,9 @@ RSpec.describe "Popover-family behavior", type: :system do
     expect(find("#popover-content", visible: :all)["data-state"]).to eq("closed")
 
     find("#popover-trigger").click
-    expect(find("#popover-content")["data-state"]).to eq("open")
-    expect(find("#popover-trigger")["aria-expanded"]).to eq("true")
+    # toggle イベントはタスク発火のため、属性反映を再試行付きで待つ
+    expect(page).to have_selector("#popover-content[data-state='open']")
+    expect(page).to have_selector("#popover-trigger[aria-expanded='true']")
     expect(find("#popover-content")).to be_visible
   end
 
@@ -20,12 +21,12 @@ RSpec.describe "Popover-family behavior", type: :system do
     visit "/pages/popovers"
 
     find("#popover-trigger").click
-    expect(find("#popover-content")["data-state"]).to eq("open")
+    expect(page).to have_selector("#popover-content[data-state='open']")
 
     # 本物のマウスクリックで light dismiss を起こす(合成クリックは対象外)
     find("h1").click
-    expect(find("#popover-content", visible: :all)["data-state"]).to eq("closed")
-    expect(find("#popover-trigger")["aria-expanded"]).to eq("false")
+    expect(page).to have_selector("#popover-content[data-state='closed']", visible: :all)
+    expect(page).to have_selector("#popover-trigger[aria-expanded='false']")
   end
 
   it "shows the hover-card on trigger hover with intent delay" do
@@ -42,9 +43,9 @@ RSpec.describe "Popover-family behavior", type: :system do
     find("#tooltip-trigger").click
     expect(page).to have_selector("#tooltip-content", text: "ツールチップの内容")
     expect(find("#tooltip-trigger")["aria-describedby"]).to eq("tooltip-content")
-    expect(find("#tooltip-content")["data-state"]).to eq("open")
+    expect(page).to have_selector("#tooltip-content[data-state='open']")
 
     find("h1").click
-    expect(find("#tooltip-content", visible: :all)[:hidden]).to be_present
+    expect(page).to have_selector("#tooltip-content[hidden]", visible: :all)
   end
 end

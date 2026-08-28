@@ -19,17 +19,15 @@ RSpec.describe "Command and Combobox behavior", type: :system do
     expect(page).to have_selector("#command-empty")
   end
 
-  it "highlights the first visible item and moves with arrow keys" do
+  it "moves the highlight by exactly one item per arrow keypress (二重発火の回帰)" do
     visit "/pages/commands"
 
-    expect(find("#item-copy")["data-selected"]).to eq("true")
-    page.execute_script(<<~JS)
-      document.querySelector("#command").dispatchEvent(
-        new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true })
-      )
-    JS
-    expect(find("#item-paste")["data-selected"]).to eq("true")
-    expect(find("#item-copy")["data-selected"]).to eq("false")
+    expect(page).to have_selector("#item-copy[data-selected='true']")
+    # 実キー操作で検証する:キーバインディングが二重(data-action + キャプチャリスナー)に
+    # なると1回の押下で2項目進み、この検証が赤になる
+    find("#command-input input").send_keys(:down)
+    expect(page).to have_selector("#item-paste[data-selected='true']")
+    expect(page).to have_selector("#item-copy[data-selected='false']")
   end
 
   it "opens the combobox listbox and filters items by query" do

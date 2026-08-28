@@ -24,9 +24,10 @@ export default class DialogController extends Controller {
   }
 
   disconnect() {
-    if (!this.dialog) return
-    this.dialog.removeEventListener("close", this.onClose)
-    this.dialog.removeEventListener("cancel", this.onCancel)
+    // dialog が無い構成でも turbo:submit-end の除去は必須(接続サイクルごとの
+    // リスナー蓄積を防ぐ — 他コントローラと同じ ?. 書式に統一)
+    this.dialog?.removeEventListener("close", this.onClose)
+    this.dialog?.removeEventListener("cancel", this.onCancel)
     this.element.removeEventListener("turbo:submit-end", this.onSubmitEnd)
   }
 

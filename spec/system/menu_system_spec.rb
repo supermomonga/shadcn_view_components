@@ -9,8 +9,9 @@ RSpec.describe "Menu and Resizable behavior", type: :system do
 
     find("#menu-trigger").click
     expect(page.evaluate_script("document.querySelector('#menu-content').matches(':popover-open')")).to be(true)
-    expect(find("#menu-trigger")["aria-expanded"]).to eq("true")
-    expect(find("#item-copy")["data-highlighted"]).to eq("true")
+    # syncState は toggle タスクで走るため属性類は再試行付きで待つ
+    expect(page).to have_selector("#menu-trigger[aria-expanded='true']")
+    expect(page).to have_selector("#item-copy[data-highlighted='true']")
     expect(page.evaluate_script("document.activeElement.id")).to eq("item-copy")
 
     find("#menu-content").send_keys(:escape)
@@ -62,7 +63,7 @@ RSpec.describe "Menu and Resizable behavior", type: :system do
 
     find("#menubar-file").click
     expect(page.evaluate_script("document.querySelector('#menubar-file-content').matches(':popover-open')")).to be(true)
-    expect(find("#menubar-file")["aria-expanded"]).to eq("true")
+    expect(page).to have_selector("#menubar-file[aria-expanded='true']")
 
     find("#menubar-new").click
     expect(page).to have_selector("#menubar-file-content[data-state='closed']", visible: :all)

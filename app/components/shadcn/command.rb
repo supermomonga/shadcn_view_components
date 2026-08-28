@@ -50,7 +50,9 @@ module Shadcn
         void_input(
           type: "search",
           class: self.class.classes,
-          data: { slot: "command-input", action: "input->#{Command::CONTROLLER}#filter keydown->#{Command::CONTROLLER}#navigate" },
+          # キーボード操作はコントローラのキャプチャリスナーで一元処理する(data-action に
+          # keydown を置くと二重発火する — 片方のみにバインドする)
+          data: { slot: "command-input", action: "input->#{Command::CONTROLLER}#filter" },
           aria: { label: "コマンド検索" }
         )
       end

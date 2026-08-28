@@ -44,7 +44,8 @@ module Shadcn
           class: "h-9 w-full min-w-0 flex-1 rounded-md border border-input bg-transparent px-3 py-1 text-base outline-none",
           role: "combobox",
           aria: { expanded: "false", haspopup: "listbox" },
-          data: { action: "input->#{Combobox::CONTROLLER}#filter keydown->#{Combobox::CONTROLLER}#navigate" }
+          # キーボード操作はコントローラのキャプチャリスナーで一元処理する(二重発火防止)
+          data: { action: "input->#{Combobox::CONTROLLER}#filter" }
         ) { "".html_safe }
       end
 

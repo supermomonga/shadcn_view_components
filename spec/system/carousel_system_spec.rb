@@ -11,8 +11,9 @@ RSpec.describe "Carousel behavior", type: :system do
     expect(find("#carousel-next")).not_to be_disabled
 
     find("#carousel-next").click
-    # smooth スクロールは非同期。ボタンの有効化(スクロール位置の反映)を待ってから位置を検証する
-    expect(find("#carousel-prev")).not_to be_disabled
+    # smooth スクロールは非同期。ボタンの有効化(=スクロール位置の反映)を
+    # 再試行付きで待ってから位置を検証する(be_disabled は待機しないため使わない)
+    expect(page).to have_no_selector("#carousel-prev[disabled]")
     expect(page.evaluate_script("document.querySelector('[data-slot=carousel-content]').scrollLeft")).to be > 0
   end
 

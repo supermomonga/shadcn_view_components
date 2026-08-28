@@ -13,7 +13,8 @@ RSpec.describe "Sheet and Drawer behavior", type: :system do
 
     find("#demo-sheet").send_keys(:escape)
     expect(page.evaluate_script("document.querySelector('#demo-sheet').open")).to be(false)
-    expect(find("#open-sheet")["aria-expanded"]).to eq("false")
+    # close イベントはタスク発火のため aria-expanded の反映を再試行付きで待つ
+    expect(page).to have_selector("#open-sheet[aria-expanded='false']")
   end
 
   it "opens the drawer from its trigger and closes via its close button" do
