@@ -14,7 +14,7 @@ module Shadcn
       def html_attributes
         attributes = super
         attributes[:role] = "group"
-        attributes[:style] = "display: flex" unless @html_args.key?(:style)
+        merge_style(attributes, { display: "flex" })
         merge_nested(attributes, :data, { controller: CONTROLLER })
         attributes
       end
@@ -25,7 +25,8 @@ module Shadcn
       sig { override.returns(T::Hash[Symbol, T.untyped]) }
       def html_attributes
         attributes = super
-        attributes[:style] = "flex-grow: 1; flex-basis: 0; overflow: auto; min-width: 0; min-height: 0"
+        merge_style(attributes, { "flex-grow": "1", "flex-basis": "0", overflow: "auto",
+                                  "min-width": "0", "min-height": "0" })
         attributes
       end
     end
@@ -37,8 +38,8 @@ module Shadcn
         attributes = super
         attributes[:role] = "separator"
         attributes[:tabindex] = "0"
-        attributes[:aria] = { orientation: "vertical" }
-        attributes[:style] = "cursor: col-resize; flex: 0 0 auto"
+        merge_nested(attributes, :aria, { orientation: "vertical" })
+        merge_style(attributes, { cursor: "col-resize", flex: "0 0 auto" })
         merge_nested(attributes, :data, {
                        action: "mousedown->shadcn--resizable#startDrag keydown->shadcn--resizable#nudge"
                      })

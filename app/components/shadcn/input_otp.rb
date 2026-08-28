@@ -24,7 +24,7 @@ module Shadcn
     sig { override.returns(T::Hash[Symbol, T.untyped]) }
     def html_attributes
       attributes = super
-      attributes[:type] = "text"
+      attributes[:type] = "text" unless attributes.key?(:type)
       attributes[:inputmode] = "numeric"
       attributes[:maxlength] = @length
       attributes[:autocomplete] = "one-time-code"

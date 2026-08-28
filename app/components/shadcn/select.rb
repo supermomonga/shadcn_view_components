@@ -22,7 +22,7 @@ module Shadcn
       sig { override.returns(T::Hash[Symbol, T.untyped]) }
       def html_attributes
         attributes = super
-        attributes[:type] = "button"
+        attributes[:type] = "button" unless attributes.key?(:type)
         attributes[:role] = "combobox"
         merge_nested(attributes, :aria, { haspopup: "listbox", expanded: "false" })
         merge_nested(attributes, :data, { action: "#{CONTROLLER}#toggle" })

@@ -97,7 +97,7 @@ module Shadcn
       sig { override.returns(T::Hash[Symbol, T.untyped]) }
       def html_attributes
         attributes = super
-        attributes[:type] = "button"
+        attributes[:type] = "button" unless attributes.key?(:type)
         merge_nested(attributes, :data, { action: "#{Combobox::CONTROLLER}#toggleList" })
         attributes
       end
@@ -177,7 +177,8 @@ module Shadcn
 
       sig { returns(String) }
       def indicator
-        content_tag(:span, data: { slot: "combobox-item-indicator", hidden: @selected ? nil : "true" }) do
+        # 未選択時は HTML の hidden 属性で隠す(upstream の ItemIndicator と同じ挙動)
+        content_tag(:span, data: { slot: "combobox-item-indicator" }, hidden: !@selected) do
           check_icon
         end
       end
@@ -284,7 +285,7 @@ module Shadcn
       sig { override.returns(T::Hash[Symbol, T.untyped]) }
       def html_attributes
         attributes = super
-        attributes[:type] = "text"
+        attributes[:type] = "text" unless attributes.key?(:type)
         attributes
       end
     end

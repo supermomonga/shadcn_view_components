@@ -59,13 +59,14 @@ module Shadcn
 
       sig do
         params(
-          is_active: T.nilable(T.any(Symbol, String)),
+          is_active: T.nilable(T.any(Symbol, String, T::Boolean)),
           size: T.any(Symbol, String),
           args: T::Hash[Symbol, T.untyped]
         ).void.checked(:never)
       end
       def initialize(is_active: nil, size: ShadcnViewComponents::Contracts::Pagination::Link::DEFAULTS.fetch(:size), **args)
-        @is_active = T.let(normalize_option(:is_active, is_active || "false"), Symbol)
+        # Boolean(true/false)も受け入れる(Boolean#to_s は契約値 "true"/"false" と一致する)
+        @is_active = T.let(normalize_option(:is_active, (is_active.nil? ? "false" : is_active.to_s)), Symbol)
         @size = T.let(normalize_option(:size, size), Symbol)
         super(**args)
       end

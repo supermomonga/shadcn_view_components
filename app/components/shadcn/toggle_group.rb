@@ -36,8 +36,7 @@ module Shadcn
     sig { override.returns(T::Hash[Symbol, T.untyped]) }
     def html_attributes
       attributes = super
-      user_style = T.cast(attributes[:style], T.nilable(T::Hash[Symbol, T.untyped]))
-      attributes[:style] = { "--gap": @spacing.to_s }.merge(user_style || {})
+      merge_style(attributes, { "--gap": @spacing.to_s })
       attributes
     end
 

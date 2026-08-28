@@ -172,6 +172,21 @@ module Shadcn
       self.class.classes(extra: extra, **variant_options)
     end
 
+    # style は利用者が文字列・ハッシュどちらで渡しても壊れないよう結合する。
+    # 出力は常に文字列とする(ハッシュのまま渡すとレンダラの整形に依存するため)。
+    # gem 側の宣言を先頭に付け、CSSの後勝ちに従い利用者が上書きできる
+    sig { params(attributes: T::Hash[Symbol, T.untyped], defaults: T::Hash[Symbol, T.untyped]).void }
+    def merge_style(attributes, defaults)
+      user = attributes[:style]
+      base = defaults.map { |key, value| "#{key}: #{value}" }.join("; ")
+      user_part = if user.is_a?(Hash)
+                    user.map { |key, value| "#{key}: #{value}" }.join("; ")
+                  else
+                    user.to_s
+                  end
+      attributes[:style] = [base, user_part].reject(&:empty?).join("; ")
+    end
+
     # data: / aria: は深部マージ(契約由来の値と利用者指定が共存する)
     sig { params(attributes: T::Hash[Symbol, T.untyped], key: Symbol, defaults: T::Hash[Symbol, T.untyped]).void }
     def merge_nested(attributes, key, defaults)

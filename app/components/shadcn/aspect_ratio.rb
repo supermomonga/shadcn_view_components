@@ -27,10 +27,7 @@ module Shadcn
     sig { override.returns(T::Hash[Symbol, T.untyped]) }
     def html_attributes
       attributes = super
-      if @ratio
-        user_style = T.cast(attributes[:style], T.nilable(T::Hash[Symbol, T.untyped]))
-        attributes[:style] = { aspect_ratio: @ratio.to_s }.merge(user_style || {})
-      end
+      merge_style(attributes, { aspect_ratio: @ratio.to_s }) if @ratio
       attributes
     end
   end

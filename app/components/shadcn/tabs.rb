@@ -23,9 +23,17 @@ module Shadcn
     end
 
     class List < BaseComponent
-      sig { params(variant: T.any(Symbol, String), args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
-      def initialize(variant: ShadcnViewComponents::Contracts::Tabs::List::DEFAULTS.fetch(:variant), **args)
+      sig do
+        params(
+          variant: T.any(Symbol, String),
+          orientation: T.any(Symbol, String),
+          args: T::Hash[Symbol, T.untyped]
+        ).void.checked(:never)
+      end
+      def initialize(variant: ShadcnViewComponents::Contracts::Tabs::List::DEFAULTS.fetch(:variant),
+                     orientation: "horizontal", **args)
         @variant = T.let(normalize_option(:variant, variant), Symbol)
+        @orientation = T.let(orientation.to_s, String)
         super(**args)
       end
 
@@ -38,7 +46,7 @@ module Shadcn
       def html_attributes
         attributes = super
         merge_nested(attributes, :data, { variant: @variant })
-        merge_nested(attributes, :aria, { orientation: "horizontal" })
+        merge_nested(attributes, :aria, { orientation: @orientation })
         attributes[:role] = "tablist"
         attributes
       end
@@ -75,7 +83,7 @@ module Shadcn
         merge_nested(attributes, :aria, { selected: @active.to_s })
         attributes[:role] = "tab"
         attributes[:tabindex] = @active ? 0 : -1
-        attributes[:type] = "button"
+        attributes[:type] = "button" unless attributes.key?(:type) || tag == "a"
         attributes
       end
 
