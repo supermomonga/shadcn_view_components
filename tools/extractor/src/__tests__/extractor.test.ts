@@ -232,6 +232,33 @@ describe("parse: cn", () => {
     expect(combinations["side=top"]).not.toContain("right-0")
   })
 
+  it("derives conditional prop defaults from boolean parameter defaults (isActive = true)", () => {
+    const code = `
+      const linkVariants = cva("base", {
+        variants: { variant: { on: "bg-active", off: "bg-inactive" } },
+      })
+      function Link({ className, isActive = true, ...props }) {
+        return (
+          <a
+            data-slot="link"
+            className={cn(linkVariants({ variant: isActive ? "on" : "off" }), className)}
+            {...props}
+          />
+        )
+      }
+      export { Link }
+    `
+    const ast = parseTsx(code)
+    const definitions = extractCvaDefinitions(ast, "link", "ui/link.tsx")
+    const exports = discoverExports(ast, "link", "ui/link.tsx")
+    const analysis = analyzeCn(ast, exports[0]!.functionNode!, definitions, "link", "ui/link.tsx")
+    const def = definitions.get("linkVariants")!
+    const combos = resolveConstrainedCombinations(def, [], analysis.calls[0]!.cvaOptions)
+    expect(Object.keys(combos).sort()).toEqual(["is_active=false", "is_active=true"])
+    expect(combos["is_active=true"]).toContain("bg-active")
+    expect(combos["is_active=false"]).toContain("bg-inactive")
+  })
+
   it("evaluates bare identifier guards (showOnHover && \"...\") against boolean defaults", () => {
     const code = `
       function MenuAction({ className, showOnHover = false, ...props }) {

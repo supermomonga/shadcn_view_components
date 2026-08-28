@@ -19,6 +19,8 @@ import type { FunctionLike } from "./context.ts"
 export interface CnCall {
   /** cn を持つ要素の data-slot(無い場合は "") */
   slot: string
+  /** cn を持つ要素のタグ名(無名ラッパースロット記録用。例: "div") */
+  slotTag: string
   statics: string[]
   cvaRef: string | null
   /** cva(...) 呼び出し時のオプション(呼び出し側での値の与え方) */
@@ -78,7 +80,15 @@ export function analyzeCn(
       const belongsToFunction = path.getFunctionParent()?.node === fnNode
       if (!belongsToFunction) return
 
-      const call: CnCall = { slot: slotOf(path), statics: [], cvaRef: null, cvaOptions: [], guards: [], hasUserClass: false }
+      const call: CnCall = {
+        slot: slotOf(path),
+        slotTag: tagOf(path),
+        statics: [],
+        cvaRef: null,
+        cvaOptions: [],
+        guards: [],
+        hasUserClass: false,
+      }
       for (const argument of expression.arguments) {
         classifyCnArgument(argument, call, cvaDefinitions, item, file, fileDefaults, expression.loc?.start)
       }
@@ -125,6 +135,17 @@ function collectParamDefaults(params: readonly Node[], defaults: FileDefaults, o
       }
     }
   }
+}
+
+/** このcnが属する要素のタグ名(ローカル変数経由の差し替えは素のタグ名を返す) */
+function tagOf(path: NodePath): string {
+  const element = path.findParent((parent) => parent.isJSXElement()) as
+    | { node: { openingElement: { name: { type: string, name?: string } } } }
+    | null
+  if (!element) return "div"
+  const name = element.node.openingElement.name
+  if (name.type === "JSXIdentifier" && /^[a-z]/.test(name.name ?? "")) return name.name!
+  return "div"
 }
 
 /** このcnが属する要素の data-slot(無い場合は "") */

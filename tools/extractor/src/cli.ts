@@ -159,7 +159,15 @@ async function compareDirectories(generatedDir: string, committedDir: string, la
   return differences
 }
 
-async function runCheck(): Promise<number> {
+async function runCheck(options: CliOptions): Promise<number> {
+  // check は常に既定パスのコミット済み成果物と比較するため、パス系オプションは
+  // 受け付けない(静かに無視すると検証対象を誤認させる)
+  for (const key of ["vendorDir", "genDir", "rubyDir", "cssFile"] as const) {
+    if (options[key]) {
+      process.stderr.write(`check does not accept --${key}: it always verifies the committed outputs\n`)
+      return 2
+    }
+  }
   const tempRoot = await mkdtemp(path.join(tmpdir(), "shadcn-view-components-check-"))
   const checkPaths: PipelinePaths = {
     ...DEFAULT_PATHS,
@@ -203,7 +211,7 @@ async function main(): Promise<number> {
     case "generate":
       return runGenerate(options)
     case "check":
-      return runCheck()
+      return runCheck(options)
     default:
       process.stderr.write(USAGE)
       return 2

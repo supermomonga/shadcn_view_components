@@ -108,7 +108,7 @@ export async function extractContracts(pipeline: PipelinePaths, only?: string[])
 /** 静的なだけのサブ要素cnを、そのスロットの static_attributes["class"] に合成する。
  * 対象スロットが無い(data-slot を持たない外側ラッパー等)は、名前無しスロットとして
  * 記録する — 手書き側がラッパー構造を再現できるようにするため */
-function attachSecondaryStaticClass(slots: Array<{ name: string, tag: string, static_attributes: Record<string, string>, dynamic_attributes: string[] }>, call: { slot: string, statics: string[] }): void {
+function attachSecondaryStaticClass(slots: Array<{ name: string, tag: string, static_attributes: Record<string, string>, dynamic_attributes: string[] }>, call: { slot: string, slotTag: string, statics: string[] }): void {
   const slot = slots.find((candidate) => candidate.name === call.slot)
   if (slot) {
     const existing = slot.static_attributes["class"]
@@ -116,11 +116,15 @@ function attachSecondaryStaticClass(slots: Array<{ name: string, tag: string, st
     return
   }
   if (call.slot === "") {
-    slots.push({ name: "", tag: "div", static_attributes: { class: call.statics.join(" ") }, dynamic_attributes: [] })
+    slots.push({ name: "", tag: call.slotTag, static_attributes: { class: call.statics.join(" ") }, dynamic_attributes: [] })
   }
 }
 
-/** 関数パラメータの分割代入から、バリアントpropの既定値を取り出す(`{ variant = "default" }`)。 */
+/**
+ * 関数パラメータの分割代入から、バリアントpropの既定値を取り出す
+ * (`{ variant = "default" }` / `{ isActive = true }`)。
+ * boolean 既定値は conditional prop の既定値として使うため "true"/"false" に文字列化する
+ */
 function paramDefaults(fnNode: FunctionLike, cvaProps: string[]): Record<string, string> {
   const defaults: Record<string, string> = {}
   const first = fnNode.params[0]
@@ -132,6 +136,7 @@ function paramDefaults(fnNode: FunctionLike, cvaProps: string[]): Record<string,
     if (name === null || !cvaProps.includes(name)) continue
     const value = property.value.type === "AssignmentPattern" ? property.value.right : property.value
     if (value.type === "StringLiteral") defaults[name] = value.value
+    else if (value.type === "BooleanLiteral") defaults[name] = value.value ? "true" : "false"
   }
   return defaults
 }
@@ -157,7 +162,8 @@ function constrainedExportProps(
   const defaults: Record<string, string> = {}
   for (const option of options) {
     if (option.kind === "conditional") {
-      defaults[snakeCase(option.condition)] = "false"
+      // 条件付きpropの既定値 = パラメータ既定値({ isActive = true } 等)。無ければ偽側
+      defaults[snakeCase(option.condition)] = parameterDefaults[option.condition] ?? "false"
     } else if (option.kind === "passthrough") {
       const value = parameterDefaults[option.prop] ?? definition.defaults[option.prop]
       if (value !== undefined) defaults[snakeCase(option.prop)] = value
@@ -165,7 +171,29 @@ function constrainedExportProps(
   }
   return {
     propNames: exposedPropNames(options).map(snakeCase).sort(),
-    defaults: Object.fromEntries(Object.entries(defaults).sort(([a], [b]) => a.localeCompare(b))),
+    defaults: Object.fromEntries(Object.entries(defaults).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))),
+  }
+}
+
+/**
+ * 非制約経路(全値域列挙)の契約側prop。
+ * 実効的な既定値 = cva defaultVariants ∪ 関数パラメータの既定値(パラメータ側が優先)。
+ * 実行時はパラメータ既定値が cva 呼び出しへ流れて defaultVariants を上書きするため
+ * (制約付き経路の constrainedExportProps と同じ優先順位に統一)
+ */
+function legacyExportProps(
+  definition: CvaDefinition | null,
+  fnNode: FunctionLike,
+  options: CvaOption[],
+): { propNames: string[], defaults: Record<string, string> } {
+  return {
+    propNames: definition ? Object.keys(definition.variants).sort() : [],
+    defaults: definition
+      ? Object.fromEntries(
+          Object.entries({ ...definition.defaults, ...paramDefaults(fnNode, exposedPropNames(options)) })
+            .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)),
+        )
+      : {},
   }
 }
 
@@ -178,7 +206,7 @@ function mergeProps(
   return {
     propNames: [...new Set([...base.propNames, ...guardInfo.propNames])].sort(),
     defaults: Object.fromEntries(
-      Object.entries({ ...base.defaults, ...guardInfo.defaults }).sort(([a], [b]) => a.localeCompare(b)),
+      Object.entries({ ...base.defaults, ...guardInfo.defaults }).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)),
     ),
   }
 }
@@ -229,7 +257,7 @@ function guardExportProps(
   }
   return {
     propNames: propNames.sort(),
-    defaults: Object.fromEntries(Object.entries(defaults).sort(([a], [b]) => a.localeCompare(b))),
+    defaults: Object.fromEntries(Object.entries(defaults).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))),
     guardProps,
     resolvedGuards,
   }
@@ -254,9 +282,17 @@ async function dependencyCvaDefinitions(
   for (const dependency of item.registryDependencies ?? []) {
     const manifestItem = manifest.items[dependency]
     if (!manifestItem) continue
-    const dependencyItem = JSON.parse(
-      await readFile(path.join(vendorDir, manifestItem.path), "utf8"),
-    ) as RegistryItem
+    const dependencyPath = path.join(vendorDir, manifestItem.path)
+    const dependencyContent = await readFile(dependencyPath, "utf8")
+    // 依存アイテムも対象アイテムと同じ手編集検知を適用する(検証なしに取り込まない)
+    const normalizedDependency = dependencyContent.endsWith("\n") ? dependencyContent : `${dependencyContent}\n`
+    if (sha256Hex(normalizedDependency) !== manifestItem.sha256) {
+      throw new ParseError(
+        `${dependency}: sha256 mismatch — vendor item was hand-edited (rerun rake shadcn:sync)`,
+        "(pipeline)", "extract",
+      )
+    }
+    const dependencyItem = JSON.parse(dependencyContent) as RegistryItem
     for (const file of dependencyItem.files ?? []) {
       if (!file.path?.endsWith(".tsx") || typeof file.content !== "string") continue
       for (const [identifier, definition] of extractCvaDefinitions(parseTsx(file.content), dependency, file.path)) {
@@ -338,7 +374,10 @@ async function extractContractFromItem(
           throw new ParseError(`guard prop collides with cva option: ${collisions.join(", ")}`, name, file.path)
         }
       }
-      const constrained = definition !== null && primary !== null && primary.cvaOptions.length > 0
+      // cva参照を伴う呼び出しはすべて制約付き経路で解決する。
+      // オプション引数を持たない(navigationMenuTriggerStyle() 等)場合は
+      // 露出propなし = cva既定値のみの単一組合せになる
+      const constrained = definition !== null && primary !== null && primary.cvaRef !== null
       const guarded = guardInfo !== null
       const combinations = primary && (constrained || guarded)
         ? resolveConstrainedCombinations(definition, primary.statics, primary.cvaOptions,
@@ -347,31 +386,8 @@ async function extractContractFromItem(
       const props = primary && constrained && definition
         ? mergeProps(constrainedExportProps(definition, fnNode, primary.cvaOptions), guardInfo)
         : primary && guarded
-          ? mergeProps(
-              {
-                propNames: definition ? Object.keys(definition.variants).sort() : [],
-                // 実効的な既定値 = 関数パラメータの既定値 ∪ cvaのdefaultVariants(cva側が優先)。
-                // marker のように defaultVariants を持たずパラメータ既定値で済ませる定形に対応する
-                defaults: definition
-                  ? Object.fromEntries(
-                      Object.entries(
-                        { ...paramDefaults(fnNode, exposedPropNames(primary.cvaOptions)), ...definition.defaults },
-                      ).sort(([a], [b]) => a.localeCompare(b)),
-                    )
-                  : {},
-              },
-              guardInfo,
-            )
-          : {
-              propNames: definition ? Object.keys(definition.variants).sort() : [],
-              defaults: definition
-                ? Object.fromEntries(
-                    Object.entries(
-                      { ...paramDefaults(fnNode, exposedPropNames(primary?.cvaOptions ?? [])), ...definition.defaults },
-                    ).sort(([a], [b]) => a.localeCompare(b)),
-                  )
-                : {},
-            }
+          ? mergeProps(legacyExportProps(definition, fnNode, primary?.cvaOptions ?? []), guardInfo)
+          : legacyExportProps(definition, fnNode, primary?.cvaOptions ?? [])
       const exportName = discovered.name
       exports[exportName] = {
         root_slot: slots.rootSlot,
@@ -407,14 +423,20 @@ async function extractContractFromItem(
   // upstream のDOMは子コンポーネントのルート要素(<a data-slot="pagination-link">)になる。
   // 自分のJSX内に data-slot 要素を持つ場合(alert-dialog-content が overlay+content を
   // 含む等)は継承しない — その要素群がこのエクスポートの描画結果になる
-  for (const exportData of Object.values(exports)) {
-    if (exportData.root_slot !== "") continue
-    if (!exportData.slots.every((slot) => slot.name === "")) continue
-    const childRefTag = exportData.slots.find((slot) => slot.name === "")?.tag ?? ""
-    const sibling = exports[childRefTag]
-    if (!sibling || sibling === exportData || sibling.root_slot === "") continue
-    exportData.root_slot = sibling.root_slot
-    exportData.slots = structuredClone(sibling.slots)
+  // A→B→C の連鎖で処理順により継承が漏れないよう、変化がなくなるまで反復する
+  let changed = true
+  while (changed) {
+    changed = false
+    for (const exportData of Object.values(exports)) {
+      if (exportData.root_slot !== "") continue
+      if (!exportData.slots.every((slot) => slot.name === "")) continue
+      const childRefTag = exportData.slots.find((slot) => slot.name === "")?.tag ?? ""
+      const sibling = exports[childRefTag]
+      if (!sibling || sibling === exportData || sibling.root_slot === "") continue
+      exportData.root_slot = sibling.root_slot
+      exportData.slots = structuredClone(sibling.slots)
+      changed = true
+    }
   }
 
   if (Object.keys(exports).length === 0) {

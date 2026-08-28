@@ -12,7 +12,12 @@ import { atomicWriteFile } from "../normalize.ts"
  */
 
 function rubyString(value: string): string {
-  const escaped = value.replace(/\\/g, "\\\\").replace(/"/g, '\\"')
+  // `#{` をエスケープする(二重引用符内は補間が有効なため。任意値のクラス文字列に
+  // `#` 単体は現れうるが `{` が続くときのみ補間になる)
+  const escaped = value
+    .replace(/\\/g, "\\\\")
+    .replace(/"/g, '\\"')
+    .replace(/#\{/g, "\\#{")
   return `"${escaped}"`
 }
 
@@ -61,7 +66,11 @@ function insertExport(root: ModuleNode, exportData: Export): void {
   node.own = exportData
 }
 
-/** VARIANTS 定数用: combinations キーと compound から prop ごとの値域を復元する。 */
+/**
+ * VARIANTS 定数用: combinations キーから prop ごとの値域を復元する。
+ * COMBINATIONS に現れない値(compound 専用の条件値など)は Ruby 側で
+ * combination() の fetch に失敗するため含めない
+ */
 function variantValues(exportData: Export): Record<string, string[]> {
   const values: Record<string, string[]> = {}
   for (const prop of exportData.cva.prop_names) {
@@ -72,10 +81,6 @@ function variantValues(exportData: Export): Record<string, string[]> {
         const [name, value] = pair.split("=")
         if (name === prop && value !== undefined) collected.add(value)
       }
-    }
-    for (const compound of exportData.cva.compound) {
-      const value = compound.when[prop]
-      if (value !== undefined) collected.add(value)
     }
     values[prop] = [...collected].sort()
   }
@@ -144,7 +149,7 @@ function renderModule(node: ModuleNode, depth: number): string {
   const lines: string[] = []
   lines.push(`${indent}module ${node.name}`)
   if (node.own) lines.push(...renderExportConstants(node.own))
-  for (const child of [...node.children.values()].sort((a, b) => a.name.localeCompare(b.name))) {
+  for (const child of [...node.children.values()].sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))) {
     lines.push(renderModule(child, depth + 1))
   }
   lines.push(`${indent}end`)

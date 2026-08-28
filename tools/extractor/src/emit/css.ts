@@ -16,7 +16,7 @@ export interface ThemeTokens {
 
 function renderTokenBlock(selector: string, tokens: Record<string, string>, radiusFirst: boolean): string[] {
   const lines: string[] = [`${selector} {`]
-  const names = Object.keys(tokens).sort((a, b) => a.localeCompare(b))
+  const names = Object.keys(tokens).sort((a, b) => (a < b ? -1 : a > b ? 1 : 0))
   const ordered = radiusFirst
     ? [...names.filter((name) => name === "radius"), ...names.filter((name) => name !== "radius")]
     : names
@@ -50,7 +50,7 @@ export function renderThemeCss(theme: ThemeTokens, contracts: Contract[]): strin
 
   // (3) Tailwindテーマへの接続: ユーティリティ(bg-background等)が変数を参照
   lines.push("@theme inline {")
-  for (const name of Object.keys(light).filter((name) => name !== "radius").sort((a, b) => a.localeCompare(b))) {
+  for (const name of Object.keys(light).filter((name) => name !== "radius").sort((a, b) => (a < b ? -1 : a > b ? 1 : 0))) {
     lines.push(`  --color-${name}: var(--${name});`)
   }
   if ("radius" in light) {
@@ -65,7 +65,7 @@ export function renderThemeCss(theme: ThemeTokens, contracts: Contract[]): strin
   const seen = new Set<string>()
   const cssBlocks = contracts
     .filter((contract) => contract.css.trim().length > 0)
-    .sort((a, b) => a.name.localeCompare(b.name))
+    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
   for (const contract of cssBlocks) {
     const css = contract.css.trim()
     if (seen.has(css)) continue
