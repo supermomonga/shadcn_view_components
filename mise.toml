@@ -2,3 +2,9 @@
 ruby = "4.0"
 node = "lts"
 pnpm = "latest"
+
+[tasks.lookbook]
+description = "dummy アプリを起動して Lookbook(http://localhost:9292/lookbook)を開く"
+dir = "spec/dummy"
+env = { BUNDLE_GEMFILE = "../../Gemfile" }
+run = "bundle exec puma config.ru"
