@@ -1,0 +1,25 @@
+/*
+ * Lookbook / dummy アプリ用の静的スタイルの入力(07-testing §2: dummy は Tailwind を実行しない)。
+ *
+ * gem 同梱のテーマトークン(shadcn.css の :root/.dark/@theme)を読み込み、
+ * gem コポーネント(生成契約 + 手書き分)と dummy(previews/views/controllers)が
+ * 実際に出力するクラスだけを静的CSSにビルドする。ホストアプリでは各自の
+ * Tailwind ビルドで shadcn.css を読み込むため、この成果物は dummy 専用。
+ *
+ * 再生成(コンポーネント追加・クラス変更時):
+ *   cd spec/dummy && ../../tools/extractor/node_modules/.bin/tailwindcss \
+ *     -i tailwind/input.css -o app/assets/stylesheets/application.css
+ * または mise run build-css
+ */
+@import "tailwindcss";
+@import "../../../app/assets/stylesheets/shadcn/shadcn.css";
+
+/* gem 側のクラス文字列(生成契約 + 手書きコンポーネント + コントローラJS) */
+@source "../../../lib/shadcn_view_components/generated/**/*.rb";
+@source "../../../app/components/shadcn/**/*.rb";
+@source "../../../app/assets/javascripts/shadcn/**/*.js";
+
+/* dummy 側(previews / pages / 独自JS) */
+@source "../app/**/*.rb";
+@source "../app/**/*.erb";
+@source "../app/**/*.js";

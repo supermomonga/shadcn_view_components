@@ -8,3 +8,10 @@ description = "dummy アプリを起動して Lookbook(http://localhost:9292/loo
 dir = "spec/dummy"
 env = { BUNDLE_GEMFILE = "../../Gemfile" }
 run = "bundle exec puma config.ru"
+
+# dummy は Tailwind を実行しない方針(07-testing §2)のため、Lookbook 用の
+# スタイルは gem のテーマCSS + コンポーネントのクラスを静的ビルドしてCommitする。
+# コンポーネント追加・クラス変更時に実行する
+[tasks.build-css]
+description = "Lookbook/dummy 用の静的スタイル(spec/dummy/app/assets/stylesheets/application.css)を再生成する"
+run = "tools/extractor/node_modules/.bin/tailwindcss -i spec/dummy/tailwind/input.css -o spec/dummy/app/assets/stylesheets/application.css"
