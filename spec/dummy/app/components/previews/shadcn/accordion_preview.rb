@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class AccordionPreview < ViewComponent::Preview
+  class AccordionPreview < Shadcn::PreviewBase
     def default
       render(Shadcn::Accordion.new) do
         safe_join([

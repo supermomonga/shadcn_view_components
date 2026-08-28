@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class PopoverPreview < ViewComponent::Preview
+  class PopoverPreview < Shadcn::PreviewBase
     def default
       render(Shadcn::Popover.new) do
         safe_join([

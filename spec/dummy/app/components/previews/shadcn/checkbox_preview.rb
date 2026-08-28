@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class CheckboxPreview < ViewComponent::Preview
+  class CheckboxPreview < Shadcn::PreviewBase
     def default
       render(Shadcn::Checkbox.new(id: "check", name: "check"))
     end

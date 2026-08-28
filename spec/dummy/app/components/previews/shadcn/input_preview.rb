@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class InputPreview < ViewComponent::Preview
+  class InputPreview < Shadcn::PreviewBase
     def default
       render(Shadcn::Input.new(type: :email, placeholder: "email@example.com"))
     end

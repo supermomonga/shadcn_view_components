@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class AvatarPreview < ViewComponent::Preview
+  class AvatarPreview < Shadcn::PreviewBase
     def default
       render(Shadcn::Avatar.new) do
         render(Shadcn::Avatar::Fallback.new) { "AB" }

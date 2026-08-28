@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class DrawerPreview < ViewComponent::Preview
+  class DrawerPreview < Shadcn::PreviewBase
     def default
       render(Shadcn::Drawer.new) do
         safe_join([

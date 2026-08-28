@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class TooltipPreview < ViewComponent::Preview
+  class TooltipPreview < Shadcn::PreviewBase
     def default
       render(Shadcn::Tooltip::Provider.new) do
         render(Shadcn::Tooltip.new) do

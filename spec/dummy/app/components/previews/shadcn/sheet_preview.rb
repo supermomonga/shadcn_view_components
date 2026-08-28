@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class SheetPreview < ViewComponent::Preview
+  class SheetPreview < Shadcn::PreviewBase
     def default
       render(Shadcn::Sheet.new) do
         safe_join([

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class RadioGroupPreview < ViewComponent::Preview
+  class RadioGroupPreview < Shadcn::PreviewBase
     def default
       render(Shadcn::RadioGroup.new) do
         safe_join([

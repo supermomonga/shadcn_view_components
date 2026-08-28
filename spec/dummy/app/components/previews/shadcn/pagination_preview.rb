@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class PaginationPreview < ViewComponent::Preview
+  class PaginationPreview < Shadcn::PreviewBase
     def default
       render(Shadcn::Pagination.new) do
         render(Shadcn::Pagination::Content.new) do

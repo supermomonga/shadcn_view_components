@@ -45,6 +45,11 @@ Style/ArgumentsForwarding:
   # 名前付きrest-kwargs(**options)はSorbetのsigで型付けに必要
   Enabled: false
 
+Naming/BlockForwarding:
+  # 名前付きブロック引数(&block)も同様にSorbetのsigで型付けに必要
+  # (匿名転送 def m(&) は sig の params で型を与えられない)
+  Enabled: false
+
 Lint/MissingSuper:
   Exclude:
     # ViewComponent::Base の initialize は ActionView::Base 由来で引数互換が無い。

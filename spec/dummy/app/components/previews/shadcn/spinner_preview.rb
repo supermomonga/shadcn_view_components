@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class SpinnerPreview < ViewComponent::Preview
+  class SpinnerPreview < Shadcn::PreviewBase
     def default
       render(Shadcn::Spinner.new)
     end

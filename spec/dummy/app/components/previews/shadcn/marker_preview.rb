@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class MarkerPreview < ViewComponent::Preview
+  class MarkerPreview < Shadcn::PreviewBase
     def default
       render(Shadcn::Marker.new) { render(Shadcn::Marker::Content.new) { "本文" } }
     end

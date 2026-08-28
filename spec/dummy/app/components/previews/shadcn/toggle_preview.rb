@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class TogglePreview < ViewComponent::Preview
+  class TogglePreview < Shadcn::PreviewBase
     def default
       render(Shadcn::Toggle.new) { "トグル" }
     end

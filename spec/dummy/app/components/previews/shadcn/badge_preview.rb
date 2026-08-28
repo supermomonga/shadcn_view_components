@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class BadgePreview < ViewComponent::Preview
+  class BadgePreview < Shadcn::PreviewBase
     def default
       render(Shadcn::Badge.new) { "Badge" }
     end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class ItemPreview < ViewComponent::Preview
+  class ItemPreview < Shadcn::PreviewBase
     def default
       render(Shadcn::Item::Group.new) do
         safe_join([

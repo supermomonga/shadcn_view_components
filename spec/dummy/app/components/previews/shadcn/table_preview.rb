@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class TablePreview < ViewComponent::Preview
+  class TablePreview < Shadcn::PreviewBase
     def default
       render(Shadcn::Table.new) do
         safe_join([

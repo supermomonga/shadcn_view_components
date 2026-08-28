@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class ResizablePreview < ViewComponent::Preview
+  class ResizablePreview < Shadcn::PreviewBase
     def default
       render(Shadcn::Resizable::PanelGroup.new(style: "display: flex; height: 200px; width: 100%; border: 1px solid #ccc")) do
         safe_join([

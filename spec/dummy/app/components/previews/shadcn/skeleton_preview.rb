@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class SkeletonPreview < ViewComponent::Preview
+  class SkeletonPreview < Shadcn::PreviewBase
     def default
       render(Shadcn::Skeleton.new(class: "h-8 w-full"))
     end

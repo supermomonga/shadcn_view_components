@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class DialogPreview < ViewComponent::Preview
+  class DialogPreview < Shadcn::PreviewBase
     def default
       render(Shadcn::Dialog.new) do
         safe_join([

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class ToggleGroupPreview < ViewComponent::Preview
+  class ToggleGroupPreview < Shadcn::PreviewBase
     def multiple
       render(Shadcn::ToggleGroup.new(variant: :outline)) do
         safe_join([

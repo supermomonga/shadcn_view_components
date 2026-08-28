@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class BreadcrumbPreview < ViewComponent::Preview
+  class BreadcrumbPreview < Shadcn::PreviewBase
     def default
       render(Shadcn::Breadcrumb.new) do
         render(Shadcn::Breadcrumb::List.new) do

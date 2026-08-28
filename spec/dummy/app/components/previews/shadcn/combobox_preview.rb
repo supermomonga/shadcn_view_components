@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class ComboboxPreview < ViewComponent::Preview
+  class ComboboxPreview < Shadcn::PreviewBase
     def default
       render(Shadcn::Combobox.new) do
         safe_join([

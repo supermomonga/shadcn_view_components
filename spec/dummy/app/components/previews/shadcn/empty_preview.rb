@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class EmptyPreview < ViewComponent::Preview
+  class EmptyPreview < Shadcn::PreviewBase
     def default
       render(Shadcn::Empty.new) do
         render(Shadcn::Empty::Header.new) do

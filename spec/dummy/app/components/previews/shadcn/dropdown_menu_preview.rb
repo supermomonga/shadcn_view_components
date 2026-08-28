@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class DropdownMenuPreview < ViewComponent::Preview
+  class DropdownMenuPreview < Shadcn::PreviewBase
     def default
       render(Shadcn::DropdownMenu.new) do
         safe_join([

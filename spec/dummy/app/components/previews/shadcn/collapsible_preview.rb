@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class CollapsiblePreview < ViewComponent::Preview
+  class CollapsiblePreview < Shadcn::PreviewBase
     def default
       render(Shadcn::Collapsible.new) do
         safe_join([

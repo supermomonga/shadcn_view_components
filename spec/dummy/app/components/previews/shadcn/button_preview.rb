@@ -3,7 +3,7 @@
 # Lookbookプレビュー(07-testing §7)。upstreamのdocsページに相当する全バリアントの一覧。
 # 手動ビジュアル確認の場でありテストではない。
 module Shadcn
-  class ButtonPreview < ViewComponent::Preview
+  class ButtonPreview < Shadcn::PreviewBase
     def default
       render(Shadcn::Button.new) { "Button" }
     end

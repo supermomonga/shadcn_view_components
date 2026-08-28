@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class CommandPreview < ViewComponent::Preview
+  class CommandPreview < Shadcn::PreviewBase
     def default
       render(Shadcn::Command.new(class: "rounded-lg border shadow-md")) do
         safe_join([

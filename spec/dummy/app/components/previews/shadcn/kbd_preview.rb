@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class KbdPreview < ViewComponent::Preview
+  class KbdPreview < Shadcn::PreviewBase
     def default
       render(Shadcn::Kbd.new) { "⌘" }
     end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class LabelPreview < ViewComponent::Preview
+  class LabelPreview < Shadcn::PreviewBase
     def default
       render(Shadcn::Label.new) { "ラベル" }
     end

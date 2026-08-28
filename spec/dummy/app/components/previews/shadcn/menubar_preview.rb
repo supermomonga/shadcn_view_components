@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class MenubarPreview < ViewComponent::Preview
+  class MenubarPreview < Shadcn::PreviewBase
     def default
       render(Shadcn::Menubar.new) do
         render(Shadcn::Menubar::Menu.new) do

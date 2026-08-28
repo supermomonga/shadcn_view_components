@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class CarouselPreview < ViewComponent::Preview
+  class CarouselPreview < Shadcn::PreviewBase
     def default
       render(Shadcn::Carousel.new(class: "max-w-xs")) do
         safe_join([

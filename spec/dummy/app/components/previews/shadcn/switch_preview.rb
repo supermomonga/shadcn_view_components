@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class SwitchPreview < ViewComponent::Preview
+  class SwitchPreview < Shadcn::PreviewBase
     def default
       render(Shadcn::Switch.new(id: "switch", name: "switch"))
     end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class SeparatorPreview < ViewComponent::Preview
+  class SeparatorPreview < Shadcn::PreviewBase
     def horizontal
       render(Shadcn::Separator.new)
     end

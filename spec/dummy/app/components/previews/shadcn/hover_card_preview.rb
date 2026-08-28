@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class HoverCardPreview < ViewComponent::Preview
+  class HoverCardPreview < Shadcn::PreviewBase
     def default
       render(Shadcn::HoverCard.new) do
         safe_join([

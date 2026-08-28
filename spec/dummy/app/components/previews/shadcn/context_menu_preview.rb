@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Shadcn
-  class ContextMenuPreview < ViewComponent::Preview
+  class ContextMenuPreview < Shadcn::PreviewBase
     def default
       render(Shadcn::ContextMenu.new) do
         safe_join([
