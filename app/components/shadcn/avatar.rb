@@ -14,7 +14,7 @@ module Shadcn
       params(
         size: T.any(Symbol, String),
         args: T::Hash[Symbol, T.untyped]
-      ).void
+      ).void.checked(:never)
     end
     def initialize(size: "default", **args)
       @size = T.let(size.to_s, String)

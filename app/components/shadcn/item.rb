@@ -8,7 +8,7 @@ module Shadcn
         variant: T.any(Symbol, String),
         size: T.any(Symbol, String),
         args: T::Hash[Symbol, T.untyped]
-      ).void
+      ).void.checked(:never)
     end
     def initialize(variant: ShadcnViewComponents::Contracts::Item::DEFAULTS.fetch(:variant),
                    size: ShadcnViewComponents::Contracts::Item::DEFAULTS.fetch(:size), **args)
@@ -33,7 +33,7 @@ module Shadcn
         params(
           variant: T.any(Symbol, String),
           args: T::Hash[Symbol, T.untyped]
-        ).void
+        ).void.checked(:never)
       end
       def initialize(variant: ShadcnViewComponents::Contracts::Item::Media::DEFAULTS.fetch(:variant), **args)
         @variant = T.let(normalize_option(:variant, variant), Symbol)

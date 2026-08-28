@@ -14,7 +14,7 @@ module Shadcn
       params(
         ratio: T.nilable(T.any(Integer, Float, String)),
         args: T::Hash[Symbol, T.untyped]
-      ).void
+      ).void.checked(:never)
     end
     def initialize(ratio: nil, **args)
       @ratio = ratio

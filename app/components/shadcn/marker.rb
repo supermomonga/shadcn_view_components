@@ -8,7 +8,7 @@ module Shadcn
       params(
         variant: T.any(Symbol, String),
         args: T::Hash[Symbol, T.untyped]
-      ).void
+      ).void.checked(:never)
     end
     def initialize(variant: ShadcnViewComponents::Contracts::Marker::DEFAULTS.fetch(:variant), **args)
       @variant = T.let(normalize_option(:variant, variant), Symbol)
