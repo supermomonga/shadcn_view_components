@@ -174,13 +174,15 @@ module Shadcn
 
     # style は利用者が文字列・ハッシュどちらで渡しても壊れないよう結合する。
     # 出力は常に文字列とする(ハッシュのまま渡すとレンダラの整形に依存するため)。
-    # gem 側の宣言を先頭に付け、CSSの後勝ちに従い利用者が上書きできる
+    # gem 側の宣言を先頭に付け、CSSの後勝ちに従い利用者が上書きできる。
+    # key は Rails の style ハッシュと同じ規約でアンダースコアをハイフンへ変換する
+    # (aspect_ratio → aspect-ratio)
     sig { params(attributes: T::Hash[Symbol, T.untyped], defaults: T::Hash[Symbol, T.untyped]).void }
     def merge_style(attributes, defaults)
       user = attributes[:style]
-      base = defaults.map { |key, value| "#{key}: #{value}" }.join("; ")
+      base = defaults.map { |key, value| "#{key.to_s.dasherize}: #{value}" }.join("; ")
       user_part = if user.is_a?(Hash)
-                    user.map { |key, value| "#{key}: #{value}" }.join("; ")
+                    user.map { |key, value| "#{key.to_s.dasherize}: #{value}" }.join("; ")
                   else
                     user.to_s
                   end
