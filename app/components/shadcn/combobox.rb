@@ -27,10 +27,21 @@ module Shadcn
         "div"
       end
 
+      # upstream は <InputGroup className="w-auto"> でラップするため、
+      # ラッパのクラスは input-group の契約クラスを土台に組む。
+      # placeholder は内側の検索inputに移す(ラッパのdivには意味が無い)
+      sig { override.returns(T::Hash[Symbol, T.untyped]) }
+      def html_attributes
+        attributes = super
+        attributes[:class] = ShadcnViewComponents::Classes.resolve(:input_group, extra: attributes[:class].to_s)
+        @input_placeholder = T.let(attributes.delete(:placeholder), T.untyped)
+        attributes
+      end
+
       sig { override.returns(String) }
       def call
         content_tag(tag, **html_attributes) do
-          safe_join([search_input, trigger_button])
+          safe_join([search_input, trigger_addon])
         end
       end
 
@@ -38,18 +49,32 @@ module Shadcn
 
       sig { returns(String) }
       def search_input
-        # キーボード操作はコントローラのキャプチャリスナーで一元処理する(二重発火防止)
+        # キーボード操作はコントローラのキャプチャリスナーで一元処理する(二重発火防止)。
+        # クラスは upstream と同じ構成: Input の契約クラス + input-group-control の上書き
+        base = ShadcnViewComponents::Classes.resolve(:input)
+        overlay = input_group_combination("Input", {})
         void_tag(
           "input",
           type: "search",
-          class: "h-9 w-full min-w-0 flex-1 rounded-md border border-input bg-transparent px-3 py-1 text-base outline-none",
+          class: ShadcnViewComponents::Classes::MERGER.merge("#{base} #{overlay}"),
+          placeholder: T.cast(@input_placeholder, T.nilable(String)),
           role: "combobox",
           aria: { expanded: "false", haspopup: "listbox" },
           data: { action: "input->#{Combobox::CONTROLLER}#filter" }
         )
       end
 
-      # 契約の input-group-button スロット(静的クラスはスロット由来)
+      # upstream の <InputGroupAddon align="inline-end">(トリガーを右端に置く)
+      sig { returns(String) }
+      def trigger_addon
+        inline_end = { align: :"inline-end" }
+        content_tag(:div, class: input_group_combination("Addon", inline_end), data: { slot: "input-group-addon" }) do
+          trigger_button
+        end
+      end
+
+      # 契約の input-group-button スロット。クラスは upstream と同じ構成で
+      # Button(ghost) + input-group-button(icon-xs) + combobox側の上書きを重ねる
       sig { returns(String) }
       def trigger_button
         content_tag(
@@ -61,9 +86,22 @@ module Shadcn
         ) { chevron_icon }
       end
 
-      sig { returns(T.nilable(String)) }
+      sig { returns(String) }
       def trigger_class
-        T.cast(contract_slot("input-group-button").dig(:static_attributes, :class), T.nilable(String))
+        # NOTE: Hashの値型は不変のため、Classes.resolve の options と同じ型で T.let する
+        button_options = T.let({ variant: :ghost }, T::Hash[Symbol, T.nilable(T.any(Symbol, String))])
+        button_base = ShadcnViewComponents::Classes.resolve(:button, extra: nil, **button_options)
+        overlay = input_group_combination("Button", { size: :"icon-xs" })
+        tail = T.cast(contract_slot("input-group-button").dig(:static_attributes, :class), T.nilable(String)).to_s
+        ShadcnViewComponents::Classes::MERGER.merge([button_base, overlay, tail].join(" "))
+      end
+
+      # input-group 契約の各スロット組み合わせを引く
+      sig { params(export: String, options: T::Hash[Symbol, T.untyped]).returns(String) }
+      def input_group_combination(export, options = {})
+        contract = ShadcnViewComponents::Contracts::InputGroup.const_get(export)
+        defaults = T.cast(contract.const_get(:DEFAULTS), T::Hash[Symbol, Symbol])
+        T.cast(T.unsafe(contract).combination(defaults.merge(options)), String)
       end
 
       sig { returns(String) }
@@ -247,10 +285,14 @@ module Shadcn
 
       sig { returns(String) }
       def remove_button
+        # upstream は <Button variant="ghost" size="icon-xs"> に
+        # combobox 側の上書き(-ml-1 opacity-50 …)を重ねる
+        options = T.let({ variant: :ghost, size: :"icon-xs" }, T::Hash[Symbol, T.nilable(T.any(Symbol, String))])
+        base = ShadcnViewComponents::Classes.resolve(:button, extra: nil, **options)
         content_tag(
           :button,
           type: "button",
-          class: "-ml-1 opacity-50 hover:opacity-100",
+          class: ShadcnViewComponents::Classes::MERGER.merge("#{base} -ml-1 opacity-50 hover:opacity-100"),
           data: { slot: "combobox-chip-remove" },
           aria: { label: "削除" }
         ) { remove_icon }

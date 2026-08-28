@@ -53,6 +53,10 @@ module Shadcn
       def html_attributes
         attributes = super
         merge_nested(attributes, :data, { error: @error.to_s })
+        # upstream の FormLabel は <Label> を描く: ラベルの契約クラスを土台に
+        # フォーム契約側の data-[error=true]:text-destructive を重ねる
+        # (cn(labelVariants(), "data-[error=true]:...") と同じ順)
+        attributes[:class] = ShadcnViewComponents::Classes.resolve(:label, extra: attributes[:class].to_s)
         attributes
       end
     end

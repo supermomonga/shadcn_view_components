@@ -8,17 +8,25 @@ module Shadcn
     # 契約タグは ToggleGroupPrimitive.Root。排他制御は shadcn--toggle-group コントローラが担う
     CONTROLLER = "shadcn--toggle-group"
 
-    # type: :single は常に1つのみ on(コントローラが排他処理)。spacing は --gap CSS変数
+    # type: :single は常に1つのみ on(コントローラが排他処理)。spacing は --gap CSS変数。
+    # variant/size は upstream と同じくグループの data 属性に出力する
+    # (Item 側の装飾は group-data セレクタと Item 自身の data 属性で効く)
     sig do
       params(
         type: T.any(Symbol, String),
         spacing: T.any(Integer, Float),
+        variant: T.nilable(T.any(Symbol, String)),
+        size: T.nilable(T.any(Symbol, String)),
         args: T::Hash[Symbol, T.untyped]
       ).void.checked(:never)
     end
-    def initialize(type: :multiple, spacing: 0, **args)
+    def initialize(type: :multiple, spacing: 0, variant: nil, size: nil, **args)
       @group_type = T.let(type.to_s, String)
       @spacing = spacing
+      # グループ自身の契約に軸は無いため、Item の許容値で検証する
+      item_variants = ShadcnViewComponents::Contracts::ToggleGroup::Item::VARIANTS
+      @group_variant = T.let(variant && normalize_group_option(item_variants.fetch(:variant), variant, "variant"), T.nilable(Symbol))
+      @group_size = T.let(size && normalize_group_option(item_variants.fetch(:size), size, "size"), T.nilable(Symbol))
       super(**args)
     end
 
@@ -27,10 +35,15 @@ module Shadcn
 
     sig { override.returns(T::Hash[Symbol, T.untyped]) }
     def contract_data_attributes
-      super.merge(
+      attributes = super.merge(
         controller: CONTROLLER,
         type: @group_type
       )
+      # upstream の Root と同じ data 属性(未指定のものは描かない)
+      attributes[:variant] = @group_variant if @group_variant
+      attributes[:size] = @group_size if @group_size
+      attributes[:spacing] = @spacing.to_s
+      attributes
     end
 
     sig { override.returns(T::Hash[Symbol, T.untyped]) }
@@ -38,6 +51,17 @@ module Shadcn
       attributes = super
       merge_style(attributes, { "--gap": @spacing.to_s })
       attributes
+    end
+
+    private
+
+    # グループの variant/size を Item の許容値で fail-fast 検証する
+    sig { params(allowed: T::Array[Symbol], value: T.any(Symbol, String), prop: String).returns(Symbol) }
+    def normalize_group_option(allowed, value, prop)
+      symbol = value.to_sym
+      raise ArgumentError, "unknown #{prop} #{value.inspect} for ToggleGroup (valid: #{allowed.inspect})" unless allowed.include?(symbol)
+
+      symbol
     end
 
     class Item < BaseComponent
@@ -49,21 +73,24 @@ module Shadcn
       end
 
       # variant/size はupstreamではグループのcontextから受け取る。Ruby側では
-      # 利用者が各Itemに指定する(規約: 省略時は契約の既定値)
+      # 利用者が各Itemに指定する(規約: 省略時は契約の既定値)。
+      # spacing はグループの値(既定 0)を引き継いで data 属性に出力する
       sig do
         params(
           variant: T.any(Symbol, String),
           size: T.any(Symbol, String),
           state: T.any(Symbol, String),
+          spacing: T.any(Integer, Float),
           args: T::Hash[Symbol, T.untyped]
         ).void.checked(:never)
       end
       def initialize(variant: ShadcnViewComponents::Contracts::ToggleGroup::Item::DEFAULTS.fetch(:variant),
                      size: ShadcnViewComponents::Contracts::ToggleGroup::Item::DEFAULTS.fetch(:size),
-                     state: :off, **args)
+                     state: :off, spacing: 0, **args)
         @variant = T.let(normalize_option(:variant, variant), Symbol)
         @size = T.let(normalize_option(:size, size), Symbol)
         @state = T.let(state.to_s, String)
+        @spacing = spacing
         super(**args)
       end
 
@@ -78,10 +105,14 @@ module Shadcn
         { variant: @variant, size: @size }
       end
 
+      # upstream の Item と同じ data 属性(spacing の角丸・枠線制御はここから効く)
       sig { override.returns(T::Hash[Symbol, T.untyped]) }
       def contract_data_attributes
         super.merge(
           state: @state,
+          variant: @variant,
+          size: @size,
+          spacing: @spacing.to_s,
           action: "#{ToggleGroup::CONTROLLER}#toggleItem"
         )
       end

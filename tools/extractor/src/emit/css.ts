@@ -77,12 +77,19 @@ export function renderThemeCss(theme: ThemeTokens, contracts: Contract[]): strin
 
   // (5) ViewComponent実装の実行時規則。閉じたネイティブ dialog / popover は
   // UA由来の display:none よりコンポーネント自身のユーティリティ(.flex等)が
-  // 優先されて可視化されるため、同じ規則を作者CSSとして先出ししておく
+  // 優先されて可視化されるため、同じ規則を作者CSSとして先出ししておく。
+  // また collapsible を <details>/<summary> で移植している関係で、summary の
+  // 既定マーカー(三角)は upstream(React)側に存在しないため消す
   lines.push("")
   lines.push("/* (5) 実行時規則: 閉じた dialog/popover はユーティリティでも可視化しない */")
   lines.push("dialog:not([open]):not(:popover-open),")
   lines.push("[popover]:not(:popover-open):not(dialog[open]) {")
   lines.push("  display: none;")
+  lines.push("}")
+  lines.push("")
+  lines.push("/* (5) 実行時規則: details 移植コンポーネントの summary マーカーは upstream に無い */")
+  lines.push("summary[data-slot='collapsible-trigger']::marker {")
+  lines.push("  content: none;")
   lines.push("}")
 
   return `${lines.join("\n")}\n`

@@ -119,3 +119,8 @@ dialog:not([open]):not(:popover-open),
 [popover]:not(:popover-open):not(dialog[open]) {
   display: none;
 }
+
+/* (5) 実行時規則: details 移植コンポーネントの summary マーカーは upstream に無い */
+summary[data-slot='collapsible-trigger']::marker {
+  content: none;
+}

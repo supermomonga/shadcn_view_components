@@ -76,6 +76,9 @@ carousel:
     attributes: [type, disabled, data-action, aria-hidden]
 form:
   FormLabel:
+    # upstream の FormLabel は <Label>(別アイテム)のクラスに data-[error=true]:text-destructive
+    # を合成する。契約(form側)には上書き分のみ記録されるため、描画は Label のクラス群を含む
+    class_mode: contains
     attributes: [for, data-error]
   FormControl:
     attributes: [id]
@@ -236,6 +239,11 @@ command:
     attributes: [hidden]
 combobox:
   ComboboxInput:
+    # upstream の ComboboxInput は <InputGroup>(別アイテム)でラップし、トリガーを
+    # <InputGroupAddon> に置く。契約(combobox側)には上書き分のみ記録されるため、
+    # 描画は input-group のクラス群と addon スロットを含む
+    class_mode: contains
+    slots_mode: superset
     attributes: [type, role, aria-expanded, aria-haspopup, data-action]
   ComboboxTrigger:
     attributes: [type, data-action, aria-label]

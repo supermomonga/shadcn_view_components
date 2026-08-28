@@ -14,6 +14,13 @@
 @import "tailwindcss";
 @import "../../../app/assets/stylesheets/shadcn/shadcn.css";
 
+/* 比較の決定論性のためフォントスタックを両側で同一に固定する
+   (upstream側の tools/visual-parity/src/theme.css と同じ定義) */
+@theme {
+  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
 /* gem 側のクラス文字列(生成契約 + 手書きコンポーネント + コントローラJS) */
 @source "../../../lib/shadcn_view_components/generated/**/*.rb";
 @source "../../../app/components/shadcn/**/*.rb";
