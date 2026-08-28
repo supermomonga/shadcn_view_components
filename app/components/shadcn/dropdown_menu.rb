@@ -167,7 +167,7 @@ module Shadcn
       sig { override.returns(T::Hash[Symbol, T.untyped]) }
       def html_attributes
         attributes = super
-        attributes[:aria] = { haspopup: "menu", expanded: "false" }
+        merge_nested(attributes, :aria, { haspopup: "menu", expanded: "false" })
         merge_nested(attributes, :data, { action: "#{DropdownMenu::CONTROLLER}#toggleSub" })
         attributes
       end

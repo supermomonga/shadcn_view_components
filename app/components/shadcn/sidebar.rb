@@ -134,10 +134,11 @@ module Shadcn
       # upstream は Input(別アイテム)に静的クラスを足す(contains で検証)
       sig { override.returns(String) }
       def call
-        render(::Shadcn::Input.new(
-                 **@html_args, data: { slot: "sidebar-input", sidebar: "input" },
-                               class: self.class.classes(extra: @user_class)
-               )) { content }
+        # NOTE: `**@html_args, data: {...}` は Ruby 4 でリテラルキーがスプラット側を
+        # 黙って上書きするため、merge + 深部マージで利用者指定を保持する
+        attributes = @html_args.merge(class: self.class.classes(extra: @user_class))
+        merge_nested(attributes, :data, { slot: "sidebar-input", sidebar: "input" })
+        render(::Shadcn::Input.new(**attributes)) { content }
       end
     end
 
@@ -153,10 +154,9 @@ module Shadcn
       # upstream は Separator(別アイテム)に静的クラスを足す
       sig { override.returns(String) }
       def call
-        render(::Shadcn::Separator.new(
-                 **@html_args, data: { slot: "sidebar-separator", sidebar: "separator" },
-                               class: self.class.classes(extra: @user_class)
-               )) { content }
+        attributes = @html_args.merge(class: self.class.classes(extra: @user_class))
+        merge_nested(attributes, :data, { slot: "sidebar-separator", sidebar: "separator" })
+        render(::Shadcn::Separator.new(**attributes)) { content }
       end
     end
 

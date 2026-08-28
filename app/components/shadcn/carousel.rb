@@ -26,10 +26,8 @@ module Shadcn
       # 二重構造(accordion-content と同じ split 構造)
       sig { override.returns(String) }
       def call
-        attributes = @html_args.merge(
-          class: root_static_class,
-          data: { slot: contract_root_slot[:name] }
-        )
+        attributes = @html_args.merge(class: root_static_class)
+        merge_nested(attributes, :data, { slot: contract_root_slot[:name] })
         content_tag(tag, **attributes) do
           content_tag(:div, class: self.class.classes(extra: @user_class)) { content }
         end

@@ -36,9 +36,9 @@ module Shadcn
 
     sig { returns(String) }
     def range_input
-      content_tag(:input,
-                  type: "range", min: @min, max: @max, value: @value,
-                  "aria-label": "slider", class: "absolute inset-0 opacity-0") { "".html_safe }
+      void_tag("input",
+               type: "range", min: @min, max: @max, value: @value,
+               "aria-label": "slider", class: "absolute inset-0 opacity-0")
     end
 
     sig { params(name: String).returns(T.nilable(String)) }

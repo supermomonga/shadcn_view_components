@@ -256,7 +256,8 @@ slider:
     attributes: [role]
 native-select:
   NativeSelect:
-    attributes: [data-slot]
+    # フォーム属性は利用者が <select> に渡す(name/required 等)
+    attributes: [name, id, required, disabled, multiple, form, autofocus, aria-label]
 input-otp:
   InputOTP:
     attributes: [type, inputmode, maxlength, autocomplete, value]

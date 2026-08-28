@@ -47,22 +47,15 @@ module Shadcn
 
       sig { returns(String) }
       def input_element
-        void_input(
+        # キーボード操作はコントローラのキャプチャリスナーで一元処理する(data-action に
+        # keydown を置くと二重発火する — 片方のみにバインドする)
+        void_tag(
+          "input",
           type: "search",
           class: self.class.classes,
-          # キーボード操作はコントローラのキャプチャリスナーで一元処理する(data-action に
-          # keydown を置くと二重発火する — 片方のみにバインドする)
           data: { slot: "command-input", action: "input->#{Command::CONTROLLER}#filter" },
           aria: { label: "コマンド検索" }
         )
-      end
-
-      # void要素(input)を閉じタグ無しで出力する
-      sig { params(attrs: T::Hash[Symbol, T.untyped]).returns(String) }
-      def void_input(attrs)
-        content_tag(:input, **attrs) { "".html_safe }
-          .then { |markup| markup.sub(%r{</input>\z}, "") }
-          .then(&:html_safe)
       end
 
       sig { returns(String) }

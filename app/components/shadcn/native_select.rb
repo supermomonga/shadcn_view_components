@@ -2,20 +2,15 @@
 # frozen_string_literal: true
 
 module Shadcn
-  # 素の select/optgroup/option(JSレス — 05 §3)。ラッパーdiv + select + chevron
+  # 素の select/optgroup/option(JSレス — 05 §3)。ラッパーdiv + select + chevron。
+  # 利用者属性(name/id/required 等)はすべて実際の <select> に渡す
+  # (ラッパーは gem 内部要素のため name 等が届かないフォーム送信の破壊を防ぐ)
   class NativeSelect < BaseComponent
     sig { override.returns(String) }
     def call
-      content_tag(:div, **html_attributes) do
+      content_tag(:div, class: wrapper_class, data: { slot: "native-select-wrapper" }) do
         safe_join([select_element, chevron_icon])
       end
-    end
-
-    sig { override.returns(T::Hash[Symbol, T.untyped]) }
-    def html_attributes
-      attributes = @html_args.merge(class: wrapper_class)
-      attributes[:data] = { slot: "native-select-wrapper" }
-      attributes
     end
 
     private
@@ -23,7 +18,9 @@ module Shadcn
     # 選択肢は OptGroup / Option コンポーネントで content に渡す
     sig { returns(String) }
     def select_element
-      content_tag(:select, class: self.class.classes, data: { slot: "native-select" }) { content }
+      attributes = @html_args.merge(class: self.class.classes(extra: @user_class))
+      merge_nested(attributes, :data, { slot: "native-select" })
+      content_tag(:select, **attributes) { content }
     end
 
     sig { returns(T.nilable(String)) }

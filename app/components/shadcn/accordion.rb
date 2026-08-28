@@ -30,10 +30,8 @@ module Shadcn
 
       sig { returns(T::Hash[Symbol, T.untyped]) }
       def trigger_attributes
-        attributes = @html_args.merge(
-          class: self.class.classes(extra: @user_class),
-          data: { slot: self.class.contract.const_get(:CLASSES_SLOT) }
-        )
+        attributes = @html_args.merge(class: self.class.classes(extra: @user_class))
+        merge_nested(attributes, :data, { slot: self.class.contract.const_get(:CLASSES_SLOT) })
         merge_nested(attributes, :aria, {})
         attributes
       end
@@ -63,7 +61,9 @@ module Shadcn
       # 内側のdivに契約クラス(cn)を持つ二重構造。そのまま再現する
       sig { override.returns(String) }
       def call
-        content_tag(tag, class: root_static_class, data: { slot: contract_root_slot[:name] }) do
+        attributes = @html_args.merge(class: root_static_class)
+        merge_nested(attributes, :data, { slot: contract_root_slot[:name] })
+        content_tag(tag, **attributes) do
           content_tag(:div, class: self.class.classes(extra: @user_class)) { content }
         end
       end

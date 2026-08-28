@@ -73,8 +73,17 @@ module Shadcn
     # 空ブロックを渡してから閉じタグを取り除く
     sig { returns(String) }
     def open_tag
-      content_tag(tag, **html_attributes) { "".html_safe }
-        .then { |markup| markup.sub(%r{></#{Regexp.escape(tag)}>\z}, ">") }
+      void_tag(tag, **html_attributes)
+    end
+
+    # 指定タグの void 要素(input/br/hr 等)を閉じタグ無しで出力する統一ヘルパ。
+    # 手書きの input 描画で使う(閉じタグ付き <input></input> はHTML仕様違反のため)
+    # attrs を T.untyped にするのは srb の rest-kwargs モデル対策(呼び出し側の
+    # 任意キーワードを attrs に誤バインドする既知の挙動のため)
+    sig { params(name: String, attrs: T.untyped).returns(String) }
+    def void_tag(name, **attrs)
+      content_tag(name, **attrs) { "".html_safe }
+        .then { |markup| markup.sub(%r{></#{Regexp.escape(name)}>\z}, ">") }
         .then(&:html_safe)
     end
 

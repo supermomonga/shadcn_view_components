@@ -38,15 +38,15 @@ module Shadcn
 
       sig { returns(String) }
       def search_input
-        content_tag(
-          :input,
+        # キーボード操作はコントローラのキャプチャリスナーで一元処理する(二重発火防止)
+        void_tag(
+          "input",
           type: "search",
           class: "h-9 w-full min-w-0 flex-1 rounded-md border border-input bg-transparent px-3 py-1 text-base outline-none",
           role: "combobox",
           aria: { expanded: "false", haspopup: "listbox" },
-          # キーボード操作はコントローラのキャプチャリスナーで一元処理する(二重発火防止)
           data: { action: "input->#{Combobox::CONTROLLER}#filter" }
-        ) { "".html_safe }
+        )
       end
 
       # 契約の input-group-button スロット(静的クラスはスロット由来)

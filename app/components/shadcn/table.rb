@@ -23,10 +23,8 @@ module Shadcn
     # 内側の table に契約クラスを適用する。ラッパーの静的クラスは混ぜない
     sig { returns(T::Hash[Symbol, T.untyped]) }
     def table_attributes
-      attributes = @html_args.merge(
-        class: self.class.classes(extra: @user_class),
-        data: { slot: self.class.contract.const_get(:CLASSES_SLOT) }
-      )
+      attributes = @html_args.merge(class: self.class.classes(extra: @user_class))
+      merge_nested(attributes, :data, { slot: self.class.contract.const_get(:CLASSES_SLOT) })
       merge_nested(attributes, :aria, {})
       attributes
     end
