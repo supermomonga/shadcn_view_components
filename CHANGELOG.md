@@ -6,6 +6,35 @@ All notable changes to this project will be documented in this file.
 
 Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
+### 方向カスタムバリアントの欠落修正と resizable 挙動の修正(不具合修正)
+
+契約が使う Tailwind の `data-horizontal:` / `data-vertical:` が、存在しない
+`[data-horizontal]` 属性へのマッチにコンパイルされており、`data-orientation`
+を出力するどのコンポーネントにも適用されていなかった。tabs では active
+インジケータ(line バリアントの下線)の寸法・位置指定が死んでいて下線が描かれず、
+root の `data-horizontal:flex-col` も効かないためリストとコンテンツが横並びに
+なっていた。parity 検証は upstream 側も同じテーマCSS(shadcn.css)で描くため、
+この欠落を検出できていなかった。
+
+- extractor の CSS 生成に upstream npm shadcn/tailwind.css 由来の
+  `@custom-variant data-horizontal / data-vertical` を追加し、shadcn.css と
+  dummy の静的CSSを再生成。tabs ほか button-group / field / scroll-area /
+  separator / slider / toggle-group の方向系クラスが活性化する
+- resizable コントローラの修正:
+  - ドラッグ軸の反転(セパレータの `aria-orientation="vertical"` を縦方向
+    ドラッグと解釈しており、横並びグループで上下移動が分割を変えていた)を正す
+  - 前後パネルの対を「ハンドルより手前のパネル数」から決める(子要素全体の
+    index だったため、3パネル以上で2個目以降のハンドルが無反応だった)
+  - ドラッグを開始時の比率 + 移動量の相対方式に変更(カーソルの絶対位置をそのまま
+    比率にしていたため、掴んだ瞬間パネルがカーソル位置へ跳んでいた)
+  - 縦積みグループで上下キーでもリサイズできるようにし、flex-basis は %
+    表記のときだけ信頼する
+- `Resizable::PanelGroup` / `Resizable::Handle` に `orientation:` を追加し、
+  垂直グループ(`aria-orientation="vertical"` で flex-col、ハンドルは
+  row-resize)を構成できるように
+- Lookbook に `tabs/vertical` と `resizable/vertical` のシナリオを追加
+  (parity の upstream デモ・シナリオも登録)
+
 ### combobox の選択確定・chips 操作の実装(不具合修正)
 
 選択肢のクリック・chips入力欄でのEnter確定が全く機能しない不具合を修正した。
