@@ -199,7 +199,17 @@ module Shadcn
         attributes = super
         attributes[:role] = "option"
         attributes[:tabindex] = "-1"
-        merge_nested(attributes, :data, { value: @value, selected: @selected ? "true" : "false" }.compact)
+        # クリックでの選択確定。キー操作はコントローラのキャプチャリスナーで
+        # 一元処理するため data-action にしない(二重発火防止)
+        merge_nested(
+          attributes,
+          :data,
+          {
+            value: @value,
+            selected: @selected ? "true" : "false",
+            action: "click->#{Combobox::CONTROLLER}#select"
+          }.compact
+        )
         attributes
       end
 
@@ -214,8 +224,9 @@ module Shadcn
 
       sig { returns(String) }
       def indicator
-        # 未選択時は HTML の hidden 属性で隠す(upstream の ItemIndicator と同じ挙動)
-        content_tag(:span, hidden: !@selected) do
+        # 未選択時は HTML の hidden 属性で隠す(upstream の ItemIndicator と同じ挙動)。
+        # data-indicator は JS からの選択状態切替用(data-slot ではない)
+        content_tag(:span, hidden: !@selected, data: { indicator: "true" }) do
           check_icon
         end
       end
@@ -292,7 +303,7 @@ module Shadcn
           :button,
           type: "button",
           class: ShadcnViewComponents::Classes::MERGER.merge("#{base} -ml-1 opacity-50 hover:opacity-100"),
-          data: { slot: "combobox-chip-remove" },
+          data: { slot: "combobox-chip-remove", action: "#{Combobox::CONTROLLER}#removeChip" },
           aria: { label: "削除" }
         ) { remove_icon }
       end

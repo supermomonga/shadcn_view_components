@@ -258,7 +258,8 @@ combobox:
   ComboboxContent:
     attributes: [role, popover, data-state]
   ComboboxItem:
-    attributes: [role, tabindex, data-value, data-selected, aria-selected]
+    # クリックでの選択確定のための Stimulus アクション
+    attributes: [role, tabindex, data-value, data-selected, aria-selected, data-action]
   ComboboxEmpty:
     attributes: [hidden]
   ComboboxChipsInput:

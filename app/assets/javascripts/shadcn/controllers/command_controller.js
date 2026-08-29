@@ -4,12 +4,18 @@ import { hideAfterExit } from "shadcn/hide_after_exit"
 
 // コマンドパレット / コンボボックスの絞り込み(10-roadmap Phase 3)。
 // SSR済みの項目リストを入力でフィルタし、矢印キーでハイライト移動、
-// Enter で選択(data-selected / data-state を書き換える)
+// Enter やクリックで選択(data-selected / data-state を書き換える)
 export default class CommandController extends Controller {
   connect() {
-    this.input = this.element.querySelector("input[role='combobox']") ||
+    this.chips = this.element.querySelector("[data-slot='combobox-chips']")
+    // chipsモードではチップ入力欄が操作対象。併存時は role=combobox の入力より優先する
+    this.input = (this.chips && this.element.querySelector("[data-slot='combobox-chip-input']")) ||
+      this.element.querySelector("input[role='combobox']") ||
       this.element.querySelector("[data-slot='command-input']")
     this.empty = this.element.querySelector("[data-slot='command-empty'], [data-slot='combobox-empty']")
+    // 新規chipの複製元。全chipが削除された後も契約どおりのマークアップを
+    // 複製できるよう、接続時のchipを確保しておく
+    this.chipTemplate = this.chips?.querySelector("[data-slot='combobox-chip']") ?? null
     this.onKeydown = (event) => this.navigate(event)
     this.element.addEventListener("keydown", this.onKeydown, true)
     // combobox のリスト(popover)は data-open / data-closed 属性でアニメーション
@@ -39,6 +45,10 @@ export default class CommandController extends Controller {
     } else {
       this.list.setAttribute("data-closed", "")
       this.list.removeAttribute("data-open")
+    }
+    // chips入力欄はリストを持たないため aria-expanded を持たない(付け替え対象外)
+    if (this.input?.hasAttribute("aria-expanded")) {
+      this.input.setAttribute("aria-expanded", String(open))
     }
   }
 
@@ -71,6 +81,14 @@ export default class CommandController extends Controller {
   navigate(event) {
     const keys = ["ArrowDown", "ArrowUp", "Enter", "Home", "End"]
     if (!keys.includes(event.key)) return
+    // chips: Enter でハイライト項目を、無ければ入力テキストを新規chipとして確定する
+    if (event.key === "Enter" && this.chips) {
+      event.preventDefault()
+      const highlighted = this.visibleItems.find((item) => item.dataset.selected === "true")
+      if (highlighted) highlighted.click()
+      else this.commitChip(this.input?.value)
+      return
+    }
     const items = this.visibleItems
     if (items.length === 0) return
     event.preventDefault()
@@ -88,6 +106,22 @@ export default class CommandController extends Controller {
     this.highlight(items[Math.max(0, next)])
   }
 
+  // 項目の選択確定(Item の click->select)。Enter による item.click() もここへ流れる
+  select(event) {
+    const item = event.currentTarget
+    this.highlight(item)
+    if (this.chips) {
+      // 複数選択: 選択後もリストは開いたまま(upstream と同じ)
+      if (this.input) this.input.value = ""
+      this.addChip(item.textContent.trim())
+      this.filter()
+      return
+    }
+    this.markSelected(item)
+    if (this.input) this.input.value = item.textContent.trim()
+    this.closeList()
+  }
+
   highlight(item) {
     // 非表示項目も含めて走査する(絞り込みで隠れた項目に選択状態が残留しないように)
     for (const candidate of this.items) {
@@ -98,21 +132,78 @@ export default class CommandController extends Controller {
     }
   }
 
+  // 単一選択の確定状態(チェックインジケータ)を移す。ハイライト(data-selected)とは別管理
+  markSelected(item) {
+    for (const candidate of this.items) {
+      const indicator = candidate.querySelector("[data-indicator]")
+      if (indicator) indicator.hidden = candidate !== item
+    }
+  }
+
+  removeChip(event) {
+    event.currentTarget.closest("[data-slot='combobox-chip']")?.remove()
+  }
+
+  commitChip(value) {
+    const label = (value ?? "").trim()
+    if (label === "" || !this.chips) return
+    this.addChip(label)
+    if (this.input) {
+      this.input.value = ""
+      this.filter()
+    }
+  }
+
+  addChip(label) {
+    if (label === "" || !this.chips) return
+    const chip = this.buildChip(label)
+    if (this.input?.parentElement === this.chips) this.chips.insertBefore(chip, this.input)
+    else this.chips.appendChild(chip)
+  }
+
+  buildChip(label) {
+    // 既存 chip の複製でクラスと削除ボタンを引き継ぐ。どちらも無い場合は簡素に組み直す
+    const template = this.chipTemplate || this.chips.querySelector("[data-slot='combobox-chip']")
+    if (template) {
+      const chip = template.cloneNode(true)
+      const text = [...chip.childNodes].find(
+        (node) => node.nodeType === Node.TEXT_NODE && node.textContent.trim().length > 0
+      )
+      if (text) {
+        text.textContent = label
+      } else {
+        const remove = chip.querySelector("[data-slot='combobox-chip-remove']")
+        chip.insertBefore(document.createTextNode(label), remove)
+      }
+      return chip
+    }
+    const chip = document.createElement("div")
+    chip.dataset.slot = "combobox-chip"
+    chip.textContent = label
+    return chip
+  }
+
   // combobox: トリガーアイコンでリストを開閉する。
   // popover の toggle イベントは非同期のため、表示前に属性を先に切り替える
   // (閉状態属性のまま表示され、exit アニメーションで始まってしまうのを防ぐ)
   toggleList(event) {
-    const list = this.element.querySelector("[popover]")
+    const list = this.list
     if (!list) return
     if (list.matches(":popover-open")) {
-      this.syncListState(false)
-      hideAfterExit(list, () => {
-        if (list.dataset.state === "open") return
-        list.hidePopover()
-      })
+      this.closeList()
     } else {
       this.syncListState(true)
       list.showPopover()
     }
+  }
+
+  closeList() {
+    const list = this.list
+    if (!list || !list.matches(":popover-open")) return
+    this.syncListState(false)
+    hideAfterExit(list, () => {
+      if (list.dataset.state === "open") return
+      list.hidePopover()
+    })
   }
 }

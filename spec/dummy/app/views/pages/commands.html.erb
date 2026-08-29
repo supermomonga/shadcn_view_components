@@ -34,4 +34,14 @@
       <% end %>
     <% end %>
   </section>
+
+  <section id="combobox-chips-demo">
+    <%= render(Shadcn::Combobox.new(id: "combobox-chips")) do %>
+      <%= render(Shadcn::Combobox::Chips.new(id: "combobox-chips-box")) do %>
+        <%= render(Shadcn::Combobox::Chip.new(id: "chip-rails")) { "Rails" } %>
+        <%= render(Shadcn::Combobox::Chip.new(id: "chip-hanami")) { "Hanami" } %>
+        <%= render(Shadcn::Combobox::ChipsInput.new(id: "combobox-chip-input", placeholder: "追加…")) %>
+      <% end %>
+    <% end %>
+  </section>
 </main>

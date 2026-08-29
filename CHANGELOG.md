@@ -6,6 +6,27 @@ All notable changes to this project will be documented in this file.
 
 Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
+### combobox の選択確定・chips 操作の実装(不具合修正)
+
+選択肢のクリック・chips入力欄でのEnter確定が全く機能しない不具合を修正した。
+原因は選択確定の接線がJS/Ruby双方に存在しなかったことと、chipsプレビューが
+コントローラ無しで描かれていたこと。
+
+- `Combobox::Item` に `data-action="click->shadcn--command#select"` を追加し、
+  クリック(およびEnter時の合成クリック)で選択確定するように。単一選択では
+  チェックインジケータ(`data-indicator`)の移動・入力欄へのラベル反映・リストを
+  閉じるまでを行う。キー操作は従来どおりキャプチャリスナーに一元化
+  (data-action 化による二重発火は起こさない)
+- chipsモード: `Combobox::ChipsInput` をコントローラが発見できるようにし、Enter で
+  ハイライト項目(リスト無し時は入力テキスト)を新規chipとして確定。
+  `Combobox::Chip` の削除ボタンにも `removeChip` アクションを接線
+  (動的追加chipにも効く。新規chipは接続時に確保した既存chipの複製で、
+  クラスと削除ボタンを引き継ぐ。全chip削除後の追加でも契約どおりのマークアップになる)
+- chipsプレビュー(`combobox/chips`)を `Shadcn::Combobox.new` でラップし
+  コントローラを接線
+- 選択確定時に入力欄の `aria-expanded` を開閉に同期
+- 適合試験: allowances の `ComboboxItem` に `data-action` を許可に追加
+
 ### form の Field ベース再設計(破壊的変更)
 
 base-nova には form アイテムが存在せず、公式 docs/forms ガイドは Field プリミティブ +

@@ -21,12 +21,14 @@ module Shadcn
     end
 
     def chips
-      render(Shadcn::Combobox::Chips.new) do
-        safe_join([
-          render(Shadcn::Combobox::Chip.new) { "Rails" },
-          render(Shadcn::Combobox::Chip.new) { "Hanami" },
-          render(Shadcn::Combobox::ChipsInput.new(placeholder: "追加…"))
-        ])
+      render(Shadcn::Combobox.new) do
+        render(Shadcn::Combobox::Chips.new) do
+          safe_join([
+            render(Shadcn::Combobox::Chip.new) { "Rails" },
+            render(Shadcn::Combobox::Chip.new) { "Hanami" },
+            render(Shadcn::Combobox::ChipsInput.new(placeholder: "追加…"))
+          ])
+        end
       end
     end
   end

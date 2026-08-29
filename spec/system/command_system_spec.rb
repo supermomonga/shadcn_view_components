@@ -41,4 +41,58 @@ RSpec.describe "Command and Combobox behavior", type: :system do
     expect(page).to have_selector("#cb-hanami")
     expect(find("#cb-rails", visible: :all)).not_to be_visible
   end
+
+  it "selects a combobox item on click and closes the listbox" do
+    visit "/pages/commands"
+
+    find("#combobox-input [data-slot='input-group-button']").click
+    find("#cb-hanami").click
+
+    # 閉じは exit アニメーション後に hidePopover されるため非表示への切替を待つ
+    expect(page).to have_selector("#combobox-content", visible: :hidden)
+    expect(find("#cb-hanami", visible: :hidden)[:"data-selected"]).to eq("true")
+    expect(find("#combobox-input input").value).to eq("Hanami")
+    # 選択チェック(upstream の ItemIndicator 相当)がクリックした項目へ移る
+    expect(page.evaluate_script("document.querySelector('#cb-hanami [data-indicator]').hidden")).to be(false)
+    expect(page.evaluate_script("document.querySelector('#cb-rails [data-indicator]').hidden")).to be(true)
+  end
+
+  it "selects the highlighted item with Enter and closes the listbox" do
+    visit "/pages/commands"
+
+    find("#combobox-input [data-slot='input-group-button']").click
+    find("#combobox-input input").send_keys(:enter)
+
+    expect(page).to have_selector("#combobox-content", visible: :hidden)
+    expect(find("#combobox-input input").value).to eq("Ruby on Rails")
+  end
+
+  it "commits a new chip on Enter and removes chips via the remove button" do
+    visit "/pages/commands"
+
+    input = find("#combobox-chip-input")
+    input.set("Sinatra")
+    input.send_keys(:enter)
+
+    expect(page).to have_selector("#combobox-chips-box [data-slot='combobox-chip']", text: "Sinatra")
+    expect(page).to have_selector("#combobox-chips-box [data-slot='combobox-chip']", count: 3)
+    expect(input.value).to eq("")
+
+    # 動的に追加したchipでも削除ボタンが効くこと(Stimulusアクションの後からの接線)
+    find("#combobox-chips-box [data-slot='combobox-chip']", text: "Sinatra")
+      .find("[data-slot='combobox-chip-remove']").click
+    expect(page).to have_selector("#combobox-chips-box [data-slot='combobox-chip']", count: 2)
+
+    # 全chipを削除しても、複製元(接続時に確保)から完全なマークアップのchipを追加できる
+    find("#chip-rails [data-slot='combobox-chip-remove']").click
+    find("#chip-hanami [data-slot='combobox-chip-remove']").click
+    expect(page).to have_selector("#combobox-chips-box [data-slot='combobox-chip']", count: 0)
+
+    input.set("Zzz")
+    input.send_keys(:enter)
+    expect(page).to have_selector("#combobox-chips-box [data-slot='combobox-chip']", text: "Zzz")
+    find("#combobox-chips-box [data-slot='combobox-chip']", text: "Zzz")
+      .find("[data-slot='combobox-chip-remove']").click
+    expect(page).to have_selector("#combobox-chips-box [data-slot='combobox-chip']", count: 0)
+  end
 end
