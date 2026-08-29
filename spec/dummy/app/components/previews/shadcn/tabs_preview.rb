@@ -31,5 +31,20 @@ module Shadcn
         ])
       end
     end
+
+    def vertical
+      render(Shadcn::Tabs.new(orientation: :vertical)) do
+        safe_join([
+          render(Shadcn::Tabs::List.new(orientation: :vertical)) do
+            safe_join([
+              render(Shadcn::Tabs::Trigger.new(value: "account", active: true)) { "アカウント" },
+              render(Shadcn::Tabs::Trigger.new(value: "password")) { "パスワード" }
+            ])
+          end,
+          render(Shadcn::Tabs::Content.new(value: "account")) { "アカウント設定の内容" },
+          render(Shadcn::Tabs::Content.new(value: "password")) { "パスワード変更の内容" }
+        ])
+      end
+    end
   end
 end

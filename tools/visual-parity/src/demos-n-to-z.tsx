@@ -178,6 +178,24 @@ export const demosNToZ: Record<string, ComponentType> = {
     </ResizablePanelGroup>
   ),
 
+  "resizable/vertical": () => (
+    // ライブラリはグループの aria-orientation を自動付与しないため
+    // CSS 契約(aria-[orientation=vertical]:flex-col)のために明示する
+    <ResizablePanelGroup
+      orientation="vertical"
+      aria-orientation="vertical"
+      style={{ display: "flex", height: "200px", width: "100%", border: "1px solid #ccc" }}
+    >
+      <ResizablePanel>
+        <div style={{ padding: "12px" }}>上パネル</div>
+      </ResizablePanel>
+      <ResizableHandle />
+      <ResizablePanel>
+        <div style={{ padding: "12px" }}>下パネル</div>
+      </ResizablePanel>
+    </ResizablePanelGroup>
+  ),
+
   "scroll-area/default": () => (
     <ScrollArea className="h-48">
       {Array.from({ length: 20 }, (_, i) => (
@@ -256,6 +274,17 @@ export const demosNToZ: Record<string, ComponentType> = {
       </TabsList>
       <TabsContent value="a">概要の内容</TabsContent>
       <TabsContent value="b">設定の内容</TabsContent>
+    </Tabs>
+  ),
+
+  "tabs/vertical": () => (
+    <Tabs orientation="vertical" defaultValue="account">
+      <TabsList>
+        <TabsTrigger value="account">アカウント</TabsTrigger>
+        <TabsTrigger value="password">パスワード</TabsTrigger>
+      </TabsList>
+      <TabsContent value="account">アカウント設定の内容</TabsContent>
+      <TabsContent value="password">パスワード変更の内容</TabsContent>
     </Tabs>
   ),
 

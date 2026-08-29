@@ -12,6 +12,18 @@ module Shadcn
       end
     end
 
+    def vertical
+      render(Shadcn::Resizable::PanelGroup.new(orientation: :vertical,
+                                               style: "display: flex; height: 200px; width: 100%; border: 1px solid #ccc")) do
+        safe_join([
+          panel("上パネル"),
+          # ハンドル(セパレータ)自身の向きはグループの逆になる
+          render(Shadcn::Resizable::Handle.new(orientation: :horizontal)),
+          panel("下パネル")
+        ])
+      end
+    end
+
     private
 
     def panel(text)
