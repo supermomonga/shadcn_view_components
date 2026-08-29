@@ -1,7 +1,11 @@
 import { Controller } from "@hotwired/stimulus"
 
+import { hideAfterExit } from "shadcn/hide_after_exit"
+
 // ホバーインテント: trigger と content のどちらにいるかを遅延つきで判定し、
-// 素早い通り抜けでは表示しない(05-stimulus-hotwire §3)
+// 素早い通り抜けでは表示しない(05-stimulus-hotwire §3)。
+// 閉じる際は退出アニメーション(data-[state=closed]:animate-out)を待ってから
+// hidden 属性を付ける
 export default class HoverCardController extends Controller {
   connect() {
     this.content = this.element.querySelector("[data-slot='hover-card-content']")
@@ -23,7 +27,13 @@ export default class HoverCardController extends Controller {
   hide() {
     clearTimeout(this.showTimer)
     if (!this.content || this.content.dataset.state === "closed") return
-    this.hideTimer = setTimeout(() => this.setState("closed"), 150)
+    this.hideTimer = setTimeout(() => {
+      this.content.dataset.state = "closed"
+      hideAfterExit(this.content, () => {
+        if (this.content?.dataset.state === "open") return
+        this.content.hidden = true
+      })
+    }, 150)
   }
 
   setState(state) {

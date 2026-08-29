@@ -1,5 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
+import { hideAfterExit } from "shadcn/hide_after_exit"
+
 // コマンドパレット / コンボボックスの絞り込み(10-roadmap Phase 3)。
 // SSR済みの項目リストを入力でフィルタし、矢印キーでハイライト移動、
 // Enter で選択(data-selected / data-state を書き換える)
@@ -10,11 +12,33 @@ export default class CommandController extends Controller {
     this.empty = this.element.querySelector("[data-slot='command-empty'], [data-slot='combobox-empty']")
     this.onKeydown = (event) => this.navigate(event)
     this.element.addEventListener("keydown", this.onKeydown, true)
+    // combobox のリスト(popover)は data-open / data-closed 属性でアニメーション
+    // (upstream の Base UI と同じ属性)するため、開閉に同期して切り替える
+    this.list = this.element.querySelector("[popover]")
+    if (this.list) {
+      this.onListToggle = () => this.syncListState()
+      this.list.addEventListener("toggle", this.onListToggle)
+      this.syncListState()
+    }
     this.filter()
   }
 
   disconnect() {
     this.element.removeEventListener("keydown", this.onKeydown, true)
+    this.list?.removeEventListener("toggle", this.onListToggle)
+  }
+
+  // open 引数を渡すと実開状態より優先する(表示前に属性を切り替えるため)
+  syncListState(open = this.list?.matches(":popover-open")) {
+    if (!this.list) return
+    this.list.dataset.state = open ? "open" : "closed"
+    if (open) {
+      this.list.setAttribute("data-open", "")
+      this.list.removeAttribute("data-closed")
+    } else {
+      this.list.setAttribute("data-closed", "")
+      this.list.removeAttribute("data-open")
+    }
   }
 
   get items() {
@@ -73,9 +97,21 @@ export default class CommandController extends Controller {
     }
   }
 
-  // combobox: トリガーアイコンでリストを開閉する
+  // combobox: トリガーアイコンでリストを開閉する。
+  // popover の toggle イベントは非同期のため、表示前に属性を先に切り替える
+  // (閉状態属性のまま表示され、exit アニメーションで始まってしまうのを防ぐ)
   toggleList(event) {
     const list = this.element.querySelector("[popover]")
-    if (list) list.togglePopover()
+    if (!list) return
+    if (list.matches(":popover-open")) {
+      this.syncListState(false)
+      hideAfterExit(list, () => {
+        if (list.dataset.state === "open") return
+        list.hidePopover()
+      })
+    } else {
+      this.syncListState(true)
+      list.showPopover()
+    }
   }
 }

@@ -1,5 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
+import { hideAfterExit } from "shadcn/hide_after_exit"
+
 // ARIA menu パターンの共通実装(dropdown-menu / context-menu 共用 — 05 §4)。
 // - 矢印 / Home / End でハイライト移動(roving)
 // - Esc で閉じる、項目の activation で閉じる
@@ -30,7 +32,7 @@ export default class MenuController extends Controller {
     this.element.addEventListener("keydown", this.onKeydown, true)
     this.onDocPointerDown = (event) => {
       for (const popover of this.element.querySelectorAll("[popover='manual']")) {
-        if (popover.matches(":popover-open") && !popover.contains(event.target)) popover.hidePopover()
+        if (popover.matches(":popover-open") && !popover.contains(event.target)) this.hidePopoverAfterExit(popover)
       }
     }
     document.addEventListener("pointerdown", this.onDocPointerDown)
@@ -49,7 +51,15 @@ export default class MenuController extends Controller {
   }
 
   toggle() {
-    this.menu?.togglePopover()
+    if (!this.menu) return
+    if (this.menu.matches(":popover-open")) {
+      this.hidePopoverAfterExit(this.menu)
+    } else {
+      // toggle イベントは非同期のため、表示前に属性を先に切り替える
+      // (閉状態属性のまま表示され、exit アニメーションで始まってしまうのを防ぐ)
+      this.menu.dataset.state = "open"
+      this.menu.togglePopover()
+    }
   }
 
   // context-menu: 右クリック位置に開く。content は popover="manual" で描かれるため
@@ -79,13 +89,23 @@ export default class MenuController extends Controller {
 
   // popover="manual" のcontent(右クリック)を開く。外側のpointerdownで閉じる
   show() {
-    if (this.menu && !this.menu.matches(":popover-open")) this.menu.showPopover()
+    if (this.menu && !this.menu.matches(":popover-open")) {
+      // toggle イベントは非同期のため、表示前に属性を先に切り替える
+      this.menu.dataset.state = "open"
+      this.menu.showPopover()
+    }
     this.focusItem(this.items[0])
   }
 
   toggleSub(event) {
     const sub = event.currentTarget.closest("[data-slot$='-sub']")?.querySelector("[popover]")
-    sub?.togglePopover()
+    if (!sub) return
+    if (sub.matches(":popover-open")) {
+      this.hidePopoverAfterExit(sub)
+    } else {
+      sub.dataset.state = "open"
+      sub.togglePopover()
+    }
   }
 
   activate() {
@@ -146,9 +166,27 @@ export default class MenuController extends Controller {
     item.focus()
   }
 
+  // 退出アニメーション(data-[state=closed]:animate-out)を待ってから閉じる。
+  // 退出中に再オープンされた場合は閉じない
+  hidePopoverAfterExit(popover) {
+    if (!popover.matches(":popover-open")) {
+      popover.hidePopover()
+      return
+    }
+    popover.dataset.state = "closed"
+    // 退出アニメーション中も aria-expanded は即時に閉側へ(a11y 上の状態は操作の瞬間に確定させる)
+    for (const trigger of this.element.querySelectorAll("[aria-haspopup='menu']")) {
+      trigger.setAttribute("aria-expanded", "false")
+    }
+    hideAfterExit(popover, () => {
+      if (popover.dataset.state === "open") return
+      popover.hidePopover()
+    })
+  }
+
   closeAll() {
     for (const popover of this.element.querySelectorAll("[popover]")) {
-      if (popover.matches(":popover-open")) popover.hidePopover()
+      if (popover.matches(":popover-open")) this.hidePopoverAfterExit(popover)
     }
   }
 }

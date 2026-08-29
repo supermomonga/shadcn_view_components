@@ -5,7 +5,16 @@ module Shadcn
   class Accordion < BaseComponent
     # ネイティブな details によるアコーディオン(JS無しで開閉可 — 05-stimulus-hotwire §3)。
     # JS無効時フォールバック: Graceful(開閉・排他ともネイティブ要素で成立)。
-    # 単一排他は Item の name 属性で実現する(利用者が name: を渡す)
+    # 単一排他は Item の name 属性で実現する(利用者が name: を渡す)。
+    # 開閉アニメーション(animate-accordion-down/up)は shadcn--accordion コントローラが
+    # data-state と高さ変数を同期して担う
+    CONTROLLER = "shadcn--accordion"
+
+    sig { override.returns(T::Hash[Symbol, T.untyped]) }
+    def contract_data_attributes
+      super.merge(controller: CONTROLLER)
+    end
+
     class Item < BaseComponent
       # 契約タグは AccordionPrimitive.Item。ネイティブな details として描く
       sig { override.returns(String) }

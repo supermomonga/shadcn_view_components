@@ -1,8 +1,12 @@
 import { Controller } from "@hotwired/stimulus"
 
+import { hideAfterExit } from "shadcn/hide_after_exit"
+
 // Popover API(popover="auto")の開閉同期と位置合わせ。
 // 軽い外側クリック解散(light dismiss)はネイティブが担い、ここでは
-// data-state / aria-expanded の同期と、trigger 直下への位置合わせを行う
+// data-state / aria-expanded の同期と、trigger 直下への位置合わせを行う。
+// trigger からの明示的な閉じ操作では退出アニメーションを待つ
+// (ネイティブの light dismiss は即時解散のためアニメーション無し)
 export default class PopoverController extends Controller {
   connect() {
     this.content = this.element.querySelector("[popover]")
@@ -20,7 +24,17 @@ export default class PopoverController extends Controller {
 
   toggle() {
     if (!this.content) return
-    this.content.togglePopover()
+    if (this.content.matches(":popover-open")) {
+      this.content.dataset.state = "closed"
+      hideAfterExit(this.content, () => {
+        if (this.content?.dataset.state === "open") return
+        this.content.hidePopover()
+      })
+    } else {
+      // toggle イベントは非同期のため、表示前に属性を先に切り替える
+      this.content.dataset.state = "open"
+      this.content.togglePopover()
+    }
   }
 
   syncState() {

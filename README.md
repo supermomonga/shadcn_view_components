@@ -61,6 +61,12 @@ bin/rails generate shadcn_view_components:install
 
 **`@source` 指定が必須**である理由: Tailwind v4の自動コンテンツ検出はgem内部を走査しない。この指定がないと、コンポーネントの契約クラスがCSSに含まれず素のHTMLとして表示される(最も多い導入トラブル)。gemアップデートでパスが変わったらインストーラを再実行するとパスが最新化される。
 
+**アニメーション**: テーマCSSは `@import "tw-animate-css"` を含む(upstreamのshadcnインストールと同じ)。開閉・ポップオーバーのアニメーション(animate-in/out、accordion-down/up等)のため、ホストのnode環境に `tw-animate-css` がインストール済みであること:
+
+```bash
+npm install tw-animate-css   # または pnpm add / yarn add
+```
+
 ### JS(インタラクティブコンポーネント利用時)
 
 importmap-rails利用時はエンジンが自動pinする:

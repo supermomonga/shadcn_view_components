@@ -339,6 +339,10 @@ chart:
 sonner:
   Toaster:
     attributes: [data-controller, aria-live]
+accordion:
+  Accordion:
+    # 開閉アニメーション同期のため shadcn--accordion コントローラを付ける
+    attributes: [data-controller]
 calendar:
   Calendar:
     # 内側に DayButton を描く合成構造のため子スロットが増える
