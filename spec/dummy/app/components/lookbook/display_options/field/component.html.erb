@@ -1,0 +1,18 @@
+<%# Lookbook display option「theme」のトグルボタン。
+    Lookbook 標準のセレクト(config/initializers/lookbook_theme_toggle.rb で差し替え)の代わりに
+    月/太陽アイコンで light/dark を切り替える。x-data は Lookbook の
+    displayOptionsFieldComponent のままなので、クリックで value を変えるだけで
+    クッキー(lookbook-display-theme)とプレビューURLの _display が更新され、
+    プレビューiframeが再読み込みされる %>
+<%= render_component_tag do %>
+  <button type="button"
+    id="theme-toggle-button"
+    class="block p-2 text-lookbook-icon-button-stroke hover:text-lookbook-icon-button-stroke-hover focus:outline-none focus-visible:outline-none"
+    x-on:click="value = (value === 'dark' ? 'light' : 'dark')"
+    :aria-label="value === 'dark' ? 'ライトモードに切り替え' : 'ダークモードに切り替え'"
+    :title="value === 'dark' ? 'ライトモードに切り替え' : 'ダークモードに切り替え'">
+    <%# x-cloak は Alpine 起動前の誤表示を防ぐ。状態はサーバー側の value と一致させておく %>
+    <span class="block" x-show="value !== 'dark'" <%= "x-cloak" if value == "dark" %>><%= icon :moon, size: 4 %></span>
+    <span class="block" x-show="value === 'dark'" <%= "x-cloak" if value != "dark" %>><%= icon :sun, size: 4 %></span>
+  </button>
+<% end %>

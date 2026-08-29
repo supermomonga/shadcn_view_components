@@ -38,5 +38,14 @@ module Dummy
     # 設定実体は ViewComponent::Config.current。Lookbookが起動時に
     # プレビューツリーを構築するため、クラス定義時点で登録しておく
     ViewComponent::Config.current.previews.paths << File.expand_path("../app/components/previews", __dir__)
+
+    # Lookbookプレビューのdisplay optionにライト/ダーク切り替えを追加する(06-theming §3)。
+    # 選択値はクッキー(lookbook-display-theme)とプレビューURLの _display パラメータで
+    # 永続化され、dummyレイアウトが <html class="dark"> として反映する。
+    # シナリオメソッドはthemeを受け取らない(Shadcn::PreviewBase.invoke_example が
+    # 宣言済みkwargsだけを渡す)ため、プレビュー描画結果への影響はない
+    Lookbook.configure do |config|
+      config.preview_display_options = { theme: %w[light dark] }
+    end
   end
 end
