@@ -199,7 +199,7 @@ RSpec.describe "animation parity", :parity, type: :system do
         scenario.fetch(:upstream_trigger), scenario.fetch(:content), action
       )
       ours = open_and_collect(
-        "/lookbook/preview/#{scenario.fetch(:ours)}",
+        "/preview/#{scenario.fetch(:ours)}",
         scenario.fetch(:ours_trigger), scenario.fetch(:content), action
       )
 

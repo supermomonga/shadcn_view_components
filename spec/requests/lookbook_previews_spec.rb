@@ -9,12 +9,12 @@ require "rails_helper"
 # 全exampleをHTTP経由で描画し、リークとステータス異常を検出する
 RSpec.describe "Lookbook previews", type: :request do
   it "Lookbook のインデックスが表示される" do
-    get "/lookbook"
+    get "/"
     expect(response).to have_http_status(:ok)
   end
 
   it "プレビュー基底クラス自体はexampleを持たず一覧に出ない" do
-    get "/lookbook"
+    get "/"
     expect(response.body).not_to include("preview_base")
   end
 
@@ -23,7 +23,7 @@ RSpec.describe "Lookbook previews", type: :request do
 
     preview.examples.sort.each do |example|
       it "#{preview.preview_name}/#{example} がディスクリプタを露出せず描画される" do
-        get "/lookbook/preview/#{preview.preview_name}/#{example}"
+        get "/preview/#{preview.preview_name}/#{example}"
 
         expect(response).to have_http_status(:ok)
         expect(response.body).not_to include("&lt;Proc")
@@ -33,14 +33,14 @@ RSpec.describe "Lookbook previews", type: :request do
   end
 
   it "アコーディオンのプレビューはネストしたコンポーネントを実際のHTMLとして描画する" do
-    get "/lookbook/preview/shadcn/accordion/default"
+    get "/preview/shadcn/accordion/default"
 
     expect(response).to have_http_status(:ok)
     expect(response.body).to include("<details")
     expect(response.body).to include("最初の項目")
   end
 
-  # display option「theme」(light/dark)はdummyレイアウトが _display パラメータと
+  # display option「theme」(light/dark)はプレビュー専用レイアウトが _display パラメータと
   # クッキーから <html class="dark"> へ反映する(06-theming §3)。
   # Lookbookのセレクト操作実体は「クッキー + URLの_display更新 + iframeリロード」
   describe "テーマ切り替え(display option theme)" do
@@ -49,14 +49,14 @@ RSpec.describe "Lookbook previews", type: :request do
     end
 
     it "パラメータ無しの既定はライトで描画される" do
-      get "/lookbook/preview/shadcn/button/default"
+      get "/preview/shadcn/button/default"
 
       expect(response.body).not_to include(%(<html lang="ja" class="dark">))
       expect(response.body).not_to include("background-color: var(--background)")
     end
 
     it "_display パラメータの theme:dark でダークになる" do
-      get "/lookbook/preview/shadcn/button/default?_display=#{encoded_display(theme: 'dark')}"
+      get "/preview/shadcn/button/default?_display=#{encoded_display(theme: 'dark')}"
 
       expect(response.body).to include(%(<html lang="ja" class="dark">))
       expect(response.body).to include("background-color: var(--background)")
@@ -64,7 +64,7 @@ RSpec.describe "Lookbook previews", type: :request do
 
     it "theme:light の _display はクッキーより優先されてライトに戻る" do
       cookies["lookbook-display-theme"] = "dark"
-      get "/lookbook/preview/shadcn/button/default?_display=#{encoded_display(theme: 'light')}"
+      get "/preview/shadcn/button/default?_display=#{encoded_display(theme: 'light')}"
 
       expect(response.body).not_to include(%(<html lang="ja" class="dark">))
     ensure
@@ -73,7 +73,7 @@ RSpec.describe "Lookbook previews", type: :request do
 
     it "_display 無しでもクッキー(lookbook-display-theme)でダークが永続化する" do
       cookies["lookbook-display-theme"] = "dark"
-      get "/lookbook/preview/shadcn/button/default"
+      get "/preview/shadcn/button/default"
 
       expect(response.body).to include(%(<html lang="ja" class="dark">))
     ensure
@@ -81,14 +81,14 @@ RSpec.describe "Lookbook previews", type: :request do
     end
 
     it "theme キーを含まない _display はライトで描画される" do
-      get "/lookbook/preview/shadcn/button/default?_display=#{encoded_display(other: 'x')}"
+      get "/preview/shadcn/button/default?_display=#{encoded_display(other: 'x')}"
 
       expect(response.body).not_to include(%(<html lang="ja" class="dark">))
       expect(response).to have_http_status(:ok)
     end
 
     it "インスペクタのテーマ切り替えはセレクトではなくトグルボタンで表示される" do
-      get "/lookbook/inspect/shadcn/button/default"
+      get "/inspect/shadcn/button/default"
 
       expect(response).to have_http_status(:ok)
       expect(response.body).not_to include('<select name="theme"')

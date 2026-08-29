@@ -2492,6 +2492,10 @@
       outline-offset: 2px;
     }
   }
+  .focus\:outline-none:focus {
+    --tw-outline-style: none;
+    outline-style: none;
+  }
   .focus-visible\:z-10:focus-visible {
     z-index: 10;
   }
@@ -2551,6 +2555,10 @@
   }
   .focus-visible\:outline-ring:focus-visible {
     outline-color: var(--ring);
+  }
+  .focus-visible\:outline-none:focus-visible {
+    --tw-outline-style: none;
+    outline-style: none;
   }
   .active\:bg-sidebar-accent:active {
     background-color: var(--sidebar-accent);

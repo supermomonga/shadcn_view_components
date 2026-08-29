@@ -120,12 +120,14 @@ def parity_capture(page, body_path, dark: false)
   # animate-pulse 等の非決定性を両側で同じように止めてからbody要素を撮る
   # (Cuprite の selector: オプションで要素単位のスクリーンショットになる)。
   # 内容が表示高さ0のときも要素撮影が失敗しないよう最小高さを両側で同値に保証する。
+  # プレビュー専用レイアウトが付与するbodyの余白は比較対象外のため、両側で同じように
+  # 打ち消してから撮る(upstream側は余白なしなので実質うち側だけ効く)。
   # dark モードではさらに .dark を <html> に付与し、body背景にトークン
   # (--background)を直接効かせてから撮る(両サイドへ同一の注入)
   dark_js = dark ? "document.documentElement.classList.add('dark');document.body.style.backgroundColor='var(--background)';" : ""
   page.execute_script(
     "const s=document.createElement('style');s.textContent='*{animation:none!important;transition:none!important}';document.head.append(s);" \
-    "document.body.style.minHeight='1px';#{dark_js}"
+    "document.body.style.minHeight='1px';document.body.style.padding='0';#{dark_js}"
   )
   # 戻り値は注入後の body の計算背景色(dark適用の確認に使う)
   bg = page.evaluate_script("getComputedStyle(document.body).backgroundColor")
@@ -159,7 +161,7 @@ RSpec.describe "visual parity", :parity, type: :system do
         visit "http://127.0.0.1:4173/?demo=#{demo_id}"
         upstream_bg = parity_capture(page, upstream_png, dark: dark)
 
-        visit "/lookbook/preview/#{ours_path}"
+        visit "/preview/#{ours_path}"
         ours_bg = parity_capture(page, ours_png, dark: dark)
 
         if dark

@@ -4,7 +4,7 @@ node = "lts"
 pnpm = "latest"
 
 [tasks.lookbook]
-description = "dummy アプリを起動して Lookbook(http://localhost:9292/lookbook)を開く"
+description = "dummy アプリを起動して Lookbook(http://localhost:9292/)を開く"
 dir = "spec/dummy"
 env = { BUNDLE_GEMFILE = "../../Gemfile" }
 run = "bundle exec puma config.ru"

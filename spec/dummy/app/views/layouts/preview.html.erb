@@ -1,0 +1,32 @@
+<%
+  # Lookbookプレビュー専用レイアウト(config.preview_layout = "preview")。
+  # display option「theme」をプレビュードキュメントへ反映する(06-theming §3)。
+  # _display はJSONをURLエンコードした値で、Rackが一度デコードして渡す。
+  # パラメータが無い場合はLookbookがdisplay optionの永続化に使う
+  # クッキー(lookbook-display-theme)で補う
+  raw_display = request.query_parameters[:_display] || params[:_display]
+  display = begin
+    JSON.parse(raw_display.to_s)
+  rescue JSON::ParserError
+    begin
+      JSON.parse(CGI.unescape(raw_display.to_s))
+    rescue JSON::ParserError
+      {}
+    end
+  end
+  dark = (display["theme"] || cookies["lookbook-display-theme"]).to_s == "dark"
+%>
+<!DOCTYPE html>
+<html lang="ja" class="<%= "dark" if dark %>">
+  <head>
+    <title>preview — shadcn_view_components</title>
+    <!-- Tailwindビルド済みの静的CSS(spec/dummy/tailwind/input.css から生成)。dummyはTailwindを実行しない方針 -->
+    <%= stylesheet_link_tag "application" %>
+    <%= javascript_importmap_tags %>
+  </head>
+  <%# 余白は全シナリオ共通の表示領域として確保するもの。パリティ検証は
+      parity_capture側でpaddingを0に戻してから撮影する(spec/visual/parity_spec.rb) %>
+  <body style="padding: 1rem;<%= " background-color: var(--background);" if dark %>">
+    <%= yield %>
+  </body>
+</html>

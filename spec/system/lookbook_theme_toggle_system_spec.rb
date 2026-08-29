@@ -4,7 +4,7 @@
 # ボタンはLookbook Fieldコンポーネントのテンプレートを差し替えたもの
 # (config/initializers/lookbook_theme_toggle.rb 参照)で、
 # 「クリック → Alpine(displayOptionsFieldComponent) → Cookie+_display 更新 →
-#   iframeリロード → dummyレイアウトが <html class="dark"> を付与」
+#   iframeリロード → プレビュー専用レイアウトが <html class="dark"> を付与」
 # という末端のループを実ブラウザで確認する
 require "rails_helper"
 
@@ -14,7 +14,7 @@ RSpec.describe "Lookbook theme toggle", type: :system do
   end
 
   it "トグルをクリックするとプレビューiframeがダーク/ライトに切り替わる" do
-    visit "/lookbook/inspect/shadcn/button/default"
+    visit "/inspect/shadcn/button/default"
 
     within_frame("preview-iframe") do
       expect(page).to have_selector("html:not(.dark)")

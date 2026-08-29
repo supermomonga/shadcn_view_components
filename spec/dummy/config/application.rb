@@ -41,11 +41,14 @@ module Dummy
 
     # Lookbookプレビューのdisplay optionにライト/ダーク切り替えを追加する(06-theming §3)。
     # 選択値はクッキー(lookbook-display-theme)とプレビューURLの _display パラメータで
-    # 永続化され、dummyレイアウトが <html class="dark"> として反映する。
+    # 永続化され、プレビュー専用レイアウトが <html class="dark"> として反映する。
     # シナリオメソッドはthemeを受け取らない(Shadcn::PreviewBase.invoke_example が
     # 宣言済みkwargsだけを渡す)ため、プレビュー描画結果への影響はない
     Lookbook.configure do |config|
       config.preview_display_options = { theme: %w[light dark] }
+      # プレビューはダミー共通レイアウトではなく専用レイアウトで包む
+      # (テーマ反映 + 全シナリオ共通の表示領域の余白を担う)
+      config.preview_layout = "preview"
     end
   end
 end

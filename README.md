@@ -128,13 +128,14 @@ bundle exec rspec spec/conformance     # 適合試験のみ(追従PRで最初に
 bundle exec rspec spec/system          # ふるまいのみ(Cuprite + Chrome)
 bundle exec srb tc                     # 型検査
 bundle exec rubocop                    # lint
-mise run lookbook                      # プレビュー(http://localhost:9292/lookbook)
+mise run lookbook                      # プレビュー(http://localhost:9292/)
 mise run build-css                     # Lookbook用の静的スタイル再生成
 ```
 
-Lookbook のプレビューツールバーには **Theme トグルボタン(月/太陽アイコン)** があり、プレビューの
-ライト/ダークを切り替えられる(選択はクッキーに永続化)。反映は dummy レイアウト
-(`spec/dummy/app/views/layouts/application.html.erb`)が `<html class="dark">` として行う。
+Lookbook は dummy アプリのルートパス(`/`)で開く。プレビューツールバーには
+**Theme トグルボタン(月/太陽アイコン)** があり、プレビューの
+ライト/ダークを切り替えられる(選択はクッキーに永続化)。反映はプレビュー専用レイアウト
+(`spec/dummy/app/views/layouts/preview.html.erb`)が `<html class="dark">` として行う。
 ボタンは Lookbook の display option「theme」(select)のテンプレートを差し替えたもので
 (`spec/dummy/config/initializers/lookbook_theme_toggle.rb` 参照)、動作経路は Lookbook 組み込みのままである。
 
