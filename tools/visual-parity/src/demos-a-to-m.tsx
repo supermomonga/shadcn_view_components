@@ -4,7 +4,6 @@
  */
 import type { ComponentType } from "react"
 import { ja } from "date-fns/locale"
-import { useForm } from "react-hook-form"
 
 import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger,
@@ -57,11 +56,12 @@ import {
   DropdownMenuShortcut, DropdownMenuTrigger,
 } from "./components/ui/dropdown-menu.tsx"
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "./components/ui/empty.tsx"
+import {
+  Field, FieldContent, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldTitle,
+} from "./components/ui/field.tsx"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./components/ui/hover-card.tsx"
 import { Input } from "./components/ui/input.tsx"
-import {
-  Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage,
-} from "./components/ui/form.tsx"
+import { Switch } from "./components/ui/switch.tsx"
 
 const box = (text: string) => (
   <div className="flex size-40 items-center justify-center rounded-md border">{text}</div>
@@ -352,50 +352,51 @@ export const demosAToM: Record<string, ComponentType> = {
     </Empty>
   ),
 
-  // upstream の FormLabel/FormMessage は react-hook-form のコンテキストを要求するため
-  // Form + FormField で囲む(描画されるDOMは FormItem 配下でうち側と同じ構造)
-  "form/default": () => {
-    const form = useForm()
-    return (
-      <Form {...form}>
-        <FormField
-          control={form.control}
-          name="preview-email"
-          render={() => (
-            <FormItem>
-              <FormLabel htmlFor="preview-email">メールアドレス</FormLabel>
-              <FormControl>
-                <Input id="preview-email" type="email" placeholder="you@example.com" />
-              </FormControl>
-              <FormDescription>ログインに使うアドレスです</FormDescription>
-              <FormMessage>メールアドレスを入力してください</FormMessage>
-            </FormItem>
-          )}
-        />
-      </Form>
-    )
-  },
+  "field/default": () => (
+    <FieldGroup>
+      <Field>
+        <FieldLabel htmlFor="field-email">メールアドレス</FieldLabel>
+        <Input id="field-email" type="email" placeholder="you@example.com" />
+        <FieldDescription>ログインに使うアドレスです</FieldDescription>
+      </Field>
+      <Field>
+        <FieldLabel htmlFor="field-name">名前</FieldLabel>
+        <Input id="field-name" />
+        <FieldDescription>表示名として使われます</FieldDescription>
+      </Field>
+    </FieldGroup>
+  ),
 
-  "form/without-message": () => {
-    const form = useForm()
-    return (
-      <Form {...form}>
-        <FormField
-          control={form.control}
-          name="preview-name"
-          render={() => (
-            <FormItem>
-              <FormLabel htmlFor="preview-name">名前</FormLabel>
-              <FormControl>
-                <Input id="preview-name" />
-              </FormControl>
-              <FormDescription>エラーが無いときはメッセージ要素自体が描かれません</FormDescription>
-            </FormItem>
-          )}
-        />
-      </Form>
-    )
-  },
+  "field/horizontal": () => (
+    <Field orientation="horizontal">
+      <FieldContent>
+        <FieldTitle>公開する</FieldTitle>
+        <FieldDescription>プロフィールを全員に表示します</FieldDescription>
+      </FieldContent>
+      <Switch />
+    </Field>
+  ),
+
+  // form は base-nova のレジストリに存在しない(local-override の独自契約)。
+  // upstream docs/forms ガイドと同じ Field プリミティブの組み立てで、
+  // Form::Item(= data-invalid 付き Field) + Form::Error の描画を再現する
+  "form/default": () => (
+    <Field data-invalid="true">
+      <FieldLabel htmlFor="preview-email">メールアドレス</FieldLabel>
+      <Input id="preview-email" type="email" placeholder="you@example.com" aria-invalid="true" />
+      <FieldDescription>ログインに使うアドレスです</FieldDescription>
+      <FieldError errors={[{ message: "メールアドレスを入力してください" }]} />
+    </Field>
+  ),
+
+  "form/without-error": () => (
+    <Field data-invalid="false">
+      <FieldLabel htmlFor="preview-name">名前</FieldLabel>
+      <Input id="preview-name" />
+      <FieldDescription>エラーが無いときはError要素自体が描かれません</FieldDescription>
+      <FieldError />
+    </Field>
+  ),
 
   "hover-card/default": () => (
     <HoverCard>

@@ -41,7 +41,7 @@ module ParityServer
 
   # distが無い、または前回ビルド時からビルド入力が変わっている
   def stale?
-    File.read(stamp_path) == fingerprint
+    File.read(stamp_path) != fingerprint
   rescue Errno::ENOENT
     true
   end
