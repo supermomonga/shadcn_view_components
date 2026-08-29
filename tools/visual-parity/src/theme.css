@@ -1,13 +1,16 @@
 /*
- * upstream側のスタイル入力。gem と同一のテーマトークン(shadcn.css)を読み込む。
+ * upstream側のスタイル入力。参照側を gem の shadcn.css から独立させるため、
+ * upstream 実アプリの globals.css 相当のみ(upstream_theme.css: extractor が
+ * vendor スナップショット + npm shadcn/tailwind.css から生成)を読む。
+ * gem の shadcn.css に移植漏れがあれば upstream 側との描画差分として検出される。
+ * 比較の決定論性のためフォントスタックのみ両側で同一に固定する。
  * src/components/ui/(unpack.mjs が展開、gitignore 済み)は自動走査の対象外に
  * なるため、明示的な @source で登録する。
  */
 @import "tailwindcss";
-@import "../../../app/assets/stylesheets/shadcn/shadcn.css";
+@import "./upstream_theme.css";
 
-/* 比較の決定論性のためフォントスタックを両側で同一に固定する
-   (dummy側の spec/dummy/tailwind/input.css と同じ定義) */
+/* dummy側の spec/dummy/tailwind/input.css と同じ定義 */
 @theme {
   --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";

@@ -6,6 +6,30 @@ All notable changes to this project will be documented in this file.
 
 Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
+### パリティ検証の参照側を upstream 本来のCSSパイプラインへ(検証設計修正)
+
+visual parity の upstream 参照側は、これまで gem の `shadcn.css` を読んでいた(トークンと
+フォントを両側で同一にして決定論的に比較するため)。しかし**共有したものはテスト対象から
+外れる**ため、shadcn.css とその Tailwind コンパイル意味論に属する不具合 — 前項で修正した
+カスタムバリアント欠落(tabs line の下線消失)もその型 — は両側で同じだけ壊れて差分が消え、
+検出できなかった。
+
+- npm shadcn パッケージ同梱の `tailwind.css`(index.json の `@import "shadcn/tailwind.css"`
+  の実体)を `vendor/shadcn/style/tailwind.css` にスナップショットし、manifest の
+  `source.tailwind_css` がバージョン(`upstream_release.tag` に固定)と SHA256 を記録。
+  `rake shadcn:sync` がこのファイルも取得・更新する
+- gem の `shadcn.css` は当該ファイルを verbatim 取り込みに変更。従来手追加していた
+  `data-horizontal` / `data-vertical` の2バリアント断片を廃止し、9種のカスタムバリアント・
+  accordion keyframes・`no-scrollbar`・`scroll-fade`・`shimmer` を upstream どおり提供する
+- 参照側には upstream 実アプリの globals.css 相当のみを生成した
+  `tools/visual-parity/src/upstream_theme.css` を与え、gem 出力から独立させた
+  (`shadcn:generate` / `shadcn:check` の対象に追加)。全シナリオの描画は変化せず
+  (既存の移植に CSS パイプライン起因の漏れが無いことの確認)。「accordion の開閉
+  アニメーションが upstream と一致する」は keyframes 定義の供給により今回から緑化
+- 新スペック `spec/conformance/custom_variant_spec.rb`: shadcn.css への verbatim取り込み
+  の存在と、契約が使う bare `data-*:` バリアントが「upstream 定義済み」か「Base UI の
+  bare 状態属性(presence で正しい)の許可リスト」に分類できることを機械的に検査
+
 ### 方向カスタムバリアントの欠落修正と resizable 挙動の修正(不具合修正)
 
 契約が使う Tailwind の `data-horizontal:` / `data-vertical:` が、存在しない

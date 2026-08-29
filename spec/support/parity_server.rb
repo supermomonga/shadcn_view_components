@@ -19,7 +19,8 @@ module ParityServer
     File.expand_path("../../vendor/shadcn/manifest.json", __dir__),
     File.expand_path("../../app/assets/stylesheets/shadcn/shadcn.css", __dir__),
     *%w[package.json pnpm-lock.yaml vite.config.ts index.html unpack.mjs].map { |f| File.join(HARNESS_DIR, f) },
-    *%w[main.tsx theme.css demos.tsx demos-a-to-m.tsx demos-n-to-z.tsx].map { |f| File.join(HARNESS_DIR, "src", f) },
+    *%w[main.tsx theme.css upstream_theme.css demos.tsx demos-a-to-m.tsx demos-n-to-z.tsx]
+      .map { |f| File.join(HARNESS_DIR, "src", f) },
     File.join(HARNESS_DIR, "src/lib/utils.ts")
   ].freeze
 
