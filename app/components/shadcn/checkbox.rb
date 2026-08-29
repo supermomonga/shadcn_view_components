@@ -5,8 +5,8 @@ module Shadcn
   class Checkbox < BaseComponent
     # 契約タグは CheckboxPrimitive.Root。ネイティブな input[type=checkbox] として描く
     # (JS無しで動作 — 05-stimulus-hotwire §3「checkbox = input + CSS」)。
-    # 契約の data-[state=checked]:* クラスは Radix の data-state 由来のため、ネイティブ
-    # inputでは素のチェック印が表示される(data-state同期はPhase 2後半の改良枠)
+    # 契約の data-[state=checked]:* クラスは Radix の data-state 由来のため、
+    # checked 属性の有無から data-state を同期して素のinputでも発火させる
     sig { override.returns(String) }
     def default_tag
       "input"
@@ -20,18 +20,28 @@ module Shadcn
     private
 
     sig { returns(String) }
+    def state
+      @html_args[:checked] ? "checked" : "unchecked"
+    end
+
+    sig { returns(String) }
     def input_element
       attributes = html_attributes.merge(type: "checkbox")
+      # ネイティブウィジェット描画(appearance:auto)はCSSの背景の上にOS標準の箱を
+      # 塗る(dark時は白箱として視覚差になる)ため消す
+      attributes[:class] = [attributes[:class], "appearance-none"].compact.join(" ")
+      merge_nested(attributes, :data, { state: state })
       content_tag(:input, **attributes) { "".html_safe }
         .then { |markup| markup.sub(%r{></input>\z}, ">") }
         .then(&:html_safe)
     end
 
-    # 契約のスロット構造(checkbox-indicator)を保つ。表示は素のinputのチェック印が担うため隠す
+    # 契約のスロット構造(checkbox-indicator)を保つ。普段は非表示で、
+    # peer であるinputのチェック状態に連動して出す(upstreamのIndicatorと同じ挙動)
     sig { returns(String) }
     def indicator_element
       contract_class = T.cast(contract_slot("checkbox-indicator").dig(:static_attributes, :class), T.nilable(String))
-      content_tag(:span, data: { slot: "checkbox-indicator" }, class: [contract_class, "hidden"].compact.join(" ")) do
+      content_tag(:span, data: { slot: "checkbox-indicator" }, class: [contract_class, "hidden peer-checked:grid"].compact.join(" ")) do
         content_tag(
           :svg,
           xmlns: "http://www.w3.org/2000/svg",

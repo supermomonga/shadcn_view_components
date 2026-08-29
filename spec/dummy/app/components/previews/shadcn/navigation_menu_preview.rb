@@ -6,7 +6,7 @@ module Shadcn
       render(Shadcn::NavigationMenu.new) do
         render(Shadcn::NavigationMenu::List.new) do
           render(Shadcn::NavigationMenu::Item.new) do
-            render(Shadcn::NavigationMenu::Link.new(href: "#") { "ホーム" })
+            render(Shadcn::NavigationMenu::Link.new(href: "#")) { "ホーム" }
           end
         end
       end
@@ -19,7 +19,7 @@ module Shadcn
             safe_join([
               render(Shadcn::NavigationMenu::Trigger.new) { "ドキュメント" },
               render(Shadcn::NavigationMenu::Content.new) do
-                render(Shadcn::NavigationMenu::Link.new(href: "#") { "はじめに" })
+                render(Shadcn::NavigationMenu::Link.new(href: "#")) { "はじめに" }
               end
             ])
           end

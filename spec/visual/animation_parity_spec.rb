@@ -13,7 +13,8 @@ require "rails_helper"
 #      イージングを比較する
 # 時間を仮想化するため実行タイミングの影響を受けない(決定論的)。
 #
-# 通常の `bundle exec rspec` では実行されない(PARITY=1 が必要 — rake parity:run)。
+# 通常の `bundle exec rspec` でも実行される(他のスペックと同じく :parity 付き。
+# upstream参照サーバは spec/support/parity_server.rb が自動起動する)。
 # クリック系: evaluate_async_script(コールバック式)で click → 描画待ち → 取得を行う。
 # React はイベント後の描画を非同期に flush するため少し待つ。アニメーション持続時間は
 # 最短でも100msなので60ms待ちでも生存中に取得できる(取得後に時刻を固定するため

@@ -41,9 +41,23 @@ module Shadcn
 
     private
 
+    # upstream(Radix)はルートとツマミの両方に data-state="checked"/"unchecked" を
+    # 出力する。契約の data-[state] / dark:data-[state] ユーティリティ(bg-input /
+    # bg-foreground 等)はこの属性で初めて発火するため、checked 属性(利用者指定)
+    # の有無から state を導出して両要素に付与する
+    sig { returns(String) }
+    def state
+      @html_args[:checked] ? "checked" : "unchecked"
+    end
+
     sig { returns(String) }
     def input_element
       attributes = html_attributes.merge(type: "checkbox", role: "switch")
+      # ネイティブチェックボックスのウィジェット描画(appearance:auto)はCSSの
+      # 背景/角丸の上にOS標準の箱を塗る(dark時は白箱として視覚差になる)ため消す。
+      # 契約の data-[state] 系背景クラスを素の要素に効かせるために必要
+      attributes[:class] = [attributes[:class], "appearance-none"].compact.join(" ")
+      merge_nested(attributes, :data, { state: state })
       content_tag(:input, **attributes) { "".html_safe }
         .then { |markup| markup.sub(%r{></input>\z}, ">") }
         .then(&:html_safe)
@@ -52,13 +66,18 @@ module Shadcn
     sig { returns(String) }
     def thumb_element
       thumb_class = T.cast(contract_slot("switch-thumb").dig(:static_attributes, :class), T.nilable(String))
+      # 契約のツマミサイズ(group-data-[size]/switch:size-*)はルートをgroupとする
+      # 子孫向けユーティリティのため、ネイティブinput構成ではツマミが兄弟になるので
+      # 発火しない。sizeはコンポーネント側で明示する(契約のdata-size値と同じ)
+      size_class = @size == "sm" ? "size-3" : "size-4"
       decoration = [
         "pointer-events-none absolute left-0.5 top-1/2 -translate-y-1/2 translate-x-0",
-        "peer-checked:translate-x-[calc(100%-2px)] transition-transform"
+        "peer-checked:translate-x-[calc(100%-2px)] transition-transform",
+        size_class
       ].join(" ")
       content_tag(
         :span,
-        data: { slot: "switch-thumb" },
+        data: { slot: "switch-thumb", state: state },
         class: [thumb_class, decoration].compact.join(" ")
       ) { "".html_safe }
     end

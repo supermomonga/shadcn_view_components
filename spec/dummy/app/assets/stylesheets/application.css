@@ -907,6 +907,9 @@
   .animate-in {
     animation: enter var(--tw-animation-duration,var(--tw-duration,.15s))var(--tw-ease,ease)var(--tw-animation-delay,0s)var(--tw-animation-iteration-count,1)var(--tw-animation-direction,normal)var(--tw-animation-fill-mode,none);
   }
+  .animate-out {
+    animation: exit var(--tw-animation-duration,var(--tw-duration,.15s))var(--tw-ease,ease)var(--tw-animation-delay,0s)var(--tw-animation-iteration-count,1)var(--tw-animation-direction,normal)var(--tw-animation-fill-mode,none);
+  }
   .animate-pulse {
     animation: var(--animate-pulse);
   }
@@ -2165,6 +2168,12 @@
   .group-data-\[viewport\=false\]\/navigation-menu\:duration-200:is(:where(.group\/navigation-menu)[data-viewport="false"] *) {
     --tw-duration: 200ms;
     transition-duration: 200ms;
+  }
+  .peer-checked\:flex:is(:where(.peer):checked ~ *) {
+    display: flex;
+  }
+  .peer-checked\:grid:is(:where(.peer):checked ~ *) {
+    display: grid;
   }
   .peer-checked\:translate-x-\[calc\(100\%-2px\)\]:is(:where(.peer):checked ~ *) {
     --tw-translate-x: calc(100% - 2px);

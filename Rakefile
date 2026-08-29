@@ -1,8 +1,14 @@
 # frozen_string_literal: true
 
 require_relative "lib/shadcn_view_components/version"
+require "rspec/core/rake_task"
+require "rubocop/rake_task"
 
 Dir[File.expand_path("lib/tasks/*.rake", __dir__)].each { |path| load path }
+
+# フルスイート。spec/visual の visual parity も含まれる(upstreamサーバは自動起動)
+RSpec::Core::RakeTask.new(:spec)
+RuboCop::RakeTask.new
 
 desc "Run the full local verification suite (mirrors CI)"
 task verify: %w[shadcn:check sorbet:tc rubocop spec]

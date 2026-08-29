@@ -12,15 +12,29 @@ require "open3"
 # スペックが保証しており、この層はその先の「CSS適用結果を含めた見た目」の
 # 差分検出を担う。
 #
-# 通常の `bundle exec rspec` では実行されない(重い・Node依存のため)。
-# 実行:   bundle exec rake parity:run(または mise run parity)
+# 素の `bundle exec rspec` でも常時実行される(upstream参照サーバのビルドと
+# 起動は spec/support/parity_server.rb が行う。明示的に外すときは PARITY=0)。
+# 実行:   bundle exec rspec spec/visual(または rake parity:run / mise run parity)
 # 閾値:   PARITY_RATIO(既定 0.005 = 0.5%)を超える差分で失敗
 PARITY_BASELINES = File.expand_path("baselines", __dir__)
 PARITY_COMPARE = File.expand_path("../../tools/visual-parity/compare.mjs", __dir__)
 PARITY_THRESHOLD = (ENV.fetch("PARITY_RATIO", nil) || "0.005").to_f
+# 各シナリオを light/dark 両カラースキームで撮る。ダークでしか発火しない
+# dark:* ユーティリティ(dark:bg-destructive/60 等)や .dark トークンの差分も
+# このモードでしか検出できない(ライトのみだと盲点になる: dark はクラスベースで
+# Lookbook プレビューには .dark が付かないため、通常描画は常にライトになる)
+PARITY_MODES = %i[light dark].freeze
 # calendar は手書き実装(10-roadmap: 抽出対象外)で、upstream は react-day-picker の
 # 描画結果のため厳密な像素一致は対象外。概形一致(枠・曜日行・日付グリッド・選択表示)を
 # 緩い閾値(2%)で保証する。第3要素でシナリオ個別の閾値を上書きできる
+# calendar の手書き実装は upstream と高さ差がある(白背景では比較パディングの白に溶けるが、
+# dark では背景が黒く出るため同じ差が差分ピクセルとして計上される)。概形一致の保証水準を
+# light に揃えるため、このシナリオは dark だけ閾値をさらに緩める
+PARITY_DARK_THRESHOLDS = {
+  "calendar/default" => 0.06,
+  "calendar/plain" => 0.06
+}.freeze
+
 PARITY_SCENARIOS = [
   # [lookbookプレビューのパス, upstreamデモID, (省略可)個別閾値]
   %w[shadcn/accordion/default accordion/default],
@@ -102,15 +116,21 @@ PARITY_SCENARIOS = [
 ].freeze
 
 # スクリーンショットの保存はこの検証の本題(Lint/Debugger は spec/visual を対象外にしている)
-def parity_capture(page, body_path)
+def parity_capture(page, body_path, dark: false)
   # animate-pulse 等の非決定性を両側で同じように止めてからbody要素を撮る
   # (Cuprite の selector: オプションで要素単位のスクリーンショットになる)。
-  # 内容が表示高さ0のときも要素撮影が失敗しないよう最小高さを両側で同値に保証する
+  # 内容が表示高さ0のときも要素撮影が失敗しないよう最小高さを両側で同値に保証する。
+  # dark モードではさらに .dark を <html> に付与し、body背景にトークン
+  # (--background)を直接効かせてから撮る(両サイドへ同一の注入)
+  dark_js = dark ? "document.documentElement.classList.add('dark');document.body.style.backgroundColor='var(--background)';" : ""
   page.execute_script(
     "const s=document.createElement('style');s.textContent='*{animation:none!important;transition:none!important}';document.head.append(s);" \
-    "document.body.style.minHeight='1px'"
+    "document.body.style.minHeight='1px';#{dark_js}"
   )
+  # 戻り値は注入後の body の計算背景色(dark適用の確認に使う)
+  bg = page.evaluate_script("getComputedStyle(document.body).backgroundColor")
   page.save_screenshot(body_path, selector: "body")
+  bg
 end
 
 RSpec.describe "visual parity", :parity, type: :system do
@@ -120,30 +140,45 @@ RSpec.describe "visual parity", :parity, type: :system do
   end
 
   PARITY_SCENARIOS.each do |ours_path, demo_id, scenario_threshold|
-    threshold = scenario_threshold || PARITY_THRESHOLD
-    it "#{ours_path} が upstream(#{demo_id}) と一致する" do
-      dir = File.join(PARITY_BASELINES, demo_id.tr("/", "-"))
-      FileUtils.mkdir_p(dir)
-      ours_png = File.join(dir, "ours.png")
-      upstream_png = File.join(dir, "upstream.png")
-      diff_png = File.join(dir, "diff.png")
-      report_json = File.join(dir, "report.json")
+    PARITY_MODES.each do |mode|
+      dark = mode == :dark
+      threshold =
+        if dark && PARITY_DARK_THRESHOLDS.key?(demo_id)
+          PARITY_DARK_THRESHOLDS.fetch(demo_id)
+        else
+          scenario_threshold || PARITY_THRESHOLD
+        end
+      it "#{ours_path} が upstream(#{demo_id}) と一致する(#{mode})" do
+        dir = File.join(PARITY_BASELINES, demo_id.tr("/", "-"), mode.to_s)
+        FileUtils.mkdir_p(dir)
+        ours_png = File.join(dir, "ours.png")
+        upstream_png = File.join(dir, "upstream.png")
+        diff_png = File.join(dir, "diff.png")
+        report_json = File.join(dir, "report.json")
 
-      visit "http://127.0.0.1:4173/?demo=#{demo_id}"
-      parity_capture(page, upstream_png)
+        visit "http://127.0.0.1:4173/?demo=#{demo_id}"
+        upstream_bg = parity_capture(page, upstream_png, dark: dark)
 
-      visit "/lookbook/preview/#{ours_path}"
-      parity_capture(page, ours_png)
+        visit "/lookbook/preview/#{ours_path}"
+        ours_bg = parity_capture(page, ours_png, dark: dark)
 
-      out, status = Open3.capture2e("node", PARITY_COMPARE, ours_png, upstream_png, diff_png, report_json, threshold.to_s)
-      report = JSON.parse(File.read(report_json))
-      expect(report.fetch("pass")).to be(true), <<~MSG
-        #{ours_path} のupstreamとの差分率が閾値(#{threshold})を超えました: #{report['ratio']}
+        if dark
+          # .dark 注入の空振り(=ライト同士の比較になって誤って緑化)を防ぐ担保。
+          # 片側だけ適用漏れがあればここで落ちる。未適用のbody背景は透過
+          expect(upstream_bg).to eq(ours_bg)
+          expect(upstream_bg).not_to eq("rgba(0, 0, 0, 0)"), "dark モードの .dark 注入が効いていません(body背景が透過のままです)"
+        end
 
-        #{"#{out}\n" unless status.success?}
-        baseline: #{dir}
-          ours.png / upstream.png / diff.png(赤=差分ピクセル)
-      MSG
+        out, status = Open3.capture2e("node", PARITY_COMPARE, ours_png, upstream_png, diff_png, report_json, threshold.to_s)
+        report = JSON.parse(File.read(report_json))
+        expect(report.fetch("pass")).to be(true), <<~MSG
+          #{ours_path} のupstreamとの差分率が閾値(#{threshold})を超えました: #{report['ratio']}(#{mode})
+
+          #{"#{out}\n" unless status.success?}
+          baseline: #{dir}
+            ours.png / upstream.png / diff.png(赤=差分ピクセル)
+        MSG
+      end
     end
   end
 end

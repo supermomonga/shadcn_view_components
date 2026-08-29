@@ -24,16 +24,23 @@ spinner:
 
 checkbox:
   Checkbox:
-    # ネイティブinput化に伴う属性(05 §3)
-    attributes: [type]
+    # ネイティブinput化に伴う属性(05 §3)。data-state は契約の data-[state] クラスを
+    # 素のinputでも発火させるための同期属性、appearance-none はネイティブウィジェット
+    # 描画を消す装飾(dark時の白箱問題)。装飾クラスを含め見た目は visual parity が検証する
+    class_mode: contains
+    attributes: [type, data-state]
 switch:
   Switch:
-    attributes: [type, role]
+    # checkbox と同じ理由の data-state / appearance-none(peer-checked のための peer 含む)
+    class_mode: contains
+    attributes: [type, role, data-state]
 radio-group:
   RadioGroup:
     attributes: [role]
   RadioGroupItem:
-    attributes: [type]
+    # checkbox と同じ理由の data-state / appearance-none / peer
+    class_mode: contains
+    attributes: [type, data-state]
 toggle:
   Toggle:
     # shadcn--toggle コントローラの状態属性と button 既定の type

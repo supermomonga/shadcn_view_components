@@ -166,16 +166,17 @@ rake shadcn:check     # 決定論性検証(一時ディレクトリ生成とコ�
 各コンポーネントの見た目が元のshadcn/ui実装(vendor/shadcn のReact実装)と一致するかをピクセル比較で機械判定する仕組み。契約による「クラス文字列の一致」、コンポーネントspecによる「DOM構造の一致」の先にある最終段(「CSS適用結果を含めた見た目の一致」)を検証する。
 
 ```bash
-bundle exec rake parity:run                      # または mise run parity
+bundle exec rake parity:run                      # または mise run parity(ハーネスを明示的に再ビルド)
 PARITY_RATIO=0.01 bundle exec rake parity:run    # 閾値を1%に緩和(既定 0.5%)
 ```
 
-仕組み: `vendor/shadcn` の tsx を `tools/visual-parity` で展開し、Vite + React で実際に描画(upstream側)。dummy の Lookbook プレビュー(うち側)と同じ Chromium(Cuprite)でスクリーンショットを撮り、pixelmatch で差分率を判定する。両側でアニメーションを停止し、同一ブラウザ・同一フォントで比較するため決定論的。
+仕組み: `vendor/shadcn` の tsx を `tools/visual-parity` で展開し、Vite + React で実際に描画(upstream側)。dummy の Lookbook プレビュー(うち側)と同じ Chromium(Cuprite)でスクリーンショットを撮り、pixelmatch で差分率を判定する。両側でアニメーションを停止し、同一ブラウザ・同一フォントで比較するため決定論的。各シナリオは **light/dark 両カラースキーム**で撮影する(dark は両側の `<html>` に `.dark` を付与。`dark:bg-destructive/60` 等の dark時ユーティリティや `.dark` トークンの差分はこのモードでしか検出できない)。
 
 さらにアニメーションパリティ(`spec/visual/animation_parity_spec.rb`)では、両側のコンポーネントを開いた直後に WAAPI でアニメーションを取得・停止し、currentTime を同一チェックポイント(0/25/50/75/100%)に固定した上で補間値(opacity / transform / 高さ)とアニメーション名・持続時間・イージングを比較する。時間を仮想化するため実行タイミングに影響されない(drawer は upstream が vaul のJSバネ物理で動くため対象外)。
 
-- 成果物は `spec/visual/baselines/<demo>/`(ours.png / upstream.png / diff.png / report.json)。Commitして人間が差分画像を確認できる
-- 通常の `bundle exec rspec` では実行されない(`PARITY=1` が必要。重いため分離)
+- 素の `bundle exec rspec` でも**常時実行される**。upstream参照サーバ(vite preview)のキャッシュビルドと起動・停止は `spec/support/parity_server.rb` が自動で行う(ビルド入力のハッシュが変わらなければ再ビルドを省略)。明示的に外したいときだけ `PARITY=0 bundle exec rspec`
+- CI でも必須ジョブ(`parity`)として実行される
+- 成果物は `spec/visual/baselines/<demo>/<light|dark>/`(ours.png / upstream.png / diff.png / report.json)。Commitして人間が差分画像を確認できる
 - 初期セットは13シナリオ(うち11がピクセル完全一致、残り2件も0.06〜0.22%)
 
 **シナリオの追加手順**:

@@ -26,26 +26,37 @@ module Shadcn
 
       private
 
+      # 契約の data-[state] クラスを素のinputでも発火させるため checked 属性から同期する
+      sig { returns(String) }
+      def state
+        @html_args[:checked] ? "checked" : "unchecked"
+      end
+
       sig { returns(String) }
       def input_element
         attributes = html_attributes.merge(type: "radio")
+        # ネイティブウィジェット描画を消す(dark時の白箱問題 — checkbox.rb と同じ理由)。
+        # 印の表示は indicator を peer-checked で出すため peer も付与する
+        attributes[:class] = [attributes[:class], "appearance-none peer"].compact.join(" ")
+        merge_nested(attributes, :data, { state: state })
         content_tag(:input, **attributes) { "".html_safe }
           .then { |markup| markup.sub(%r{></input>\z}, ">") }
           .then(&:html_safe)
       end
 
-      # 契約のスロット構造(radio-group-indicator)を保つ。表示は素のinputの印が担うため隠す
+      # 契約のスロット構造(radio-group-indicator)を保つ。普段は非表示で、
+      # peer であるinputのチェック状態に連動して出す(upstreamのIndicatorと同じ挙動)
       sig { returns(String) }
       def indicator_element
         indicator_class = T.cast(contract_slot("radio-group-indicator").dig(:static_attributes, :class), T.nilable(String))
-        content_tag(:span, data: { slot: "radio-group-indicator" }, class: [indicator_class, "hidden"].compact.join(" ")) do
+        content_tag(:span, data: { slot: "radio-group-indicator" }, class: [indicator_class, "hidden peer-checked:flex"].compact.join(" ")) do
           content_tag(
             :svg,
             xmlns: "http://www.w3.org/2000/svg",
             viewBox: "0 0 24 24",
-            fill: "currentColor",
-            stroke: "currentColor",
-            class: "absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2 fill-primary"
+            fill: "none",
+            stroke: "none",
+            class: "absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2 fill-current"
           ) do
             raw(%(<circle cx="12" cy="12" r="10"/>))
           end

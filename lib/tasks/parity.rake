@@ -1,40 +1,19 @@
 # frozen_string_literal: true
 
-# 見た目の upstream パリティ検証(spec/visual/parity_spec.rb)のオーケストレーション。
+# 見た目の upstream パリティ検証(spec/visual)の入口。
 #
-#   bundle exec rake parity:run      ... ビルド+upstreamサーバ起動+比較
+#   bundle exec rake parity:run      ... ハーネスを明示的に再ビルドしてから比較
 #   PARITY_RATIO=0.01 rake parity:run ... 閾値を1%に緩めて実行
 #
-# 差分の成果物(ours/upstream/diff/report)は spec/visual/baselines/ に置かれる。
+# upstream参照サーバ(vite preview)の起動・停止とビルドのキャッシュ判断は
+# spec/support/parity_server.rb(スペック本体側)が担うため、rakeタスクは薄い。
+# 素の bundle exec rspec でもパリティは実行される(このタスクは強制再ビルドが付く)。
+require_relative "../../spec/support/parity_server"
+
 namespace :parity do
-  desc "upstream(React/Vite)とdummy(Lookbook)の描画をピクセル比較する"
+  desc "upstream(React/Vite)とdummy(Lookbook)の描画をピクセル比較する(ハーネスを明示的に再ビルド)"
   task :run do
-    Dir.chdir(File.expand_path("../..", __dir__)) do
-      sh "pnpm -C tools/visual-parity run build"
-
-      vite = spawn("pnpm", "-C", "tools/visual-parity", "run", "serve")
-      begin
-        ready = false
-        60.times do
-          ready = system("curl -s -o /dev/null http://127.0.0.1:4173/")
-
-          break if ready
-
-          sleep 0.5
-        end
-        abort "vite preview (4173) が起動しません" unless ready
-
-        sh({ "PARITY" => "1" }, "bundle exec rspec spec/visual")
-      ensure
-        if vite
-          Process.kill("TERM", vite)
-          begin
-            Process.wait(vite)
-          rescue SystemCallError
-            nil
-          end
-        end
-      end
-    end
+    ParityServer.rebuild!
+    sh "bundle exec rspec spec/visual"
   end
 end

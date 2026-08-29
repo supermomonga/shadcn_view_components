@@ -36,9 +36,12 @@ RSpec.configure do |config|
   config.include RenderedRoot, type: :component
   config.include RenderedRoot, type: :conformance
 
-  # 見た目のupstreamパリティ検証(spec/visual)は重くNode/Vite依存のため、
-  # 通常の rspec では実行しない。rake parity:run が PARITY=1 を設定する
-  config.filter_run_excluding parity: true unless ENV["PARITY"]
+  # 見た目のupstreamパリティ検証(spec/visual)は常時実行する。upstream参照サーバ
+  # (vite preview)のビルドと起動は ParityServer(spec/support/parity_server.rb)が
+  # 行うため、素の bundle exec rspec でそのまま走る。外したいときだけ PARITY=0
+  config.filter_run_excluding parity: true if ENV["PARITY"] == "0"
+
+  config.before(:context, :parity) { ParityServer.ensure_running! }
 
   config.before do |example|
     driven_by :shadcn_cuprite if example.metadata[:type] == :system
