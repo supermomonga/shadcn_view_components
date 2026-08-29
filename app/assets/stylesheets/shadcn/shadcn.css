@@ -9,6 +9,16 @@
 /* (1) ダークモード変換: クラスベース(.dark) */
 @custom-variant dark (&:is(.dark *));
 
+/* (1b) 方向バリアント: upstream npm shadcn/tailwind.css 由来。
+   契約の data-horizontal: / data-vertical: は data-orientation 属性値に
+   対応する(tailwind 既定の属性存在マッチのままでは data-orientation に
+   絶対に合わず、tabs の active インジケータ等が描画されない)。
+   upstream 同ファイルには他に data-open/checked/selected 等のバリアントや
+   scroll-fade・shimmer ユーティリティがあるが未移植(必要になった属性は
+   コンポーネント側で bare 属性を出す state_attrs.js 等で代替済み) */
+@custom-variant data-horizontal (&:where([data-orientation="horizontal"]));
+@custom-variant data-vertical (&:where([data-orientation="vertical"]));
+
 /* (2) semanticトークン(:root = light、.dark = dark): upstream cssVars の統合 */
 :root {
   --radius: 0.625rem;
