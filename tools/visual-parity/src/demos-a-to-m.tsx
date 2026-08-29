@@ -51,9 +51,9 @@ import {
   DrawerTitle, DrawerTrigger,
 } from "./components/ui/drawer.tsx"
 import {
-  DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem,
-  DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator,
-  DropdownMenuShortcut, DropdownMenuTrigger,
+  DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup,
+  DropdownMenuItem, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem,
+  DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger,
 } from "./components/ui/dropdown-menu.tsx"
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "./components/ui/empty.tsx"
 import {
@@ -328,11 +328,14 @@ export const demosAToM: Record<string, ComponentType> = {
     <DropdownMenu>
       <DropdownMenuTrigger asChild><Button variant="outline">メニューを開く</Button></DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuLabel>操作</DropdownMenuLabel>
-        <DropdownMenuItem>コピー</DropdownMenuItem>
-        <DropdownMenuItem>
-          貼り付け <DropdownMenuShortcut>⌘V</DropdownMenuShortcut>
-        </DropdownMenuItem>
+        {/* Label は Menu.GroupLabel への写像のため Group 外では upstream が文脈エラーになる */}
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>操作</DropdownMenuLabel>
+          <DropdownMenuItem>コピー</DropdownMenuItem>
+          <DropdownMenuItem>
+            貼り付け <DropdownMenuShortcut>⌘V</DropdownMenuShortcut>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuCheckboxItem checked>通知を受け取る</DropdownMenuCheckboxItem>
         <DropdownMenuRadioGroup>

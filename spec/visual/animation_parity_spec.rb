@@ -222,12 +222,14 @@ RSpec.describe "animation parity", :parity, type: :system do
           # 高さはアニメーション形状(0→最終高さへの補間割合)を比較する。
           # 絶対高さ(開状態のレイアウト)は静的な層の担当であり、ここでは
           # 相対値の一致(= 同じキーフレーム形状)を検証する
-          ours_final = ours_samples.fetch(4).fetch("height")
-          upstream_final = upstream_samples.fetch(4).fetch("height")
+          ours_final = ours_samples.fetch(4).fetch("height").to_f
+          upstream_final = upstream_samples.fetch(4).fetch("height").to_f
           next if ours_final.zero? || upstream_final.zero?
 
-          ours_ratio = sample.fetch("height") / ours_final
-          upstream_ratio = expected.fetch("height") / upstream_final
+          # JSの rect 値は JSON 数値として整数になりうるため to_f 必須
+          # (Integer/Integer の Ruby 整数除算は 0 になり、形状比較が必ず失敗する)
+          ours_ratio = sample.fetch("height").to_f / ours_final
+          upstream_ratio = expected.fetch("height").to_f / upstream_final
           expect((ours_ratio - upstream_ratio).abs).to be < 0.03,
                                                        "height(正規化) が checkpoints[#{i}] で不一致: ours=#{ours_ratio.round(3)} upstream=#{upstream_ratio.round(3)}"
         end

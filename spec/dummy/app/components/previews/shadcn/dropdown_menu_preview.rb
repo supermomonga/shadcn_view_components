@@ -8,10 +8,16 @@ module Shadcn
           render(Shadcn::DropdownMenu::Trigger.new(variant: :outline)) { "メニューを開く" },
           render(Shadcn::DropdownMenu::Content.new) do
             safe_join([
-              render(Shadcn::DropdownMenu::Label.new) { "操作" },
-              render(Shadcn::DropdownMenu::Item.new) { "コピー" },
-              render(Shadcn::DropdownMenu::Item.new) do
-                safe_join(["貼り付け", render(Shadcn::DropdownMenu::Shortcut.new) { "⌘V" }])
+              # upstream(base-nova)の Label は Menu.GroupLabel への写像のため
+              # Group 内で使うのが正構成(Group 外では upstream が文脈エラーになる)
+              render(Shadcn::DropdownMenu::Group.new) do
+                safe_join([
+                  render(Shadcn::DropdownMenu::Label.new) { "操作" },
+                  render(Shadcn::DropdownMenu::Item.new) { "コピー" },
+                  render(Shadcn::DropdownMenu::Item.new) do
+                    safe_join(["貼り付け", render(Shadcn::DropdownMenu::Shortcut.new) { "⌘V" }])
+                  end
+                ])
               end,
               render(Shadcn::DropdownMenu::Separator.new),
               render(Shadcn::DropdownMenu::CheckboxItem.new(checked: true)) { "通知を受け取る" },
