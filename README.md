@@ -20,7 +20,7 @@ Phase 0〜4 完了 — vendor の全61アイテムを実装(calendar は個別�
   **Button, Badge, Alert, Card, Avatar, Separator, Skeleton, Table, Label, Kbd, Spinner,
   Empty, AspectRatio, Item, Marker, Input, Textarea, Breadcrumb,
   Accordion, Checkbox, Collapsible, RadioGroup, ScrollArea, Switch, Toggle, ToggleGroup,
-  Tabs, Carousel, Pagination, Form,
+  Tabs, Carousel, Pagination, Form(Item/Error — Fieldベース),
   Dialog, AlertDialog, Sheet, Drawer, Popover, HoverCard, Tooltip,
   DropdownMenu, ContextMenu, Menubar, NavigationMenu, Command, Combobox, Resizable,
   Progress, Slider, NativeSelect, InputOTP, Select, Field, InputGroup,

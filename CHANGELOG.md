@@ -6,6 +6,39 @@ All notable changes to this project will be documented in this file.
 
 Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
+### form の Field ベース再設計(破壊的変更)
+
+base-nova には form アイテムが存在せず、公式 docs/forms ガイドは Field プリミティブ +
+`data-invalid` / `aria-invalid` の手動ワイヤリングへ移行した(Issue #3)。旧new-york-v4
+定義の local-override 維持を撤退し、同ガイドに沿った独自契約として再設計した。
+
+- 新API(2 exports):
+  - `Shadcn::Form::Item` — Field と同じ DOM 構造(`data-slot="field"`)を描く。
+    `invalid:` キーワードで `data-invalid="true|false"` を出力。`orientation:` も
+    Field と同様に受け付ける
+  - `Shadcn::Form::Error` — upstream `FieldError` セマンティクスの Rails 向け版。
+    `message:`(文字列)/`errors:`(文字列配列、重複除去)を受け、1件は平文・
+    複数は ul リスト・無ければ非描画。`model.errors.full_messages_for(:attr)` を
+    そのまま渡せる
+- 廃止: `Form::Label` / `Form::Control` / `Form::Description` / `Form::Message`。
+  ラベルと説明は `Shadcn::Field::Label` / `Shadcn::Field::Description` を直接使う
+- 属性変更: ラベルの `data-error` → Field 構造の `data-invalid`(破壊的変更)。
+  `aria-invalid` / `aria-describedby` / `for`-`id` の紐付けは従来どおり呼び出し側責務
+- 契約: `vendor/shadcn/overrides/items/form.json` を「旧スタイルの逐語コピー」から
+  独自契約(オリジナルソース)へ書き換え。`registryDependencies` は `field` のみ
+  (react-hook-form / zod 等のnpm依存は解消)。FormField の孤児契約も消滅
+- 関連更新: `Field::Error` も upstream 準拠で「本文無ければ非描画」に。
+  `Shadcn::Field` が upstream と同様に `data-orientation` を出力するように。
+  `Field::Label` は upstream と同じく `<Label>` の契約クラスを実行時合成する
+  (適合試験は allowances の `class_mode: contains` で緩和)。
+  field プレビュー(`field/default` / `field/horizontal`)と visual parity
+  シナリオを追加し、form の parity デモを react-hook-form 非依存に書き換え。
+  parity参照サーバのビルド入力が変わっても再ビルドされない
+  `parity_server.rb` の `stale?` 判定(比較演算の向き)を修正
+- direction(Issue #3): base-nova は re-export のみで抽出可能な契約面が無いため
+  **現行維持**(手書き `DirectionProvider` + local-override)。決定は
+  docs.local/00-overview §5 決定ログに記録
+
 ### スタイル移行: new-york-v4 → base-nova(破壊的変更)
 
 公式ドキュメントのデフォルトがbase系プリセットへ移行した(docsの`/docs/components/*`は
