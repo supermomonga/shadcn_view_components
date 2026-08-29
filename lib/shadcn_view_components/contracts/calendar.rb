@@ -16,7 +16,11 @@ module ShadcnViewComponents
       VARIANTS = T.let({}.freeze, T::Hash[Symbol, T::Array[Symbol]])
 
       COMBINATIONS = T.let({
-        {} => "group/calendar bg-background p-2 [--cell-radius:var(--radius-md)] [--cell-size:--spacing(7)] " \
+        # 冒頭の flex 群は upstream ラッパー Calendar の className。upstream は
+        # md:flex-row で複数月を横並びにできるが、本実装は単月のみの描画のため
+        # 入れない(rdp-root は react-day-picker 内部クラスのためDOMには出ない)
+        {} => "relative flex flex-col gap-4 group/calendar bg-background p-2 " \
+              "[--cell-radius:var(--radius-md)] [--cell-size:--spacing(7)] " \
               "in-data-[slot=card-content]:bg-transparent in-data-[slot=popover-content]:bg-transparent w-fit"
       }.freeze, T::Hash[T::Hash[Symbol, Symbol], String])
 
@@ -37,6 +41,10 @@ module ShadcnViewComponents
       end
 
       module DayButton
+        # upstream は <Button variant="ghost" size="icon"> を土台に day 用クラスを
+        # tailwind-merge で合成する(size-8 は size-auto に、px-2.5 は icon サイズの
+        # 採用で消える)。px-2.5 等が残るとボタンの最小幅が --cell-size を超え、
+        # グリッドが upstream より膨らむ
         ROOT_SLOT = T.let("calendar-day-button", String)
 
         DEFAULTS = T.let({}.freeze, T::Hash[Symbol, Symbol])
@@ -51,8 +59,8 @@ module ShadcnViewComponents
                 "aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 " \
                 "dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 " \
                 "[&_svg:not([class*='size-'])]:size-4 hover:bg-muted hover:text-foreground " \
-                "aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 px-2.5 " \
-                "has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 relative isolate z-10 flex " \
+                "aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 " \
+                "relative isolate z-10 flex " \
                 "aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 border-0 leading-none " \
                 "font-normal group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 " \
                 "group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-[3px] " \

@@ -28,6 +28,13 @@ module Shadcn
       { variant: @variant, size: @size }
     end
 
+    # upstream useRender の state は data-variant / data-size として DOM に現れる
+    # (ItemGroup の has-data-[size=sm]:gap-2.5 等がこれを参照する)
+    sig { override.returns(T::Hash[Symbol, T.untyped]) }
+    def contract_data_attributes
+      super.merge(variant: @variant, size: @size)
+    end
+
     class Media < BaseComponent
       sig do
         params(
@@ -46,6 +53,11 @@ module Shadcn
       sig { override.returns(T::Hash[Symbol, VariantOption]) }
       def variant_options
         { variant: @variant }
+      end
+
+      sig { override.returns(T::Hash[Symbol, T.untyped]) }
+      def contract_data_attributes
+        super.merge(variant: @variant)
       end
     end
 
@@ -69,8 +81,13 @@ module Shadcn
 
       sig { returns(String) }
       def separator_class
-        # base-nova では item-separator の契約クラスが my-2 に統合された
-        self.class.classes(extra: @user_class)
+        # base-nova の item-separator は Separator(別アイテム)のクラスの上に
+        # item 側の my-2 を合成する(item契約には my-2 のみ記録される)。
+        # h-px / bg-border は Separator 契約の data-horizontal: バリアントが担当し、
+        # これが無いと separator の高さが 0 になる
+        ShadcnViewComponents::Classes::MERGER.merge(
+          "#{ShadcnViewComponents::Classes.resolve(:separator)} #{self.class.classes}"
+        )
       end
     end
 

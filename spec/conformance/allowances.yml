@@ -12,6 +12,11 @@ separator:
     # ネイティブdiv化に伴うARIA(05-stimulus-hotwire §3 の方針)
     attributes: [role, aria-orientation]
 item:
+  Item:
+    # upstream useRender の state(variant/size)は data-variant / data-size として出る
+    attributes: [data-variant, data-size]
+  ItemMedia:
+    attributes: [data-variant]
   ItemSeparator:
     # upstream は Separator(別アイテム)のクラス + "my-0" を実行時に合成する。
     # 契約(item側)には "my-0" のみ記録されるため、描画は Separator のクラス群を含む
@@ -240,7 +245,11 @@ command:
     slots_mode: superset
     attributes: [data-controller]
   CommandInput:
-    attributes: [type, aria-label, data-action]
+    # upstream の CommandInput は <InputGroup>(別アイテム)でラップし、検索アイコンを
+    # <InputGroupAddon align="inline-start"> に置く。契約(command側)には
+    # wrapper/input のスロットのみ記録されるため、input-group 由来の slot は superset
+    slots_mode: superset
+    attributes: [type, placeholder, autocomplete, aria-label, data-action]
   CommandItem:
     attributes: [role, tabindex, data-value, data-selected, aria-selected, data-action]
   CommandEmpty:

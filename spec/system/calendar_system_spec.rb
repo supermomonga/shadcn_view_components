@@ -19,12 +19,12 @@ RSpec.describe "Calendar behavior", type: :system do
   it "navigates to the previous and next month via server round-trip links" do
     visit "/pages/calendar?month=2026-08"
 
-    expect(page).to have_text("2026年 8月")
+    expect(page).to have_text("2026年8月")
     find("#demo-calendar [aria-label='前の月']").click
-    expect(page).to have_text("2026年 7月")
+    expect(page).to have_text("2026年7月")
 
     find("#demo-calendar [aria-label='次の月']").click
-    expect(page).to have_text("2026年 8月")
+    expect(page).to have_text("2026年8月")
   end
 
   it "marks outside days as muted and non-focusable" do

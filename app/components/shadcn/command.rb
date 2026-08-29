@@ -30,20 +30,39 @@ module Shadcn
     end
 
     class Input < BaseComponent
-      # 契約スロット構成: command-input-wrapper(div) > command-input(input)
+      # 契約スロット構成: command-input-wrapper(div) > command-input(input)。
+      # upstream はさらに内側を <InputGroup>(別アイテム)でラップし、検索アイコンは
+      # <InputGroupAddon align="inline-start"> に置く(そのため input が先・icon が後)
       sig { override.returns(String) }
       def default_tag
         "div"
       end
 
+      sig do
+        params(placeholder: T.nilable(String), args: T::Hash[Symbol, T.untyped]).void.checked(:never)
+      end
+      def initialize(placeholder: nil, **args)
+        @placeholder = T.let(placeholder, T.nilable(String))
+        super(**args)
+      end
+
       sig { override.returns(String) }
       def call
         content_tag(tag, **html_attributes) do
-          safe_join([search_icon, input_element])
+          render(Shadcn::InputGroup.new(**group_args)) do
+            safe_join([input_element, addon_element])
+          end
         end
       end
 
       private
+
+      # upstream CommandInput の InputGroup への上書き(className)
+      sig { returns(T::Hash[Symbol, T.untyped]) }
+      def group_args
+        { class: "h-8! rounded-lg! border-input/30 bg-input/30 shadow-none! " \
+                 "*:data-[slot=input-group-addon]:pl-2!" }
+      end
 
       sig { returns(String) }
       def input_element
@@ -51,11 +70,20 @@ module Shadcn
         # keydown を置くと二重発火する — 片方のみにバインドする)
         void_tag(
           "input",
-          type: "search",
+          type: "text",
+          placeholder: @placeholder,
+          autocomplete: "off",
           class: self.class.classes,
           data: { slot: "command-input", action: "input->#{Command::CONTROLLER}#filter" },
           aria: { label: "コマンド検索" }
         )
+      end
+
+      sig { returns(String) }
+      def addon_element
+        render(Shadcn::InputGroup::Addon.new(align: "inline-start")) do
+          search_icon
+        end
       end
 
       sig { returns(String) }
@@ -69,12 +97,10 @@ module Shadcn
           "stroke-width": "2",
           "stroke-linecap": "round",
           "stroke-linejoin": "round",
-          width: "16",
-          height: "16",
-          class: "size-4",
+          class: "size-4 shrink-0 opacity-50",
           aria: { hidden: "true" }
         ) do
-          raw(%(<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>))
+          raw(%(<path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/>))
         end
       end
     end

@@ -6,6 +6,31 @@ All notable changes to this project will be documented in this file.
 
 Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
+### 残っていた parity 失敗 8件の解消(不具合修正)
+
+参照側CSSパイプラインの独立化の時点で残っていた8件の失敗(静的5件: command / calendar
+default・plain / item、アニメーション3件: dropdown-menu / combobox / hover-card)を解消。
+`bundle exec rake`(shadcn:check / sorbet / rubocop / 全spec + parity)が完全に緑になった。
+
+- アニメーション検証の整数除算バグ(combobox / hover-card): JS由来の rect 値は JSON 数値
+  として整数になりうるため、`114 / 120` のような比率計算が Ruby の整数除算で 0 になり、
+  アニメーション形状の比較が必ず失敗しうた。比率計算を to_f に統一(spec 側のバグ修正)
+- dropdown-menu: upstream の `DropdownMenuLabel` は `Menu.GroupLabel` への写像のため、
+  Group 外でメニューを開くと Base UI が文脈エラー(#31)を投げ React ツリー全体が
+  アンマウントされていた(静的比較は閉じた状態のため検知できていなかった)。
+  公式ドキュメント構成に従いラベルを `DropdownMenuGroup` 内へ移動(プレビュー・
+  upstreamデモ両側)
+- command: `Command::Input` が InputGroup 合成を持たず placeholder が消失していた
+  (upstream は `<InputGroup>` + `<InputGroupAddon>` 構成)。combobox と同じ合成パターン
+  で再実装し、placeholder を内側の input へ転記
+- item: upstream useRender の state(`data-variant` / `data-size`)を出力していなかったため
+  ItemGroup の `has-data-[size=sm]:gap-2.5` が発火せず gap が不一致。また item-separator
+  が Separator 契約クラス(`shrink-0 bg-border data-horizontal:h-px`)を持たず高さ 0 だった
+- calendar: セル寸法が upstream(--cell-size = 28px)より大きかった。month_grid の幅を
+  7×cell に固定、DayButton 契約を `<Button variant="ghost" size="icon">` 合成に修正
+  (px-2.5 がセルの最小幅を超過させていた)、ナビをキャプション行上の絶対配置に変更
+  (タイトル表記も upstream に合わせ「2026年8月」)
+
 ### パリティ検証の参照側を upstream 本来のCSSパイプラインへ(検証設計修正)
 
 visual parity の upstream 参照側は、これまで gem の `shadcn.css` を読んでいた(トークンと

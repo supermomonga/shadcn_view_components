@@ -778,6 +778,9 @@
   .w-24 {
     width: calc(var(--spacing) * 24);
   }
+  .w-49 {
+    width: calc(var(--spacing) * 49);
+  }
   .w-64 {
     width: calc(var(--spacing) * 64);
   }
@@ -956,6 +959,34 @@
   }
   .transform-\[translate3d\(var\(--translate-x\,0px\)\,var\(--translate-y\,0px\)\,0\)_scale\(var\(--stack-scale\)\)\] {
     transform: translate3d(var(--translate-x,0px),var(--translate-y,0px),0) scale(var(--stack-scale));
+  }
+  .shimmer {
+    --_spread: var(--shimmer-spread, calc(3ch + 40px));
+    --_base: currentColor;
+    --_highlight: var(
+    --shimmer-color,
+    oklch(from currentColor l c h / calc(alpha* 0.2))
+  );
+    background-image: var( --shimmer-image, linear-gradient( calc(90deg + var(--shimmer-angle)), var(--_base) calc(50% - var(--_spread)), var(--_highlight) calc(50% - var(--_spread) * 0.5), var(--_highlight) 50%, var(--_highlight) calc(50% + var(--_spread) * 0.5), var(--_base) calc(50% + var(--_spread)) ) );
+    @supports (color: color-mix(in lab, red, red)) {
+      background-image: var( --shimmer-image, linear-gradient( calc(90deg + var(--shimmer-angle)), var(--_base) calc(50% - var(--_spread)), color-mix(in oklch, var(--_highlight), var(--_base) 50%) calc(50% - var(--_spread) * 0.5), var(--_highlight) 50%, color-mix(in oklch, var(--_highlight), var(--_base) 50%) calc(50% + var(--_spread) * 0.5), var(--_base) calc(50% + var(--_spread)) ) );
+    }
+    background-repeat: no-repeat;
+    background-size: calc(200% + var(--_spread) * 2) 100%;
+    background-position: 0 0;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: var(--shimmer-text-fill, transparent);
+    animation: tw-shimmer var(--shimmer-duration, 2s) linear infinite;
+    &:is(.dark *) {
+      --_highlight: var(
+      --shimmer-color,
+      oklch(from currentColor max(0.8, calc(l + 0.4)) c h / calc(alpha + 0.4))
+    );
+    }
+    &:where([dir="rtl"], [dir="rtl"] *) {
+      animation-direction: reverse;
+    }
   }
   .scroll-fade-x {
     --_scroll-fade-size-s: var(
@@ -3030,9 +3061,6 @@
     }
     .hover\:bg-sidebar-accent:hover {
       background-color: var(--sidebar-accent);
-    }
-    .hover\:text-accent-foreground:hover {
-      color: var(--accent-foreground);
     }
     .hover\:text-foreground:hover {
       color: var(--foreground);
