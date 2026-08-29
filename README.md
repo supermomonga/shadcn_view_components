@@ -1,6 +1,6 @@
 # shadcn_view_components
 
-[shadcn/ui](https://ui.shadcn.com/)(new-york-v4 スタイル)を [Rails ViewComponent](https://viewcomponent.org/) + Stimulus として移植する Rails エンジンgem。
+[shadcn/ui](https://ui.shadcn.com/)(base-nova スタイル)を [Rails ViewComponent](https://viewcomponent.org/) + Stimulus として移植する Rails エンジンgem。
 
 単なる一回の移植ではなく、**shadcn/ui のバージョンアップへの追従コストを最小化する**ことを第一の設計目標とする:
 
