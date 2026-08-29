@@ -16,6 +16,12 @@
       "tag": "shadcn@4.19.0",
       "resolved_sha": "1773ecfeeb4a04366978d353e69b5c7ded78dcb2",
       "checked_at": "2026-08-29T07:47:05.374Z"
+    },
+    "tailwind_css": {
+      "package": "shadcn",
+      "version": "4.19.0",
+      "path": "style/tailwind.css",
+      "sha256": "bc7d83425702955b4cb67cb14ede9d603f9d912376d57a2d81d661094d2a782a"
     }
   },
   "fetched_at": "2026-08-29T07:47:05.374Z",

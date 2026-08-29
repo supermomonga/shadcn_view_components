@@ -450,8 +450,8 @@ describe("emit: determinism", () => {
 
   it("renders stable theme CSS with radius first and sorted tokens", () => {
     const theme = { light: { background: "oklch(1 0 0)", radius: "0.625rem", primary: "oklch(0 0 0)" }, dark: { background: "oklch(0 0 0)" } }
-    const css = renderThemeCss(theme, [], "base-nova")
-    expect(css).toBe(renderThemeCss(theme, [], "base-nova"))
+    const css = renderThemeCss(theme, [], "base-nova", "@custom-variant data-open {\n}")
+    expect(css).toBe(renderThemeCss(theme, [], "base-nova", "@custom-variant data-open {\n}"))
     expect(css).toContain("/* Source: shadcn/ui base-nova (manifest: vendor/shadcn/manifest.json) */")
     const rootBlock = css.split("\n.dark {")[0]!
     expect(rootBlock.indexOf("--radius")).toBeLessThan(rootBlock.indexOf("--background"))

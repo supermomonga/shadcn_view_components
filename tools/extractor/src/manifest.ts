@@ -14,6 +14,18 @@ export interface ManifestItem {
   origin: "upstream" | "local-override"
 }
 
+/**
+ * npm shadcn パッケージ同梱の tailwind.css(カスタムバリアント・scroll-fade・shimmer等の
+ * スタイル共通定義)。index.json の `@import "shadcn/tailwind.css"` の実体で、実アプリでは
+ * npm依存として解決されるため、バージョンは upstream_release.tag に固定して取得する。
+ */
+export interface ManifestTailwindCss {
+  package: string
+  version: string
+  path: string
+  sha256: string
+}
+
 export interface Manifest {
   version: number
   source: {
@@ -23,6 +35,7 @@ export interface Manifest {
     style_dependencies: string[]
     style_dev_dependencies: string[]
     upstream_release: UpstreamRelease | null
+    tailwind_css: ManifestTailwindCss | null
   }
   fetched_at: string
   theme: { base_color: string, path: string, sha256: string }

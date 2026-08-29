@@ -8,7 +8,7 @@ import { ParseError } from "./errors.ts"
 import { resolveCnCombinations, resolveConstrainedCombinations } from "./derive/combinations.ts"
 import { emitContractJson } from "./emit/json.ts"
 import { emitContractRuby } from "./emit/ruby.ts"
-import { emitThemeCss, type ThemeTokens } from "./emit/css.ts"
+import { emitThemeCss, emitUpstreamThemeCss, type ThemeTokens } from "./emit/css.ts"
 import { readJsonFile, removeStaleFiles, sha256Hex, snakeCase } from "./normalize.ts"
 import { parseTsx } from "./parse/ast.ts"
 import { analyzeCn, type CvaOption } from "./parse/cn.ts"
@@ -22,6 +22,7 @@ export interface PipelinePaths {
   genDir: string
   rubyDir: string
   cssFile: string
+  upstreamCssFile: string
   configDir: string
 }
 
@@ -482,10 +483,34 @@ async function loadThemeTokens(vendorDir: string, manifest: Manifest): Promise<T
   return { light: colors.cssVars.light ?? {}, dark: colors.cssVars.dark ?? {} }
 }
 
+/**
+ * npm shadcn パッケージ同梱の tailwind.css(vendored)。アイテムと同じ手編集検知を
+ * 適用する(shadcn.css に verbatim 取り込まれるため、検証なしに取り込まない)
+ */
+async function loadTailwindCss(vendorDir: string, manifest: Manifest): Promise<string> {
+  const entry = manifest.source.tailwind_css
+  if (!entry) {
+    throw new ParseError(
+      "manifest has no source.tailwind_css entry — rerun rake shadcn:sync",
+      "(pipeline)", "generate", undefined,
+    )
+  }
+  const filePath = path.join(vendorDir, entry.path)
+  const content = await readFile(filePath, "utf8")
+  const normalized = content.endsWith("\n") ? content : `${content}\n`
+  if (sha256Hex(normalized) !== entry.sha256) {
+    throw new ParseError(
+      `${entry.path}: sha256 mismatch — vendored tailwind.css was hand-edited (rerun rake shadcn:sync)`,
+      "(pipeline)", "generate", undefined,
+    )
+  }
+  return normalized
+}
+
 export interface GenerateReport {
   contracts: Contract[]
   skipped: string[]
-  files: { json: string[], ruby: string[], css: string }
+  files: { json: string[], ruby: string[], css: string, upstream_css: string }
   removed: { json: string[], ruby: string[] }
 }
 
@@ -494,6 +519,7 @@ export async function generateAll(pipeline: PipelinePaths, only?: string[]): Pro
   const { contracts, skipped } = await extractContracts(pipeline, only)
   const manifest = await loadManifest(pipeline.vendorDir)
   const theme = await loadThemeTokens(pipeline.vendorDir, manifest)
+  const tailwindCss = await loadTailwindCss(pipeline.vendorDir, manifest)
 
   const jsonFiles: string[] = []
   const rubyFiles: string[] = []
@@ -501,7 +527,8 @@ export async function generateAll(pipeline: PipelinePaths, only?: string[]): Pro
     jsonFiles.push(await emitContractJson(contract, pipeline.genDir))
     rubyFiles.push(await emitContractRuby(contract, pipeline.rubyDir, manifest.source.style))
   }
-  const css = await emitThemeCss(theme, contracts, pipeline.cssFile, manifest.source.style)
+  const css = await emitThemeCss(theme, contracts, pipeline.cssFile, manifest.source.style, tailwindCss)
+  const upstreamCss = await emitUpstreamThemeCss(theme, contracts, pipeline.upstreamCssFile, manifest.source.style, tailwindCss)
 
   // only が指定されないフル生成のときのみ、廃止アイテムの生成物を削除する
   let removedJson: string[] = []
@@ -511,5 +538,5 @@ export async function generateAll(pipeline: PipelinePaths, only?: string[]): Pro
     removedRuby = await removeStaleFiles(pipeline.rubyDir, new Set(contracts.map((contract) => `${contract.name}.rb`)))
   }
 
-  return { contracts, skipped, files: { json: jsonFiles, ruby: rubyFiles, css }, removed: { json: removedJson, ruby: removedRuby } }
+  return { contracts, skipped, files: { json: jsonFiles, ruby: rubyFiles, css, upstream_css: upstreamCss }, removed: { json: removedJson, ruby: removedRuby } }
 }

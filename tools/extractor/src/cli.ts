@@ -21,6 +21,8 @@ options:
   --gen DIR         契約JSON出力先の上書き
   --ruby-out DIR    生成Ruby出力先の上書き
   --css-out FILE    生成CSS出力先の上書き
+  --upstream-css-out FILE
+                        upstream参照側テーマCSSの生成先の上書き
 `
 
 interface CliOptions {
@@ -29,6 +31,7 @@ interface CliOptions {
   genDir?: string
   rubyDir?: string
   cssFile?: string
+  upstreamCssFile?: string
 }
 
 function parseArgs(argv: string[]): { command: string, options: CliOptions } {
@@ -44,6 +47,7 @@ function parseArgs(argv: string[]): { command: string, options: CliOptions } {
     gen: "genDir",
     "ruby-out": "rubyDir",
     "css-out": "cssFile",
+    "upstream-css-out": "upstreamCssFile",
   }
   for (let i = 0; i < rest.length; i += 1) {
     const arg = rest[i]!
@@ -76,6 +80,7 @@ function resolvePaths(options: CliOptions): PipelinePaths {
     genDir: options.genDir ?? DEFAULT_PATHS.genDir,
     rubyDir: options.rubyDir ?? DEFAULT_PATHS.rubyDir,
     cssFile: options.cssFile ?? DEFAULT_PATHS.cssFile,
+    upstreamCssFile: options.upstreamCssFile ?? DEFAULT_PATHS.upstreamCssFile,
     configDir: DEFAULT_PATHS.configDir,
   }
 }
@@ -122,6 +127,7 @@ async function runGenerate(options: CliOptions): Promise<number> {
   for (const file of report.files.json) process.stdout.write(`generated ${file}\n`)
   for (const file of report.files.ruby) process.stdout.write(`generated ${file}\n`)
   process.stdout.write(`generated ${report.files.css}\n`)
+  process.stdout.write(`generated ${report.files.upstream_css}\n`)
   for (const removed of report.removed.json) process.stdout.write(`removed stale contract json: ${removed}\n`)
   for (const removed of report.removed.ruby) process.stdout.write(`removed stale contract ruby: ${removed}\n`)
   await reportSkipped(report.skipped)
@@ -162,7 +168,7 @@ async function compareDirectories(generatedDir: string, committedDir: string, la
 async function runCheck(options: CliOptions): Promise<number> {
   // check は常に既定パスのコミット済み成果物と比較するため、パス系オプションは
   // 受け付けない(静かに無視すると検証対象を誤認させる)
-  for (const key of ["vendorDir", "genDir", "rubyDir", "cssFile"] as const) {
+  for (const key of ["vendorDir", "genDir", "rubyDir", "cssFile", "upstreamCssFile"] as const) {
     if (options[key]) {
       process.stderr.write(`check does not accept --${key}: it always verifies the committed outputs\n`)
       return 2
@@ -174,6 +180,7 @@ async function runCheck(options: CliOptions): Promise<number> {
     genDir: path.join(tempRoot, "gen", "contracts"),
     rubyDir: path.join(tempRoot, "lib", "contracts"),
     cssFile: path.join(tempRoot, "shadcn.css"),
+    upstreamCssFile: path.join(tempRoot, "upstream_theme.css"),
   }
   await generateAll(checkPaths)
 
@@ -181,14 +188,19 @@ async function runCheck(options: CliOptions): Promise<number> {
   differences.push(...await compareDirectories(checkPaths.genDir, DEFAULT_PATHS.genDir, "gen/contracts"))
   differences.push(...await compareDirectories(checkPaths.rubyDir, DEFAULT_PATHS.rubyDir, "lib/shadcn_view_components/generated/contracts"))
 
-  const [generatedCss, committedCss] = await Promise.all([
-    readFile(checkPaths.cssFile, "utf8"),
-    readFile(DEFAULT_PATHS.cssFile, "utf8").catch(() => null),
-  ])
-  if (committedCss === null) {
-    differences.push("app/assets/stylesheets/shadcn/shadcn.css: committed output is missing")
-  } else if (generatedCss !== committedCss) {
-    differences.push("app/assets/stylesheets/shadcn/shadcn.css: content differs (hand edit or non-deterministic pipeline)")
+  for (const [generatedFile, committedFile, label] of [
+    [checkPaths.cssFile, DEFAULT_PATHS.cssFile, "app/assets/stylesheets/shadcn/shadcn.css"],
+    [checkPaths.upstreamCssFile, DEFAULT_PATHS.upstreamCssFile, "tools/visual-parity/src/upstream_theme.css"],
+  ] as const) {
+    const [generatedCss, committedCss] = await Promise.all([
+      readFile(generatedFile, "utf8"),
+      readFile(committedFile, "utf8").catch(() => null),
+    ])
+    if (committedCss === null) {
+      differences.push(`${label}: committed output is missing`)
+    } else if (generatedCss !== committedCss) {
+      differences.push(`${label}: content differs (hand edit or non-deterministic pipeline)`)
+    }
   }
 
   if (differences.length > 0) {

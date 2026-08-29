@@ -9,7 +9,7 @@ import { mkdir, readdir, readFile, rename, rm, writeFile } from "node:fs/promise
 import path from "node:path"
 
 import { normalizeRegistryItem, sha256Hex } from "./normalize.ts"
-import type { Manifest, ManifestItem, UpstreamRelease } from "./manifest.ts"
+import type { Manifest, ManifestItem, ManifestTailwindCss, UpstreamRelease } from "./manifest.ts"
 
 export const REGISTRY_BASE_URL = "https://ui.shadcn.com/r"
 export const STYLE = "base-nova"
@@ -30,6 +30,21 @@ export function styleIndexUrl(): string {
 
 export function colorsUrl(baseColor: string): string {
   return `${REGISTRY_BASE_URL}/colors/${baseColor}.json`
+}
+
+/**
+ * npm shadcn パッケージの tailwind.css。実アプリでは node_modules から解決される
+ * (`@import "shadcn/tailwind.css"`)ため、バージョンは upstream_release.tag(shadcn@X.Y.Z)
+ * に固定し、unpkg の不変URLから取得する(02-upstream-sync §2)。
+ */
+export function tailwindCssUrl(version: string): string {
+  return `https://unpkg.com/shadcn@${version}/tailwind.css`
+}
+
+/** リリースタグ(shadcn@4.19.0 等)からnpmパッケージバージョンを取り出す。 */
+export function versionFromReleaseTag(tag: string): string | null {
+  const match = /^shadcn@(\d[^\s@]*)$/.exec(tag)
+  return match?.[1] ?? null
 }
 
 export interface SyncResult {
@@ -246,13 +261,46 @@ export async function syncVendor(vendorDir: string): Promise<SyncResult> {
 
   await writeAtomic(colorsPath, colorsContent)
 
+  // (5) npm shadcn パッケージの tailwind.css(index.json の `@import "shadcn/tailwind.css"`
+  //     の実体。カスタムバリアントや scroll-fade 等のスタイル共通定義)。バージョンは
+  //     upstream_release.tag に固定する。release解決に失敗したときは前回manifestの
+  //     バージョンで取得を試み、取得失敗時は既存スナップショットを維持する
+  const upstreamRelease = await resolveUpstreamRelease()
+  let tailwindCss: ManifestTailwindCss | null = null
+  const tailwindVersion = (upstreamRelease !== null ? versionFromReleaseTag(upstreamRelease.tag) : null)
+    ?? previous?.source.tailwind_css?.version ?? null
+  if (tailwindVersion === null) {
+    process.stderr.write("WARN: could not resolve the shadcn package version for tailwind.css — snapshot kept as-is\n")
+    tailwindCss = previous?.source.tailwind_css ?? null
+  } else {
+    const ctx: FetchContext = { item: `shadcn@${tailwindVersion}`, file: "tailwind.css" }
+    try {
+      const response = await fetch(tailwindCssUrl(tailwindVersion), { signal: AbortSignal.timeout(30_000) })
+      if (!response.ok) throw new Error(`HTTP ${response.status} for ${tailwindCssUrl(tailwindVersion)}`)
+      const raw = await response.text()
+      const content = raw.endsWith("\n") ? raw : `${raw}\n`
+      const tailwindPath = path.join(vendorDir, "style", "tailwind.css")
+      await writeAtomic(tailwindPath, content)
+      tailwindCss = {
+        package: "shadcn",
+        version: tailwindVersion,
+        path: path.relative(vendorDir, tailwindPath).split(path.sep).join("/"),
+        sha256: sha256Hex(content),
+      }
+    } catch (error) {
+      process.stderr.write(`WARN: ${ctx.item}/${ctx.file}: ${String(error)} — snapshot kept as-is\n`)
+      tailwindCss = previous?.source.tailwind_css ?? null
+    }
+  }
+
   const manifest: Manifest = {
     version: 1,
     source: {
       style: STYLE,
       registry_base_url: REGISTRY_BASE_URL,
       ...await fetchStyleDependencies(),
-      upstream_release: await resolveUpstreamRelease(),
+      upstream_release: upstreamRelease,
+      tailwind_css: tailwindCss,
     },
     fetched_at: new Date().toISOString(),
     theme: {
