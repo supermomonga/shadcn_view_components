@@ -3930,9 +3930,6 @@
   .data-\[disabled\=true\]\:opacity-50[data-disabled="true"] {
     opacity: 50%;
   }
-  .data-\[error\=true\]\:text-destructive[data-error="true"] {
-    color: var(--destructive);
-  }
   .data-\[invalid\=true\]\:text-destructive[data-invalid="true"] {
     color: var(--destructive);
   }

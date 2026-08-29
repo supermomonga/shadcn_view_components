@@ -232,11 +232,10 @@
     },
     "form": {
       "path": "overrides/items/form.json",
-      "sha256": "4ed67af627c6325d0502462fa1decde12b21495340ea95a04d5888f8ecbb52ed",
+      "sha256": "449d8b022868fff90102143dc84f1e551487aed8cd69847f8624c9730cf92c12",
       "file_count": 1,
       "registry_dependencies": [
-        "button",
-        "label"
+        "field"
       ],
       "origin": "local-override"
     },

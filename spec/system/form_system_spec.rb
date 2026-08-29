@@ -1,17 +1,17 @@
 # frozen_string_literal: true
 
-# Phase 2 の DoD(10-roadmap): form_with と各フォーム部品の統合。
-# 値の送出とバリデーションエラー表示(aria-invalid / data-error / メッセージ要素)
+# form_with と各フォーム部品の統合(Phase 2 の DoD、Issue #3 で Field ベースに再設計)。
+# 値の送出とバリデーションエラー表示(aria-invalid / data-invalid / メッセージ要素)
 require "rails_helper"
 
 RSpec.describe "Form integration", type: :system do
-  it "renders no message element when there is no error" do
+  it "renders no error element when there is no error" do
     visit "/pages/form"
 
     expect(page).to have_field("email")
     expect(page).to have_no_selector("#email-message")
     expect(find("#subscribe-email")["aria-invalid"]).to eq("false")
-    expect(find("label[for='subscribe-email']")["data-error"]).to eq("false")
+    expect(find("[data-slot='field']")["data-invalid"]).to eq("false")
   end
 
   it "shows validation error with aria-invalid linkage after submitting an invalid value" do
@@ -22,7 +22,7 @@ RSpec.describe "Form integration", type: :system do
 
     expect(page).to have_selector("#email-message", text: "有効なメールアドレスを入力してください")
     expect(find("#subscribe-email")["aria-invalid"]).to eq("true")
-    expect(find("label[for='subscribe-email']")["data-error"]).to eq("true")
+    expect(find("[data-slot='field']")["data-invalid"]).to eq("true")
     expect(page).to have_text("送信できませんでした")
   end
 

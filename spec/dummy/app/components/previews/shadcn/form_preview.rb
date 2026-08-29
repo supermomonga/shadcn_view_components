@@ -3,25 +3,24 @@
 module Shadcn
   class FormPreview < Shadcn::PreviewBase
     def default
-      render(Shadcn::Form::Item.new) do
+      render(Shadcn::Form::Item.new(invalid: true)) do
         safe_join([
-          render(Shadcn::Form::Label.new(for: "preview-email")) { "メールアドレス" },
-          render(Shadcn::Form::Control.new) do
-            render(Shadcn::Input.new(id: "preview-email", type: "email", placeholder: "you@example.com"))
-          end,
-          render(Shadcn::Form::Description.new) { "ログインに使うアドレスです" },
-          render(Shadcn::Form::Message.new(message: "メールアドレスを入力してください"))
-        ])
+                    render(Shadcn::Field::Label.new(for: "preview-email")) { "メールアドレス" },
+                    render(Shadcn::Input.new(id: "preview-email", type: "email", placeholder: "you@example.com", aria: { invalid: true })),
+                    render(Shadcn::Field::Description.new) { "ログインに使うアドレスです" },
+                    render(Shadcn::Form::Error.new(errors: ["メールアドレスを入力してください"]))
+                  ])
       end
     end
 
-    def without_message
+    def without_error
       render(Shadcn::Form::Item.new) do
         safe_join([
-          render(Shadcn::Form::Label.new(for: "preview-name")) { "名前" },
-          render(Shadcn::Form::Control.new) { render(Shadcn::Input.new(id: "preview-name")) },
-          render(Shadcn::Form::Description.new) { "エラーが無いときはメッセージ要素自体が描かれません" }
-        ])
+                    render(Shadcn::Field::Label.new(for: "preview-name")) { "名前" },
+                    render(Shadcn::Input.new(id: "preview-name")),
+                    render(Shadcn::Field::Description.new) { "エラーが無いときはError要素自体が描かれません" },
+                    render(Shadcn::Form::Error.new)
+                  ])
       end
     end
   end

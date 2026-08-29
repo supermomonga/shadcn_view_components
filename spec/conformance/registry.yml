@@ -232,7 +232,8 @@ field:
     - { component: Shadcn::Field, export: Field }
     - { component: Shadcn::Field::Content, export: FieldContent }
     - { component: Shadcn::Field::Description, export: FieldDescription }
-    - { component: Shadcn::Field::Error, export: FieldError }
+    # FieldError は upstream と同じく「本文が無ければ描かない」ため、検証用コンテンツを与える
+    - { component: Shadcn::Field::Error, export: FieldError, content: "必須項目です" }
     - { component: Shadcn::Field::Group, export: FieldGroup }
     - { component: Shadcn::Field::Label, export: FieldLabel }
     - { component: Shadcn::Field::Legend, export: FieldLegend }
@@ -241,12 +242,11 @@ field:
     - { component: Shadcn::Field::Title, export: FieldTitle }
 form:
   exports:
+    # form は Field ベースに再設計した独自契約(local-override)。ラベル/説明は
+    # Shadcn::Field 側のエクスポートを使うため、form アイテム自身の出口は2つ
     - { component: Shadcn::Form::Item, export: FormItem }
-    - { component: Shadcn::Form::Label, export: FormLabel }
-    - { component: Shadcn::Form::Control, export: FormControl }
-    - { component: Shadcn::Form::Description, export: FormDescription }
-    # FormMessage は upstream と同じく「本文が無ければ描かない」ため、検証用コンテンツを与える
-    - { component: Shadcn::Form::Message, export: FormMessage, content: "必須項目です" }
+    # FormError は upstream(FieldError) と同じく「本文が無ければ描かない」ため、検証用コンテンツを与える
+    - { component: Shadcn::Form::Error, export: FormError, content: "必須項目です" }
 
 hover-card:
   exports:

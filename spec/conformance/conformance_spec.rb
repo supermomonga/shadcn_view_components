@@ -11,7 +11,7 @@ allowances = YAML.safe_load_file(File.expand_path("allowances.yml", __dir__)) ||
 
 # レジストリエントリを [component_class, export_name, content] のペアへ正規化する。
 # 単純なアイテムは component/export、複合アイテムは exports: のリストで列挙する。
-# content は「本文が無ければ描かない」コンポーネント(Form::Message 等)への検証用入力
+# content は「本文が無ければ描かない」コンポーネント(Form::Error 等)への検証用入力
 def normalized_exports(entry)
   if entry["exports"]
     entry["exports"].map { |export| [export.fetch("component"), export.fetch("export"), export["content"]] }

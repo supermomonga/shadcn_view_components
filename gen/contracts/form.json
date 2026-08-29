@@ -5,167 +5,78 @@
     "light": {}
   },
   "exports": {
-    "FormControl": {
-      "classes_slot": "",
+    "FormError": {
+      "classes_slot": "field-error",
       "combinations": {
-        "": ""
+        "": "text-sm font-normal text-destructive"
       },
-      "component_class": "Shadcn::Form::Control",
-      "cva": {
-        "compound": [],
-        "defaults": {},
-        "prop_names": []
-      },
-      "passthrough_class": false,
-      "root_slot": "form-control",
-      "slots": [
-        {
-          "dynamic_attributes": [
-            "aria-describedby",
-            "aria-invalid",
-            "id"
-          ],
-          "name": "form-control",
-          "static_attributes": {},
-          "tag": "Slot.Root"
-        }
-      ]
-    },
-    "FormDescription": {
-      "classes_slot": "form-description",
-      "combinations": {
-        "": "text-sm text-muted-foreground"
-      },
-      "component_class": "Shadcn::Form::Description",
+      "component_class": "Shadcn::Form::Error",
       "cva": {
         "compound": [],
         "defaults": {},
         "prop_names": []
       },
       "passthrough_class": true,
-      "root_slot": "form-description",
+      "root_slot": "field-error",
       "slots": [
         {
-          "dynamic_attributes": [
-            "id"
-          ],
-          "name": "form-description",
-          "static_attributes": {},
-          "tag": "p"
-        }
-      ]
-    },
-    "FormField": {
-      "classes_slot": "",
-      "combinations": {
-        "": ""
-      },
-      "component_class": "Shadcn::FormField",
-      "cva": {
-        "compound": [],
-        "defaults": {},
-        "prop_names": []
-      },
-      "passthrough_class": false,
-      "root_slot": "",
-      "slots": [
+          "dynamic_attributes": [],
+          "name": "field-error",
+          "static_attributes": {
+            "role": "alert"
+          },
+          "tag": "div"
+        },
         {
-          "dynamic_attributes": [
-            "value"
-          ],
+          "dynamic_attributes": [],
           "name": "",
-          "static_attributes": {},
-          "tag": "FormFieldContext.Provider"
+          "static_attributes": {
+            "class": "ml-4 flex list-disc flex-col gap-1"
+          },
+          "tag": "ul"
         }
       ]
     },
     "FormItem": {
-      "classes_slot": "form-item",
+      "classes_slot": "field",
       "combinations": {
-        "": "grid gap-2"
+        "orientation=horizontal": "group/field flex w-full gap-2 data-[invalid=true]:text-destructive flex-row items-center has-[>[data-slot=field-content]]:items-start *:data-[slot=field-label]:flex-auto has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px",
+        "orientation=responsive": "group/field flex w-full gap-2 data-[invalid=true]:text-destructive flex-col *:w-full @md/field-group:flex-row @md/field-group:items-center @md/field-group:*:w-auto @md/field-group:has-[>[data-slot=field-content]]:items-start @md/field-group:*:data-[slot=field-label]:flex-auto [&>.sr-only]:w-auto @md/field-group:has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px",
+        "orientation=vertical": "group/field flex w-full gap-2 data-[invalid=true]:text-destructive flex-col *:w-full [&>.sr-only]:w-auto"
       },
       "component_class": "Shadcn::Form::Item",
       "cva": {
         "compound": [],
-        "defaults": {},
-        "prop_names": []
-      },
-      "passthrough_class": true,
-      "root_slot": "",
-      "slots": [
-        {
-          "dynamic_attributes": [
-            "value"
-          ],
-          "name": "",
-          "static_attributes": {},
-          "tag": "FormItemContext.Provider"
+        "defaults": {
+          "orientation": "vertical"
         },
+        "prop_names": [
+          "orientation"
+        ]
+      },
+      "passthrough_class": true,
+      "root_slot": "field",
+      "slots": [
         {
-          "dynamic_attributes": [],
-          "name": "form-item",
-          "static_attributes": {},
+          "dynamic_attributes": [
+            "data-invalid",
+            "data-orientation"
+          ],
+          "name": "field",
+          "static_attributes": {
+            "role": "group"
+          },
           "tag": "div"
-        }
-      ]
-    },
-    "FormLabel": {
-      "classes_slot": "form-label",
-      "combinations": {
-        "": "data-[error=true]:text-destructive"
-      },
-      "component_class": "Shadcn::Form::Label",
-      "cva": {
-        "compound": [],
-        "defaults": {},
-        "prop_names": []
-      },
-      "passthrough_class": true,
-      "root_slot": "form-label",
-      "slots": [
-        {
-          "dynamic_attributes": [
-            "data-error",
-            "htmlFor"
-          ],
-          "name": "form-label",
-          "static_attributes": {},
-          "tag": "Label"
-        }
-      ]
-    },
-    "FormMessage": {
-      "classes_slot": "form-message",
-      "combinations": {
-        "": "text-sm text-destructive"
-      },
-      "component_class": "Shadcn::Form::Message",
-      "cva": {
-        "compound": [],
-        "defaults": {},
-        "prop_names": []
-      },
-      "passthrough_class": true,
-      "root_slot": "form-message",
-      "slots": [
-        {
-          "dynamic_attributes": [
-            "id"
-          ],
-          "name": "form-message",
-          "static_attributes": {},
-          "tag": "p"
         }
       ]
     }
   },
   "name": "form",
   "registry_dependencies": [
-    "button",
-    "label"
+    "field"
   ],
   "schema_version": 1,
   "source": {
-    "item_sha256": "4ed67af627c6325d0502462fa1decde12b21495340ea95a04d5888f8ecbb52ed"
+    "item_sha256": "449d8b022868fff90102143dc84f1e551487aed8cd69847f8624c9730cf92c12"
   }
 }

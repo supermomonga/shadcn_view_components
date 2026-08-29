@@ -89,14 +89,6 @@ carousel:
   CarouselNext:
     class_mode: contains
     attributes: [type, disabled, data-action, aria-hidden]
-form:
-  FormLabel:
-    # upstream の FormLabel は <Label>(別アイテム)のクラスに data-[error=true]:text-destructive
-    # を合成する。契約(form側)には上書き分のみ記録されるため、描画は Label のクラス群を含む
-    class_mode: contains
-    attributes: [for, data-error]
-  FormControl:
-    attributes: [id]
 dialog:
   Dialog:
     attributes: [data-controller]
@@ -297,6 +289,9 @@ select:
     attributes: [role, tabindex, data-value, aria-selected]
 field:
   FieldLabel:
+    # upstream の FieldLabel は <Label>(別アイテム)を描くため、描画は label 契約の
+    # クラス群を含む(field 契約側のクラスは上書き分として後勝ち)
+    class_mode: contains
     attributes: [for]
 input-group:
   InputGroupButton:
