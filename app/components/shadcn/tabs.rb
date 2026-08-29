@@ -76,10 +76,11 @@ module Shadcn
       sig { override.returns(T::Hash[Symbol, T.untyped]) }
       def html_attributes
         attributes = super
+        # base-nova は選択状態を data-active(属性の存在)で表現する
+        state_attributes = @active ? { active: "" } : {}
         merge_nested(attributes, :data, {
-          state: @active ? "active" : "inactive",
           value: @value
-        }.compact)
+        }.compact.merge(state_attributes))
         merge_nested(attributes, :aria, { selected: @active.to_s })
         attributes[:role] = "tab"
         attributes[:tabindex] = @active ? 0 : -1

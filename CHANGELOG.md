@@ -6,6 +6,27 @@ All notable changes to this project will be documented in this file.
 
 Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
+### スタイル移行: new-york-v4 → base-nova(破壊的変更)
+
+公式ドキュメントのデフォルトがbase系プリセットへ移行した(docsの`/docs/components/*`は
+baseページへ307リダイレクト、CLI `init -d`は`--preset=base-nova`、`new-york-v4`はCLIの
+`FALLBACK_STYLE`=レガシー配信)ことに追従し、vendoring対象スタイルを`base-nova`へ移行した。
+
+- 契約: 全60コンポーネントのクラス文字列がbase-novaに更新(Badge destructive は
+  `bg-destructive/10 text-destructive` の淡い表現へ。公式docs表示と一致)
+- 属性契約: `data-state=open/closed` → `data-open` / `data-closed`(Base UI規約)。
+  accordion / dialog / sheet / drawer / popover / hover_card / tabs / toggle 系の
+  コントローラ・コンポーネントを更新
+- 廃止対応: base-novaに存在しない `Popover::Anchor` / `Select` ルート契約 /
+  `NavigationMenu::Viewport` を非対応化(または削除)。`form` / `direction` は
+  upstreamから提供が無い(または re-export のみ)ため
+  `vendor/shadcn/overrides/items/`(origin: local-override)として現行維持
+- 抽出器: Base UI `useRender` パターンをJSX形状へ機械変換する対応を追加
+  (`parse/userender.ts`)。`IconPlaceholder` / キャメルケースprops(DOM属性でない)の除去
+- 新規未対応: `questionnaire` / `toast`(個別評価)
+- 検証: 適合試験・コントラクト整合は全件更新。visual parity のbaselineは
+  base-nova描画で再生成
+
 ### upstream出所
 
 - 出所: `vendor/shadcn/manifest.json` を参照(tag / resolved_sha / fetched_at)

@@ -30,8 +30,15 @@ registry.reject { |_name, entry| entry["pending"] }.each do |name, entry|
     contract = ShadcnViewComponents::Contracts.const_get(component_name.delete_prefix("Shadcn::"))
     root_slot = contract::ROOT_SLOT
     slot_definition = contract::SLOTS.find { |slot| slot[:name] == root_slot } || contract::SLOTS.first || {}
-    # 契約クラスがルート以外の要素に属する構造(Tableのラッパー等)はその要素を検証対象にする
     classes_slot = contract.const_defined?(:CLASSES_SLOT) ? contract.const_get(:CLASSES_SLOT) : root_slot
+    if root_slot.to_s.empty?
+      # ルートがDOMを持たない構成(portalラッパー等)では、クラスを持つスロットの
+      # 属性定義(static/dynamic)を検証基準にする
+      classes_slot_definition = contract::SLOTS.find { |slot| slot[:name] == classes_slot }
+      slot_definition = classes_slot_definition if classes_slot_definition
+    end
+    # 契約クラスがルート以外の要素に属する構造(Tableのラッパー等)はその要素を検証対象にする
+    # (classes_slot は直上で算出済み)
     root_static_class = slot_definition.is_a?(Hash) ? slot_definition.dig(:static_attributes, :class).to_s : ""
     # ルートに静的クラス、内側の(スロット無し)要素にcnを持つ二重構造(accordion-content等)。
     # 検証はルートに対して「静的クラス + 契約クラス」の結合で行う(両方の存否を検出できる)

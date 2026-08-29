@@ -23,7 +23,7 @@ RSpec.describe "upstream drift detection", type: :conformance do
       item_path = File.join(vendor_dir, "registry/items/button.json")
       item = JSON.parse(File.read(item_path))
       mutated_content = item["files"][0]["content"].sub(
-        "inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium",
+        "group/button inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-clip-padding text-sm font-medium",
         "flex flex-row-reverse items-start justify-start gap-4 rounded-full text-lg font-bold"
       )
       expect(mutated_content).not_to eq(item["files"][0]["content"]), "fixture mutation did not apply"

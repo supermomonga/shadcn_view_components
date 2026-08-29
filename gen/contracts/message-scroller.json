@@ -58,7 +58,7 @@
     "MessageScrollerContent": {
       "classes_slot": "message-scroller-content",
       "combinations": {
-        "": "flex h-max min-h-full flex-col gap-8"
+        "": "flex h-max min-h-full flex-col gap-6"
       },
       "component_class": "Shadcn::MessageScroller::Content",
       "cva": {
@@ -126,7 +126,7 @@
     "MessageScrollerViewport": {
       "classes_slot": "message-scroller-viewport",
       "combinations": {
-        "": "size-full min-h-0 min-w-0 scroll-fade-b scrollbar-thin scrollbar-gutter-stable overflow-y-auto overscroll-contain contain-content data-autoscrolling:scrollbar-none"
+        "": "size-full min-h-0 min-w-0 scroll-fade-b scrollbar-thin scrollbar-gutter-stable overflow-y-auto overscroll-contain contain-content data-autoscrolling:scrollbar-thumb-transparent data-autoscrolling:scrollbar-track-transparent"
       },
       "component_class": "Shadcn::MessageScroller::Viewport",
       "cva": {
@@ -152,6 +152,6 @@
   ],
   "schema_version": 1,
   "source": {
-    "item_sha256": "7a7dbb8bdd367fb0e42fdb3204def7ab1c5d5ec7542ad29f5a2c117cdda14cd8"
+    "item_sha256": "61c4c24dc632622378c0d708a5106cbf1a063aeb2e84bd69988b1a169cefda22"
   }
 }

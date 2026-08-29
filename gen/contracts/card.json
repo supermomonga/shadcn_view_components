@@ -8,7 +8,7 @@
     "Card": {
       "classes_slot": "card",
       "combinations": {
-        "": "flex flex-col gap-6 rounded-xl border bg-card py-6 text-card-foreground shadow-sm"
+        "": "group/card flex flex-col gap-(--card-spacing) overflow-hidden rounded-xl bg-card py-(--card-spacing) text-sm text-card-foreground ring-1 ring-foreground/10 [--card-spacing:--spacing(4)] has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:[--card-spacing:--spacing(3)] data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl"
       },
       "component_class": "Shadcn::Card",
       "cva": {
@@ -20,7 +20,9 @@
       "root_slot": "card",
       "slots": [
         {
-          "dynamic_attributes": [],
+          "dynamic_attributes": [
+            "data-size"
+          ],
           "name": "card",
           "static_attributes": {},
           "tag": "div"
@@ -52,7 +54,7 @@
     "CardContent": {
       "classes_slot": "card-content",
       "combinations": {
-        "": "px-6"
+        "": "px-(--card-spacing)"
       },
       "component_class": "Shadcn::Card::Content",
       "cva": {
@@ -96,7 +98,7 @@
     "CardFooter": {
       "classes_slot": "card-footer",
       "combinations": {
-        "": "flex items-center px-6 [.border-t]:pt-6"
+        "": "flex items-center rounded-b-xl border-t bg-muted/50 p-(--card-spacing)"
       },
       "component_class": "Shadcn::Card::Footer",
       "cva": {
@@ -118,7 +120,7 @@
     "CardHeader": {
       "classes_slot": "card-header",
       "combinations": {
-        "": "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6"
+        "": "group/card-header @container/card-header grid auto-rows-min items-start gap-1 rounded-t-xl px-(--card-spacing) has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto] [.border-b]:pb-(--card-spacing)"
       },
       "component_class": "Shadcn::Card::Header",
       "cva": {
@@ -140,7 +142,7 @@
     "CardTitle": {
       "classes_slot": "card-title",
       "combinations": {
-        "": "leading-none font-semibold"
+        "": "cn-font-heading text-base leading-snug font-medium group-data-[size=sm]/card:text-sm"
       },
       "component_class": "Shadcn::Card::Title",
       "cva": {
@@ -164,6 +166,6 @@
   "registry_dependencies": [],
   "schema_version": 1,
   "source": {
-    "item_sha256": "9c17ccab21e1a760af4cdea89c42bbbc1c17b4ad364bdd2caa457bc38c88e74d"
+    "item_sha256": "a9e14f96850a8ccaa07a0ea0e24232c8982435cd0a9c356a55d6bca5af5148c7"
   }
 }

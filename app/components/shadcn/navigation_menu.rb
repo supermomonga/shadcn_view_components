@@ -110,31 +110,7 @@ module Shadcn
       end
     end
 
-    class Viewport < BaseComponent
-      # 契約スロット構成: 名前無しラッパー(div.absolute...) > navigation-menu-viewport。
-      # 本gemではviewportなしでContentを直接表示するため、ラッパー込みで描く
-      sig { override.returns(String) }
-      def call
-        content_tag(:div, class: wrapper_class) do
-          content_tag(tag, **inner_attributes) { content }
-        end
-      end
-
-      private
-
-      sig { returns(T.nilable(String)) }
-      def wrapper_class
-        T.cast(contract_slot("").dig(:static_attributes, :class), T.nilable(String))
-      end
-
-      # 内側要素にはラッパーの静的クラスを混ぜない(契約クラスのみ)
-      sig { returns(T::Hash[Symbol, T.untyped]) }
-      def inner_attributes
-        attributes = @html_args.merge(class: self.class.classes(extra: @user_class))
-        data = T.cast(attributes[:data], T.nilable(T::Hash[Symbol, T.untyped])) || {}
-        attributes[:data] = { slot: "navigation-menu-viewport" }.merge(data)
-        attributes
-      end
-    end
+    # base-nova では Viewport が廃止され Positioner(Portal 由来の位置決め)に置き換わった。
+    # 本gemは viewport/positioner なしで Content を直接表示する設計のため、両方を移植しない
   end
 end

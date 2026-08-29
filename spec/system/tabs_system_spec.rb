@@ -9,7 +9,7 @@ RSpec.describe "Tabs behavior", type: :system do
     visit "/pages/tabs"
 
     account = find("#trigger-account")
-    expect(account["data-state"]).to eq("active")
+    expect(account["data-active"]).to eq("")
     expect(account["aria-selected"]).to eq("true")
     expect(account["tabindex"]).to eq("0")
     expect(find("#trigger-password")["tabindex"]).to eq("-1")
@@ -33,11 +33,11 @@ RSpec.describe "Tabs behavior", type: :system do
 
     find("#trigger-account").click
     find("#trigger-account").send_keys(:right)
-    expect(find("#trigger-password")["data-state"]).to eq("active")
+    expect(find("#trigger-password")["data-active"]).to eq("")
     expect(page.evaluate_script("document.activeElement.id")).to eq("trigger-password")
 
     find("#trigger-password").send_keys(:left)
-    expect(find("#trigger-account")["data-state"]).to eq("active")
+    expect(find("#trigger-account")["data-active"]).to eq("")
     expect(page.evaluate_script("document.activeElement.id")).to eq("trigger-account")
   end
 end

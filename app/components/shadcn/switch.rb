@@ -41,13 +41,12 @@ module Shadcn
 
     private
 
-    # upstream(Radix)はルートとツマミの両方に data-state="checked"/"unchecked" を
-    # 出力する。契約の data-[state] / dark:data-[state] ユーティリティ(bg-input /
-    # bg-foreground 等)はこの属性で初めて発火するため、checked 属性(利用者指定)
-    # の有無から state を導出して両要素に付与する
-    sig { returns(String) }
-    def state
-      @html_args[:checked] ? "checked" : "unchecked"
+    # base-nova の契約クラスは data-checked / data-unchecked(属性の存在)を参照する
+    # (bg-primary / bg-input / ツマミ背景等)。checked 属性(利用者指定)の有無から
+    # 導出して両要素に付与する
+    sig { returns(T::Hash[Symbol, T.untyped]) }
+    def state_attributes
+      @html_args[:checked] ? { checked: "" } : { unchecked: "" }
     end
 
     sig { returns(String) }
@@ -57,7 +56,7 @@ module Shadcn
       # 背景/角丸の上にOS標準の箱を塗る(dark時は白箱として視覚差になる)ため消す。
       # 契約の data-[state] 系背景クラスを素の要素に効かせるために必要
       attributes[:class] = [attributes[:class], "appearance-none"].compact.join(" ")
-      merge_nested(attributes, :data, { state: state })
+      merge_nested(attributes, :data, state_attributes)
       content_tag(:input, **attributes) { "".html_safe }
         .then { |markup| markup.sub(%r{></input>\z}, ">") }
         .then(&:html_safe)
@@ -77,7 +76,7 @@ module Shadcn
       ].join(" ")
       content_tag(
         :span,
-        data: { slot: "switch-thumb", state: state },
+        data: { slot: "switch-thumb" }.merge(state_attributes),
         class: [thumb_class, decoration].compact.join(" ")
       ) { "".html_safe }
     end

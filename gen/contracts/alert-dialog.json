@@ -39,22 +39,13 @@
         "prop_names": []
       },
       "passthrough_class": true,
-      "root_slot": "",
+      "root_slot": "alert-dialog-action",
       "slots": [
-        {
-          "dynamic_attributes": [
-            "size",
-            "variant"
-          ],
-          "name": "",
-          "static_attributes": {},
-          "tag": "Button"
-        },
         {
           "dynamic_attributes": [],
           "name": "alert-dialog-action",
           "static_attributes": {},
-          "tag": "AlertDialogPrimitive.Action"
+          "tag": "Button"
         }
       ]
     },
@@ -70,29 +61,22 @@
         "prop_names": []
       },
       "passthrough_class": true,
-      "root_slot": "",
+      "root_slot": "alert-dialog-cancel",
       "slots": [
         {
           "dynamic_attributes": [
-            "size",
-            "variant"
+            "render"
           ],
-          "name": "",
-          "static_attributes": {},
-          "tag": "Button"
-        },
-        {
-          "dynamic_attributes": [],
           "name": "alert-dialog-cancel",
           "static_attributes": {},
-          "tag": "AlertDialogPrimitive.Cancel"
+          "tag": "AlertDialogPrimitive.Close"
         }
       ]
     },
     "AlertDialogContent": {
       "classes_slot": "alert-dialog-content",
       "combinations": {
-        "": "group/alert-dialog-content fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border bg-background p-6 shadow-lg duration-200 data-[size=sm]:max-w-xs data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[size=default]:sm:max-w-lg"
+        "": "group/alert-dialog-content fixed top-1/2 left-1/2 z-50 grid w-full -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl bg-popover p-4 text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none data-[size=default]:max-w-xs data-[size=sm]:max-w-xs data-[size=default]:sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
       },
       "component_class": "Shadcn::AlertDialog::Content",
       "cva": {
@@ -115,14 +99,14 @@
           ],
           "name": "alert-dialog-content",
           "static_attributes": {},
-          "tag": "AlertDialogPrimitive.Content"
+          "tag": "AlertDialogPrimitive.Popup"
         }
       ]
     },
     "AlertDialogDescription": {
       "classes_slot": "alert-dialog-description",
       "combinations": {
-        "": "text-sm text-muted-foreground"
+        "": "text-sm text-balance text-muted-foreground md:text-pretty *:[a]:underline *:[a]:underline-offset-3 *:[a]:hover:text-foreground"
       },
       "component_class": "Shadcn::AlertDialog::Description",
       "cva": {
@@ -144,7 +128,7 @@
     "AlertDialogFooter": {
       "classes_slot": "alert-dialog-footer",
       "combinations": {
-        "": "flex flex-col-reverse gap-2 group-data-[size=sm]/alert-dialog-content:grid group-data-[size=sm]/alert-dialog-content:grid-cols-2 sm:flex-row sm:justify-end"
+        "": "-mx-4 -mb-4 flex flex-col-reverse gap-2 rounded-b-xl border-t bg-muted/50 p-4 group-data-[size=sm]/alert-dialog-content:grid group-data-[size=sm]/alert-dialog-content:grid-cols-2 sm:flex-row sm:justify-end"
       },
       "component_class": "Shadcn::AlertDialog::Footer",
       "cva": {
@@ -166,7 +150,7 @@
     "AlertDialogHeader": {
       "classes_slot": "alert-dialog-header",
       "combinations": {
-        "": "grid grid-rows-[auto_1fr] place-items-center gap-1.5 text-center has-data-[slot=alert-dialog-media]:grid-rows-[auto_auto_1fr] has-data-[slot=alert-dialog-media]:gap-x-6 sm:group-data-[size=default]/alert-dialog-content:place-items-start sm:group-data-[size=default]/alert-dialog-content:text-left sm:group-data-[size=default]/alert-dialog-content:has-data-[slot=alert-dialog-media]:grid-rows-[auto_1fr]"
+        "": "grid grid-rows-[auto_1fr] place-items-center gap-1.5 text-center has-data-[slot=alert-dialog-media]:grid-rows-[auto_auto_1fr] has-data-[slot=alert-dialog-media]:gap-x-4 sm:group-data-[size=default]/alert-dialog-content:place-items-start sm:group-data-[size=default]/alert-dialog-content:text-left sm:group-data-[size=default]/alert-dialog-content:has-data-[slot=alert-dialog-media]:grid-rows-[auto_1fr]"
       },
       "component_class": "Shadcn::AlertDialog::Header",
       "cva": {
@@ -188,7 +172,7 @@
     "AlertDialogMedia": {
       "classes_slot": "alert-dialog-media",
       "combinations": {
-        "": "mb-2 inline-flex size-16 items-center justify-center rounded-md bg-muted sm:group-data-[size=default]/alert-dialog-content:row-span-2 *:[svg:not([class*='size-'])]:size-8"
+        "": "mb-2 inline-flex size-10 items-center justify-center rounded-md bg-muted sm:group-data-[size=default]/alert-dialog-content:row-span-2 *:[svg:not([class*='size-'])]:size-6"
       },
       "component_class": "Shadcn::AlertDialog::Media",
       "cva": {
@@ -210,7 +194,7 @@
     "AlertDialogOverlay": {
       "classes_slot": "alert-dialog-overlay",
       "combinations": {
-        "": "fixed inset-0 z-50 bg-black/50 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0"
+        "": "fixed inset-0 isolate z-50 bg-black/10 duration-100 supports-backdrop-filter:backdrop-blur-xs data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0"
       },
       "component_class": "Shadcn::AlertDialog::Overlay",
       "cva": {
@@ -225,7 +209,7 @@
           "dynamic_attributes": [],
           "name": "alert-dialog-overlay",
           "static_attributes": {},
-          "tag": "AlertDialogPrimitive.Overlay"
+          "tag": "AlertDialogPrimitive.Backdrop"
         }
       ]
     },
@@ -254,7 +238,7 @@
     "AlertDialogTitle": {
       "classes_slot": "alert-dialog-title",
       "combinations": {
-        "": "text-lg font-semibold sm:group-data-[size=default]/alert-dialog-content:group-has-data-[slot=alert-dialog-media]/alert-dialog-content:col-start-2"
+        "": "cn-font-heading text-base font-medium sm:group-data-[size=default]/alert-dialog-content:group-has-data-[slot=alert-dialog-media]/alert-dialog-content:col-start-2"
       },
       "component_class": "Shadcn::AlertDialog::Title",
       "cva": {
@@ -302,6 +286,6 @@
   ],
   "schema_version": 1,
   "source": {
-    "item_sha256": "368c015d76c244729250e6445612e01dd4d053960c94fd1b9f2f4755e603ca93"
+    "item_sha256": "5b4d7d1abc8fee4066b42616bf1f640984d500d8edde391338e192e988a8d43d"
   }
 }

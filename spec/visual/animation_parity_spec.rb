@@ -106,11 +106,9 @@ ANIMATION_SCENARIOS = [
     ours_trigger: "button[data-slot='dialog-trigger']", upstream_trigger: "button[data-slot='dialog-trigger']",
     content: "[data-slot='dialog-content']"
   },
-  {
-    ours: "shadcn/sheet/default", demo: "sheet/default",
-    ours_trigger: "button[data-slot='sheet-trigger']", upstream_trigger: "button[data-slot='sheet-trigger']",
-    content: "[data-slot='sheet-content']"
-  },
+  # NOTE: sheet は base-nova では WAAPI アニメーションを持たない(開閉は
+  # data-starting-style / data-ending-style のCSSトランジション)。両側とも
+  # getAnimations() で animation を拾えないためこの検証の対象外。
   # NOTE: drawer は upstream(vaul)がJSのバネ物理でアニメーションするためCSS等価が無く、
   # この検証の対象外(ネイティブ dialog への移植と引き換えにしている documented な差異)
   {

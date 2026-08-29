@@ -1,6 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 import { hideAfterExit } from "shadcn/hide_after_exit"
+import { applyStateAttrs } from "shadcn/state_attrs"
 
 // ツールチップの遅延制御(既定 delayDuration=0 — upstream と同じ)。
 // aria-describedby で trigger と内容を結合する(05 §4)。
@@ -30,6 +31,7 @@ export default class TooltipController extends Controller {
     if (!this.content || this.content.hidden || this.content.dataset.state === "closed") return
 
     this.content.dataset.state = "closed"
+    applyStateAttrs(this.content, "closed")
     hideAfterExit(this.content, () => {
       if (this.content?.dataset.state === "open") return
       this.content.hidden = true
@@ -39,6 +41,7 @@ export default class TooltipController extends Controller {
   setState(state) {
     if (!this.content) return
     this.content.dataset.state = state
+    applyStateAttrs(this.content, state)
     this.content.hidden = state === "closed"
     if (state === "open" && this.trigger) {
       const rect = this.trigger.getBoundingClientRect()

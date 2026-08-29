@@ -15,6 +15,7 @@ import { analyzeCn, type CvaOption } from "./parse/cn.ts"
 import { discoverExports, type FunctionLike } from "./parse/context.ts"
 import { collectSlots, returnsJsx } from "./parse/slots.ts"
 import { extractCvaDefinitions } from "./parse/cva.ts"
+import { rewriteUseRenderReturns } from "./parse/userender.ts"
 
 export interface PipelinePaths {
   vendorDir: string
@@ -269,6 +270,14 @@ function isComponentTag(tag: string): boolean {
 }
 
 /**
+ * キャメルケースの属性名は React(JSX) の prop であって DOM 属性の名前空間には
+ * 現れない(thumbAlignment 等)。data-* / aria-* はDOM属性として妥当なため除外しない。
+ */
+function isComponentPropName(name: string): boolean {
+  return !name.startsWith("data-") && !name.startsWith("aria-") && /[A-Z]/.test(name)
+}
+
+/**
  * registryDependencies を辿って、依存アイテムが定義する cva も参照可能にする
  * (toggle-group が toggle の toggleVariants を使う等のクロスアイテム構成)。
  * 一段階のみ辿る(依存の依存は現状のupstreamに存在しない)。
@@ -317,6 +326,8 @@ async function extractContractFromItem(
   for (const file of item.files ?? []) {
     if (!file.path?.endsWith(".tsx") || typeof file.content !== "string") continue
     const ast = parseTsx(file.content)
+    // base-nova の useRender パターンを従来の JSX 返却形状へ書き換えてから解析する
+    rewriteUseRenderReturns(ast, name, file.path)
     const cvaDefinitions = new Map([
       ...inheritedDefinitions,
       ...extractCvaDefinitions(ast, name, file.path),
@@ -406,13 +417,17 @@ async function extractContractFromItem(
 
     // コンポーネント参照タグ(Radixプリミティブ等)に与えられたバリアント選択は
     // React の prop であって DOM 属性にはならない(variant="outline" 等はクラスに現れる)。
-    // DOM契約に混入しないよう、cva の prop 名と一致する静的属性を取り除く
+    // DOM契約に混入しないよう、cva の prop 名と一致する静的属性を取り除く。
+    // 同様にキャメルケースprop(slider の thumbAlignment 等Base UI固有prop)も
+    // DOM属性ではないため取り除く(data-* / aria-* は除く)
     const cvaPropNames = new Set([...cvaDefinitions.values()].flatMap((definition) => Object.keys(definition.variants)))
     for (const exportData of Object.values(exports)) {
       for (const slot of exportData.slots) {
         if (!isComponentTag(slot.tag)) continue
         for (const prop of Object.keys(slot.static_attributes)) {
-          if (cvaPropNames.has(prop) && prop !== "class") delete slot.static_attributes[prop]
+          if (prop !== "class" && (cvaPropNames.has(prop) || isComponentPropName(prop))) {
+            delete slot.static_attributes[prop]
+          }
         }
       }
     }
@@ -484,9 +499,9 @@ export async function generateAll(pipeline: PipelinePaths, only?: string[]): Pro
   const rubyFiles: string[] = []
   for (const contract of contracts) {
     jsonFiles.push(await emitContractJson(contract, pipeline.genDir))
-    rubyFiles.push(await emitContractRuby(contract, pipeline.rubyDir))
+    rubyFiles.push(await emitContractRuby(contract, pipeline.rubyDir, manifest.source.style))
   }
-  const css = await emitThemeCss(theme, contracts, pipeline.cssFile)
+  const css = await emitThemeCss(theme, contracts, pipeline.cssFile, manifest.source.style)
 
   // only が指定されないフル生成のときのみ、廃止アイテムの生成物を削除する
   let removedJson: string[] = []

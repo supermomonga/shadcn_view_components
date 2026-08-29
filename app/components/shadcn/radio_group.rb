@@ -26,10 +26,10 @@ module Shadcn
 
       private
 
-      # 契約の data-[state] クラスを素のinputでも発火させるため checked 属性から同期する
-      sig { returns(String) }
-      def state
-        @html_args[:checked] ? "checked" : "unchecked"
+      # base-nova の契約クラスは data-checked / data-unchecked(属性の存在)を参照する
+      sig { returns(T::Hash[Symbol, T.untyped]) }
+      def state_attributes
+        @html_args[:checked] ? { checked: "" } : { unchecked: "" }
       end
 
       sig { returns(String) }
@@ -38,7 +38,7 @@ module Shadcn
         # ネイティブウィジェット描画を消す(dark時の白箱問題 — checkbox.rb と同じ理由)。
         # 印の表示は indicator を peer-checked で出すため peer も付与する
         attributes[:class] = [attributes[:class], "appearance-none peer"].compact.join(" ")
-        merge_nested(attributes, :data, { state: state })
+        merge_nested(attributes, :data, state_attributes)
         content_tag(:input, **attributes) { "".html_safe }
           .then { |markup| markup.sub(%r{></input>\z}, ">") }
           .then(&:html_safe)

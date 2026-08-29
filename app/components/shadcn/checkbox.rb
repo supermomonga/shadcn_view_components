@@ -5,8 +5,8 @@ module Shadcn
   class Checkbox < BaseComponent
     # 契約タグは CheckboxPrimitive.Root。ネイティブな input[type=checkbox] として描く
     # (JS無しで動作 — 05-stimulus-hotwire §3「checkbox = input + CSS」)。
-    # 契約の data-[state=checked]:* クラスは Radix の data-state 由来のため、
-    # checked 属性の有無から data-state を同期して素のinputでも発火させる
+    # base-nova の契約クラスは data-checked / data-unchecked(属性の存在)を参照する。
+    # checked 属性(利用者指定)の有無から導出して素のinputでも発火させる
     sig { override.returns(String) }
     def default_tag
       "input"
@@ -19,9 +19,9 @@ module Shadcn
 
     private
 
-    sig { returns(String) }
-    def state
-      @html_args[:checked] ? "checked" : "unchecked"
+    sig { returns(T::Hash[Symbol, T.untyped]) }
+    def state_attributes
+      @html_args[:checked] ? { checked: "" } : { unchecked: "" }
     end
 
     sig { returns(String) }
@@ -30,7 +30,7 @@ module Shadcn
       # ネイティブウィジェット描画(appearance:auto)はCSSの背景の上にOS標準の箱を
       # 塗る(dark時は白箱として視覚差になる)ため消す
       attributes[:class] = [attributes[:class], "appearance-none"].compact.join(" ")
-      merge_nested(attributes, :data, { state: state })
+      merge_nested(attributes, :data, state_attributes)
       content_tag(:input, **attributes) { "".html_safe }
         .then { |markup| markup.sub(%r{></input>\z}, ">") }
         .then(&:html_safe)

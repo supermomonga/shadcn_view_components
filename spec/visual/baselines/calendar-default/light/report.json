@@ -1,14 +1,14 @@
 {
-  "ratio": 0.012886069606413994,
+  "ratio": 0.014107175586510264,
   "pass": true,
-  "differing": 4526,
+  "differing": 4926,
   "sizeMismatch": true,
   "ours": {
     "width": 1024,
-    "height": 343
+    "height": 341
   },
   "upstream": {
     "width": 1024,
-    "height": 331
+    "height": 295
   }
 }

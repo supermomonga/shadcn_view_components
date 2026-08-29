@@ -24,23 +24,25 @@ spinner:
 
 checkbox:
   Checkbox:
-    # ネイティブinput化に伴う属性(05 §3)。data-state は契約の data-[state] クラスを
-    # 素のinputでも発火させるための同期属性、appearance-none はネイティブウィジェット
-    # 描画を消す装飾(dark時の白箱問題)。装飾クラスを含め見た目は visual parity が検証する
+    # ネイティブinput化に伴う属性(05 §3)。data-checked / data-unchecked は契約の
+    # data-checked: クラスを素のinputでも発火させるための同期属性(unchecked は
+    # 契約がunchecked側の属性を記録しないため許可)、appearance-none はネイティブ
+    # ウィジェット描画を消す装飾(dark時の白箱問題)
     class_mode: contains
-    attributes: [type, data-state]
+    attributes: [type, data-checked, data-unchecked]
 switch:
   Switch:
-    # checkbox と同じ理由の data-state / appearance-none(peer-checked のための peer 含む)
+    # checkbox と同じ理由の data-checked / data-unchecked / appearance-none
+    # (peer-checked のための peer 含む)
     class_mode: contains
-    attributes: [type, role, data-state]
+    attributes: [type, role, data-checked, data-unchecked]
 radio-group:
   RadioGroup:
     attributes: [role]
   RadioGroupItem:
-    # checkbox と同じ理由の data-state / appearance-none / peer
+    # checkbox と同じ理由の data-checked / data-unchecked / appearance-none / peer
     class_mode: contains
-    attributes: [type, data-state]
+    attributes: [type, data-checked, data-unchecked]
 toggle:
   Toggle:
     # shadcn--toggle コントローラの状態属性と button 既定の type
@@ -52,14 +54,20 @@ toggle-group:
     attributes: [data-state, data-action, aria-pressed, type]
 pagination:
   PaginationLink:
-    attributes: [href]
-  PaginationPrevious:
-    # Link(ghost/default)のクラスと Previous 固有クラスの実行時合成(upstreamと同構成)
+    # base-nova は Button装飾(variant/size)をrender propで合成するため契約クラスは空。
+    # 描画側はButton契約からクラスを合成する
     class_mode: contains
-    attributes: [aria-label, href]
+    attributes: [href, data-active, data-slot]
+  PaginationPrevious:
+    # Link(ghost/default)のクラスと Previous 固有クラスの実行時合成(upstreamと同構成)。
+    # 契約は無名スロットのみのため実DOMの data-slot も許可する
+    class_mode: contains
+    slots_mode: superset
+    attributes: [aria-label, href, data-active, data-slot]
   PaginationNext:
     class_mode: contains
-    attributes: [aria-label, href]
+    slots_mode: superset
+    attributes: [aria-label, href, data-active, data-slot]
 tabs:
   Tabs:
     attributes: [data-controller, data-orientation]
@@ -123,7 +131,7 @@ sheet:
     attributes: [aria-modal, data-state]
 drawer:
   Drawer:
-    attributes: [data-controller]
+    attributes: [data-controller, data-slot]
   DrawerTrigger:
     attributes: [type, aria-haspopup, aria-expanded, data-action]
   DrawerClose:
@@ -351,6 +359,10 @@ accordion:
   Accordion:
     # 開閉アニメーション同期のため shadcn--accordion コントローラを付ける
     attributes: [data-controller]
+  AccordionTrigger:
+    # details/summary方式とアイコン切替(group-aria-expanded)の状態属性。
+    # base-nova のTriggerは aria-expanded を実行時にprimitiveが付与するため契約に現れない
+    attributes: [aria-expanded]
 calendar:
   Calendar:
     # 内側に DayButton を描く合成構造のため子スロットが増える

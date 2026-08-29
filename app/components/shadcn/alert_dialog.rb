@@ -64,7 +64,7 @@ module Shadcn
           role: "alertdialog"
         )
         data = T.cast(attributes[:data], T.nilable(T::Hash[Symbol, T.untyped])) || {}
-        attributes[:data] = { slot: "alert-dialog-content", size: @size, state: "closed" }.merge(data)
+        attributes[:data] = { slot: "alert-dialog-content", size: @size }.merge(data)
         aria = T.cast(attributes[:aria], T.nilable(T::Hash[Symbol, T.untyped])) || {}
         attributes[:aria] = { modal: "true" }.merge(aria)
         attributes

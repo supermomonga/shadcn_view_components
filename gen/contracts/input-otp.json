@@ -21,7 +21,8 @@
       "slots": [
         {
           "dynamic_attributes": [
-            "containerClassName"
+            "containerClassName",
+            "spellCheck"
           ],
           "name": "input-otp",
           "static_attributes": {},
@@ -32,7 +33,7 @@
     "InputOTPGroup": {
       "classes_slot": "input-otp-group",
       "combinations": {
-        "": "flex items-center"
+        "": "flex items-center rounded-lg has-aria-invalid:border-destructive has-aria-invalid:ring-3 has-aria-invalid:ring-destructive/20 dark:has-aria-invalid:ring-destructive/40"
       },
       "component_class": "Shadcn::InputOTP::Group",
       "cva": {
@@ -69,6 +70,7 @@
           "dynamic_attributes": [],
           "name": "input-otp-separator",
           "static_attributes": {
+            "class": "flex items-center [&_svg:not([class*='size-'])]:size-4",
             "role": "separator"
           },
           "tag": "div"
@@ -78,7 +80,7 @@
     "InputOTPSlot": {
       "classes_slot": "input-otp-slot",
       "combinations": {
-        "": "relative flex h-9 w-9 items-center justify-center border-y border-r border-input text-sm shadow-xs transition-all outline-none first:rounded-l-md first:border-l last:rounded-r-md aria-invalid:border-destructive data-[active=true]:z-10 data-[active=true]:border-ring data-[active=true]:ring-[3px] data-[active=true]:ring-ring/50 data-[active=true]:aria-invalid:border-destructive data-[active=true]:aria-invalid:ring-destructive/20 dark:bg-input/30 dark:data-[active=true]:aria-invalid:ring-destructive/40"
+        "": "relative flex size-8 items-center justify-center border-y border-r border-input text-sm transition-all outline-none first:rounded-l-lg first:border-l last:rounded-r-lg aria-invalid:border-destructive data-[active=true]:z-10 data-[active=true]:border-ring data-[active=true]:ring-3 data-[active=true]:ring-ring/50 data-[active=true]:aria-invalid:border-destructive data-[active=true]:aria-invalid:ring-destructive/20 dark:bg-input/30 dark:data-[active=true]:aria-invalid:ring-destructive/40"
       },
       "component_class": "Shadcn::InputOTP::Slot",
       "cva": {
@@ -104,6 +106,6 @@
   "registry_dependencies": [],
   "schema_version": 1,
   "source": {
-    "item_sha256": "432f9d236842fb76d54195b12c5bd32567dcc45671870d91753cd50341a29985"
+    "item_sha256": "79854188a7a1f9413ccd906b528ec57d8cd113f586ffc12b6b25d6aa9c9ab0ae"
   }
 }

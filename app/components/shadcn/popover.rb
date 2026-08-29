@@ -32,9 +32,7 @@ module Shadcn
       end
     end
 
-    class Anchor < BaseComponent
-      # 位置決め用の不可視要素(契約スロット維持のため実体化する)
-    end
+    # base-nova では Anchor が廃止されたため非対応(位置決めはTrigger基準)
 
     class Content < BaseComponent
       # align=center / sideOffset=4 相当の位置合わせはコントローラが行う

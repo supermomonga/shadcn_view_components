@@ -6,7 +6,7 @@
   },
   "exports": {
     "Breadcrumb": {
-      "classes_slot": "",
+      "classes_slot": "breadcrumb",
       "combinations": {
         "": ""
       },
@@ -16,7 +16,7 @@
         "defaults": {},
         "prop_names": []
       },
-      "passthrough_class": false,
+      "passthrough_class": true,
       "root_slot": "breadcrumb",
       "slots": [
         {
@@ -32,7 +32,7 @@
     "BreadcrumbEllipsis": {
       "classes_slot": "breadcrumb-ellipsis",
       "combinations": {
-        "": "flex size-9 items-center justify-center"
+        "": "flex size-5 items-center justify-center [&>svg]:size-4"
       },
       "component_class": "Shadcn::Breadcrumb::Ellipsis",
       "cva": {
@@ -57,7 +57,7 @@
     "BreadcrumbItem": {
       "classes_slot": "breadcrumb-item",
       "combinations": {
-        "": "inline-flex items-center gap-1.5"
+        "": "inline-flex items-center gap-1"
       },
       "component_class": "Shadcn::Breadcrumb::Item",
       "cva": {
@@ -101,7 +101,7 @@
     "BreadcrumbList": {
       "classes_slot": "breadcrumb-list",
       "combinations": {
-        "": "flex flex-wrap items-center gap-1.5 text-sm break-words text-muted-foreground sm:gap-2.5"
+        "": "flex flex-wrap items-center gap-1.5 text-sm wrap-break-word text-muted-foreground"
       },
       "component_class": "Shadcn::Breadcrumb::List",
       "cva": {
@@ -176,6 +176,6 @@
   "registry_dependencies": [],
   "schema_version": 1,
   "source": {
-    "item_sha256": "e574ee6733819f32162ce43091569c485029fc53cd86a12062a8cc789c0a0283"
+    "item_sha256": "96a1a8a86552a433d94581fbf6a87224a1db32da57007b7739d0bfe08bfaddbd"
   }
 }

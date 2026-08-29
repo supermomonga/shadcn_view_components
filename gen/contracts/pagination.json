@@ -33,7 +33,7 @@
     "PaginationContent": {
       "classes_slot": "pagination-content",
       "combinations": {
-        "": "flex flex-row items-center gap-1"
+        "": "flex items-center gap-0.5"
       },
       "component_class": "Shadcn::Pagination::Content",
       "cva": {
@@ -55,7 +55,7 @@
     "PaginationEllipsis": {
       "classes_slot": "pagination-ellipsis",
       "combinations": {
-        "": "flex size-9 items-center justify-center"
+        "": "flex size-8 items-center justify-center [&_svg:not([class*='size-'])]:size-4"
       },
       "component_class": "Shadcn::Pagination::Ellipsis",
       "cva": {
@@ -99,40 +99,30 @@
       ]
     },
     "PaginationLink": {
-      "classes_slot": "pagination-link",
+      "classes_slot": "",
       "combinations": {
-        "is_active=false&size=default": "inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3",
-        "is_active=false&size=icon": "inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 size-9",
-        "is_active=false&size=icon-lg": "inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 size-10",
-        "is_active=false&size=icon-sm": "inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 size-8",
-        "is_active=false&size=icon-xs": "inline-flex shrink-0 items-center justify-center gap-2 text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 size-6 rounded-md [&_svg:not([class*='size-'])]:size-3",
-        "is_active=false&size=lg": "inline-flex shrink-0 items-center justify-center gap-2 text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-10 rounded-md px-6 has-[>svg]:px-4",
-        "is_active=false&size=sm": "inline-flex shrink-0 items-center justify-center text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-8 gap-1.5 rounded-md px-3 has-[>svg]:px-2.5",
-        "is_active=false&size=xs": "inline-flex shrink-0 items-center justify-center font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-6 gap-1 rounded-md px-2 text-xs has-[>svg]:px-1.5 [&_svg:not([class*='size-'])]:size-3",
-        "is_active=true&size=default": "inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3",
-        "is_active=true&size=icon": "inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50 size-9",
-        "is_active=true&size=icon-lg": "inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50 size-10",
-        "is_active=true&size=icon-sm": "inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50 size-8",
-        "is_active=true&size=icon-xs": "inline-flex shrink-0 items-center justify-center gap-2 text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50 size-6 rounded-md [&_svg:not([class*='size-'])]:size-3",
-        "is_active=true&size=lg": "inline-flex shrink-0 items-center justify-center gap-2 text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4",
-        "is_active=true&size=sm": "inline-flex shrink-0 items-center justify-center text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50 h-8 gap-1.5 rounded-md px-3 has-[>svg]:px-2.5",
-        "is_active=true&size=xs": "inline-flex shrink-0 items-center justify-center font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50 h-6 gap-1 rounded-md px-2 text-xs has-[>svg]:px-1.5 [&_svg:not([class*='size-'])]:size-3"
+        "": ""
       },
       "component_class": "Shadcn::Pagination::Link",
       "cva": {
         "compound": [],
-        "defaults": {
-          "is_active": "false",
-          "size": "icon"
-        },
-        "prop_names": [
-          "is_active",
-          "size"
-        ]
+        "defaults": {},
+        "prop_names": []
       },
       "passthrough_class": true,
-      "root_slot": "pagination-link",
+      "root_slot": "",
       "slots": [
+        {
+          "dynamic_attributes": [
+            "nativeButton",
+            "render",
+            "size",
+            "variant"
+          ],
+          "name": "",
+          "static_attributes": {},
+          "tag": "Button"
+        },
         {
           "dynamic_attributes": [
             "aria-current",
@@ -147,7 +137,7 @@
     "PaginationNext": {
       "classes_slot": "",
       "combinations": {
-        "": "gap-1 px-2.5 sm:pr-2.5"
+        "": "pr-1.5!"
       },
       "component_class": "Shadcn::Pagination::Next",
       "cva": {
@@ -156,23 +146,22 @@
         "prop_names": []
       },
       "passthrough_class": true,
-      "root_slot": "pagination-link",
+      "root_slot": "",
       "slots": [
         {
-          "dynamic_attributes": [
-            "aria-current",
-            "data-active"
-          ],
-          "name": "pagination-link",
-          "static_attributes": {},
-          "tag": "a"
+          "dynamic_attributes": [],
+          "name": "",
+          "static_attributes": {
+            "aria-label": "Go to next page"
+          },
+          "tag": "PaginationLink"
         }
       ]
     },
     "PaginationPrevious": {
       "classes_slot": "",
       "combinations": {
-        "": "gap-1 px-2.5 sm:pl-2.5"
+        "": "pl-1.5!"
       },
       "component_class": "Shadcn::Pagination::Previous",
       "cva": {
@@ -181,16 +170,15 @@
         "prop_names": []
       },
       "passthrough_class": true,
-      "root_slot": "pagination-link",
+      "root_slot": "",
       "slots": [
         {
-          "dynamic_attributes": [
-            "aria-current",
-            "data-active"
-          ],
-          "name": "pagination-link",
-          "static_attributes": {},
-          "tag": "a"
+          "dynamic_attributes": [],
+          "name": "",
+          "static_attributes": {
+            "aria-label": "Go to previous page"
+          },
+          "tag": "PaginationLink"
         }
       ]
     }
@@ -201,6 +189,6 @@
   ],
   "schema_version": 1,
   "source": {
-    "item_sha256": "6467b15fae39bef05299ee141e3a654809ecb9210194119300a975fecd9b4a46"
+    "item_sha256": "3163817c48acc7cce45755b68a46ae2b4b5a8e63e769e4dfcb00b5f7452a4a2a"
   }
 }

@@ -16,8 +16,8 @@ module ShadcnViewComponents
       VARIANTS = T.let({}.freeze, T::Hash[Symbol, T::Array[Symbol]])
 
       COMBINATIONS = T.let({
-        {} => "group/calendar bg-background p-3 [--cell-size:--spacing(8)] " \
-              "[[data-slot=card-content]_&]:bg-transparent [[data-slot=popover-content]_&]:bg-transparent w-fit"
+        {} => "group/calendar bg-background p-2 [--cell-radius:var(--radius-md)] [--cell-size:--spacing(7)] " \
+              "in-data-[slot=card-content]:bg-transparent in-data-[slot=popover-content]:bg-transparent w-fit"
       }.freeze, T::Hash[T::Hash[Symbol, Symbol], String])
 
       SLOTS = T.let([
@@ -44,23 +44,26 @@ module ShadcnViewComponents
         VARIANTS = T.let({}.freeze, T::Hash[Symbol, T::Array[Symbol]])
 
         COMBINATIONS = T.let({
-          {} => "shrink-0 items-center justify-center rounded-md text-sm whitespace-nowrap transition-all " \
-                "outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 " \
+          {} => "group/button shrink-0 items-center justify-center rounded-lg border-transparent bg-clip-padding " \
+                "text-sm whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring " \
+                "focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px " \
                 "disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive " \
-                "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 " \
-                "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 " \
-                "flex aspect-square min-w-(--cell-size) flex-col gap-1 leading-none font-normal " \
-                "group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 " \
+                "aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 " \
+                "dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 " \
+                "[&_svg:not([class*='size-'])]:size-4 hover:bg-muted hover:text-foreground " \
+                "aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 px-2.5 " \
+                "has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 relative isolate z-10 flex " \
+                "aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 border-0 leading-none " \
+                "font-normal group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 " \
                 "group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-[3px] " \
-                "group-data-[focused=true]/day:ring-ring/50 data-[range-end=true]:rounded-md " \
-                "data-[range-end=true]:rounded-r-md data-[range-end=true]:bg-primary " \
+                "group-data-[focused=true]/day:ring-ring/50 data-[range-end=true]:rounded-(--cell-radius) " \
+                "data-[range-end=true]:rounded-r-(--cell-radius) data-[range-end=true]:bg-primary " \
                 "data-[range-end=true]:text-primary-foreground data-[range-middle=true]:rounded-none " \
-                "data-[range-middle=true]:bg-accent data-[range-middle=true]:text-accent-foreground " \
-                "data-[range-start=true]:rounded-md data-[range-start=true]:rounded-l-md " \
+                "data-[range-middle=true]:bg-muted data-[range-middle=true]:text-foreground " \
+                "data-[range-start=true]:rounded-(--cell-radius) data-[range-start=true]:rounded-l-(--cell-radius) " \
                 "data-[range-start=true]:bg-primary data-[range-start=true]:text-primary-foreground " \
                 "data-[selected-single=true]:bg-primary data-[selected-single=true]:text-primary-foreground " \
-                "dark:hover:text-accent-foreground [&>span]:text-xs [&>span]:opacity-70 " \
-                "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 size-9"
+                "dark:hover:text-foreground [&>span]:text-xs [&>span]:opacity-70"
         }.freeze, T::Hash[T::Hash[Symbol, Symbol], String])
 
         SLOTS = T.let([

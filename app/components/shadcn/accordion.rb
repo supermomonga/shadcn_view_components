@@ -31,7 +31,7 @@ module Shadcn
       sig { override.returns(String) }
       def call
         content_tag(:summary, **trigger_attributes) do
-          safe_join([content.presence, chevron_icon])
+          safe_join([content.presence, chevron_icons])
         end
       end
 
@@ -41,12 +41,26 @@ module Shadcn
       def trigger_attributes
         attributes = @html_args.merge(class: self.class.classes(extra: @user_class))
         merge_nested(attributes, :data, { slot: self.class.contract.const_get(:CLASSES_SLOT) })
-        merge_nested(attributes, :aria, {})
+        merge_nested(attributes, :aria, { expanded: "false" })
         attributes
       end
 
+      # base-nova は開閉で2つのアイコンを group-aria-expanded で切り替える
+      # (閉: ChevronDown / 開: ChevronUp)。両方を描き、表示は契約クラスに任せる
       sig { returns(String) }
-      def chevron_icon
+      def chevron_icons
+        icon_slots = self.class.contract.const_get(:SLOTS)
+                         .select { |slot| slot[:name] == "accordion-trigger-icon" }
+        safe_join(icon_slots.map do |slot|
+          content_tag(:span,
+                      class: slot.dig(:static_attributes, :class),
+                      data: { slot: "accordion-trigger-icon" },
+                      "aria-hidden": "true") { chevron_svg }
+        end)
+      end
+
+      sig { returns(String) }
+      def chevron_svg
         content_tag(
           :svg,
           xmlns: "http://www.w3.org/2000/svg",
@@ -58,7 +72,7 @@ module Shadcn
           "stroke-linejoin": "round",
           width: "16",
           height: "16",
-          class: "size-4 shrink-0 transition-transform duration-200"
+          class: "size-4"
         ) do
           raw(%(<path d="m6 9 6 6 6-6"/>))
         end

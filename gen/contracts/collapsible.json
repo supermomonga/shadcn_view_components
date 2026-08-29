@@ -45,7 +45,7 @@
           "dynamic_attributes": [],
           "name": "collapsible-content",
           "static_attributes": {},
-          "tag": "CollapsiblePrimitive.CollapsibleContent"
+          "tag": "CollapsiblePrimitive.Panel"
         }
       ]
     },
@@ -67,7 +67,7 @@
           "dynamic_attributes": [],
           "name": "collapsible-trigger",
           "static_attributes": {},
-          "tag": "CollapsiblePrimitive.CollapsibleTrigger"
+          "tag": "CollapsiblePrimitive.Trigger"
         }
       ]
     }
@@ -76,6 +76,6 @@
   "registry_dependencies": [],
   "schema_version": 1,
   "source": {
-    "item_sha256": "aa6f1001c884bf26fc8794e88cedad8e0d356935c2f13baf5d20d53fd98413c1"
+    "item_sha256": "bce936b20335ee04db66a0daab3ba5e0230ef91ae2da787a1dbe0ba2f5d1c1de"
   }
 }

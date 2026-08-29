@@ -27,32 +27,10 @@
         }
       ]
     },
-    "PopoverAnchor": {
-      "classes_slot": "",
-      "combinations": {
-        "": ""
-      },
-      "component_class": "Shadcn::Popover::Anchor",
-      "cva": {
-        "compound": [],
-        "defaults": {},
-        "prop_names": []
-      },
-      "passthrough_class": false,
-      "root_slot": "popover-anchor",
-      "slots": [
-        {
-          "dynamic_attributes": [],
-          "name": "popover-anchor",
-          "static_attributes": {},
-          "tag": "PopoverPrimitive.Anchor"
-        }
-      ]
-    },
     "PopoverContent": {
       "classes_slot": "popover-content",
       "combinations": {
-        "": "z-50 w-72 origin-(--radix-popover-content-transform-origin) rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-hidden data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
+        "": "z-50 flex w-72 origin-(--transform-origin) flex-col gap-2.5 rounded-lg bg-popover p-2.5 text-sm text-popover-foreground shadow-md ring-1 ring-foreground/10 outline-hidden duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
       },
       "component_class": "Shadcn::Popover::Content",
       "cva": {
@@ -70,13 +48,10 @@
           "tag": "PopoverPrimitive.Portal"
         },
         {
-          "dynamic_attributes": [
-            "align",
-            "sideOffset"
-          ],
+          "dynamic_attributes": [],
           "name": "popover-content",
           "static_attributes": {},
-          "tag": "PopoverPrimitive.Content"
+          "tag": "PopoverPrimitive.Popup"
         }
       ]
     },
@@ -98,14 +73,14 @@
           "dynamic_attributes": [],
           "name": "popover-description",
           "static_attributes": {},
-          "tag": "p"
+          "tag": "PopoverPrimitive.Description"
         }
       ]
     },
     "PopoverHeader": {
       "classes_slot": "popover-header",
       "combinations": {
-        "": "flex flex-col gap-1 text-sm"
+        "": "flex flex-col gap-0.5 text-sm"
       },
       "component_class": "Shadcn::Popover::Header",
       "cva": {
@@ -142,7 +117,7 @@
           "dynamic_attributes": [],
           "name": "popover-title",
           "static_attributes": {},
-          "tag": "div"
+          "tag": "PopoverPrimitive.Title"
         }
       ]
     },
@@ -173,6 +148,6 @@
   "registry_dependencies": [],
   "schema_version": 1,
   "source": {
-    "item_sha256": "8d175a27f00a8f01196eb587cf5a45728f4a81fdd467d7344640b62b339b29bd"
+    "item_sha256": "5e607da2e037a067d69490caad7c6aaf9e5dbf5c95b4cdd77f185fc1267a6c0a"
   }
 }

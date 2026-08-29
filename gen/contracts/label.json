@@ -23,7 +23,7 @@
           "dynamic_attributes": [],
           "name": "label",
           "static_attributes": {},
-          "tag": "LabelPrimitive.Root"
+          "tag": "label"
         }
       ]
     }
@@ -32,6 +32,6 @@
   "registry_dependencies": [],
   "schema_version": 1,
   "source": {
-    "item_sha256": "d8ee58d93947e114a83ddbd7b5e47036f045d049091dd127146d4d2f2882efaf"
+    "item_sha256": "7fbe4e76e397d4934c4c6426c44cfa1e2e16bfb6f8fddd9c68a299ef0c4583e1"
   }
 }

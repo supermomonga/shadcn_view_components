@@ -50,8 +50,8 @@ module Shadcn
     end
 
     class Link < BaseComponent
-      # 契約タグは a。is_active は upstream の isActive 条件付きバリアント
-      # (variant: isActive ? "outline" : "ghost")を契約化したもの
+      # base-nova は Button装飾(variant/size)をrender propで<a>へ合成する。
+      # 本gemもButton契約からクラスを合成して同等の<a>を描く(契約クラス自体は空)
       sig { override.returns(String) }
       def default_tag
         "a"
@@ -64,27 +64,26 @@ module Shadcn
           args: T::Hash[Symbol, T.untyped]
         ).void.checked(:never)
       end
-      def initialize(is_active: nil, size: ShadcnViewComponents::Contracts::Pagination::Link::DEFAULTS.fetch(:size), **args)
-        # Boolean(true/false)も受け入れる(Boolean#to_s は契約値 "true"/"false" と一致する)
-        @is_active = T.let(normalize_option(:is_active, (is_active.nil? ? "false" : is_active.to_s)), Symbol)
-        @size = T.let(normalize_option(:size, size), Symbol)
+      def initialize(is_active: nil, size: :icon, **args)
+        @is_active = T.let(is_active.to_s == "true", T::Boolean)
+        @size = T.let(size.to_sym, Symbol)
         super(**args)
-      end
-
-      sig { override.returns(T::Hash[Symbol, VariantOption]) }
-      def variant_options
-        { is_active: @is_active, size: @size }
       end
 
       sig { returns(T::Boolean) }
       def active?
-        @is_active.to_s == "true"
+        @is_active
       end
 
       sig { override.returns(T::Hash[Symbol, T.untyped]) }
       def html_attributes
-        attributes = super
-        merge_nested(attributes, :data, { active: active?.to_s })
+        # NOTE: Hashの値型は不変のため、Classes.resolve の options と同じ型で T.let する
+        button_options = T.let({ variant: active? ? :outline : :ghost, size: @size },
+                               T::Hash[Symbol, T.nilable(T.any(Symbol, String))])
+        attributes = @html_args.merge(
+          class: ShadcnViewComponents::Classes.resolve(:button, extra: @user_class.to_s, **button_options)
+        )
+        merge_nested(attributes, :data, { slot: "pagination-link", active: active?.to_s })
         attributes[:aria] = { current: "page" } if active?
         attributes
       end
@@ -93,7 +92,7 @@ module Shadcn
     class Previous < BaseComponent
       include IconHelpers
 
-      # upstream は Link(size="default")を描き、静的クラスと固定の子(chevron + ラベル)を足す
+      # upstream は Link(size="default")を描き、固定の子(chevron + ラベル)を足す
       sig { override.returns(String) }
       def call
         render(Link.new(size: :default, class: self.class.classes(extra: @user_class), **link_attributes)) do

@@ -347,7 +347,7 @@ navigation-menu:
     - { component: Shadcn::NavigationMenu::Trigger, export: NavigationMenuTrigger }
     - { component: Shadcn::NavigationMenu::Link, export: NavigationMenuLink }
     - { component: Shadcn::NavigationMenu::Indicator, export: NavigationMenuIndicator }
-    - { component: Shadcn::NavigationMenu::Viewport, export: NavigationMenuViewport }
+    # base-nova で Viewport は廃止(Positioner に置換)。本gemはviewportなし設計のため非対応
 pagination:
   exports:
     - { component: Shadcn::Pagination, export: Pagination }
@@ -363,13 +363,18 @@ popover:
     - { component: Shadcn::Popover, export: Popover }
     - { component: Shadcn::Popover::Trigger, export: PopoverTrigger }
     - { component: Shadcn::Popover::Content, export: PopoverContent }
-    - { component: Shadcn::Popover::Anchor, export: PopoverAnchor }
     - { component: Shadcn::Popover::Header, export: PopoverHeader }
     - { component: Shadcn::Popover::Title, export: PopoverTitle }
     - { component: Shadcn::Popover::Description, export: PopoverDescription }
+    # base-nova で Anchor は廃止されたため非対応
 progress:
   exports:
     - { component: Shadcn::Progress, export: Progress }
+
+# questionnaire: base-nova で新規に追加されたアイテム。移植は個別評価(10-roadmap §7)
+questionnaire:
+  pending: true
+
 radio-group:
   exports:
     - { component: Shadcn::RadioGroup, export: RadioGroup }
@@ -387,7 +392,7 @@ scroll-area:
 
 select:
   exports:
-    - { component: Shadcn::Select, export: Select }
+    # base-nova で Select ルートはプリミティブ別名(契約面なし)のため非対象
     - { component: Shadcn::Select::Trigger, export: SelectTrigger }
     - { component: Shadcn::Select::Value, export: SelectValue }
     - { component: Shadcn::Select::Content, export: SelectContent }
@@ -449,6 +454,11 @@ sonner:
 spinner:
   exports:
     - { component: Shadcn::Spinner, export: Spinner }
+
+# toast: base-nova では Base UI 専用コンポーネント(CLI の DEPRECATED_COMPONENTS にも
+# 「toast is only available for Base UI projects」と記載)。ベンダーはするが移植は個別評価
+toast:
+  pending: true
 
 switch:
   exports:

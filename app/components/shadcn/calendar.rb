@@ -172,9 +172,9 @@ module Shadcn
       today = date == Date.current
       outside = date.month != @month.month
       cell_class = +"group/day relative aspect-square h-full w-full p-0 text-center select-none " \
-                    "[&:last-child[data-selected=true]_button]:rounded-r-md " \
-                    "[&:first-child[data-selected=true]_button]:rounded-l-md"
-      cell_class << " rounded-md bg-accent text-accent-foreground data-[selected=true]:rounded-none" if today
+                    "[&:last-child[data-selected=true]_button]:rounded-r-(--cell-radius) " \
+                    "[&:first-child[data-selected=true]_button]:rounded-l-(--cell-radius)"
+      cell_class << " rounded-(--cell-radius) bg-muted text-foreground data-[selected=true]:rounded-none" if today
       cell_class << " text-muted-foreground aria-selected:text-muted-foreground" if outside
 
       content_tag(:td, class: cell_class, data: { today: today.to_s, outside: outside.to_s }) do

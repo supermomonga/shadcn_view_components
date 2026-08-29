@@ -86,7 +86,7 @@
     "ChartTooltipContent": {
       "classes_slot": "",
       "combinations": {
-        "": "grid min-w-[8rem] items-start gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl"
+        "": "grid min-w-32 items-start gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl"
       },
       "component_class": "Shadcn::Chart::TooltipContent",
       "cva": {
@@ -112,6 +112,6 @@
   ],
   "schema_version": 1,
   "source": {
-    "item_sha256": "1f1d6d00fd8bfd9926937f6358bcfa0cccd38af6f765f2db06af03b66242b065"
+    "item_sha256": "59acc9bd92c77e1d0dd1436cbe7401630bad443f7ccf6e0adfe08271a34dd6af"
   }
 }

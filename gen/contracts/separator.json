@@ -8,7 +8,7 @@
     "Separator": {
       "classes_slot": "separator",
       "combinations": {
-        "": "shrink-0 bg-border data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px"
+        "": "shrink-0 bg-border data-horizontal:h-px data-horizontal:w-full data-vertical:w-px data-vertical:self-stretch"
       },
       "component_class": "Shadcn::Separator",
       "cva": {
@@ -21,12 +21,11 @@
       "slots": [
         {
           "dynamic_attributes": [
-            "decorative",
             "orientation"
           ],
           "name": "separator",
           "static_attributes": {},
-          "tag": "SeparatorPrimitive.Root"
+          "tag": "SeparatorPrimitive"
         }
       ]
     }
@@ -35,6 +34,6 @@
   "registry_dependencies": [],
   "schema_version": 1,
   "source": {
-    "item_sha256": "73d9d973ed587b3b122360333976803dceae3278da39ef87a0818e2146332a6d"
+    "item_sha256": "622a7a1ae42cc52999b23db02943dbc52311efb07527f45d54784eec7af3945b"
   }
 }

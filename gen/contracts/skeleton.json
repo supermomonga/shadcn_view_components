@@ -8,7 +8,7 @@
     "Skeleton": {
       "classes_slot": "skeleton",
       "combinations": {
-        "": "animate-pulse rounded-md bg-accent"
+        "": "animate-pulse rounded-md bg-muted"
       },
       "component_class": "Shadcn::Skeleton",
       "cva": {
@@ -32,6 +32,6 @@
   "registry_dependencies": [],
   "schema_version": 1,
   "source": {
-    "item_sha256": "2323903e8c95154fb4256a5167acef14f55c4ec7df90688858ce334eb8844aca"
+    "item_sha256": "886dbcfaab0c800bcb0734084e1fa2b1f7ebac27761d3b90c7276fc5bb508a7b"
   }
 }

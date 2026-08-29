@@ -5,43 +5,16 @@
     "light": {}
   },
   "exports": {
-    "Select": {
-      "classes_slot": "",
-      "combinations": {
-        "": ""
-      },
-      "component_class": "Shadcn::Select",
-      "cva": {
-        "compound": [],
-        "defaults": {},
-        "prop_names": []
-      },
-      "passthrough_class": false,
-      "root_slot": "select",
-      "slots": [
-        {
-          "dynamic_attributes": [],
-          "name": "select",
-          "static_attributes": {},
-          "tag": "SelectPrimitive.Root"
-        }
-      ]
-    },
     "SelectContent": {
       "classes_slot": "select-content",
       "combinations": {
-        "position=item-aligned": "relative z-50 max-h-(--radix-select-content-available-height) min-w-[8rem] origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border bg-popover text-popover-foreground shadow-md data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
-        "position=popper": "relative z-50 max-h-(--radix-select-content-available-height) min-w-[8rem] origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border bg-popover text-popover-foreground shadow-md data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1"
+        "": "cn-menu-target cn-menu-translucent relative isolate z-50 max-h-(--available-height) w-(--anchor-width) min-w-36 origin-(--transform-origin) overflow-x-hidden overflow-y-auto rounded-lg bg-popover text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100 data-[align-trigger=true]:animate-none data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
       },
       "component_class": "Shadcn::Select::Content",
       "cva": {
         "compound": [],
-        "defaults": {
-          "position": "item-aligned"
-        },
-        "prop_names": [
-          "position"
-        ]
+        "defaults": {},
+        "prop_names": []
       },
       "passthrough_class": true,
       "root_slot": "",
@@ -49,26 +22,23 @@
         {
           "dynamic_attributes": [],
           "name": "",
-          "static_attributes": {
-            "class": "p-1"
-          },
+          "static_attributes": {},
           "tag": "SelectPrimitive.Portal"
         },
         {
           "dynamic_attributes": [
-            "align",
-            "position"
+            "data-align-trigger"
           ],
           "name": "select-content",
           "static_attributes": {},
-          "tag": "SelectPrimitive.Content"
+          "tag": "SelectPrimitive.Popup"
         }
       ]
     },
     "SelectGroup": {
-      "classes_slot": "",
+      "classes_slot": "select-group",
       "combinations": {
-        "": ""
+        "": "scroll-my-1 p-1"
       },
       "component_class": "Shadcn::Select::Group",
       "cva": {
@@ -76,7 +46,7 @@
         "defaults": {},
         "prop_names": []
       },
-      "passthrough_class": false,
+      "passthrough_class": true,
       "root_slot": "select-group",
       "slots": [
         {
@@ -90,7 +60,7 @@
     "SelectItem": {
       "classes_slot": "select-item",
       "combinations": {
-        "": "relative flex w-full cursor-default items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2"
+        "": "relative flex w-full cursor-default items-center gap-1.5 rounded-md py-1 pr-8 pl-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2"
       },
       "component_class": "Shadcn::Select::Item",
       "cva": {
@@ -106,21 +76,13 @@
           "name": "select-item",
           "static_attributes": {},
           "tag": "SelectPrimitive.Item"
-        },
-        {
-          "dynamic_attributes": [],
-          "name": "select-item-indicator",
-          "static_attributes": {
-            "class": "absolute right-2 flex size-3.5 items-center justify-center"
-          },
-          "tag": "span"
         }
       ]
     },
     "SelectLabel": {
       "classes_slot": "select-label",
       "combinations": {
-        "": "px-2 py-1.5 text-xs text-muted-foreground"
+        "": "px-1.5 py-1 text-xs text-muted-foreground"
       },
       "component_class": "Shadcn::Select::Label",
       "cva": {
@@ -135,14 +97,14 @@
           "dynamic_attributes": [],
           "name": "select-label",
           "static_attributes": {},
-          "tag": "SelectPrimitive.Label"
+          "tag": "SelectPrimitive.GroupLabel"
         }
       ]
     },
     "SelectScrollDownButton": {
       "classes_slot": "select-scroll-down-button",
       "combinations": {
-        "": "flex cursor-default items-center justify-center py-1"
+        "": "bottom-0 z-10 flex w-full cursor-default items-center justify-center bg-popover py-1 [&_svg:not([class*='size-'])]:size-4"
       },
       "component_class": "Shadcn::Select::ScrollDownButton",
       "cva": {
@@ -157,14 +119,14 @@
           "dynamic_attributes": [],
           "name": "select-scroll-down-button",
           "static_attributes": {},
-          "tag": "SelectPrimitive.ScrollDownButton"
+          "tag": "SelectPrimitive.ScrollDownArrow"
         }
       ]
     },
     "SelectScrollUpButton": {
       "classes_slot": "select-scroll-up-button",
       "combinations": {
-        "": "flex cursor-default items-center justify-center py-1"
+        "": "top-0 z-10 flex w-full cursor-default items-center justify-center bg-popover py-1 [&_svg:not([class*='size-'])]:size-4"
       },
       "component_class": "Shadcn::Select::ScrollUpButton",
       "cva": {
@@ -179,7 +141,7 @@
           "dynamic_attributes": [],
           "name": "select-scroll-up-button",
           "static_attributes": {},
-          "tag": "SelectPrimitive.ScrollUpButton"
+          "tag": "SelectPrimitive.ScrollUpArrow"
         }
       ]
     },
@@ -208,7 +170,7 @@
     "SelectTrigger": {
       "classes_slot": "select-trigger",
       "combinations": {
-        "": "flex w-fit items-center justify-between gap-2 rounded-md border border-input bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-[placeholder]:text-muted-foreground data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 dark:bg-input/30 dark:hover:bg-input/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground"
+        "": "flex w-fit items-center justify-between gap-1.5 rounded-lg border border-input bg-transparent py-2 pr-2 pl-2.5 text-sm whitespace-nowrap transition-colors outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 data-placeholder:text-muted-foreground data-[size=default]:h-8 data-[size=sm]:h-7 data-[size=sm]:rounded-[min(var(--radius-md),10px)] *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 dark:bg-input/30 dark:hover:bg-input/50 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
       },
       "component_class": "Shadcn::Select::Trigger",
       "cva": {
@@ -230,9 +192,9 @@
       ]
     },
     "SelectValue": {
-      "classes_slot": "",
+      "classes_slot": "select-value",
       "combinations": {
-        "": ""
+        "": "flex flex-1 text-left"
       },
       "component_class": "Shadcn::Select::Value",
       "cva": {
@@ -240,7 +202,7 @@
         "defaults": {},
         "prop_names": []
       },
-      "passthrough_class": false,
+      "passthrough_class": true,
       "root_slot": "select-value",
       "slots": [
         {
@@ -256,6 +218,6 @@
   "registry_dependencies": [],
   "schema_version": 1,
   "source": {
-    "item_sha256": "99408825c17a23e7fe927ed4edf21c0854fc92b70498a593a08b7a618b4e1646"
+    "item_sha256": "a3f9e9486195651b70fa500361c9d61d839a3fe4d650ffdda2f7e2ce1c03b780"
   }
 }

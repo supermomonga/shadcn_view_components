@@ -30,7 +30,7 @@
     "ContextMenuCheckboxItem": {
       "classes_slot": "context-menu-checkbox-item",
       "combinations": {
-        "": "relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+        "": "relative flex cursor-default items-center gap-1.5 rounded-md py-1 pr-8 pl-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground data-inset:pl-7 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
       },
       "component_class": "Shadcn::ContextMenu::CheckboxItem",
       "cva": {
@@ -43,7 +43,8 @@
       "slots": [
         {
           "dynamic_attributes": [
-            "checked"
+            "checked",
+            "data-inset"
           ],
           "name": "context-menu-checkbox-item",
           "static_attributes": {},
@@ -54,7 +55,7 @@
     "ContextMenuContent": {
       "classes_slot": "context-menu-content",
       "combinations": {
-        "": "z-50 max-h-(--radix-context-menu-content-available-height) min-w-[8rem] origin-(--radix-context-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
+        "": "cn-menu-target cn-menu-translucent z-50 max-h-(--available-height) min-w-36 origin-(--transform-origin) overflow-x-hidden overflow-y-auto rounded-lg bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100 outline-none data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
       },
       "component_class": "Shadcn::ContextMenu::Content",
       "cva": {
@@ -75,7 +76,7 @@
           "dynamic_attributes": [],
           "name": "context-menu-content",
           "static_attributes": {},
-          "tag": "ContextMenuPrimitive.Content"
+          "tag": "ContextMenuPrimitive.Popup"
         }
       ]
     },
@@ -104,7 +105,7 @@
     "ContextMenuItem": {
       "classes_slot": "context-menu-item",
       "combinations": {
-        "": "relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive dark:data-[variant=destructive]:focus:bg-destructive/20 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground data-[variant=destructive]:*:[svg]:text-destructive!"
+        "": "group/context-menu-item relative flex cursor-default items-center gap-1.5 rounded-md px-1.5 py-1 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground data-inset:pl-7 data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive dark:data-[variant=destructive]:focus:bg-destructive/20 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 focus:*:[svg]:text-accent-foreground data-[variant=destructive]:*:[svg]:text-destructive"
       },
       "component_class": "Shadcn::ContextMenu::Item",
       "cva": {
@@ -129,7 +130,7 @@
     "ContextMenuLabel": {
       "classes_slot": "context-menu-label",
       "combinations": {
-        "": "px-2 py-1.5 text-sm font-medium text-foreground data-[inset]:pl-8"
+        "": "px-1.5 py-1 text-xs font-medium text-muted-foreground data-inset:pl-7"
       },
       "component_class": "Shadcn::ContextMenu::Label",
       "cva": {
@@ -146,7 +147,7 @@
           ],
           "name": "context-menu-label",
           "static_attributes": {},
-          "tag": "ContextMenuPrimitive.Label"
+          "tag": "ContextMenuPrimitive.GroupLabel"
         }
       ]
     },
@@ -197,7 +198,7 @@
     "ContextMenuRadioItem": {
       "classes_slot": "context-menu-radio-item",
       "combinations": {
-        "": "relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+        "": "relative flex cursor-default items-center gap-1.5 rounded-md py-1 pr-8 pl-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground data-inset:pl-7 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
       },
       "component_class": "Shadcn::ContextMenu::RadioItem",
       "cva": {
@@ -209,7 +210,9 @@
       "root_slot": "context-menu-radio-item",
       "slots": [
         {
-          "dynamic_attributes": [],
+          "dynamic_attributes": [
+            "data-inset"
+          ],
           "name": "context-menu-radio-item",
           "static_attributes": {},
           "tag": "ContextMenuPrimitive.RadioItem"
@@ -241,7 +244,7 @@
     "ContextMenuShortcut": {
       "classes_slot": "context-menu-shortcut",
       "combinations": {
-        "": "ml-auto text-xs tracking-widest text-muted-foreground"
+        "": "ml-auto text-xs tracking-widest text-muted-foreground group-focus/context-menu-item:text-accent-foreground"
       },
       "component_class": "Shadcn::ContextMenu::Shortcut",
       "cva": {
@@ -278,14 +281,14 @@
           "dynamic_attributes": [],
           "name": "context-menu-sub",
           "static_attributes": {},
-          "tag": "ContextMenuPrimitive.Sub"
+          "tag": "ContextMenuPrimitive.SubmenuRoot"
         }
       ]
     },
     "ContextMenuSubContent": {
-      "classes_slot": "context-menu-sub-content",
+      "classes_slot": "",
       "combinations": {
-        "": "z-50 min-w-[8rem] origin-(--radix-context-menu-content-transform-origin) overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-lg data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
+        "": ""
       },
       "component_class": "Shadcn::ContextMenu::SubContent",
       "cva": {
@@ -293,21 +296,24 @@
         "defaults": {},
         "prop_names": []
       },
-      "passthrough_class": true,
+      "passthrough_class": false,
       "root_slot": "context-menu-sub-content",
       "slots": [
         {
           "dynamic_attributes": [],
           "name": "context-menu-sub-content",
-          "static_attributes": {},
-          "tag": "ContextMenuPrimitive.SubContent"
+          "static_attributes": {
+            "class": "cn-menu-target cn-menu-translucent shadow-lg",
+            "side": "right"
+          },
+          "tag": "ContextMenuContent"
         }
       ]
     },
     "ContextMenuSubTrigger": {
       "classes_slot": "context-menu-sub-trigger",
       "combinations": {
-        "": "flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground data-[inset]:pl-8 data-[state=open]:bg-accent data-[state=open]:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground"
+        "": "flex cursor-default items-center gap-1.5 rounded-md px-1.5 py-1 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground data-inset:pl-7 data-open:bg-accent data-open:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
       },
       "component_class": "Shadcn::ContextMenu::SubTrigger",
       "cva": {
@@ -324,14 +330,14 @@
           ],
           "name": "context-menu-sub-trigger",
           "static_attributes": {},
-          "tag": "ContextMenuPrimitive.SubTrigger"
+          "tag": "ContextMenuPrimitive.SubmenuTrigger"
         }
       ]
     },
     "ContextMenuTrigger": {
-      "classes_slot": "",
+      "classes_slot": "context-menu-trigger",
       "combinations": {
-        "": ""
+        "": "select-none"
       },
       "component_class": "Shadcn::ContextMenu::Trigger",
       "cva": {
@@ -339,7 +345,7 @@
         "defaults": {},
         "prop_names": []
       },
-      "passthrough_class": false,
+      "passthrough_class": true,
       "root_slot": "context-menu-trigger",
       "slots": [
         {
@@ -355,6 +361,6 @@
   "registry_dependencies": [],
   "schema_version": 1,
   "source": {
-    "item_sha256": "14fa367c053721c9624394f3f8d9bd16c91bf0d1ca83af0d16f81f129ec5fc76"
+    "item_sha256": "d712a605f27a1134c8a76d712fc20b64a019291bfa36de6659f3433147688ec5"
   }
 }

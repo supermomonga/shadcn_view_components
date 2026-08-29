@@ -1,6 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 import { hideAfterExit } from "shadcn/hide_after_exit"
+import { applyStateAttrs } from "shadcn/state_attrs"
 
 // Popover API(popover="auto")の開閉同期と位置合わせ。
 // 軽い外側クリック解散(light dismiss)はネイティブが担い、ここでは
@@ -26,6 +27,7 @@ export default class PopoverController extends Controller {
     if (!this.content) return
     if (this.content.matches(":popover-open")) {
       this.content.dataset.state = "closed"
+    applyStateAttrs(this.content, "closed")
       hideAfterExit(this.content, () => {
         if (this.content?.dataset.state === "open") return
         this.content.hidePopover()
@@ -33,6 +35,7 @@ export default class PopoverController extends Controller {
     } else {
       // toggle イベントは非同期のため、表示前に属性を先に切り替える
       this.content.dataset.state = "open"
+    applyStateAttrs(this.content, "open")
       this.content.togglePopover()
     }
   }
@@ -41,6 +44,7 @@ export default class PopoverController extends Controller {
     if (!this.content) return
     const state = this.content.matches(":popover-open") ? "open" : "closed"
     this.content.dataset.state = state
+    applyStateAttrs(this.content, state)
     this.trigger?.setAttribute("aria-expanded", String(state === "open"))
     if (state === "open") this.position()
   }

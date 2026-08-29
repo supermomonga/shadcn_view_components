@@ -73,17 +73,19 @@ export default class AccordionController extends Controller {
     this.syncState(item, "closed")
   }
 
-  // data-state は upstream(Radix)と同じく Item / Trigger / Content の3要素に出す。
-  // Trigger のシェブロン回転は [&[data-state=open]>svg]:rotate-180 が参照する
+  // base-nova の契約クラスは data-open / data-closed(属性の存在)を参照する
+  // (data-open:animate-accordion-down 等)。Trigger には aria-expanded も同期する
+  // (アイコン切替は group-aria-expanded で行う)
   syncState(item, state) {
-    item.dataset.state = state
+    item.toggleAttribute("data-open", state === "open")
+    item.toggleAttribute("data-closed", state !== "open")
     const trigger = item.querySelector("[data-slot='accordion-trigger']")
-    if (trigger) {
-      trigger.dataset.state = state
-      trigger.setAttribute("aria-expanded", String(state === "open"))
-    }
+    if (trigger) trigger.setAttribute("aria-expanded", String(state === "open"))
     const content = this.contentOf(item)
-    if (content) content.dataset.state = state
+    if (content) {
+      content.toggleAttribute("data-open", state === "open")
+      content.toggleAttribute("data-closed", state !== "open")
+    }
   }
 
   items() {

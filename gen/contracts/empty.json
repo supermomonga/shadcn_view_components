@@ -8,7 +8,7 @@
     "Empty": {
       "classes_slot": "empty",
       "combinations": {
-        "": "flex min-w-0 flex-1 flex-col items-center justify-center gap-6 rounded-lg border-dashed p-6 text-center text-balance md:p-12"
+        "": "flex w-full min-w-0 flex-1 flex-col items-center justify-center gap-4 rounded-xl border-dashed p-6 text-center text-balance"
       },
       "component_class": "Shadcn::Empty",
       "cva": {
@@ -30,7 +30,7 @@
     "EmptyContent": {
       "classes_slot": "empty-content",
       "combinations": {
-        "": "flex w-full max-w-sm min-w-0 flex-col items-center gap-4 text-sm text-balance"
+        "": "flex w-full max-w-sm min-w-0 flex-col items-center gap-2.5 text-sm text-balance"
       },
       "component_class": "Shadcn::Empty::Content",
       "cva": {
@@ -74,7 +74,7 @@
     "EmptyHeader": {
       "classes_slot": "empty-header",
       "combinations": {
-        "": "flex max-w-sm flex-col items-center gap-2 text-center"
+        "": "flex max-w-sm flex-col items-center gap-2"
       },
       "component_class": "Shadcn::Empty::Header",
       "cva": {
@@ -97,7 +97,7 @@
       "classes_slot": "empty-icon",
       "combinations": {
         "variant=default": "mb-2 flex shrink-0 items-center justify-center [&_svg]:pointer-events-none [&_svg]:shrink-0 bg-transparent",
-        "variant=icon": "mb-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted text-foreground [&_svg:not([class*='size-'])]:size-6"
+        "variant=icon": "mb-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted text-foreground [&_svg:not([class*='size-'])]:size-4"
       },
       "component_class": "Shadcn::Empty::Media",
       "cva": {
@@ -125,7 +125,7 @@
     "EmptyTitle": {
       "classes_slot": "empty-title",
       "combinations": {
-        "": "text-lg font-medium tracking-tight"
+        "": "cn-font-heading text-sm font-medium tracking-tight"
       },
       "component_class": "Shadcn::Empty::Title",
       "cva": {
@@ -149,6 +149,6 @@
   "registry_dependencies": [],
   "schema_version": 1,
   "source": {
-    "item_sha256": "50dce175d2666f129357cc57b5c4c358f6e9580e73b53e7f188695b200451bf7"
+    "item_sha256": "cc4d405e4a6f626a0d3ff683edb5cf2d6c7855874fcef9e72750aaaa0b9f28d3"
   }
 }

@@ -94,7 +94,7 @@
     "CarouselNext": {
       "classes_slot": "carousel-next",
       "combinations": {
-        "": "absolute size-8 rounded-full top-1/2 -right-12 -translate-y-1/2"
+        "": "absolute touch-manipulation rounded-full inset-y-0 -right-12 my-auto"
       },
       "component_class": "Shadcn::Carousel::Next",
       "cva": {
@@ -121,7 +121,7 @@
     "CarouselPrevious": {
       "classes_slot": "carousel-previous",
       "combinations": {
-        "": "absolute size-8 rounded-full top-1/2 -left-12 -translate-y-1/2"
+        "": "absolute touch-manipulation rounded-full inset-y-0 -left-12 my-auto"
       },
       "component_class": "Shadcn::Carousel::Previous",
       "cva": {
@@ -152,6 +152,6 @@
   ],
   "schema_version": 1,
   "source": {
-    "item_sha256": "837845cac1f9ce00cc48445559b8a4c2ad3c6675f5afc40cd12947d69987e701"
+    "item_sha256": "703c6808a255653112cfe1191879435eb0c2b2c3a628d83ba25ae214d5da1b02"
   }
 }

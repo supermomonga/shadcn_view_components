@@ -20,7 +20,7 @@ module Shadcn
         args: T::Hash[Symbol, T.untyped]
       ).void.checked(:never)
     end
-    def initialize(type: :multiple, spacing: 0, variant: nil, size: nil, **args)
+    def initialize(type: :multiple, spacing: 2, variant: nil, size: nil, **args)
       @group_type = T.let(type.to_s, String)
       @spacing = spacing
       # グループ自身の契約に軸は無いため、Item の許容値で検証する
@@ -86,7 +86,7 @@ module Shadcn
       end
       def initialize(variant: ShadcnViewComponents::Contracts::ToggleGroup::Item::DEFAULTS.fetch(:variant),
                      size: ShadcnViewComponents::Contracts::ToggleGroup::Item::DEFAULTS.fetch(:size),
-                     state: :off, spacing: 0, **args)
+                     state: :off, spacing: 2, **args)
         @variant = T.let(normalize_option(:variant, variant), Symbol)
         @size = T.let(normalize_option(:size, size), Symbol)
         @state = T.let(state.to_s, String)

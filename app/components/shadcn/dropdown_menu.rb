@@ -97,14 +97,29 @@ module Shadcn
 
       private
 
-      # upstream の ItemIndicator + CheckIcon(data-slot を持たない装飾)
+      # upstream の ItemIndicator + CheckIcon(契約スロット dropdown-menu-checkbox-item-indicator)。
+      # indicator スロットを持たない派生(context-menu / menubar)は data-slot 無しで描く
       sig { returns(String) }
       def indicator
-        content_tag(:span, class: "pointer-events-none absolute left-2 flex size-3.5 items-center justify-center") do
-          return "".html_safe unless @checked
-
-          check_icon
+        options = { class: indicator_class }
+        options[:data] = { slot: indicator_slot_name } if indicator_slot_name
+        content_tag(:span, **options) do
+          @checked ? check_icon : "".html_safe
         end
+      end
+
+      # 契約に indicator スロットが無い派生では nil を返す
+      sig { returns(T.nilable(String)) }
+      def indicator_slot_name
+        "dropdown-menu-checkbox-item-indicator"
+      end
+
+      sig { returns(T.nilable(String)) }
+      def indicator_class
+        slot_name = indicator_slot_name
+        return nil unless slot_name
+
+        T.cast(contract_slot(slot_name).dig(:static_attributes, :class), T.nilable(String))
       end
 
       sig { returns(String) }
@@ -144,10 +159,15 @@ module Shadcn
 
       private
 
+      sig { returns(T.nilable(String)) }
+      def indicator_slot_name
+        "dropdown-menu-radio-item-indicator"
+      end
+
       # ラジオはドット表示
       sig { returns(String) }
       def indicator
-        content_tag(:span, class: "pointer-events-none absolute left-2 flex size-3.5 items-center justify-center") do
+        content_tag(:span, class: indicator_class, data: { slot: indicator_slot_name }) do
           @checked ? content_tag(:span, class: "size-2 rounded-full bg-current") { "".html_safe } : "".html_safe
         end
       end

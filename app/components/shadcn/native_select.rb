@@ -8,6 +8,7 @@ module Shadcn
   class NativeSelect < BaseComponent
     sig { override.returns(String) }
     def call
+      # base-nova ではユーザークラス(className)はラッパーへ流れる
       content_tag(:div, class: wrapper_class, data: { slot: "native-select-wrapper" }) do
         safe_join([select_element, chevron_icon])
       end
@@ -18,14 +19,21 @@ module Shadcn
     # 選択肢は OptGroup / Option コンポーネントで content に渡す
     sig { returns(String) }
     def select_element
-      attributes = @html_args.merge(class: self.class.classes(extra: @user_class))
+      attributes = @html_args.merge(class: select_class)
       merge_nested(attributes, :data, { slot: "native-select" })
       content_tag(:select, **attributes) { content }
     end
 
-    sig { returns(T.nilable(String)) }
+    # ラッパーのクラスは契約combination(group/native-select ...)
+    sig { returns(String) }
     def wrapper_class
-      T.cast(contract_slot("native-select-wrapper").dig(:static_attributes, :class), T.nilable(String))
+      ShadcnViewComponents::Classes.resolve(:native_select, extra: @user_class.to_s)
+    end
+
+    # select 要素のクラスは契約スロットの静的クラス
+    sig { returns(T.nilable(String)) }
+    def select_class
+      T.cast(contract_slot("native-select").dig(:static_attributes, :class), T.nilable(String))
     end
 
     sig { returns(String) }

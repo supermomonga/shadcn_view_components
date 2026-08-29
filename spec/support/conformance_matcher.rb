@@ -36,7 +36,11 @@ RSpec::Matchers.define :conform_with_contract do |contract_data|
 
     expected_slot = contract_data[:data_slot]
     if expected_slot.to_s.empty?
-      @failures << "data-slot: expected none (icon-style contract), got #{element['data-slot'].inspect}" unless element["data-slot"].nil?
+      # 合成コンポーネント(Previous/Next等、契約が名前無しスロットのみ)では
+      # 実DOMの data-slot を allowances の data-slot 許可で受け入れる
+      unless element["data-slot"].nil? || contract_data.fetch(:allowed_extra, []).include?("data-slot")
+        @failures << "data-slot: expected none (icon-style contract), got #{element['data-slot'].inspect}"
+      end
     elsif element["data-slot"] != expected_slot
       @failures << "data-slot: expected #{expected_slot.inspect}, got #{element['data-slot'].inspect}"
     end

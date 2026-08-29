@@ -137,14 +137,14 @@ RSpec.describe "Phase 1 display components", type: :component do
   end
 
   describe Shadcn::Spinner do
-    it "renders an inline SVG spinner without data-slot" do
+    it "renders an inline SVG spinner with data-slot" do
       render_inline(described_class.new)
 
       element = rendered_fragment.at_xpath("./*[1]")
       expect(element.name).to eq("svg")
       expect(element["role"]).to eq("status")
       expect(element["aria-label"]).to eq("Loading")
-      expect(element["data-slot"]).to be_nil
+      expect(element["data-slot"]).to eq("spinner")
       expect(rendered_fragment.css("path").length).to eq(1)
     end
   end

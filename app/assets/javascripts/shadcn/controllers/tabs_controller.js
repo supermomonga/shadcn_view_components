@@ -3,13 +3,13 @@ import { Controller } from "@hotwired/stimulus"
 // ARIA tabs パターン(05-stimulus-hotwire §4)。
 // - クリック / Enter / Space で選択
 // - 左右(縦布局は上下)矢印で roving tabindex による移動
-// - 選択状態は data-state、パネル表示は hidden 属性で表現する
+// - 選択状態は data-active(属性の存在)、パネル表示は hidden 属性で表現する
 export default class TabsController extends Controller {
   connect() {
     const triggers = this.triggers
     if (triggers.length === 0) return
     // サーバ側で active 指定があればそれを、無ければ先頭を採用してパネル表示を同期する
-    const active = triggers.find((trigger) => trigger.dataset.state === "active") || triggers[0]
+    const active = triggers.find((trigger) => trigger.hasAttribute("data-active")) || triggers[0]
     this.activate(active)
   }
 
@@ -33,7 +33,7 @@ export default class TabsController extends Controller {
   activate(selected) {
     for (const trigger of this.triggers) {
       const active = trigger === selected
-      trigger.dataset.state = active ? "active" : "inactive"
+      trigger.toggleAttribute("data-active", active)
       trigger.setAttribute("aria-selected", String(active))
       trigger.tabIndex = active ? 0 : -1
     }

@@ -8,9 +8,27 @@ module Shadcn
   class Select < BaseComponent
     CONTROLLER = "shadcn--menu"
 
+    # base-nova では Select ルートはプリミティブの別名で契約面を持たない
+    # (契約JSONに Select export が無い)。ルートは旧実装どおり「クラス無しの
+    # div[data-slot] + controller ホスト」として描くため、契約解決を差し替える
+    sig { returns(String) }
+    def default_tag
+      "div"
+    end
+
+    sig { override.returns(T::Hash[Symbol, T.untyped]) }
+    def contract_root_slot
+      {}
+    end
+
+    sig { returns(String) }
+    def resolved_class
+      @user_class.to_s
+    end
+
     sig { override.returns(T::Hash[Symbol, T.untyped]) }
     def contract_data_attributes
-      super.merge(controller: CONTROLLER)
+      { slot: "select", controller: CONTROLLER }
     end
 
     class Trigger < BaseComponent
@@ -36,34 +54,21 @@ module Shadcn
 
     class Content < BaseComponent
       # 契約スロット構成: 名前無しラッパー(portal相当) > select-content。
-      # position は enum ガード(position === "popper" && ...)の露出prop
-      sig do
-        params(position: T.any(Symbol, String), args: T::Hash[Symbol, T.untyped]).void.checked(:never)
-      end
-      def initialize(position: ShadcnViewComponents::Contracts::Select::Content::DEFAULTS.fetch(:position), **args)
-        @position = T.let(normalize_option(:position, position), Symbol)
-        super(**args)
-      end
-
-      sig { override.returns(T::Hash[Symbol, VariantOption]) }
-      def variant_options
-        { position: @position }
-      end
-
+      # base-nova では位置指定は Anchor幅追従のCSS variantに統合された(position prop廃止)
       sig { override.returns(String) }
       def call
-        content_tag(:div, class: wrapper_class) do
+        content_tag(:div) do
           content_tag(tag, **content_attributes) { content }
         end
       end
 
       sig { returns(T::Hash[Symbol, T.untyped]) }
       def content_attributes
-        attributes = @html_args.merge(class: self.class.classes(extra: @user_class, **variant_options))
+        attributes = @html_args.merge(class: self.class.classes(extra: @user_class))
         attributes[:role] = "listbox"
         attributes[:popover] = "auto"
         data = T.cast(attributes[:data], T.nilable(T::Hash[Symbol, T.untyped])) || {}
-        attributes[:data] = { slot: "select-content", state: "closed" }.merge(data)
+        attributes[:data] = { slot: "select-content" }.merge(data)
         attributes
       end
 
@@ -80,7 +85,6 @@ module Shadcn
     end
 
     class Item < BaseComponent
-      # 契約スロット構成: select-item + select-item-indicator
       sig { params(value: T.nilable(String), args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
       def initialize(value: nil, **args)
         @value = value
@@ -96,31 +100,7 @@ module Shadcn
         attributes
       end
 
-      sig { override.returns(String) }
-      def call
-        content_tag(tag, **html_attributes) do
-          safe_join([content, indicator])
-        end
-      end
-
-      private
-
-      sig { returns(String) }
-      def indicator
-        content_tag(:span, class: indicator_class, data: { slot: "select-item-indicator" }) do
-          content_tag(
-            :svg,
-            xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", fill: "none",
-            stroke: "currentColor", "stroke-width": "2", "stroke-linecap": "round", "stroke-linejoin": "round",
-            width: "14", height: "14", class: "size-4"
-          ) { raw(%(<path d="M20 6 9 17l-5-5"/>)) }
-        end
-      end
-
-      sig { returns(T.nilable(String)) }
-      def indicator_class
-        T.cast(contract_slot("select-item-indicator").dig(:static_attributes, :class), T.nilable(String))
-      end
+      # base-nova の select-item は indicator スロットを持たない(選択表現は item 自身の背景)
     end
 
     class Label < BaseComponent

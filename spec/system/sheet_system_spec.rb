@@ -25,6 +25,7 @@ RSpec.describe "Sheet and Drawer behavior", type: :system do
     expect(find("#demo-drawer", visible: :all)["data-vaul-drawer-direction"]).to eq("bottom")
 
     find("#close-drawer").click
-    expect(page.evaluate_script("document.querySelector('#demo-drawer').open")).to be(false)
+    # close は exitアニメーション(フォールバック300ms)を待ってから発火するため再試行付きで待つ
+    expect(page).to have_no_selector("#demo-drawer[open]")
   end
 end

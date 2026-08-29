@@ -61,7 +61,7 @@ module Shadcn
     end
 
     class Content < BaseComponent
-      # 契約スロット構成: dialog-portal(ラッパー) > dialog-content(dialog要素)
+      # 契約スロット構成: 無名ポータルラッパー > dialog-content(dialog要素)
       # + dialog-close(右上クローズ)。オーバーレイは ::backdrop で代替する
       sig { params(show_close_button: T::Boolean, args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
       def initialize(show_close_button: true, **args)
@@ -76,7 +76,8 @@ module Shadcn
 
       sig { override.returns(String) }
       def call
-        content_tag(:div, data: { slot: "dialog-portal" }) { dialog_element }
+        # ポータルラッパーは契約上無名(data-slotを持たない)
+        content_tag(:div) { dialog_element }
       end
 
       private
@@ -88,7 +89,8 @@ module Shadcn
         end
       end
 
-      # upstream のクローズボタン(静的クラスは契約スロットの static_attributes 由来)
+      # upstream のクローズボタン(render prop のButton variant="ghost" size="icon-sm"
+      # + absolute配置)。契約クラスはButton契約から合成する
       sig { returns(T.nilable(String)) }
       def close_button
         return nil unless @show_close_button
@@ -129,15 +131,19 @@ module Shadcn
       def content_attributes
         attributes = @html_args.merge(class: self.class.classes(extra: @user_class))
         data = T.cast(attributes[:data], T.nilable(T::Hash[Symbol, T.untyped])) || {}
-        attributes[:data] = { slot: "dialog-content", state: "closed" }.merge(data)
+        # 開閉状態属性(data-open / data-closed)はコントローラが同期する(SSRでは出さない)
+        attributes[:data] = { slot: "dialog-content" }.merge(data)
         aria = T.cast(attributes[:aria], T.nilable(T::Hash[Symbol, T.untyped])) || {}
         attributes[:aria] = { modal: "true" }.merge(aria)
         attributes
       end
 
-      sig { returns(T.nilable(String)) }
+      sig { returns(String) }
       def close_class
-        T.cast(contract_slot("dialog-close").dig(:static_attributes, :class), T.nilable(String))
+        # NOTE: Hashの値型は不変のため、Classes.resolve の options と同じ型で T.let する
+        button_options = T.let({ variant: :ghost, size: :"icon-sm" },
+                               T::Hash[Symbol, T.nilable(T.any(Symbol, String))])
+        ShadcnViewComponents::Classes.resolve(:button, extra: "absolute top-2 right-2", **button_options)
       end
     end
 

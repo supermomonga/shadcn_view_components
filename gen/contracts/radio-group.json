@@ -8,7 +8,7 @@
     "RadioGroup": {
       "classes_slot": "radio-group",
       "combinations": {
-        "": "grid gap-3"
+        "": "grid w-full gap-2"
       },
       "component_class": "Shadcn::RadioGroup",
       "cva": {
@@ -23,14 +23,14 @@
           "dynamic_attributes": [],
           "name": "radio-group",
           "static_attributes": {},
-          "tag": "RadioGroupPrimitive.Root"
+          "tag": "RadioGroupPrimitive"
         }
       ]
     },
     "RadioGroupItem": {
       "classes_slot": "radio-group-item",
       "combinations": {
-        "": "aspect-square size-4 shrink-0 rounded-full border border-input text-primary shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:bg-input/30 dark:aria-invalid:ring-destructive/40"
+        "": "group/radio-group-item peer relative flex aspect-square size-4 shrink-0 rounded-full border border-input outline-none group-has-[:focus-visible]/field-label:ring-0 group-has-[:focus-visible]/field-label:not-data-checked:border-input after:absolute after:-inset-x-3 after:-inset-y-2 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 aria-invalid:aria-checked:border-primary dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 data-checked:border-primary data-checked:bg-primary data-checked:text-primary-foreground group-has-[:focus-visible]/field-label:data-checked:border-primary dark:data-checked:bg-primary"
       },
       "component_class": "Shadcn::RadioGroup::Item",
       "cva": {
@@ -45,15 +45,15 @@
           "dynamic_attributes": [],
           "name": "radio-group-item",
           "static_attributes": {},
-          "tag": "RadioGroupPrimitive.Item"
+          "tag": "RadioPrimitive.Root"
         },
         {
           "dynamic_attributes": [],
           "name": "radio-group-indicator",
           "static_attributes": {
-            "class": "relative flex items-center justify-center"
+            "class": "flex size-4 items-center justify-center"
           },
-          "tag": "RadioGroupPrimitive.Indicator"
+          "tag": "RadioPrimitive.Indicator"
         }
       ]
     }
@@ -62,6 +62,6 @@
   "registry_dependencies": [],
   "schema_version": 1,
   "source": {
-    "item_sha256": "29c224b4e131d86173438f0604741281e41e18d241b277f21dcbed8e567e02d5"
+    "item_sha256": "0c8bcd054d54c03dd47fdbf547f1eb4201f0e138a13a5ce17eef22937d7a97de"
   }
 }

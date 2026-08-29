@@ -33,7 +33,7 @@ module Shadcn
       sig { override.returns(T::Hash[Symbol, T.untyped]) }
       def html_attributes
         attributes = super
-        attributes[:class] = ShadcnViewComponents::Classes.resolve(:input_group, extra: attributes[:class].to_s)
+        attributes[:class] = ShadcnViewComponents::Classes.resolve(:input_group, extra: "w-auto #{attributes[:class]}".strip)
         @input_placeholder = T.let(attributes.delete(:placeholder), T.untyped)
         attributes
       end
@@ -161,8 +161,7 @@ module Shadcn
           width: "16",
           height: "16",
           class: "pointer-events-none size-4 text-muted-foreground",
-          aria: { hidden: "true" },
-          data: { slot: "combobox-trigger-icon" }
+          aria: { hidden: "true" }
         ) do
           raw(%(<path d="m6 9 6 6 6-6"/>))
         end
@@ -187,7 +186,7 @@ module Shadcn
     end
 
     class Item < BaseComponent
-      # 契約スロット構成: combobox-item + combobox-item-indicator(選択時のチェック)
+      # base-nova の combobox-item に indicator スロットは無い(チェックは装飾要素)
       sig { params(value: T.nilable(String), selected: T::Boolean, args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
       def initialize(value: nil, selected: false, **args)
         @value = value
@@ -216,7 +215,7 @@ module Shadcn
       sig { returns(String) }
       def indicator
         # 未選択時は HTML の hidden 属性で隠す(upstream の ItemIndicator と同じ挙動)
-        content_tag(:span, data: { slot: "combobox-item-indicator" }, hidden: !@selected) do
+        content_tag(:span, hidden: !@selected) do
           check_icon
         end
       end

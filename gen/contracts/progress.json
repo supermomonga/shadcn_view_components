@@ -8,7 +8,7 @@
     "Progress": {
       "classes_slot": "progress",
       "combinations": {
-        "": "relative h-2 w-full overflow-hidden rounded-full bg-primary/20"
+        "": "flex flex-wrap gap-3"
       },
       "component_class": "Shadcn::Progress",
       "cva": {
@@ -20,20 +20,100 @@
       "root_slot": "progress",
       "slots": [
         {
-          "dynamic_attributes": [],
+          "dynamic_attributes": [
+            "value"
+          ],
           "name": "progress",
           "static_attributes": {},
           "tag": "ProgressPrimitive.Root"
-        },
+        }
+      ]
+    },
+    "ProgressIndicator": {
+      "classes_slot": "progress-indicator",
+      "combinations": {
+        "": "h-full bg-primary transition-all"
+      },
+      "component_class": "Shadcn::ProgressIndicator",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "progress-indicator",
+      "slots": [
         {
-          "dynamic_attributes": [
-            "style"
-          ],
+          "dynamic_attributes": [],
           "name": "progress-indicator",
-          "static_attributes": {
-            "class": "h-full w-full flex-1 bg-primary transition-all"
-          },
+          "static_attributes": {},
           "tag": "ProgressPrimitive.Indicator"
+        }
+      ]
+    },
+    "ProgressLabel": {
+      "classes_slot": "progress-label",
+      "combinations": {
+        "": "text-sm font-medium"
+      },
+      "component_class": "Shadcn::ProgressLabel",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "progress-label",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "progress-label",
+          "static_attributes": {},
+          "tag": "ProgressPrimitive.Label"
+        }
+      ]
+    },
+    "ProgressTrack": {
+      "classes_slot": "progress-track",
+      "combinations": {
+        "": "relative flex h-1 w-full items-center overflow-x-hidden rounded-full bg-muted"
+      },
+      "component_class": "Shadcn::ProgressTrack",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "progress-track",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "progress-track",
+          "static_attributes": {},
+          "tag": "ProgressPrimitive.Track"
+        }
+      ]
+    },
+    "ProgressValue": {
+      "classes_slot": "progress-value",
+      "combinations": {
+        "": "ml-auto text-sm text-muted-foreground tabular-nums"
+      },
+      "component_class": "Shadcn::ProgressValue",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": true,
+      "root_slot": "progress-value",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "progress-value",
+          "static_attributes": {},
+          "tag": "ProgressPrimitive.Value"
         }
       ]
     }
@@ -42,6 +122,6 @@
   "registry_dependencies": [],
   "schema_version": 1,
   "source": {
-    "item_sha256": "5fdd8ee9e86ec24214ddd960df7706f351d301fd46f72503f8da6674594b3b8e"
+    "item_sha256": "72f8409c19c9e02c9ba9339938e79cf6e56e1b7bf9b71d1637fe7b5a57c04b44"
   }
 }

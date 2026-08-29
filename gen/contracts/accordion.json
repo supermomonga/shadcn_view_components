@@ -6,9 +6,9 @@
   },
   "exports": {
     "Accordion": {
-      "classes_slot": "",
+      "classes_slot": "accordion",
       "combinations": {
-        "": ""
+        "": "flex w-full flex-col"
       },
       "component_class": "Shadcn::Accordion",
       "cva": {
@@ -16,7 +16,7 @@
         "defaults": {},
         "prop_names": []
       },
-      "passthrough_class": false,
+      "passthrough_class": true,
       "root_slot": "accordion",
       "slots": [
         {
@@ -30,7 +30,7 @@
     "AccordionContent": {
       "classes_slot": "",
       "combinations": {
-        "": "pt-0 pb-4"
+        "": "h-(--accordion-panel-height) pt-0 pb-2.5 data-ending-style:h-0 data-starting-style:h-0 [&_a]:underline [&_a]:underline-offset-3 [&_a]:hover:text-foreground [&_p:not(:last-child)]:mb-4"
       },
       "component_class": "Shadcn::Accordion::Content",
       "cva": {
@@ -45,16 +45,16 @@
           "dynamic_attributes": [],
           "name": "accordion-content",
           "static_attributes": {
-            "class": "overflow-hidden text-sm data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
+            "class": "overflow-hidden text-sm data-open:animate-accordion-down data-closed:animate-accordion-up"
           },
-          "tag": "AccordionPrimitive.Content"
+          "tag": "AccordionPrimitive.Panel"
         }
       ]
     },
     "AccordionItem": {
       "classes_slot": "accordion-item",
       "combinations": {
-        "": "border-b last:border-b-0"
+        "": "not-last:border-b"
       },
       "component_class": "Shadcn::Accordion::Item",
       "cva": {
@@ -76,7 +76,7 @@
     "AccordionTrigger": {
       "classes_slot": "accordion-trigger",
       "combinations": {
-        "": "flex flex-1 items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180"
+        "": "group/accordion-trigger relative flex flex-1 items-start justify-between rounded-lg border border-transparent py-2.5 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:after:border-ring aria-disabled:pointer-events-none aria-disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-muted-foreground"
       },
       "component_class": "Shadcn::Accordion::Trigger",
       "cva": {
@@ -100,6 +100,32 @@
           "name": "accordion-trigger",
           "static_attributes": {},
           "tag": "AccordionPrimitive.Trigger"
+        },
+        {
+          "dynamic_attributes": [],
+          "name": "accordion-trigger-icon",
+          "static_attributes": {
+            "class": "pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden",
+            "hugeicons": "ArrowDown01Icon",
+            "lucide": "ChevronDownIcon",
+            "phosphor": "CaretDownIcon",
+            "remixicon": "RiArrowDownSLine",
+            "tabler": "IconChevronDown"
+          },
+          "tag": "IconPlaceholder"
+        },
+        {
+          "dynamic_attributes": [],
+          "name": "accordion-trigger-icon",
+          "static_attributes": {
+            "class": "pointer-events-none hidden shrink-0 group-aria-expanded/accordion-trigger:inline",
+            "hugeicons": "ArrowUp01Icon",
+            "lucide": "ChevronUpIcon",
+            "phosphor": "CaretUpIcon",
+            "remixicon": "RiArrowUpSLine",
+            "tabler": "IconChevronUp"
+          },
+          "tag": "IconPlaceholder"
         }
       ]
     }
@@ -108,6 +134,6 @@
   "registry_dependencies": [],
   "schema_version": 1,
   "source": {
-    "item_sha256": "790f635c0e47827039af757da2122f5c9880816e17ceea5f785422253f3fdd9e"
+    "item_sha256": "dff3a1ce2033aaaa1df6f499f6d9187de7a46572c62d19c71ec5ba375412b5f9"
   }
 }

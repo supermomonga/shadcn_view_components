@@ -30,7 +30,7 @@
     "TooltipContent": {
       "classes_slot": "tooltip-content",
       "combinations": {
-        "": "z-50 w-fit origin-(--radix-tooltip-content-transform-origin) animate-in rounded-md bg-foreground px-3 py-1.5 text-xs text-balance text-background fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95"
+        "": "z-50 inline-flex w-fit max-w-xs origin-(--transform-origin) items-center gap-1.5 rounded-md bg-foreground px-3 py-1.5 text-xs text-background has-data-[slot=kbd]:pr-1.5 data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 **:data-[slot=kbd]:relative **:data-[slot=kbd]:isolate **:data-[slot=kbd]:z-50 **:data-[slot=kbd]:rounded-sm data-[state=delayed-open]:animate-in data-[state=delayed-open]:fade-in-0 data-[state=delayed-open]:zoom-in-95 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
       },
       "component_class": "Shadcn::Tooltip::Content",
       "cva": {
@@ -48,12 +48,10 @@
           "tag": "TooltipPrimitive.Portal"
         },
         {
-          "dynamic_attributes": [
-            "sideOffset"
-          ],
+          "dynamic_attributes": [],
           "name": "tooltip-content",
           "static_attributes": {},
-          "tag": "TooltipPrimitive.Content"
+          "tag": "TooltipPrimitive.Popup"
         }
       ]
     },
@@ -73,7 +71,7 @@
       "slots": [
         {
           "dynamic_attributes": [
-            "delayDuration"
+            "delay"
           ],
           "name": "tooltip-provider",
           "static_attributes": {},
@@ -108,6 +106,6 @@
   "registry_dependencies": [],
   "schema_version": 1,
   "source": {
-    "item_sha256": "006fe8993383894eaddf1b03a09bcd77f617a30dd03524cce3d7dc90c8f7547e"
+    "item_sha256": "7fdf229dfa72095b6f6c2d6c7dd0d2800be7787774eb52de2714629224590824"
   }
 }

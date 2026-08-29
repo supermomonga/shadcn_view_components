@@ -38,11 +38,23 @@ module Shadcn
 
     class Item < DropdownMenu::Item; end
 
-    class CheckboxItem < DropdownMenu::CheckboxItem; end
+    class CheckboxItem < DropdownMenu::CheckboxItem
+      # 契約に indicator スロットが無いため data-slot 無しで描く
+      sig { returns(T.nilable(String)) }
+      def indicator_slot_name
+        nil
+      end
+    end
 
     class RadioGroup < DropdownMenu::RadioGroup; end
 
-    class RadioItem < DropdownMenu::RadioItem; end
+    class RadioItem < DropdownMenu::RadioItem
+      # 契約に indicator スロットが無いため data-slot 無しで描く
+      sig { returns(T.nilable(String)) }
+      def indicator_slot_name
+        nil
+      end
+    end
 
     class Separator < DropdownMenu::Separator; end
 

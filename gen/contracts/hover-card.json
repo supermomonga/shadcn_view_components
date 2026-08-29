@@ -23,14 +23,14 @@
           "dynamic_attributes": [],
           "name": "hover-card",
           "static_attributes": {},
-          "tag": "HoverCardPrimitive.Root"
+          "tag": "PreviewCardPrimitive.Root"
         }
       ]
     },
     "HoverCardContent": {
       "classes_slot": "hover-card-content",
       "combinations": {
-        "": "z-50 w-64 origin-(--radix-hover-card-content-transform-origin) rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-hidden data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
+        "": "z-50 w-64 origin-(--transform-origin) rounded-lg bg-popover p-2.5 text-sm text-popover-foreground shadow-md ring-1 ring-foreground/10 outline-hidden duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
       },
       "component_class": "Shadcn::HoverCard::Content",
       "cva": {
@@ -45,16 +45,13 @@
           "dynamic_attributes": [],
           "name": "hover-card-portal",
           "static_attributes": {},
-          "tag": "HoverCardPrimitive.Portal"
+          "tag": "PreviewCardPrimitive.Portal"
         },
         {
-          "dynamic_attributes": [
-            "align",
-            "sideOffset"
-          ],
+          "dynamic_attributes": [],
           "name": "hover-card-content",
           "static_attributes": {},
-          "tag": "HoverCardPrimitive.Content"
+          "tag": "PreviewCardPrimitive.Popup"
         }
       ]
     },
@@ -76,7 +73,7 @@
           "dynamic_attributes": [],
           "name": "hover-card-trigger",
           "static_attributes": {},
-          "tag": "HoverCardPrimitive.Trigger"
+          "tag": "PreviewCardPrimitive.Trigger"
         }
       ]
     }
@@ -85,6 +82,6 @@
   "registry_dependencies": [],
   "schema_version": 1,
   "source": {
-    "item_sha256": "e0a2e6cf51ddf813c69ba0cbe0e1fc3c08a6d71b54a4c10231d1384f560e7150"
+    "item_sha256": "2ac3a753e0b083c0d5fadeabc294dd889b743925c7abd1c52971e527908fbdcc"
   }
 }

@@ -40,20 +40,27 @@ export default class DialogController extends Controller {
     this.syncState("open")
   }
 
+  // 状態属性の対象: dialog自身と、その中の content / overlay 系スロット。
+  // SSRでは状態属性(data-open / data-closed)を出さないためスロット名で収集する
+  stateTargets() {
+    const inner = this.dialog
+      ? this.dialog.querySelectorAll("[data-slot$='-content'], [data-slot$='-overlay']")
+      : []
+    return [...inner, ...(this.dialog ? [this.dialog] : [])]
+  }
+
   close() {
     if (!this.dialog || !this.dialog.open) return
 
-    // 先に閉状態へ(anime-out のトリガ)。dialog.open はまだ true のため
+    // 先に閉状態へ(animate-out のトリガ)。dialog.open はまだ true のため
     // syncState の実開状態ガードは使えず、ここでは直接書き換える
-    for (const element of this.element.querySelectorAll("[data-state]")) {
-      if (this.dialog.contains(element) || ["dialog", "alert-dialog"].includes(element.dataset.slot)) {
-        element.dataset.state = "closed"
-      }
+    for (const element of this.stateTargets()) {
+      this.applyState(element, "closed")
     }
     const content = this.dialog.querySelector("[data-slot$='-content']")
     hideAfterExit(content, () => {
       // 退出中に再オープンされた場合は閉じない
-      if (content?.dataset.state === "open") return
+      if (content?.hasAttribute("data-open")) return
       this.dialog?.close()
     })
   }
@@ -64,13 +71,18 @@ export default class DialogController extends Controller {
       // closeイベントを経由せず状態がずれた場合(ブラウザバック等)は実際の開状態を優先する
       state = this.dialog.open ? "open" : "closed"
     }
-    for (const element of this.element.querySelectorAll("[data-state]")) {
-      if (this.dialog?.contains(element) || ["dialog", "alert-dialog"].includes(element.dataset.slot)) {
-        element.dataset.state = state
-      }
+    for (const element of this.stateTargets()) {
+      this.applyState(element, state)
     }
     for (const trigger of this.element.querySelectorAll("[aria-haspopup='dialog']")) {
       trigger.setAttribute("aria-expanded", String(state === "open"))
     }
+  }
+
+  // base-nova の契約クラスは data-open / data-closed(属性の存在)を参照する
+  // (data-open:animate-in data-closed:animate-out 等)
+  applyState(element, state) {
+    element.toggleAttribute("data-open", state === "open")
+    element.toggleAttribute("data-closed", state !== "open")
   }
 }

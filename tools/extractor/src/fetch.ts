@@ -12,7 +12,7 @@ import { normalizeRegistryItem, sha256Hex } from "./normalize.ts"
 import type { Manifest, ManifestItem, UpstreamRelease } from "./manifest.ts"
 
 export const REGISTRY_BASE_URL = "https://ui.shadcn.com/r"
-export const STYLE = "new-york-v4"
+export const STYLE = "base-nova"
 export const DEFAULT_BASE_COLOR = "neutral"
 
 export function indexUrl(): string {
@@ -21,6 +21,11 @@ export function indexUrl(): string {
 
 export function itemUrl(name: string): string {
   return `${REGISTRY_BASE_URL}/styles/${STYLE}/${name}.json`
+}
+
+/** スタイルのブートストラップアイテム(registry:style)。スタイル共通のnpm依存宣言の情報源。 */
+export function styleIndexUrl(): string {
+  return `${REGISTRY_BASE_URL}/styles/${STYLE}/index.json`
 }
 
 export function colorsUrl(baseColor: string): string {
@@ -100,6 +105,30 @@ export async function resolveUpstreamRelease(): Promise<UpstreamRelease | null> 
   } catch (error) {
     process.stderr.write(`WARN: could not resolve upstream release metadata: ${String(error)}\n`)
     return null
+  }
+}
+
+export interface StyleDependencies {
+  style_dependencies: string[]
+  style_dev_dependencies: string[]
+}
+
+/**
+ * スタイル共通のnpm依存宣言を取得する。base-nova のようにアイテム毎の dependencies を
+ * 持たないスタイルでは、ブートストラップアイテム(registry:style)が唯一の依存情報源。
+ * 参考情報であり失敗時は警告して空配列で続行する(ロックの本体は items.*.sha256)。
+ */
+export async function fetchStyleDependencies(): Promise<StyleDependencies> {
+  const ctx: FetchContext = { item: "style-index", file: "index.json" }
+  try {
+    const json = (await requireJson(styleIndexUrl(), ctx)) as {
+      dependencies?: string[]
+      devDependencies?: string[]
+    }
+    return { style_dependencies: json.dependencies ?? [], style_dev_dependencies: json.devDependencies ?? [] }
+  } catch (error) {
+    process.stderr.write(`WARN: could not fetch the style bootstrap item (reference info only): ${String(error)}\n`)
+    return { style_dependencies: [], style_dev_dependencies: [] }
   }
 }
 
@@ -222,6 +251,7 @@ export async function syncVendor(vendorDir: string): Promise<SyncResult> {
     source: {
       style: STYLE,
       registry_base_url: REGISTRY_BASE_URL,
+      ...await fetchStyleDependencies(),
       upstream_release: await resolveUpstreamRelease(),
     },
     fetched_at: new Date().toISOString(),

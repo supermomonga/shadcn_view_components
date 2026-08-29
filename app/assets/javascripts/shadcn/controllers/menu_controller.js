@@ -1,6 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 import { hideAfterExit } from "shadcn/hide_after_exit"
+import { applyStateAttrs } from "shadcn/state_attrs"
 
 // ARIA menu パターンの共通実装(dropdown-menu / context-menu 共用 — 05 §4)。
 // - 矢印 / Home / End でハイライト移動(roving)
@@ -58,6 +59,7 @@ export default class MenuController extends Controller {
       // toggle イベントは非同期のため、表示前に属性を先に切り替える
       // (閉状態属性のまま表示され、exit アニメーションで始まってしまうのを防ぐ)
       this.menu.dataset.state = "open"
+      applyStateAttrs(this.menu, "open")
       this.menu.dataset.side = "bottom"
       this.menu.togglePopover()
     }
@@ -93,6 +95,7 @@ export default class MenuController extends Controller {
     if (this.menu && !this.menu.matches(":popover-open")) {
       // toggle イベントは非同期のため、表示前に属性を先に切り替える
       this.menu.dataset.state = "open"
+      applyStateAttrs(this.menu, "open")
       this.menu.dataset.side = "bottom"
       this.menu.showPopover()
     }
@@ -106,6 +109,7 @@ export default class MenuController extends Controller {
       this.hidePopoverAfterExit(sub)
     } else {
       sub.dataset.state = "open"
+      applyStateAttrs(sub, "open")
       sub.togglePopover()
     }
   }
@@ -138,6 +142,7 @@ export default class MenuController extends Controller {
     if (!this.menu) return
     const state = this.menu.matches(":popover-open") ? "open" : "closed"
     this.menu.dataset.state = state
+    applyStateAttrs(this.menu, state)
     for (const trigger of this.element.querySelectorAll("[aria-haspopup='menu']")) {
       trigger.setAttribute("aria-expanded", String(state === "open"))
     }
@@ -178,6 +183,7 @@ export default class MenuController extends Controller {
       return
     }
     popover.dataset.state = "closed"
+    applyStateAttrs(popover, "closed")
     // 退出アニメーション中も aria-expanded は即時に閉側へ(a11y 上の状態は操作の瞬間に確定させる)
     for (const trigger of this.element.querySelectorAll("[aria-haspopup='menu']")) {
       trigger.setAttribute("aria-expanded", "false")

@@ -6,9 +6,9 @@
   },
   "exports": {
     "AspectRatio": {
-      "classes_slot": "",
+      "classes_slot": "aspect-ratio",
       "combinations": {
-        "": ""
+        "": "relative aspect-(--ratio)"
       },
       "component_class": "Shadcn::AspectRatio",
       "cva": {
@@ -16,14 +16,16 @@
         "defaults": {},
         "prop_names": []
       },
-      "passthrough_class": false,
+      "passthrough_class": true,
       "root_slot": "aspect-ratio",
       "slots": [
         {
-          "dynamic_attributes": [],
+          "dynamic_attributes": [
+            "style"
+          ],
           "name": "aspect-ratio",
           "static_attributes": {},
-          "tag": "AspectRatioPrimitive.Root"
+          "tag": "div"
         }
       ]
     }
@@ -32,6 +34,6 @@
   "registry_dependencies": [],
   "schema_version": 1,
   "source": {
-    "item_sha256": "a98905fa1d22bd47c697499b403aefff928a3d914d4accf182b34aa25b71ac63"
+    "item_sha256": "8beb1cca47b75011c0688a5f7149e94c9173ca704aa9a73406295e8d31f6508c"
   }
 }

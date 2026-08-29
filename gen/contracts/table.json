@@ -82,7 +82,7 @@
     "TableCell": {
       "classes_slot": "table-cell",
       "combinations": {
-        "": "p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]"
+        "": "p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0"
       },
       "component_class": "Shadcn::Table::Cell",
       "cva": {
@@ -126,7 +126,7 @@
     "TableHead": {
       "classes_slot": "table-head",
       "combinations": {
-        "": "h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]"
+        "": "h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground [&:has([role=checkbox])]:pr-0"
       },
       "component_class": "Shadcn::Table::Head",
       "cva": {
@@ -194,6 +194,6 @@
   "registry_dependencies": [],
   "schema_version": 1,
   "source": {
-    "item_sha256": "ae89c9de2ff30715f02a087f0e3deed52954a687115481a82028ed790e8d6039"
+    "item_sha256": "f57f693778242e0dc50bf58e04dda740ff734c23be28799595da14d055a367bb"
   }
 }

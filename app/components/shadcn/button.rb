@@ -6,6 +6,11 @@ module Shadcn
     # 省略時の既定値は契約の defaults から読む(リテラルで二重管理しない)。
     # checked(:never): rest-kwargs の実行時sig検証は sorbet-runtime の誤バインドがあるため
     # 無効化し、srb tc の静的検査に委ねる(BaseComponent#initialize のコメント参照)
+    sig { override.returns(String) }
+    def default_tag
+      "button"
+    end
+
     sig do
       params(
         variant: T.any(Symbol, String),
@@ -30,11 +35,7 @@ module Shadcn
     def variant_options
       { variant: @variant, size: @size }
     end
-
-    # upstream の動的属性(data-variant / data-size)は手書き側の責務として描画する
-    sig { override.returns(T::Hash[Symbol, T.untyped]) }
-    def contract_data_attributes
-      super.merge(variant: @variant, size: @size)
-    end
+    # base-nova の button は data-variant / data-size をDOMへ出さないため、
+    # 動的属性の上書きは行わない(契約どおり)
   end
 end

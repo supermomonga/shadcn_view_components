@@ -75,11 +75,11 @@ RSpec.describe Shadcn::Button, type: :component do
     expect(rendered_root_element["data-slot"]).to eq("button")
   end
 
-  it "renders upstream's dynamic attributes (data-variant / data-size)" do
+  it "does not render data-variant / data-size (base-nova では廃止)" do
     render_inline(described_class.new(variant: :outline, size: :sm)) { "x" }
 
-    expect(rendered_root_element["data-variant"]).to eq("outline")
-    expect(rendered_root_element["data-size"]).to eq("sm")
+    expect(rendered_root_element["data-variant"]).to be_nil
+    expect(rendered_root_element["data-size"]).to be_nil
   end
 
   it "escapes hostile attribute values" do

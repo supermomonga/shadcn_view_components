@@ -201,7 +201,8 @@ module Shadcn
     end
 
     class MenuButton < BaseComponent
-      # variant(default/outline)× size(default/sm)のcva持ち
+      # variant / size は base-nova では data-variant / data-size 属性
+      # (クラスは data-[size=...]: 等のCSS variantで追従する)
       sig do
         params(
           variant: T.any(Symbol, String),
@@ -228,7 +229,8 @@ module Shadcn
       def html_attributes
         attributes = super
         attributes[:type] = "button" unless attributes.key?(:type) || tag == "a"
-        merge_nested(attributes, :data, { active: @active.to_s })
+        # 契約スロットの静的属性 data-sidebar="menu-button"
+        merge_nested(attributes, :data, { sidebar: "menu-button", active: @active.to_s })
         attributes
       end
     end
@@ -299,8 +301,8 @@ module Shadcn
     end
 
     class MenuSubButton < BaseComponent
-      # a相当(tag: で差し替え可)。isActive は data-active で表現。
-      # size は enum ガード(size === "sm" && ...)の露出prop
+      # a相当(tag: で差し替え可)。isActive / size は base-nova では data-active /
+      # data-size 属性で表現される(クラスは data-[size=...]: のCSS variantで追従)
       sig do
         params(
           size: T.any(Symbol, String),
@@ -308,16 +310,10 @@ module Shadcn
           args: T::Hash[Symbol, T.untyped]
         ).void.checked(:never)
       end
-      def initialize(size: ShadcnViewComponents::Contracts::Sidebar::MenuSubButton::DEFAULTS.fetch(:size),
-                     active: false, **args)
-        @size = T.let(normalize_option(:size, size), Symbol)
+      def initialize(size: :md, active: false, **args)
+        @size = T.let(size.to_sym, Symbol)
         @active = active
         super(**args)
-      end
-
-      sig { override.returns(T::Hash[Symbol, VariantOption]) }
-      def variant_options
-        { size: @size }
       end
 
       sig { override.returns(String) }
@@ -328,7 +324,7 @@ module Shadcn
       sig { override.returns(T::Hash[Symbol, T.untyped]) }
       def html_attributes
         attributes = super
-        merge_nested(attributes, :data, { active: @active.to_s })
+        merge_nested(attributes, :data, { active: @active.to_s, size: @size.to_s })
         attributes
       end
     end

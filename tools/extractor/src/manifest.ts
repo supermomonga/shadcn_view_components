@@ -19,6 +19,9 @@ export interface Manifest {
   source: {
     style: string
     registry_base_url: string
+    /** スタイル共通のnpm依存(bootstapアイテム registry:style 由来)。出所の参考情報 */
+    style_dependencies: string[]
+    style_dev_dependencies: string[]
     upstream_release: UpstreamRelease | null
   }
   fetched_at: string

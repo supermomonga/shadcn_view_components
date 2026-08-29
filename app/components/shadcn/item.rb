@@ -69,7 +69,8 @@ module Shadcn
 
       sig { returns(String) }
       def separator_class
-        Shadcn::Separator.classes(extra: @user_class ? "my-0 #{@user_class}" : "my-0")
+        # base-nova では item-separator の契約クラスが my-2 に統合された
+        self.class.classes(extra: @user_class)
       end
     end
 
