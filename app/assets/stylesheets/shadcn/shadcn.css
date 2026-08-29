@@ -124,3 +124,13 @@ dialog:not([open]):not(:popover-open),
 summary[data-slot='collapsible-trigger']::marker {
   content: none;
 }
+
+/* (6) ベースレイヤー: 既定のボーダー色と身体の配色(upstream r/styles 相当) */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

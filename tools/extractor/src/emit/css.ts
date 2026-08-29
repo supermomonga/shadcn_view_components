@@ -92,6 +92,22 @@ export function renderThemeCss(theme: ThemeTokens, contracts: Contract[]): strin
   lines.push("  content: none;")
   lines.push("}")
 
+  // (6) ベースレイヤー規則: upstream r/styles/new-york-v4 の @layer base 相当。
+  // Tailwind v4 の既定ボーダー色は currentColor だが、shadcn はインストール時に
+  // この規則を globals.css へ追加して既定を border トークンへ変えている。
+  // 本gemはテーマCSS(shadcn.css)をホストへ配るため、ここに含めて同等にする
+  // (色指定なし border を持つ Alert / Card 等の枠が本文色になってしまう問題の解消)
+  lines.push("")
+  lines.push("/* (6) ベースレイヤー: 既定のボーダー色と身体の配色(upstream r/styles 相当) */")
+  lines.push("@layer base {")
+  lines.push("  * {")
+  lines.push("    @apply border-border outline-ring/50;")
+  lines.push("  }")
+  lines.push("  body {")
+  lines.push("    @apply bg-background text-foreground;")
+  lines.push("  }")
+  lines.push("}")
+
   return `${lines.join("\n")}\n`
 }
 

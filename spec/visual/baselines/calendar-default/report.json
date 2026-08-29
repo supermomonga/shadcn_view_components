@@ -1,7 +1,7 @@
 {
-  "ratio": 0.012860445517492712,
+  "ratio": 0.012886069606413994,
   "pass": true,
-  "differing": 4517,
+  "differing": 4526,
   "sizeMismatch": true,
   "ours": {
     "width": 1024,

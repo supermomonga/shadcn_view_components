@@ -4389,6 +4389,19 @@ dialog:not([open]):not(:popover-open), [popover]:not(:popover-open):not(dialog[o
 summary[data-slot='collapsible-trigger']::marker {
   content: none;
 }
+@layer base {
+  * {
+    border-color: var(--border);
+    outline-color: var(--ring);
+    @supports (color: color-mix(in lab, red, red)) {
+      outline-color: color-mix(in oklab, var(--ring) 50%, transparent);
+    }
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+}
 @property --tw-translate-x {
   syntax: "*";
   inherits: false;
