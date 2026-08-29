@@ -24,7 +24,7 @@ namespace :parity do
         end
         abort "vite preview (4173) が起動しません" unless ready
 
-        sh({ "PARITY" => "1" }, "bundle exec rspec spec/visual/parity_spec.rb")
+        sh({ "PARITY" => "1" }, "bundle exec rspec spec/visual")
       ensure
         if vite
           Process.kill("TERM", vite)

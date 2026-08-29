@@ -58,6 +58,7 @@ export default class MenuController extends Controller {
       // toggle イベントは非同期のため、表示前に属性を先に切り替える
       // (閉状態属性のまま表示され、exit アニメーションで始まってしまうのを防ぐ)
       this.menu.dataset.state = "open"
+      this.menu.dataset.side = "bottom"
       this.menu.togglePopover()
     }
   }
@@ -92,6 +93,7 @@ export default class MenuController extends Controller {
     if (this.menu && !this.menu.matches(":popover-open")) {
       // toggle イベントは非同期のため、表示前に属性を先に切り替える
       this.menu.dataset.state = "open"
+      this.menu.dataset.side = "bottom"
       this.menu.showPopover()
     }
     this.focusItem(this.items[0])
@@ -148,6 +150,8 @@ export default class MenuController extends Controller {
 
   positionBelow(trigger) {
     if (!trigger || !this.menu) return
+    // upstream(Radix)は配置に応じて data-side を設定する。slide-in 系の起点になる
+    this.menu.dataset.side = "bottom"
     const rect = trigger.getBoundingClientRect()
     const style = this.menu.style
     style.position = "fixed"

@@ -13,6 +13,13 @@ module Shadcn
     end
 
     class Trigger < BaseComponent
+      # 契約タグは HoverCardPrimitive.Trigger(HTML名ではない)。upstream の慣行は
+      # <a>(href を渡した場合)なので、href の有無でリンクかボタンかに切り替える
+      sig { override.returns(String) }
+      def default_tag
+        @html_args.key?(:href) ? "a" : "button"
+      end
+
       sig { override.returns(T::Hash[Symbol, T.untyped]) }
       def html_attributes
         attributes = super

@@ -19,9 +19,17 @@ module Shadcn
     class Trigger < BaseComponent
       include Shadcn::ButtonStyled
 
+      # 契約タグは TooltipPrimitive.Trigger(HTML名ではない)だが、upstream の
+      # トリガーは button 要素として描かれるため button にフォールバックさせる
+      sig { override.returns(String) }
+      def default_tag
+        "button"
+      end
+
       sig { override.returns(T::Hash[Symbol, T.untyped]) }
       def html_attributes
         attributes = apply_button_styling(super)
+        attributes[:type] = "button" unless attributes.key?(:type)
         merge_nested(attributes, :data, {
                        action: "mouseenter->#{CONTROLLER}#show mouseleave->#{CONTROLLER}#hide focus->#{CONTROLLER}#show blur->#{CONTROLLER}#hide"
                      })

@@ -172,6 +172,8 @@ PARITY_RATIO=0.01 bundle exec rake parity:run    # 閾値を1%に緩和(既定 0
 
 仕組み: `vendor/shadcn` の tsx を `tools/visual-parity` で展開し、Vite + React で実際に描画(upstream側)。dummy の Lookbook プレビュー(うち側)と同じ Chromium(Cuprite)でスクリーンショットを撮り、pixelmatch で差分率を判定する。両側でアニメーションを停止し、同一ブラウザ・同一フォントで比較するため決定論的。
 
+さらにアニメーションパリティ(`spec/visual/animation_parity_spec.rb`)では、両側のコンポーネントを開いた直後に WAAPI でアニメーションを取得・停止し、currentTime を同一チェックポイント(0/25/50/75/100%)に固定した上で補間値(opacity / transform / 高さ)とアニメーション名・持続時間・イージングを比較する。時間を仮想化するため実行タイミングに影響されない(drawer は upstream が vaul のJSバネ物理で動くため対象外)。
+
 - 成果物は `spec/visual/baselines/<demo>/`(ours.png / upstream.png / diff.png / report.json)。Commitして人間が差分画像を確認できる
 - 通常の `bundle exec rspec` では実行されない(`PARITY=1` が必要。重いため分離)
 - 初期セットは13シナリオ(うち11がピクセル完全一致、残り2件も0.06〜0.22%)

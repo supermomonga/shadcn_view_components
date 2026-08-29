@@ -49,6 +49,7 @@ export default class PopoverController extends Controller {
   // anchor positioning 非対応環境でも成立するよう JS で算出する
   position() {
     if (!this.trigger) return
+    this.content.dataset.side = "bottom"
     const rect = this.trigger.getBoundingClientRect()
     const offset = Number(this.content.dataset.sideOffset ?? 4)
     const style = this.content.style

@@ -32,6 +32,7 @@ export default class CommandController extends Controller {
   syncListState(open = this.list?.matches(":popover-open")) {
     if (!this.list) return
     this.list.dataset.state = open ? "open" : "closed"
+    if (open) this.list.dataset.side = "bottom"
     if (open) {
       this.list.setAttribute("data-open", "")
       this.list.removeAttribute("data-closed")

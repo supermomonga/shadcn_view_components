@@ -41,6 +41,7 @@ export default class HoverCardController extends Controller {
     this.content.dataset.state = state
     this.content.hidden = state === "closed"
     if (state === "open" && this.trigger) {
+      this.content.dataset.side = "bottom"
       const rect = this.trigger.getBoundingClientRect()
       const style = this.content.style
       style.position = "fixed"
