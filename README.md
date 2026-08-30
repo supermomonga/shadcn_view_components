@@ -386,6 +386,13 @@ mise run lookbook                      # プレビュー(http://localhost:9292/)
 mise run build-css                     # Lookbook用の静的スタイル再生成
 ```
 
+CI検査を追加する場合は、`.github/workflows/ci.yml`のjobへ対応する
+`LOCAL_VERIFY_TASK`を宣言し、同じtaskを`verify:full`の依存に追加する。
+契約specが全jobと`verify:full`の完全一致を検査するため、どちらか一方だけの追加はCIで失敗する。
+検査コマンドをworkflowへ直接追加せず、対応する`verify:*` task内へ実装する。
+このworkflowは検証専用とし、他のstepは`setup_*`または`artifact_*`のIDを付ける。
+未分類stepは契約specが拒否し、releaseやdeployのjobは目的別のworkflowへ分ける。
+
 Lookbook は dummy アプリのルートパス(`/`)で開く。プレビューツールバーには
 **Theme トグルボタン(月/太陽アイコン)** があり、プレビューの
 ライト/ダークを切り替えられる(選択はクッキーに永続化)。反映はプレビュー専用レイアウト

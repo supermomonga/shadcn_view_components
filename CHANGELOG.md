@@ -246,6 +246,9 @@ Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
   JavaScript依存をまとめて導入する
 - `rake verify` / `rake verify:full` がCI必須の8検査をすべて実行し、CIの各jobも
   対応する `verify:*` subtaskを呼ぶようにした
+- 各CI jobが対応taskを`LOCAL_VERIFY_TASK`として宣言し、契約specが全jobと
+  `verify:full`の依存taskの完全一致を検査する。workflowの全stepも準備・検証・成果物保存に分類し、
+  検査追加時の片側だけの更新やCIへの検査コマンド直書きをCIで検知する
 - 通常RSpec jobから漏れていたrequest specと、従来のローカルverifyから漏れていた
   TypeScript、Vitest、Tailwind、RBI freshnessを共通経路へ含めた
 

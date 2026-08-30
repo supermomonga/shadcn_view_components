@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require_relative "lib/shadcn_view_components/version"
+require "digest"
+require "open3"
 require "rspec/core/rake_task"
 require "rubocop/rake_task"
 
@@ -10,11 +12,39 @@ Dir[File.expand_path("lib/tasks/*.rake", __dir__)].each { |path| load path }
 RSpec::Core::RakeTask.new(:spec)
 RuboCop::RakeTask.new
 
+git_output = lambda do |*arguments|
+  stdout, stderr, status = Open3.capture3("git", *arguments, chdir: __dir__)
+  abort stderr unless status.success?
+  stdout
+end
+
+worktree_fingerprint = lambda do
+  status = git_output.call("status", "--porcelain=v2", "--untracked-files=all", "-z")
+  tracked_diff = git_output.call("diff", "--binary", "--no-ext-diff", "HEAD", "--")
+  untracked_paths = git_output.call("ls-files", "--others", "--exclude-standard", "-z").split("\0").sort
+  untracked = untracked_paths.map do |relative_path|
+    path = File.join(__dir__, relative_path)
+    stat = File.lstat(path)
+    content =
+      if stat.symlink?
+        File.readlink(path)
+      elsif stat.file?
+        Digest::SHA256.file(path).hexdigest
+      end
+    [relative_path, stat.ftype, stat.mode, content]
+  end
+
+  [status, tracked_diff, untracked]
+end
+
 namespace :verify do
   desc "Verify generated contracts are deterministic"
   task :generated do
+    before = worktree_fingerprint.call
     Rake::Task["shadcn:check"].invoke
     Rake::Task["docs:check"].invoke
+    after = worktree_fingerprint.call
+    abort "verify:generated changed the working tree" unless after == before
   end
 
   desc "Run Ruby lint"
