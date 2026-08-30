@@ -22,7 +22,7 @@ export default class ComboboxController extends Controller {
   onKeydown = (event) => this.navigate(event)
 
   /** @type {() => void} */
-  onListToggle = () => this.syncListState()
+  onListToggle = () => this.syncNativeListState()
 
   /** @type {() => void} */
   onFormControlFocus = () => this.input?.focus()
@@ -35,6 +35,12 @@ export default class ComboboxController extends Controller {
 
   /** @type {() => void} */
   cancelListExit = noop
+
+  /** @type {boolean} */
+  desiredListOpen = false
+
+  /** @type {boolean} */
+  listExitPending = false
 
   connect() {
     /** @type {HTMLSelectElement | null} */
@@ -69,10 +75,11 @@ export default class ComboboxController extends Controller {
     this.element.addEventListener("focusout", this.onFocusOut)
     document.addEventListener("pointerdown", this.onDocumentPointerDown, true)
     this.formControl?.addEventListener("focus", this.onFormControlFocus)
-    this.cancelListExit = noop
+    this.cancelPendingListExit()
     if (this.list) {
+      this.desiredListOpen = this.list.matches(":popover-open")
       this.list.addEventListener("toggle", this.onListToggle)
-      this.syncListState()
+      this.syncListState(this.desiredListOpen)
     }
 
     this.applyDisabledState()
@@ -84,7 +91,8 @@ export default class ComboboxController extends Controller {
   disconnect() {
     const list = this.list
     const finishExit = list?.dataset.state === "closed" && list.matches(":popover-open")
-    this.cancelListExit()
+    this.cancelPendingListExit()
+    this.desiredListOpen = false
     // Turbo が切断中の DOM をキャッシュしても、一時的な検索文字列を残さない。
     this.restoreCommittedQuery()
     this.element.removeEventListener("keydown", this.onKeydown, true)
@@ -128,7 +136,7 @@ export default class ComboboxController extends Controller {
 
   /** @returns {boolean} */
   get listOpen() {
-    return Boolean(this.list?.dataset.state === "open" && this.list.matches(":popover-open"))
+    return Boolean(this.desiredListOpen && this.list?.matches(":popover-open"))
   }
 
   /** @param {Event} [event] */
@@ -451,14 +459,9 @@ export default class ComboboxController extends Controller {
     return left.length === right.length && left.every((value, index) => value === right[index])
   }
 
-  // open 引数を渡すと実開状態より優先する(表示前に属性を切り替えるため)
-  /** @param {boolean} [open] */
-  syncListState(open = this.list?.matches(":popover-open") ?? false) {
+  /** @param {boolean} open */
+  syncListState(open) {
     if (!this.list) return
-    if (open) {
-      this.cancelListExit()
-      this.cancelListExit = noop
-    }
     this.list.dataset.state = open ? "open" : "closed"
     if (open) this.list.dataset.side = "bottom"
     if (open) {
@@ -478,12 +481,32 @@ export default class ComboboxController extends Controller {
     )
   }
 
+  syncNativeListState() {
+    const list = this.list
+    if (!list) return
+
+    const open = list.matches(":popover-open")
+    // showPopover() の toggle は遅れて届く場合がある。close 要求後の退出中は
+    // 実要素がまだ :popover-open でも、閉じた論理状態を再び開かない。
+    if (open && !this.desiredListOpen && this.listExitPending) return
+
+    this.desiredListOpen = open
+    this.cancelPendingListExit()
+    this.syncListState(open)
+  }
+
+  cancelPendingListExit() {
+    const cancel = this.cancelListExit
+    this.cancelListExit = noop
+    this.listExitPending = false
+    cancel()
+  }
+
   toggleList() {
     const list = this.list
     if (!list || this.disabled) return
 
-    const exiting = list.dataset.state === "closed" && list.matches(":popover-open")
-    if (list.matches(":popover-open") && !exiting) {
+    if (this.listOpen) {
       this.closeList()
     } else {
       this.openList()
@@ -494,6 +517,8 @@ export default class ComboboxController extends Controller {
     const list = this.list
     if (!list || this.disabled) return
 
+    this.desiredListOpen = true
+    this.cancelPendingListExit()
     this.query = this.multiple ? (this.input?.value ?? "").trim().toLowerCase() : ""
     this.filter()
     this.syncListState(true)
@@ -503,14 +528,23 @@ export default class ComboboxController extends Controller {
 
   closeList() {
     const list = this.list
-    if (!list || !list.matches(":popover-open") || list.dataset.state === "closed") return
-    this.cancelListExit()
+    if (!list || !this.desiredListOpen) return
+
+    this.desiredListOpen = false
+    this.cancelPendingListExit()
     this.syncListState(false)
-    this.cancelListExit = hideAfterExit(list, () => {
+    if (!list.matches(":popover-open")) return
+
+    this.listExitPending = true
+    let completed = false
+    const cancel = hideAfterExit(list, () => {
+      completed = true
+      this.listExitPending = false
       this.cancelListExit = noop
-      if (list.dataset.state === "open") return
+      if (this.desiredListOpen) return
       list.hidePopover()
     })
+    if (!completed) this.cancelListExit = cancel
   }
 
   /** @param {PointerEvent} event */

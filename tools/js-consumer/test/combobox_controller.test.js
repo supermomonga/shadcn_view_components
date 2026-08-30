@@ -1,6 +1,10 @@
 import { describe, expect, it, vi } from "vitest"
 
-import { animationEvent } from "./support/browser.js"
+import {
+  animationEvent,
+  flushToggleEvents,
+  setToggleEventsDeferred,
+} from "./support/browser.js"
 import { listenerCount } from "./support/listener_ledger.js"
 import { flushStimulus, mount } from "./support/stimulus.js"
 
@@ -231,6 +235,43 @@ describe("shadcn--combobox", () => {
     keydown(input, "ArrowUp")
     expect(input.getAttribute("aria-activedescendant")).toBe("keyboard-hanami")
     expect(document.activeElement).toBe(input)
+    await harness.disconnect(root)
+  })
+
+  it("keeps an Enter selection closed when the native open toggle event arrives later", async () => {
+    vi.useFakeTimers()
+    setToggleEventsDeferred(true)
+    const harness = await mount(comboboxFixture("queued"))
+    const root = document.querySelector("#queued")
+    const form = document.querySelector("#queued-form")
+    const input = document.querySelector("#queued-input")
+    const trigger = document.querySelector("#queued-trigger")
+    const list = document.querySelector("#queued-list")
+
+    input.focus()
+    keydown(input, "ArrowDown")
+    keydown(input, "ArrowDown")
+    keydown(input, "Enter")
+    expect(formValues(form, "profile[framework]")).toEqual(["hanami"])
+    expect(input.value).toBe("Hanami")
+    expect(list.matches(":popover-open")).toBe(true)
+    expect(list.dataset.state).toBe("closed")
+    expect(trigger.getAttribute("aria-expanded")).toBe("false")
+    expect(input.hasAttribute("aria-activedescendant")).toBe(false)
+    expect(listenerCount(list, "animationend")).toBe(1)
+
+    flushToggleEvents()
+    expect(list.dataset.state).toBe("closed")
+    expect(trigger.getAttribute("aria-expanded")).toBe("false")
+    expect(input.hasAttribute("aria-activedescendant")).toBe(false)
+    expect(listenerCount(list, "animationend")).toBe(1)
+
+    list.dispatchEvent(animationEvent("animationend", "exit"))
+    flushToggleEvents()
+    expect(list.matches(":popover-open")).toBe(false)
+    expect(list.dataset.state).toBe("closed")
+    expect(input.hasAttribute("aria-activedescendant")).toBe(false)
+    expect(listenerCount(list, "animationend")).toBe(0)
     await harness.disconnect(root)
   })
 
