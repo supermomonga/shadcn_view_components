@@ -1,11 +1,17 @@
 import { Controller } from "@hotwired/stimulus"
 
+import {
+  ensureId,
+  ensureRootId,
+  ownedElements,
+  setDefaultAttribute,
+} from "@supermomonga/shadcn-view-components/aria_relationships"
 import { startFloatingPosition } from "@supermomonga/shadcn-view-components/floating_position"
 import { hideAfterExit } from "@supermomonga/shadcn-view-components/hide_after_exit"
 import { applyStateAttrs } from "@supermomonga/shadcn-view-components/state_attrs"
 
 const noop = () => {}
-let nextSelectId = 0
+const IDENTIFIER = "shadcn--select"
 
 // 単一選択のcombobox/listbox。確定値はhidden inputだけに保持し、
 // 表示・ARIA・選択印は接続時と選択時にそこから導出する。
@@ -56,13 +62,21 @@ export default class SelectController extends Controller {
   connect() {
     this.cancelPendingExit()
     this.stopPositioning()
-    this.content = this.root.querySelector("[data-slot='select-content']")
-    this.listbox = this.content?.querySelector("[role='listbox']") ?? null
-    this.trigger = this.root.querySelector("[data-slot='select-trigger']")
-    this.input = this.root.querySelector("input[data-slot='select-input']")
-    this.valueElement = this.root.querySelector("[data-slot='select-value']")
-    this.scrollUpButton = this.content?.querySelector("[data-slot='select-scroll-up-button']") ?? null
-    this.scrollDownButton = this.content?.querySelector("[data-slot='select-scroll-down-button']") ?? null
+    this.content = this.owned("[data-slot='select-content']")[0] ?? null
+    this.listbox = this.owned("[data-slot='select-content'] [role='listbox']")[0] ?? null
+    this.trigger = /** @type {HTMLButtonElement | null} */ (
+      this.owned("[data-slot='select-trigger']")[0] ?? null
+    )
+    this.input = /** @type {HTMLInputElement | null} */ (
+      this.owned("input[data-slot='select-input']")[0] ?? null
+    )
+    this.valueElement = this.owned("[data-slot='select-value']")[0] ?? null
+    this.scrollUpButton = this.owned(
+      "[data-slot='select-content'] [data-slot='select-scroll-up-button']",
+    )[0] ?? null
+    this.scrollDownButton = this.owned(
+      "[data-slot='select-content'] [data-slot='select-scroll-down-button']",
+    )[0] ?? null
     if (this.valueElement && this.valueElement.dataset.placeholderLabel === undefined) {
       this.valueElement.dataset.placeholderLabel = this.valueElement.textContent?.trim() ?? ""
     }
@@ -111,6 +125,9 @@ export default class SelectController extends Controller {
 
   /** @param {KeyboardEvent} event */
   navigate(event) {
+    if (!(event.target instanceof Element) ||
+        event.target.closest(`[data-controller~='${IDENTIFIER}']`) !== this.element) return
+
     const key = event.key === "Spacebar" ? " " : event.key
     const keys = ["ArrowDown", "ArrowUp", "Home", "End", "Enter", " ", "Escape", "Tab"]
     if (!keys.includes(key) || this.disabled) return
@@ -203,6 +220,7 @@ export default class SelectController extends Controller {
     this.cancelPendingExit()
     this.applyOpenState("open")
     if (!content.matches(":popover-open")) content.showPopover()
+    this.trigger?.focus({ preventScroll: true })
     this.startPositioning()
     this.setActiveItem(preferredItem || this.selectedEnabledItem || this.enabledItems[0])
     this.syncScrollButtons()
@@ -308,30 +326,27 @@ export default class SelectController extends Controller {
       this.valueElement.toggleAttribute("data-placeholder", !selected)
     }
     this.trigger?.toggleAttribute("data-placeholder", !selected)
+    if (this.trigger) {
+      setDefaultAttribute(this.trigger, "aria-label", this.valueElement?.textContent?.trim() || "選択肢")
+    }
   }
 
   ensureRelationships() {
     if (!this.trigger || !this.listbox) return
 
-    if (!this.root.id) {
-      let candidate
-      do candidate = `shadcn-select-${++nextSelectId}`
-      while (document.getElementById(candidate))
-      this.root.id = candidate
-    }
-    const baseId = this.root.id
-    if (!this.trigger.id) this.trigger.id = `${baseId}-trigger`
-    if (!this.listbox.id) this.listbox.id = `${baseId}-listbox`
-    this.trigger.setAttribute("aria-controls", this.listbox.id)
-    this.listbox.setAttribute("aria-labelledby", this.trigger.id)
+    const baseId = ensureRootId(this.root, "select")
+    ensureId(this.trigger, `${baseId}-trigger`)
+    ensureId(this.listbox, `${baseId}-listbox`)
+    setDefaultAttribute(this.trigger, "aria-controls", this.listbox.id)
+    setDefaultAttribute(this.listbox, "aria-labelledby", this.trigger.id)
     this.items.forEach((item, index) => {
-      if (!item.id) item.id = `${baseId}-option-${index + 1}`
+      ensureId(item, `${baseId}-option-${index + 1}`)
     })
-    this.root.querySelectorAll("[data-slot='select-group']").forEach((group, index) => {
-      const label = group.querySelector("[data-slot='select-label']")
-      if (!(group instanceof HTMLElement) || !(label instanceof HTMLElement)) return
-      if (!label.id) label.id = `${baseId}-group-${index + 1}-label`
-      group.setAttribute("aria-labelledby", label.id)
+    this.owned("[data-slot='select-group']").forEach((group, index) => {
+      const label = this.owned("[data-slot='select-label']").find((candidate) => group.contains(candidate))
+      if (!label) return
+      ensureId(label, `${baseId}-group-${index + 1}-label`)
+      setDefaultAttribute(group, "aria-labelledby", label.id)
     })
   }
 
@@ -345,10 +360,9 @@ export default class SelectController extends Controller {
     for (const candidate of this.items) {
       const active = candidate === item
       candidate.dataset.highlighted = String(active)
-      candidate.tabIndex = active ? 0 : -1
+      candidate.tabIndex = -1
     }
     this.trigger?.setAttribute("aria-activedescendant", item.id)
-    item.focus({ preventScroll: true })
     item.scrollIntoView?.({ block: "nearest" })
     if (this.listbox) {
       const enabledItems = this.enabledItems
@@ -440,8 +454,7 @@ export default class SelectController extends Controller {
 
   /** @returns {HTMLElement[]} */
   get items() {
-    if (!this.listbox) return []
-    return /** @type {HTMLElement[]} */ ([...this.listbox.querySelectorAll("[role='option']")])
+    return this.listbox ? this.owned("[role='option']") : []
   }
 
   /** @returns {HTMLElement[]} */
@@ -469,5 +482,10 @@ export default class SelectController extends Controller {
   /** @returns {HTMLElement} */
   get root() {
     return this.element
+  }
+
+  /** @param {string} selector @returns {HTMLElement[]} */
+  owned(selector) {
+    return ownedElements(this.root, selector, IDENTIFIER)
   }
 }

@@ -23,7 +23,6 @@ RSpec.describe "public property validation", type: :component do
     Shadcn::Sheet::Content => [:side, %w[top right bottom left], "right"],
     Shadcn::ScrollArea::Scrollbar => [:orientation, %w[horizontal vertical], "vertical"],
     Shadcn::Tabs => [:orientation, %w[horizontal vertical], "horizontal"],
-    Shadcn::Tabs::List => [:orientation, %w[horizontal vertical], "horizontal"],
     Shadcn::Resizable::PanelGroup => [:orientation, %w[horizontal vertical], "horizontal"],
     Shadcn::Resizable::Handle => [:orientation, %w[horizontal vertical], "vertical"],
     Shadcn::Separator => [:orientation, %w[horizontal vertical], "horizontal"],

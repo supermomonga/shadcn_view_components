@@ -1,9 +1,22 @@
 import { Controller } from "@hotwired/stimulus"
 
+import {
+  ensureId,
+  ensureRootId,
+  ownedElements,
+  setDefaultAttribute,
+} from "@supermomonga/shadcn-view-components/aria_relationships"
+
+const CONTROLLER = "shadcn--resizable"
+const DEFAULT_MIN = 10
+const DEFAULT_MAX = 90
+const STEP = 5
+
 /**
  * @typedef {object} DragState
  * @property {HTMLElement} before
  * @property {HTMLElement} after
+ * @property {HTMLElement} handle
  * @property {boolean} vertical
  * @property {number} ratio
  * @property {number} start
@@ -20,6 +33,11 @@ export default class ResizableController extends Controller {
 
   onUp = () => this.endDrag()
 
+  connect() {
+    this.ensureRelationships()
+    for (const handle of this.handles) this.syncValue(handle)
+  }
+
   disconnect() {
     this.endDrag()
   }
@@ -30,9 +48,13 @@ export default class ResizableController extends Controller {
    */
   handleFor(event) {
     if (!(event.currentTarget instanceof Element)) return null
-    return /** @type {HTMLElement | null} */ (
+    const handle = /** @type {HTMLElement | null} */ (
       event.currentTarget.closest("[data-slot='resizable-handle']")
     )
+    if (!handle || handle.closest(`[data-controller~='${CONTROLLER}']`) !== this.element) return null
+
+    this.ensureHandleRelationship(handle)
+    return handle
   }
 
   // セパレータ自身が horizontal のとき縦積みグループ(上下方向にリサイズ)。
@@ -51,10 +73,8 @@ export default class ResizableController extends Controller {
   pairFor(handle) {
     if (!handle) return null
     const group = handle.closest("[data-slot='resizable-panel-group']")
-    if (!group) return null
-    const panels = /** @type {HTMLElement[]} */ (
-      [...group.querySelectorAll(":scope > [data-slot='resizable-panel']")]
-    )
+    if (group !== this.element) return null
+    const panels = this.panels
     let count = 0
     for (let el = handle.previousElementSibling; el; el = el.previousElementSibling) {
       if (el.matches("[data-slot='resizable-panel']")) count++
@@ -86,6 +106,7 @@ export default class ResizableController extends Controller {
     const total = beforeSize + (vertical ? afterRect.height : afterRect.width) || 1
     this.dragging = {
       ...pair,
+      handle,
       vertical,
       ratio: beforeSize / total,
       start: vertical ? event.clientY : event.clientX,
@@ -103,7 +124,7 @@ export default class ResizableController extends Controller {
   /** @param {MouseEvent} event */
   drag(event) {
     if (!this.dragging) return
-    const { before, after, vertical, ratio, start } = this.dragging
+    const { before, after, handle, vertical, ratio, start } = this.dragging
     const group = /** @type {HTMLElement | null} */ (
       before.closest("[data-slot='resizable-panel-group']")
     )
@@ -112,7 +133,7 @@ export default class ResizableController extends Controller {
     const size = vertical ? rect.height : rect.width
     if (size === 0) return
     const delta = ((vertical ? event.clientY : event.clientX) - start) / size
-    this.applySplit(before, after, Math.min(0.9, Math.max(0.1, ratio + delta)))
+    this.applySplit(handle, before, after, this.clampRatio(handle, ratio + delta))
   }
 
   /** @param {KeyboardEvent} event */
@@ -122,30 +143,114 @@ export default class ResizableController extends Controller {
     if (!pair) return
     const vertical = this.isVerticalGroup(handle)
     const keys = vertical ? ["ArrowUp", "ArrowDown"] : ["ArrowLeft", "ArrowRight"]
-    if (!keys.includes(event.key)) return
+    if (![...keys, "Home", "End"].includes(event.key)) return
     event.preventDefault()
 
-    const positive = vertical ? event.key === "ArrowDown" : event.key === "ArrowRight"
-    const next = Math.min(0.9, Math.max(0.1, this.currentRatio(pair.before) + (positive ? 0.05 : -0.05)))
-    this.applySplit(pair.before, pair.after, next)
+    const { min, max } = this.limitsFor(handle)
+    let next
+    if (event.key === "Home") next = min / 100
+    else if (event.key === "End") next = max / 100
+    else {
+      const positive = vertical ? event.key === "ArrowDown" : event.key === "ArrowRight"
+      next = this.currentRatio(pair.before, pair.after, handle) + (positive ? STEP : -STEP) / 100
+    }
+    this.applySplit(handle, pair.before, pair.after, this.clampRatio(handle, next))
   }
 
-  // 均等割りの既定は 0.5。flex-basis は % 表記のときだけ信頼する(0 等は 0.5 扱い)
-  /** @param {HTMLElement} before */
-  currentRatio(before) {
+  // %指定済みならそれを、初期レイアウトでは実寸を読み取る。jsdom等で寸法を
+  // 得られない場合だけSSR済みaria-valuenow（既定50）へ戻る。
+  /** @param {HTMLElement} before @param {HTMLElement} after @param {HTMLElement} handle */
+  currentRatio(before, after, handle) {
     const basis = before.style.flexBasis
-    return basis.endsWith("%") ? parseFloat(basis) / 100 : 0.5
+    if (basis.endsWith("%")) {
+      const percent = parseFloat(basis)
+      if (Number.isFinite(percent) && percent > 0) return percent / 100
+    }
+
+    const beforeRect = before.getBoundingClientRect()
+    const afterRect = after.getBoundingClientRect()
+    const vertical = this.isVerticalGroup(handle)
+    const beforeSize = vertical ? beforeRect.height : beforeRect.width
+    const afterSize = vertical ? afterRect.height : afterRect.width
+    if (beforeSize + afterSize > 0) return beforeSize / (beforeSize + afterSize)
+
+    const value = Number.parseFloat(handle.getAttribute("aria-valuenow") ?? "")
+    return Number.isFinite(value) ? value / 100 : 0.5
   }
 
   /**
+   * @param {HTMLElement} handle
    * @param {HTMLElement} before
    * @param {HTMLElement} after
    * @param {number} ratio
    */
-  applySplit(before, after, ratio) {
+  applySplit(handle, before, after, ratio) {
     before.style.flexBasis = `${ratio * 100}%`
     before.style.flexGrow = "0"
     after.style.flexBasis = `${(1 - ratio) * 100}%`
     after.style.flexGrow = "0"
+    handle.setAttribute("aria-valuenow", this.percentValue(ratio))
+  }
+
+  ensureRelationships() {
+    const rootId = ensureRootId(this.element, "resizable")
+    this.panels.forEach((panel, index) => ensureId(panel, `${rootId}-panel-${index + 1}`))
+    this.handles.forEach((handle, index) => {
+      ensureId(handle, `${rootId}-handle-${index + 1}`)
+      this.ensureHandleRelationship(handle)
+    })
+  }
+
+  /** @param {HTMLElement} handle */
+  ensureHandleRelationship(handle) {
+    const pair = this.pairFor(handle)
+    if (!pair) return
+
+    const rootId = ensureRootId(this.element, "resizable")
+    const panelIndex = this.panels.indexOf(pair.before)
+    ensureId(pair.before, `${rootId}-panel-${panelIndex + 1}`)
+    setDefaultAttribute(handle, "aria-controls", pair.before.id)
+    setDefaultAttribute(handle, "aria-valuemin", String(DEFAULT_MIN))
+    setDefaultAttribute(handle, "aria-valuemax", String(DEFAULT_MAX))
+    setDefaultAttribute(handle, "aria-valuenow", "50")
+  }
+
+  /** @param {HTMLElement} handle */
+  syncValue(handle) {
+    const pair = this.pairFor(handle)
+    if (!pair) return
+
+    const ratio = this.currentRatio(pair.before, pair.after, handle)
+    handle.setAttribute("aria-valuenow", this.percentValue(ratio))
+  }
+
+  /** @param {HTMLElement} handle */
+  limitsFor(handle) {
+    const rawMin = Number.parseFloat(handle.getAttribute("aria-valuemin") ?? "")
+    const rawMax = Number.parseFloat(handle.getAttribute("aria-valuemax") ?? "")
+    const min = Number.isFinite(rawMin) ? rawMin : DEFAULT_MIN
+    const max = Number.isFinite(rawMax) && rawMax > min ? rawMax : DEFAULT_MAX
+    return { min, max }
+  }
+
+  /** @param {HTMLElement} handle @param {number} ratio */
+  clampRatio(handle, ratio) {
+    const { min, max } = this.limitsFor(handle)
+    return Math.min(max / 100, Math.max(min / 100, ratio))
+  }
+
+  /** @param {number} ratio */
+  percentValue(ratio) {
+    return String(Math.round(ratio * 10000) / 100)
+  }
+
+  /** @returns {HTMLElement[]} */
+  get panels() {
+    return ownedElements(this.element, ":scope > [data-slot='resizable-panel']", CONTROLLER)
+  }
+
+  /** @returns {HTMLElement[]} */
+  get handles() {
+    return ownedElements(this.element, ":scope > [data-slot='resizable-handle']", CONTROLLER)
   }
 }

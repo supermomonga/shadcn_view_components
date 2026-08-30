@@ -3,11 +3,17 @@
 
 module Shadcn
   # 確認ダイアログ(ネイティブ `<dialog>` + role="alertdialog")。
-  # Escでの意図しない棄却を防ぐため、コントローラが cancel を抑止する
-  # (05-stimulus-hotwire §3「alert-dialog = <dialog> + フォーカス制御」)
+  # EscはARIA Authoring Practicesのモーダルダイアログと同じく閉じる操作とし、
+  # ネイティブ <dialog> の cancel 動作に委ねる。
   # JS無効時フォールバック: Readable(dialog と同じ)
   class AlertDialog < BaseComponent
     CONTROLLER = "shadcn--dialog"
+
+    sig { params(args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
+    def initialize(**args)
+      assign_accessibility_root_id(args, prefix: "alert-dialog")
+      super
+    end
 
     sig { override.returns(T::Hash[Symbol, T.untyped]) }
     def contract_data_attributes

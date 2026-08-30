@@ -480,8 +480,8 @@ tabs:
   exports:
     - { component: Shadcn::Tabs, export: Tabs }
     - { component: Shadcn::Tabs::List, export: TabsList }
-    - { component: Shadcn::Tabs::Trigger, export: TabsTrigger }
-    - { component: Shadcn::Tabs::Content, export: TabsContent }
+    - { component: Shadcn::Tabs::Trigger, export: TabsTrigger, args: { value: test } }
+    - { component: Shadcn::Tabs::Content, export: TabsContent, args: { value: test } }
 
 textarea:
   exports:

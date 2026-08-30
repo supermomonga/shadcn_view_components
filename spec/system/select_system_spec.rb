@@ -59,7 +59,7 @@ RSpec.describe "Select behavior", type: :system do
 
     dispatch_key("#fruit-select", "ArrowDown")
     expect(find("#fruit-trigger")["aria-activedescendant"]).to eq("option-orange")
-    expect(page.evaluate_script("document.activeElement.id")).to eq("option-orange")
+    expect(page.evaluate_script("document.activeElement.id")).to eq("fruit-trigger")
 
     dispatch_key("#fruit-select", "ArrowUp")
     expect(find("#fruit-trigger")["aria-activedescendant"]).to eq("option-banana")
@@ -103,7 +103,8 @@ RSpec.describe "Select behavior", type: :system do
     expect(page).to have_selector("#fruit-content [data-slot='select-scroll-down-button']:not([hidden])")
 
     press_key(:end)
-    expect(page).to have_selector("#option-orange:focus")
+    expect(find("#fruit-trigger")["aria-activedescendant"]).to eq("option-orange")
+    expect(page).to have_selector("#fruit-trigger:focus")
     expect(page.evaluate_script("document.querySelector('#fruit-select-listbox').scrollTop")).to be_positive
     expect(page).to have_selector("#fruit-content [data-slot='select-scroll-up-button']:not([hidden])")
     expect(page).to have_selector("#fruit-content [data-slot='select-scroll-down-button'][hidden]", visible: :all)
@@ -128,8 +129,7 @@ RSpec.describe "Select behavior", type: :system do
     visit "/pages/select"
 
     find("#fruit-trigger").click
-    page.execute_script("document.querySelector('#option-banana').focus()")
-    expect(page).to have_selector("#option-banana:focus")
+    expect(page).to have_selector("#fruit-trigger:focus")
     press_key(:tab)
 
     expect(page).to have_selector("#fruit-content[data-state='closed']", visible: :all)

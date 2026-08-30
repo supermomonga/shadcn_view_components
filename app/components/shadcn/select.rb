@@ -17,6 +17,7 @@ module Shadcn
       ).void.checked(:never)
     end
     def initialize(name: nil, default_value: nil, disabled: false, **args)
+      assign_accessibility_root_id(args, prefix: "select")
       @name = T.let(name&.to_s, T.nilable(String))
       @default_value = T.let(default_value&.to_s, T.nilable(String))
       @disabled = T.let(disabled, T::Boolean)
@@ -253,7 +254,7 @@ module Shadcn
     class Separator < BaseComponent
       sig { override.returns(T::Hash[Symbol, T.untyped]) }
       def html_attributes
-        super.merge(role: "separator")
+        super.tap { |attributes| attributes[:role] = "presentation" unless attributes.key?(:role) }
       end
     end
 

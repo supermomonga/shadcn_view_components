@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Phase 3: ネイティブ <dialog> の挙動(10-roadmap DoD / 05 §4)。
-# Esc で閉じる・背景inert・フォーカス復帰・alertdialog での Esc 抑止・
+# Esc で閉じる・背景inert・フォーカス復帰・ARIA参照・
 # turbo:submit-end 標準フックを検証する
 require "rails_helper"
 
@@ -12,14 +12,17 @@ RSpec.describe "Dialog behavior", type: :system do
     dialog = find("#demo-dialog", visible: :all)
     expect(dialog["open"]).to be_falsey
     expect(find("#open-dialog")["aria-expanded"]).to eq("false")
+    expect(find("#open-dialog")["aria-controls"]).to eq("demo-dialog")
+    expect(dialog["aria-labelledby"]).to eq(dialog.find("[data-slot='dialog-title']", visible: :all)["id"])
+    expect(dialog["aria-describedby"]).to eq(dialog.find("[data-slot='dialog-description']", visible: :all)["id"])
 
     find("#open-dialog").click
     expect(page.evaluate_script("document.querySelector('#demo-dialog').open")).to be(true)
     expect(find("#open-dialog")["aria-expanded"]).to eq("true")
 
     find("#close-dialog").click
-    expect(find("#demo-dialog", visible: :all)["open"]).to be_falsey
-    expect(find("#open-dialog")["aria-expanded"]).to eq("false")
+    expect(page).to have_no_selector("#demo-dialog[open]", visible: :all)
+    expect(page).to have_selector("#open-dialog[aria-expanded='false']")
     # close() は開く前にフォーカスがあった要素(trigger)へ復帰する(ネイティブ保証)。
     # 復帰はマイクロタスクで行われるため再試行付きで検証する
     expect(page).to have_selector("#open-dialog:focus")
@@ -47,17 +50,18 @@ RSpec.describe "Dialog behavior", type: :system do
     expect(page.evaluate_script("document.activeElement.closest('dialog') !== null")).to be(true)
   end
 
-  it "blocks Escape dismissal for alertdialog and closes via explicit buttons" do
+  it "closes an alertdialog with Escape or an explicit button" do
     visit "/pages/dialogs"
 
     find("#open-alert").click
     expect(page.evaluate_script("document.querySelector('#demo-alert').open")).to be(true)
 
     find("#demo-alert").send_keys(:escape)
-    expect(page.evaluate_script("document.querySelector('#demo-alert').open")).to be(true)
+    expect(page.evaluate_script("document.querySelector('#demo-alert').open")).to be(false)
 
+    find("#open-alert").click
     find("#cancel-alert").click
-    expect(find("#demo-alert", visible: :all)["open"]).to be_falsey
+    expect(page).to have_no_selector("#demo-alert[open]", visible: :all)
   end
 
   it "closes on turbo:submit-end from a form inside the dialog (標準フック)" do
@@ -71,6 +75,6 @@ RSpec.describe "Dialog behavior", type: :system do
       const form = document.querySelector("#form-dialog form")
       form.dispatchEvent(new Event("turbo:submit-end", { bubbles: true }))
     JS
-    expect(page.evaluate_script("document.querySelector('#form-dialog').open")).to be(false)
+    expect(page).to have_no_selector("#form-dialog[open]", visible: :all)
   end
 end

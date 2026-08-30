@@ -62,6 +62,8 @@ jobs:
       - uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
       - uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce # v1
       - run: bundle install
+      - name: Install accessibility verification dependency
+        run: pnpm install --frozen-lockfile
       - run: CHROME_BIN=$(which chrome) bundle exec rake verify:system
 
   parity:

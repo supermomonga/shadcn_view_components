@@ -9,6 +9,12 @@ module Shadcn
   class Dialog < BaseComponent
     CONTROLLER = "shadcn--dialog"
 
+    sig { params(args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
+    def initialize(**args)
+      assign_accessibility_root_id(args, prefix: "dialog")
+      super
+    end
+
     # upstream の Root はDOMを出力しないが、本gemではトリガーとコンテンツを
     # 同一のコントローラスコープに置くためのラッパーとして描く(文書化された構造差)
     sig { override.returns(T::Hash[Symbol, T.untyped]) }

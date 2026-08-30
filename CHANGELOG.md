@@ -6,6 +6,19 @@ All notable changes to this project will be documented in this file.
 
 Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
+### 複合コンポーネントのARIA参照とキーボード操作を整備
+
+- Dialog系、Tabs、Combobox、Select、Accordion、Resizable、Calendarについて、Trigger、
+  Content、Label、選択項目を一意なIDとARIA参照で結び、開閉・選択・現在値を同期した
+- 利用者指定のIDとARIA属性を保持しつつ未指定値だけを補完し、fragment cacheで自動生成IDが
+  重複した場合は同じルート内の自動生成参照だけを再採番する共通処理を追加した
+- 同種コンポーネントの入れ子を親controllerの探索対象から除外し、TabsのHome / End、
+  Resizableの矢印・Home / End、Calendarの表示月内グリッド移動を追加した
+- Tabsの向きはRootの`orientation:`を唯一の指定箇所とし、Listの`orientation:`は削除した。
+  Listの`aria-orientation`とキーボード操作はRootの値から補完する
+- `axe-core`をCupriteへ直接読み込み、代表LookbookプレビューをWCAG 2.0〜2.2 A/AAの
+  対象ルールで検査するsystem specをCIへ追加した
+
 ### ComboboxとchipsをRailsフォームへ接続
 
 - 検索文字列、候補のハイライト、確定した送信値を分離し、確定値だけをルート直下の
@@ -248,8 +261,8 @@ root の `data-horizontal:flex-col` も効かないためリストとコンテ�
   - 縦積みグループで上下キーでもリサイズできるようにし、flex-basis は %
     表記のときだけ信頼する
 - `Resizable::PanelGroup` / `Resizable::Handle` に `orientation:` を追加し、
-  垂直グループ(`aria-orientation="vertical"` で flex-col、ハンドルは
-  row-resize)を構成できるように
+  垂直グループ(PanelGroupの`data-orientation="vertical"`でflex-col、Handleの
+  `aria-orientation="horizontal"`でrow-resize)を構成できるように
 - Lookbook に `tabs/vertical` と `resizable/vertical` のシナリオを追加
   (parity の upstream デモ・シナリオも登録)
 
@@ -397,7 +410,7 @@ baseページへ307リダイレクト、CLI `init -d`は`--preset=base-nova`、`
   DropdownMenu, ContextMenu, Menubar, NavigationMenu, Command, Combobox, Resizable
 - ネイティブ最優先の本番(05 §3 / 10-roadmap Phase 3):
   - dialog系は `<dialog>` + showModal(フォーカストラップ・背景inert・EscClose・
-    フォーカス復帰はネイティブ提供。alertdialog は cancel抑止)
+    フォーカス復帰はAlertDialogを含めてネイティブ提供)
   - popover/tooltip/menu は Popover API(light dismiss)。context-menu は
     右クリック位置に popover=manual で開く(イベント列の競合回避)
   - resizable はドラッグ + 矢印キーによるパネル配分

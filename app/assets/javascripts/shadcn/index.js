@@ -14,6 +14,7 @@
 // importmap環境ではengineのpin、bundler環境ではpackageのself-referenceが解決する。
 // digest付きassetとNode module resolutionのどちらでも同じentry pointを使える。
 import AccordionController from "@supermomonga/shadcn-view-components/controllers/accordion_controller"
+import CalendarController from "@supermomonga/shadcn-view-components/controllers/calendar_controller"
 import CarouselController from "@supermomonga/shadcn-view-components/controllers/carousel_controller"
 import ComboboxController from "@supermomonga/shadcn-view-components/controllers/combobox_controller"
 import CommandController from "@supermomonga/shadcn-view-components/controllers/command_controller"
@@ -36,6 +37,7 @@ import ToastController from "@supermomonga/shadcn-view-components/controllers/to
 /** @param {import("@hotwired/stimulus").Application} application */
 export function register(application) {
   application.register("shadcn--accordion", AccordionController)
+  application.register("shadcn--calendar", CalendarController)
   application.register("shadcn--carousel", CarouselController)
   application.register("shadcn--combobox", ComboboxController)
   application.register("shadcn--command", CommandController)

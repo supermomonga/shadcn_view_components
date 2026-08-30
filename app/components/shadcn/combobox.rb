@@ -45,13 +45,14 @@ module Shadcn
       ).void.checked(:never)
     end
     def initialize(name: nil, default_value: nil, multiple: false, disabled: false, required: false, form: nil, **args) # rubocop:disable Metrics/ParameterLists
+      assign_accessibility_root_id(args, prefix: "combobox")
       @name = T.let(name&.to_s, T.nilable(String))
       @multiple = T.let(multiple, T::Boolean)
       @disabled = T.let(disabled, T::Boolean)
       @required = T.let(required, T::Boolean)
       @form = T.let(form&.to_s, T.nilable(String))
       @default_values = T.let(normalize_default_values(default_value), T::Array[String])
-      @root_id = T.let(args[:id]&.to_s, T.nilable(String))
+      @root_id = T.let(args[:id].to_s, String)
       super(**args)
     end
 
@@ -141,9 +142,9 @@ module Shadcn
         tabindex: "-1",
         style: VISUALLY_HIDDEN_CONTROL_STYLE,
         aria: { hidden: "true" },
-        data: { slot: "combobox-form-control" }
+        data: { slot: "combobox-form-control", shadcn_generated_id: "true" }
       )
-      attributes[:id] = "#{@root_id}-form-control" if @root_id
+      attributes[:id] = "#{@root_id}-form-control"
 
       values = !@multiple && @default_values.empty? ? [""] : @default_values
       content_tag(:select, **attributes) do
@@ -196,7 +197,11 @@ module Shadcn
         attributes[:type] = "search" unless attributes.key?(:type)
         attributes[:class] = ShadcnViewComponents::Classes::MERGER.merge("#{base} #{overlay}")
         attributes[:role] = "combobox"
-        merge_nested(attributes, :aria, { expanded: "false", haspopup: "listbox" })
+        merge_nested(
+          attributes,
+          :aria,
+          { expanded: "false", haspopup: "listbox", autocomplete: "list", label: "候補を検索" }
+        )
         merge_nested(attributes, :data, { action: "input->#{Combobox::CONTROLLER}#filter" })
         void_tag("input", **attributes)
       end
@@ -219,7 +224,7 @@ module Shadcn
           type: "button",
           class: trigger_class,
           data: { slot: "input-group-button", action: "#{Combobox::CONTROLLER}#toggleList" },
-          aria: { label: "選択肢を開く" }
+          aria: { label: "選択肢を開く", haspopup: "listbox", expanded: "false" }
         ) { chevron_icon }
       end
 
@@ -273,6 +278,7 @@ module Shadcn
       def html_attributes
         attributes = super
         attributes[:type] = "button" unless attributes.key?(:type)
+        merge_nested(attributes, :aria, { label: "選択肢を開く", haspopup: "listbox", expanded: "false" })
         merge_nested(attributes, :data, { action: "#{Combobox::CONTROLLER}#toggleList" })
         attributes
       end
@@ -533,7 +539,11 @@ module Shadcn
         attributes = super
         attributes[:type] = "text" unless attributes.key?(:type)
         attributes[:role] = "combobox"
-        merge_nested(attributes, :aria, { expanded: "false", haspopup: "listbox" })
+        merge_nested(
+          attributes,
+          :aria,
+          { expanded: "false", haspopup: "listbox", autocomplete: "list", label: "候補を検索" }
+        )
         merge_nested(attributes, :data, { action: "input->#{Combobox::CONTROLLER}#filter" })
         attributes
       end

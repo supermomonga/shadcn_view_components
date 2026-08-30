@@ -75,7 +75,7 @@ pagination:
     attributes: [aria-label, href, data-active, data-slot]
 tabs:
   Tabs:
-    attributes: [data-controller, data-orientation]
+    attributes: [id, data-controller, data-orientation, data-shadcn-generated-root-id]
   TabsList:
     attributes: [role, aria-orientation]
   TabsTrigger:
@@ -96,7 +96,7 @@ carousel:
     attributes: [type, disabled, data-action, aria-hidden]
 dialog:
   Dialog:
-    attributes: [data-controller]
+    attributes: [id, data-controller, data-shadcn-generated-root-id]
   DialogTrigger:
     attributes: [type, aria-haspopup, aria-expanded, data-action]
   DialogClose:
@@ -105,7 +105,7 @@ dialog:
     attributes: [aria-modal, data-state, data-action]
 alert-dialog:
   AlertDialog:
-    attributes: [data-controller]
+    attributes: [id, data-controller, data-shadcn-generated-root-id]
   AlertDialogTrigger:
     attributes: [type, aria-haspopup, aria-expanded, data-action]
   AlertDialogContent:
@@ -119,7 +119,7 @@ alert-dialog:
     attributes: [type, data-action, data-state, aria-haspopup]
 sheet:
   Sheet:
-    attributes: [data-controller]
+    attributes: [id, data-controller, data-shadcn-generated-root-id]
   SheetTrigger:
     attributes: [type, aria-haspopup, aria-expanded, data-action]
   SheetClose:
@@ -128,7 +128,7 @@ sheet:
     attributes: [aria-modal, data-state]
 drawer:
   Drawer:
-    attributes: [data-controller, data-slot]
+    attributes: [id, data-controller, data-slot, data-shadcn-generated-root-id]
   DrawerTrigger:
     attributes: [type, aria-haspopup, aria-expanded, data-action]
   DrawerClose:
@@ -203,11 +203,11 @@ context-menu:
     attributes: [role, popover, tabindex, data-state, data-position-side, data-position-align, data-position-side-offset, data-position-align-offset, data-position-collision-padding, style]
 resizable:
   ResizablePanelGroup:
-    attributes: [role, style, data-controller, aria-orientation]
+    attributes: [id, role, style, data-controller, data-orientation, data-shadcn-generated-root-id]
   ResizablePanel:
     attributes: [style]
   ResizableHandle:
-    attributes: [role, tabindex, style, aria-orientation, data-action]
+    attributes: [role, tabindex, style, aria-orientation, aria-valuemin, aria-valuemax, aria-valuenow, data-action]
 menubar:
   Menubar:
     attributes: [data-controller, role, aria-orientation]
@@ -259,7 +259,7 @@ combobox:
   Combobox:
     # primitive Root内部のform controlをRails側ではSSRする
     slots_mode: superset
-    attributes: [data-controller]
+    attributes: [id, data-controller, data-shadcn-generated-root-id]
   ComboboxInput:
     # upstream の ComboboxInput は <InputGroup>(別アイテム)でラップし、トリガーを
     # <InputGroupAddon> に置く。契約(combobox側)には上書き分のみ記録されるため、
@@ -268,7 +268,7 @@ combobox:
     slots_mode: superset
     attributes: [type, role, aria-expanded, aria-haspopup, data-action]
   ComboboxTrigger:
-    attributes: [type, data-action, aria-label]
+    attributes: [type, data-action, aria-label, aria-haspopup, aria-expanded]
   ComboboxContent:
     attributes: [role, popover, data-state]
   ComboboxItem:
@@ -277,7 +277,7 @@ combobox:
   ComboboxEmpty:
     attributes: [hidden]
   ComboboxChipsInput:
-    attributes: [type, role, aria-expanded, aria-haspopup, data-action]
+    attributes: [type, role, aria-autocomplete, aria-label, aria-expanded, aria-haspopup, data-action]
   ComboboxChips:
     # 動的chipも同じRuby描画へ戻せるようtemplateをSSRする
     slots_mode: superset
@@ -303,7 +303,7 @@ select:
     # upstreamのRoot別名はDOMを持たない。Ruby版の状態ホストと
     # フォーム送信用inputは明示的な追加スロットとして許可する。
     slots_mode: superset
-    attributes: [data-slot, data-controller, data-action]
+    attributes: [id, data-slot, data-controller, data-action, data-shadcn-generated-root-id]
   SelectTrigger:
     attributes: [type, role, aria-haspopup, aria-expanded, data-action]
   SelectContent:
@@ -386,7 +386,10 @@ sonner:
 accordion:
   Accordion:
     # 開閉アニメーション同期のため shadcn--accordion コントローラを付ける
-    attributes: [data-controller]
+    attributes: [id, data-controller, data-shadcn-generated-root-id]
+  AccordionItem:
+    # 単独描画でも同じARIA参照とネイティブdetailsの状態同期を提供する
+    attributes: [id, data-controller, data-shadcn-generated-root-id]
   AccordionTrigger:
     # details/summary方式とアイコン切替(group-aria-expanded)の状態属性。
     # base-nova のTriggerは aria-expanded を実行時にprimitiveが付与するため契約に現れない
@@ -395,6 +398,6 @@ calendar:
   Calendar:
     # 内側に DayButton を描く合成構造のため子スロットが増える
     slots_mode: superset
-    attributes: []
+    attributes: [id, data-controller, data-action, data-shadcn-generated-root-id]
   CalendarDayButton:
-    attributes: [type, tabindex, data-day, data-selected-single, data-today, data-outside]
+    attributes: [type, tabindex, aria-label, aria-current, data-day, data-selected-single, data-today, data-outside]

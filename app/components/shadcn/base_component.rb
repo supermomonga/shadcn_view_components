@@ -1,6 +1,8 @@
 # typed: strict
 # frozen_string_literal: true
 
+require "securerandom"
+
 module Shadcn
   # 共通基底(04-component-conventions §5-6)。属性マージ・クラス解決・tag差し替えを担う。
   # 利用者が直接参照しない private 扱いのクラス。
@@ -78,6 +80,20 @@ module Shadcn
     end
 
     private
+
+    # 複合コンポーネントのARIA参照で使うルートIDを、ViewComponentの
+    # インスタンス生成時に一度だけ決める。利用者指定IDはそのまま優先する。
+    # 自動生成IDの印は、fragment cache済みの同じHTMLが同一documentへ複数回
+    # 挿入された場合にだけStimulus側で安全に再採番するために使う。
+    sig { params(args: T::Hash[Symbol, T.untyped], prefix: String).void }
+    def assign_accessibility_root_id(args, prefix:)
+      supplied_id = args[:id]
+      return unless supplied_id.nil? || supplied_id.to_s.empty?
+
+      args[:id] = "shadcn-#{prefix}-#{SecureRandom.hex(12)}"
+      data = T.cast(args[:data], T.nilable(T::Hash[Symbol, T.untyped])) || {}
+      args[:data] = data.merge(shadcn_generated_root_id: "true")
+    end
 
     # void要素は閉じタグ無しで出力する。
     # NOTE: content_tag はブロック付き呼び出しでのみ第二引数ハッシュが属性扱いになるため

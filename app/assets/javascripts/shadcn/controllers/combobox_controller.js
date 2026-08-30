@@ -1,8 +1,15 @@
 import { Controller } from "@hotwired/stimulus"
 
+import {
+  ensureId,
+  ensureRootId,
+  ownedElements,
+  setDefaultAttribute,
+} from "@supermomonga/shadcn-view-components/aria_relationships"
 import { hideAfterExit } from "@supermomonga/shadcn-view-components/hide_after_exit"
 
 const noop = () => {}
+const IDENTIFIER = "shadcn--combobox"
 
 // 検索文字列・キーボード上のハイライト・確定したフォーム値を分離して管理する。
 // 確定値の唯一の情報源は root 直下の select[data-slot=combobox-form-control]。
@@ -31,24 +38,32 @@ export default class ComboboxController extends Controller {
 
   connect() {
     /** @type {HTMLSelectElement | null} */
-    this.formControl = this.element.querySelector("select[data-slot='combobox-form-control']")
+    this.formControl = /** @type {HTMLSelectElement | null} */ (
+      this.owned("select[data-slot='combobox-form-control']")[0] ?? null
+    )
     /** @type {HTMLInputElement | null} */
-    this.emptyFormControl = this.element.querySelector("input[data-slot='combobox-empty-form-control']")
+    this.emptyFormControl = /** @type {HTMLInputElement | null} */ (
+      this.owned("input[data-slot='combobox-empty-form-control']")[0] ?? null
+    )
     this.multiple = this.formControl?.multiple ?? false
     this.query = ""
     /** @type {HTMLElement | null} */
-    this.chips = this.element.querySelector("[data-slot='combobox-chips']")
+    this.chips = this.owned("[data-slot='combobox-chips']")[0] ?? null
     /** @type {HTMLInputElement | null} */
-    this.input = (this.chips && this.element.querySelector("[data-slot='combobox-chip-input']")) ||
-      this.element.querySelector("input[role='combobox']")
+    this.input = /** @type {HTMLInputElement | null} */ (
+      (this.chips && this.owned("[data-slot='combobox-chip-input']")[0]) ||
+      this.owned("input[role='combobox']")[0] || null
+    )
     /** @type {HTMLElement | null} */
-    this.empty = this.element.querySelector("[data-slot='combobox-empty']")
+    this.empty = this.owned("[data-slot='combobox-empty']")[0] ?? null
     /** @type {HTMLTemplateElement | null} */
-    const template = this.chips?.querySelector("template[data-slot='combobox-chip-template']") ?? null
+    const template = this.chips?.querySelector(":scope > template[data-slot='combobox-chip-template']") ?? null
     /** @type {HTMLElement | null} */
     this.chipTemplate = template?.content.querySelector("[data-slot='combobox-chip']") ?? null
     /** @type {HTMLElement | null} */
-    this.list = this.element.querySelector("[data-slot='combobox-content'][popover]")
+    this.list = this.owned("[data-slot='combobox-content'][popover]")[0] ?? null
+
+    this.ensureRelationships()
 
     this.element.addEventListener("keydown", this.onKeydown, true)
     this.element.addEventListener("focusout", this.onFocusOut)
@@ -82,9 +97,7 @@ export default class ComboboxController extends Controller {
 
   /** @returns {HTMLElement[]} */
   get items() {
-    /** @type {NodeListOf<HTMLElement>} */
-    const items = this.element.querySelectorAll("[data-slot='combobox-item']")
-    return [...items]
+    return this.owned("[data-slot='combobox-item']")
   }
 
   /** @returns {HTMLElement[]} */
@@ -126,30 +139,32 @@ export default class ComboboxController extends Controller {
       if (!this.multiple) this.clearCommittedValueForEditedQuery()
     }
 
+    const items = this.items
     let visible = 0
-    for (const item of this.items) {
+    for (const item of items) {
       const text = `${item.dataset.value ?? ""} ${this.itemLabel(item)}`.toLowerCase()
       const match = this.query === "" || text.includes(this.query)
       item.hidden = !match
       if (match) visible += 1
     }
 
-    /** @type {NodeListOf<HTMLElement>} */
-    const groups = this.element.querySelectorAll("[data-slot='combobox-group']")
+    const groups = this.owned("[data-slot='combobox-group']")
     for (const group of groups) {
-      /** @type {NodeListOf<HTMLElement>} */
-      const groupItems = group.querySelectorAll("[data-slot='combobox-item']")
-      group.hidden = [...groupItems].every((item) => item.hidden)
+      const groupItems = items.filter((item) => group.contains(item))
+      group.hidden = groupItems.every((item) => item.hidden)
     }
     const empty = visible === 0
     if (this.empty) this.empty.hidden = !empty
     this.list?.toggleAttribute("data-empty", empty)
-    this.element.querySelector("[data-slot='combobox-list']")?.toggleAttribute("data-empty", empty)
+    this.owned("[data-slot='combobox-list']")[0]?.toggleAttribute("data-empty", empty)
     this.highlight(this.enabledVisibleItems[0])
   }
 
   /** @param {KeyboardEvent} event */
   navigate(event) {
+    if (!(event.target instanceof Element) ||
+        event.target.closest(`[data-controller~='${IDENTIFIER}']`) !== this.element) return
+
     if (event.key === "Escape" && this.listOpen) {
       event.preventDefault()
       event.stopPropagation()
@@ -164,6 +179,14 @@ export default class ComboboxController extends Controller {
     // 閉じた候補に残るhighlightは確定対象ではない。単一選択ではフォーム送信など
     // input本来のEnterへ委ね、複数選択だけを自由入力として扱う。
     if (!this.listOpen) {
+      if (["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) {
+        event.preventDefault()
+        this.openList()
+        const items = this.enabledVisibleItems
+        const item = ["ArrowUp", "End"].includes(event.key) ? items.at(-1) : items[0]
+        this.highlight(item)
+        return
+      }
       if (event.key === "Enter" && this.multiple) {
         event.preventDefault()
         this.commitFreeValue(this.input?.value)
@@ -224,6 +247,7 @@ export default class ComboboxController extends Controller {
     for (const candidate of this.items) {
       candidate.toggleAttribute("data-highlighted", candidate === item)
     }
+    this.syncActiveDescendant(item)
   }
 
   /** @param {Event} event */
@@ -326,7 +350,7 @@ export default class ComboboxController extends Controller {
       }
     }
 
-    const template = this.chips.querySelector("template[data-slot='combobox-chip-template']")
+    const template = this.chips.querySelector(":scope > template[data-slot='combobox-chip-template']")
     let reference = this.input?.parentElement === this.chips ? this.input : template
     // 末尾から並びを確定し、既に正しい位置にある chip は動かさない。
     // Stimulus の action を持つ既存要素を不要に再接続させないためである。
@@ -404,10 +428,9 @@ export default class ComboboxController extends Controller {
       }
     }
     if (!this.disabled) return
-    /** @type {NodeListOf<HTMLButtonElement>} */
-    const buttons = this.element.querySelectorAll(
+    const buttons = /** @type {HTMLButtonElement[]} */ (this.owned(
       "button[data-action*='shadcn--combobox#toggleList'], [data-slot='combobox-chip-remove']"
-    )
+    ))
     for (const button of buttons) button.disabled = true
   }
 
@@ -449,6 +472,10 @@ export default class ComboboxController extends Controller {
       if (!this.multiple) this.restoreCommittedQuery()
     }
     this.input?.setAttribute("aria-expanded", String(open))
+    for (const trigger of this.toggleTriggers) trigger.setAttribute("aria-expanded", String(open))
+    this.syncActiveDescendant(
+      open ? this.enabledVisibleItems.find((item) => item.hasAttribute("data-highlighted")) : undefined,
+    )
   }
 
   toggleList() {
@@ -459,12 +486,19 @@ export default class ComboboxController extends Controller {
     if (list.matches(":popover-open") && !exiting) {
       this.closeList()
     } else {
-      this.query = this.multiple ? (this.input?.value ?? "").trim().toLowerCase() : ""
-      this.filter()
-      this.syncListState(true)
-      if (!list.matches(":popover-open")) list.showPopover()
-      this.input?.focus()
+      this.openList()
     }
+  }
+
+  openList() {
+    const list = this.list
+    if (!list || this.disabled) return
+
+    this.query = this.multiple ? (this.input?.value ?? "").trim().toLowerCase() : ""
+    this.filter()
+    this.syncListState(true)
+    if (!list.matches(":popover-open")) list.showPopover()
+    this.input?.focus()
   }
 
   closeList() {
@@ -495,5 +529,51 @@ export default class ComboboxController extends Controller {
       if (activeElement && this.element.contains(activeElement)) return
       this.closeList()
     })
+  }
+
+  ensureRelationships() {
+    const rootId = ensureRootId(this.root, "combobox")
+    const list = this.list
+    if (!list) return
+
+    const listId = ensureId(list, `${rootId}-listbox`)
+    if (this.formControl) ensureId(this.formControl, `${rootId}-form-control`)
+    this.items.forEach((item, index) => ensureId(item, `${rootId}-option-${index + 1}`))
+
+    if (this.input) {
+      const inputId = ensureId(this.input, `${rootId}-input`)
+      setDefaultAttribute(this.input, "aria-controls", listId)
+      setDefaultAttribute(list, "aria-labelledby", inputId)
+    }
+    this.toggleTriggers.forEach((trigger, index) => {
+      ensureId(trigger, `${rootId}-trigger-${index + 1}`)
+      setDefaultAttribute(trigger, "aria-controls", listId)
+    })
+  }
+
+  /** @param {HTMLElement | undefined} item */
+  syncActiveDescendant(item) {
+    if (!this.input) return
+    if (!this.listOpen || !item || item.hidden) {
+      this.input.removeAttribute("aria-activedescendant")
+      return
+    }
+
+    this.input.setAttribute("aria-activedescendant", item.id)
+  }
+
+  /** @returns {HTMLElement[]} */
+  get toggleTriggers() {
+    return this.owned("button[data-action*='shadcn--combobox#toggleList']")
+  }
+
+  /** @param {string} selector @returns {HTMLElement[]} */
+  owned(selector) {
+    return ownedElements(this.root, selector, IDENTIFIER)
+  }
+
+  /** @returns {HTMLElement} */
+  get root() {
+    return /** @type {HTMLElement} */ (this.element)
   }
 }

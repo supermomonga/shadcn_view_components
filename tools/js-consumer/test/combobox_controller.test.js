@@ -41,6 +41,12 @@ function comboboxFixture(id, { disabled = false, required = false, values = ["ra
   `
 }
 
+function comboboxRootFixture(id, options = {}) {
+  return comboboxFixture(id, options)
+    .replace(/^\s*<form[^>]*>\s*/, "")
+    .replace(/\s*<\/form>\s*$/, "")
+}
+
 function chip(value, label, id = "") {
   return `<div ${id ? `id="${id}"` : ""} data-slot="combobox-chip" data-value="${value}">
     <span data-slot="combobox-chip-label">${label}</span>
@@ -87,6 +93,12 @@ function chipsFixture(id, { disabled = false, required = false, values = ["rails
   `
 }
 
+function chipsRootFixture(id, options = {}) {
+  return chipsFixture(id, options)
+    .replace(/^\s*<form[^>]*>\s*/, "")
+    .replace(/\s*<\/form>\s*$/, "")
+}
+
 function keydown(element, key) {
   const event = new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key })
   element.dispatchEvent(event)
@@ -110,6 +122,8 @@ describe("shadcn--combobox", () => {
     const form = document.querySelector("#single-form")
     const control = root.querySelector("[data-slot='combobox-form-control']")
     const input = document.querySelector("#single-input")
+    const trigger = document.querySelector("#single-trigger")
+    const list = document.querySelector("#single-list")
     const rails = document.querySelector("#single-rails")
     const hanami = document.querySelector("#single-hanami")
     const inputEvent = vi.fn()
@@ -131,6 +145,9 @@ describe("shadcn--combobox", () => {
     expect(hanami.dataset.selected).toBe("false")
     expect([...root.querySelectorAll("[data-slot='combobox-item']")].every((item) => !item.hidden)).toBe(true)
     expect(formValues(form, "profile[framework]")).toEqual(["rails"])
+    expect(input.getAttribute("aria-controls")).toBe(list.id)
+    expect(list.getAttribute("aria-labelledby")).toBe(input.id)
+    expect(trigger.getAttribute("aria-controls")).toBe(list.id)
 
     hanami.click()
     expect(formValues(form, "profile[framework]")).toEqual(["hanami"])
@@ -158,6 +175,7 @@ describe("shadcn--combobox", () => {
 
     trigger.click()
     expect(document.activeElement).toBe(input)
+    expect(input.getAttribute("aria-activedescendant")).toBe("query-rails")
     input.dispatchEvent(new Event("pointerdown", { bubbles: true }))
     input.click()
     expect(list.matches(":popover-open")).toBe(true)
@@ -167,6 +185,7 @@ describe("shadcn--combobox", () => {
     expect(unmatchedEnter.defaultPrevented).toBe(true)
     expect(formValues(form, "profile[framework]")).toEqual(["rails"])
     expect(list.hasAttribute("data-empty")).toBe(true)
+    expect(input.hasAttribute("aria-activedescendant")).toBe(false)
 
     input.value = "Hana"
     input.dispatchEvent(new Event("input", { bubbles: true }))
@@ -178,11 +197,103 @@ describe("shadcn--combobox", () => {
     document.body.dispatchEvent(new Event("pointerdown", { bubbles: true }))
     expect(list.dataset.state).toBe("closed")
     expect(input.value).toBe("Ruby on Rails")
+    expect(input.hasAttribute("aria-activedescendant")).toBe(false)
 
     input.value = ""
     input.dispatchEvent(new Event("input", { bubbles: true }))
     expect(formValues(form, "profile[framework]")).toEqual([""])
     expect(document.querySelector("#query-rails").dataset.selected).toBe("false")
+    await harness.disconnect(root)
+  })
+
+  it("opens from the query keyboard and keeps DOM focus while moving assistive focus", async () => {
+    vi.useFakeTimers()
+    const harness = await mount(comboboxFixture("keyboard"))
+    const root = document.querySelector("#keyboard")
+    const input = document.querySelector("#keyboard-input")
+    const trigger = document.querySelector("#keyboard-trigger")
+    const list = document.querySelector("#keyboard-list")
+
+    input.focus()
+    expect(keydown(input, "ArrowDown").defaultPrevented).toBe(true)
+    expect(list.matches(":popover-open")).toBe(true)
+    expect(document.activeElement).toBe(input)
+    expect(input.getAttribute("aria-activedescendant")).toBe("keyboard-rails")
+    expect(trigger.getAttribute("aria-expanded")).toBe("true")
+
+    keydown(input, "ArrowDown")
+    expect(input.getAttribute("aria-activedescendant")).toBe("keyboard-hanami")
+    expect(document.activeElement).toBe(input)
+    keydown(input, "Escape")
+    expect(input.hasAttribute("aria-activedescendant")).toBe(false)
+
+    list.dispatchEvent(animationEvent("animationend", "exit"))
+    keydown(input, "ArrowUp")
+    expect(input.getAttribute("aria-activedescendant")).toBe("keyboard-hanami")
+    expect(document.activeElement).toBe(input)
+    await harness.disconnect(root)
+  })
+
+  it("keeps nested keyboard events and filtered group visibility within their owning root", async () => {
+    vi.useFakeTimers()
+    const inner = comboboxRootFixture("nested-inner")
+    const keyboardFixture = comboboxRootFixture("nested-outer").replace(
+      "        <select data-slot=\"combobox-form-control\"",
+      `${inner}\n        <select data-slot="combobox-form-control"`,
+    )
+    const harness = await mount(keyboardFixture)
+    const outer = document.querySelector("#nested-outer")
+    const outerInput = document.querySelector("#nested-outer-input")
+    const outerTrigger = document.querySelector("#nested-outer-trigger")
+    const outerList = document.querySelector("#nested-outer-list")
+    const innerInput = document.querySelector("#nested-inner-input")
+    const innerTrigger = document.querySelector("#nested-inner-trigger")
+    const innerList = document.querySelector("#nested-inner-list")
+
+    outerTrigger.click()
+    innerTrigger.click()
+    expect(outerInput.getAttribute("aria-activedescendant")).toBe("nested-outer-rails")
+    expect(innerInput.getAttribute("aria-activedescendant")).toBe("nested-inner-rails")
+
+    keydown(innerInput, "ArrowDown")
+    expect(innerInput.getAttribute("aria-activedescendant")).toBe("nested-inner-hanami")
+    expect(outerInput.getAttribute("aria-activedescendant")).toBe("nested-outer-rails")
+    expect(outerList.dataset.state).toBe("open")
+
+    keydown(innerInput, "Escape")
+    expect(innerList.dataset.state).toBe("closed")
+    expect(outerList.dataset.state).toBe("open")
+    expect(outerInput.getAttribute("aria-activedescendant")).toBe("nested-outer-rails")
+    await harness.disconnect(outer)
+
+    const filterInner = comboboxRootFixture("filter-inner")
+    const filterFixture = comboboxRootFixture("filter-outer").replace(
+      "          <div data-slot=\"combobox-group\">",
+      `          <div data-slot="combobox-group">${filterInner}`,
+    )
+    const filterHarness = await mount(filterFixture)
+    const filterOuter = document.querySelector("#filter-outer")
+    const outerGroup = document.querySelector("#filter-outer-list > [data-slot='combobox-group']")
+
+    typeQuery(document.querySelector("#filter-outer-input"), "no outer matches")
+    expect(outerGroup.hidden).toBe(true)
+    expect(document.querySelector("#filter-inner-rails").hidden).toBe(false)
+    await filterHarness.disconnect(filterOuter)
+  })
+
+  it("preserves authored IDs and ARIA references", async () => {
+    const html = comboboxFixture("authored")
+      .replace("aria-expanded=\"false\"", "aria-expanded=\"false\" aria-controls=\"custom-listbox\"")
+      .replace("role=\"listbox\"", "role=\"listbox\" aria-labelledby=\"external-label\"")
+    const harness = await mount(html)
+    const root = document.querySelector("#authored")
+    const input = document.querySelector("#authored-input")
+    const list = document.querySelector("#authored-list")
+
+    expect(input.id).toBe("authored-input")
+    expect(list.id).toBe("authored-list")
+    expect(input.getAttribute("aria-controls")).toBe("custom-listbox")
+    expect(list.getAttribute("aria-labelledby")).toBe("external-label")
     await harness.disconnect(root)
   })
 
@@ -228,6 +339,39 @@ describe("shadcn--combobox", () => {
     expect(root.querySelectorAll("[data-slot='combobox-chip']")).toHaveLength(2)
     expect(inputEvent).toHaveBeenCalledTimes(4)
     expect(changeEvent).toHaveBeenCalledTimes(4)
+    await harness.disconnect(root)
+  })
+
+  it("uses only the direct chip template when a nested chips root comes first", async () => {
+    let outer = chipsRootFixture("template-outer", { values: [] })
+      .replace(
+        'data-slot="combobox-chip" data-value="__template__"',
+        'data-slot="combobox-chip" data-template-owner="outer" data-value="__template__"',
+      )
+      .replace('<input id="template-outer-input"', '<span data-input-wrapper><input id="template-outer-input"')
+      .replace(
+        'data-action="input->shadcn--combobox#filter">',
+        'data-action="input->shadcn--combobox#filter"></span>',
+      )
+    const inner = chipsRootFixture("template-inner", { values: [] }).replace(
+      'data-slot="combobox-chip" data-value="__template__"',
+      'data-slot="combobox-chip" data-template-owner="inner" data-value="__template__"',
+    )
+    outer = outer.replace(
+      '          <template data-slot="combobox-chip-template">',
+      `${inner}\n          <template data-slot="combobox-chip-template">`,
+    )
+
+    const harness = await mount(outer)
+    const root = document.querySelector("#template-outer")
+    const input = document.querySelector("#template-outer-input")
+    typeQuery(input, "Custom")
+    keydown(input, "Enter")
+
+    const chip = document.querySelector(
+      "#template-outer-chips > [data-slot='combobox-chip'][data-value='Custom']",
+    )
+    expect(chip.dataset.templateOwner).toBe("outer")
     await harness.disconnect(root)
   })
 

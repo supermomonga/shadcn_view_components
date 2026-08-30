@@ -6,7 +6,7 @@ import { mount } from "./support/stimulus.js"
 function tabsFixture(id, orientation = "horizontal", active = "one") {
   return `
     <section id="${id}" data-controller="shadcn--tabs" data-orientation="${orientation}">
-      <div role="tablist">
+      <div data-slot="tabs-list" role="tablist">
         <button
           id="${id}-one"
           role="tab"
@@ -47,6 +47,10 @@ describe("shadcn--tabs", () => {
     expect(firstOne.tabIndex).toBe(0)
     expect(document.querySelector("#first-panel-one").hidden).toBe(false)
     expect(document.querySelector("#first-panel-two").hidden).toBe(true)
+    expect(firstOne.getAttribute("aria-controls")).toBe("first-panel-one")
+    expect(document.querySelector("#first-panel-one").getAttribute("aria-labelledby")).toBe("first-one")
+    expect(document.querySelector("#first-panel-one").tabIndex).toBe(0)
+    expect(firstRoot.querySelector("[role='tablist']").getAttribute("aria-orientation")).toBe("horizontal")
     expect(secondTwo.getAttribute("aria-selected")).toBe("true")
 
     firstTwo.click()
@@ -83,6 +87,57 @@ describe("shadcn--tabs", () => {
 
     keydown(two, "ArrowUp")
     expect(one.getAttribute("aria-selected")).toBe("true")
+    expect(root.querySelector("[role='tablist']").getAttribute("aria-orientation")).toBe("vertical")
+    await harness.disconnect(root)
+  })
+
+  it("moves to the first and last enabled tabs with Home and End", async () => {
+    const html = tabsFixture("disabled")
+      .replace('id="disabled-two"', 'id="disabled-two" disabled')
+    const harness = await mount(html)
+    const root = document.querySelector("#disabled")
+    const one = document.querySelector("#disabled-one")
+    const two = document.querySelector("#disabled-two")
+
+    keydown(one, "End")
+    expect(document.activeElement).toBe(one)
+    expect(one.getAttribute("aria-selected")).toBe("true")
+
+    two.click()
+    expect(one.getAttribute("aria-selected")).toBe("true")
+    expect(two.getAttribute("aria-selected")).toBe("false")
+    expect(two.getAttribute("aria-controls")).toBe("disabled-panel-two")
+
+    two.removeAttribute("disabled")
+    keydown(one, "End")
+    expect(document.activeElement).toBe(two)
+    keydown(two, "Home")
+    expect(document.activeElement).toBe(one)
+    await harness.disconnect(root)
+  })
+
+  it("preserves consumer references and isolates a nested tabs root", async () => {
+    const outer = tabsFixture("outer")
+      .replace('id="outer-one"', 'id="outer-one" aria-controls="consumer-panel"')
+      .replace('id="outer-panel-one"', 'id="outer-panel-one" aria-labelledby="consumer-trigger"')
+      .replace("Panel one</div>", `Panel one${tabsFixture("inner")}</div>`)
+    const harness = await mount(outer)
+    const root = document.querySelector("#outer")
+    const outerOne = document.querySelector("#outer-one")
+    const outerTwo = document.querySelector("#outer-two")
+    const innerOne = document.querySelector("#inner-one")
+    const innerTwo = document.querySelector("#inner-two")
+
+    expect(outerOne.getAttribute("aria-controls")).toBe("consumer-panel")
+    expect(document.querySelector("#outer-panel-one").getAttribute("aria-labelledby")).toBe("consumer-trigger")
+    outerTwo.click()
+    expect(outerTwo.getAttribute("aria-selected")).toBe("true")
+    expect(innerOne.getAttribute("aria-selected")).toBe("true")
+    expect(innerTwo.getAttribute("aria-selected")).toBe("false")
+
+    innerTwo.click()
+    expect(innerTwo.getAttribute("aria-selected")).toBe("true")
+    expect(outerTwo.getAttribute("aria-selected")).toBe("true")
     await harness.disconnect(root)
   })
 })

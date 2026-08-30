@@ -24,9 +24,6 @@ module ShadcnViewComponents
       tabs: {
         orientation: { kind: :enum, default: "horizontal", values: ORIENTATIONS }.freeze
       }.freeze,
-      "tabs/list": {
-        orientation: { kind: :enum, default: "horizontal", values: ORIENTATIONS }.freeze
-      }.freeze,
       "resizable/panel_group": {
         orientation: { kind: :enum, default: "horizontal", values: ORIENTATIONS }.freeze
       }.freeze,

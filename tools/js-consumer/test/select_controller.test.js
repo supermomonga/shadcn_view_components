@@ -73,6 +73,13 @@ function selectFixture(id, { disabled = false, initialValue = null } = {}) {
   `
 }
 
+function nestedSelectFixture() {
+  return selectFixture("nested-outer").replace(
+    "        <div data-slot=\"select-scroll-up-button\"",
+    `${selectFixture("nested-inner")}\n        <div data-slot="select-scroll-up-button"`,
+  )
+}
+
 function keydown(element, key) {
   const event = new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key })
   element.dispatchEvent(event)
@@ -99,12 +106,14 @@ describe("shadcn--select", () => {
     expect(firstValue.textContent).toBe("Beta")
     expect(firstValue.hasAttribute("data-placeholder")).toBe(false)
     expect(firstTrigger.hasAttribute("data-placeholder")).toBe(false)
+    expect(firstTrigger.getAttribute("aria-label")).toBe("Beta")
     expect(firstItems.map((item) => item.getAttribute("aria-selected"))).toEqual(["false", "true", "false"])
     expect(firstItems[1].querySelector("[data-indicator]").hidden).toBe(false)
 
     expect(secondValue.textContent).toBe("Choose a framework")
     expect(secondValue.hasAttribute("data-placeholder")).toBe(true)
     expect(secondTrigger.hasAttribute("data-placeholder")).toBe(true)
+    expect(secondTrigger.getAttribute("aria-label")).toBe("Choose a framework")
     expect(secondItems.every((item) => item.getAttribute("aria-selected") === "false")).toBe(true)
 
     expect(firstTrigger.id).toBe("first-trigger")
@@ -121,10 +130,32 @@ describe("shadcn--select", () => {
 
     firstItems[0].click()
     expect(document.querySelector("#first [data-slot='select-input']").value).toBe("alpha")
+    expect(firstTrigger.getAttribute("aria-label")).toBe("Alpha")
     expect(secondValue.textContent).toBe("Choose a framework")
     expect(secondItems.every((item) => item.getAttribute("aria-selected") === "false")).toBe(true)
 
     await harness.disconnect(firstRoot)
+  })
+
+  it("preserves authored IDs and ARIA relationships", async () => {
+    const html = selectFixture("authored")
+      .replace(
+        "role=\"combobox\"",
+        "id=\"kept-trigger\" role=\"combobox\" aria-label=\"独自ラベル\" aria-controls=\"custom-popup\"",
+      )
+      .replace(
+        "<div role=\"listbox\"",
+        "<div id=\"kept-listbox\" role=\"listbox\" aria-labelledby=\"external-label\"",
+      )
+    const harness = await mount(html)
+    const root = document.querySelector("#authored")
+    const trigger = document.querySelector("#kept-trigger")
+    const listbox = document.querySelector("#kept-listbox")
+
+    expect(trigger.getAttribute("aria-label")).toBe("独自ラベル")
+    expect(trigger.getAttribute("aria-controls")).toBe("custom-popup")
+    expect(listbox.getAttribute("aria-labelledby")).toBe("external-label")
+    await harness.disconnect(root)
   })
 
   it("commits clicks once, dispatches form events, and skips disabled state", async () => {
@@ -189,23 +220,23 @@ describe("shadcn--select", () => {
     expect(keydown(trigger, "ArrowDown").defaultPrevented).toBe(true)
     expect(content.matches(":popover-open")).toBe(true)
     expect(trigger.getAttribute("aria-activedescendant")).toBe(alpha.id)
-    expect(document.activeElement).toBe(alpha)
+    expect(document.activeElement).toBe(trigger)
 
-    keydown(alpha, "ArrowDown")
+    keydown(trigger, "ArrowDown")
     expect(trigger.getAttribute("aria-activedescendant")).toBe(beta.id)
     content.dispatchEvent(new Event("toggle"))
     expect(trigger.getAttribute("aria-activedescendant")).toBe(beta.id)
-    keydown(beta, "ArrowDown")
+    keydown(trigger, "ArrowDown")
     expect(trigger.getAttribute("aria-activedescendant")).toBe(alpha.id)
-    keydown(alpha, "ArrowUp")
+    keydown(trigger, "ArrowUp")
     expect(trigger.getAttribute("aria-activedescendant")).toBe(beta.id)
-    keydown(beta, "Home")
+    keydown(trigger, "Home")
     expect(trigger.getAttribute("aria-activedescendant")).toBe(alpha.id)
-    keydown(alpha, "End")
+    keydown(trigger, "End")
     expect(trigger.getAttribute("aria-activedescendant")).toBe(beta.id)
     expect(gamma.dataset.highlighted).toBe("false")
 
-    keydown(beta, "Enter")
+    keydown(trigger, "Enter")
     expect(input.value).toBe("beta")
     expect(content.dataset.state).toBe("closed")
     expect(trigger.hasAttribute("aria-activedescendant")).toBe(false)
@@ -213,19 +244,59 @@ describe("shadcn--select", () => {
 
     keydown(trigger, "Home")
     expect(trigger.getAttribute("aria-activedescendant")).toBe(alpha.id)
-    keydown(alpha, " ")
+    keydown(trigger, " ")
     expect(input.value).toBe("alpha")
     content.dispatchEvent(animationEvent("animationend", "exit"))
 
     keydown(trigger, "End")
     expect(trigger.getAttribute("aria-activedescendant")).toBe(beta.id)
-    keydown(beta, "Escape")
+    keydown(trigger, "Escape")
     expect(input.value).toBe("alpha")
     expect(content.dataset.state).toBe("closed")
     expect(trigger.getAttribute("aria-expanded")).toBe("false")
     expect(document.activeElement).toBe(trigger)
 
     await harness.disconnect(root)
+  })
+
+  it("keeps nested content ownership and keyboard state isolated", async () => {
+    vi.useFakeTimers()
+    const harness = await mount(nestedSelectFixture())
+    const outer = document.querySelector("#nested-outer")
+    const inner = document.querySelector("#nested-inner")
+    const outerController = harness.controller(outer, "shadcn--select")
+    const outerTrigger = outer.querySelector(":scope > [data-slot='select-trigger']")
+    const outerContent = outer.querySelector(":scope > [data-slot='select-content']")
+    const outerListbox = outerContent.querySelector(":scope > [role='listbox']")
+    const outerScrollUp = outerContent.querySelector(":scope > [data-slot='select-scroll-up-button']")
+    const outerScrollDown = outerContent.querySelector(":scope > [data-slot='select-scroll-down-button']")
+    const outerItems = [...outerListbox.querySelectorAll("[role='option']")]
+    const innerTrigger = inner.querySelector(":scope > [data-slot='select-trigger']")
+    const innerContent = inner.querySelector(":scope > [data-slot='select-content']")
+    const innerItems = [...inner.querySelectorAll("[role='option']")]
+
+    expect(outerController.content).toBe(outerContent)
+    expect(outerController.listbox).toBe(outerListbox)
+    expect(outerController.scrollUpButton).toBe(outerScrollUp)
+    expect(outerController.scrollDownButton).toBe(outerScrollDown)
+    expect(outerTrigger.getAttribute("aria-controls")).toBe(outerListbox.id)
+
+    keydown(outerTrigger, "ArrowDown")
+    expect(outerTrigger.getAttribute("aria-activedescendant")).toBe(outerItems[0].id)
+    keydown(innerTrigger, "ArrowDown")
+    expect(innerTrigger.getAttribute("aria-activedescendant")).toBe(innerItems[0].id)
+    expect(outerTrigger.getAttribute("aria-activedescendant")).toBe(outerItems[0].id)
+
+    keydown(innerTrigger, "ArrowDown")
+    expect(innerTrigger.getAttribute("aria-activedescendant")).toBe(innerItems[1].id)
+    expect(outerTrigger.getAttribute("aria-activedescendant")).toBe(outerItems[0].id)
+
+    keydown(innerTrigger, "Escape")
+    expect(innerContent.dataset.state).toBe("closed")
+    expect(outerContent.dataset.state).toBe("open")
+    expect(outerTrigger.getAttribute("aria-expanded")).toBe("true")
+    expect(outerTrigger.getAttribute("aria-activedescendant")).toBe(outerItems[0].id)
+    await harness.disconnect(outer)
   })
 
   it("reopens during exit and preserves the hidden value across a clean reconnect", async () => {
@@ -312,8 +383,8 @@ describe("shadcn--select", () => {
     const after = document.querySelector("#after")
 
     trigger.click()
-    expect(document.activeElement).toBe(document.querySelector("#focus [data-value='alpha']"))
-    keydown(document.activeElement, "Tab")
+    expect(document.activeElement).toBe(trigger)
+    keydown(trigger, "Tab")
     after.focus()
 
     expect(content.dataset.state).toBe("closed")
@@ -335,7 +406,11 @@ describe("shadcn--select", () => {
     const down = anonymous.querySelector("[data-slot='select-scroll-down-button']")
     const items = [...anonymous.querySelectorAll("[role='option']")]
 
-    expect(roots.map((root) => root.id)).toEqual(["shadcn-select-1", "shadcn-select-2"])
+    expect(roots[0].id).toBe("shadcn-select-1")
+    expect(roots[1].id).toMatch(/^shadcn-select-/)
+    expect(roots[1].id).not.toBe(roots[0].id)
+    expect(trigger.id).toBe(`${roots[1].id}-trigger`)
+    expect(listbox.id).toBe(`${roots[1].id}-listbox`)
     Object.defineProperties(listbox, {
       clientHeight: { configurable: true, value: 60 },
       scrollHeight: { configurable: true, value: 180 },

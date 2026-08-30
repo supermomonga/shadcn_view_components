@@ -9,13 +9,14 @@ module Shadcn
   # Resizable自体は名前空間であり、描画には配下のクラスを使う。
   module Resizable
     class PanelGroup < BaseComponent
-      # div(水平flex。垂直は aria-orientation のクラス契約に従う)
+      # div(水平flex。配置方向は data-orientation のクラス契約に従う)
       CONTROLLER = "shadcn--resizable"
 
       sig do
         params(orientation: T.any(Symbol, String), args: T::Hash[Symbol, T.untyped]).void.checked(:never)
       end
       def initialize(orientation: self.class.property_default(:orientation), **args)
+        assign_accessibility_root_id(args, prefix: "resizable")
         @orientation = T.let(normalize_property(:orientation, orientation), String)
         super(**args)
       end
@@ -24,9 +25,8 @@ module Shadcn
       def html_attributes
         attributes = super
         attributes[:role] = "group"
-        merge_nested(attributes, :aria, { orientation: @orientation })
         merge_style(attributes, { display: "flex" })
-        merge_nested(attributes, :data, { controller: CONTROLLER })
+        merge_nested(attributes, :data, { controller: CONTROLLER, orientation: @orientation })
         attributes
       end
     end
@@ -59,7 +59,12 @@ module Shadcn
         attributes = super
         attributes[:role] = "separator"
         attributes[:tabindex] = "0"
-        merge_nested(attributes, :aria, { orientation: @orientation })
+        merge_nested(attributes, :aria, {
+                       orientation: @orientation,
+                       valuemin: "10",
+                       valuemax: "90",
+                       valuenow: "50"
+                     })
         merge_style(attributes, { cursor: @orientation == "vertical" ? "col-resize" : "row-resize",
                                   flex: "0 0 auto" })
         merge_nested(attributes, :data, {

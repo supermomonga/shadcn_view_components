@@ -202,6 +202,26 @@ end
 初期描画、Turboによる再接続、同じ値の再選択では発火しない。バリデーションエラー時は、
 サーバへ届いた値を`default_value:`へ戻して再描画する。
 
+### 複合コンポーネントのアクセシビリティ契約
+
+JavaScriptを使う複合コンポーネントは、ルートごとに一意なIDを生成し、子要素間のARIA参照を
+接続時に補完する。利用者が指定した`id`、`aria-controls`、`aria-labelledby`、
+`aria-describedby`などは上書きしない。fragment cacheなどによって自動生成IDだけが重複した場合は、
+そのルートと自動生成した参照先だけを再採番する。入れ子にした同種コンポーネントは、それぞれの
+controllerが直近のルートだけを管理する。
+Tabsの向きは`Shadcn::Tabs.new(orientation: :horizontal | :vertical)`へ指定し、Listの
+`aria-orientation`と矢印キーの方向を同じ値から補完する。
+
+| コンポーネント | ARIA参照・状態 | キーボード操作 |
+| --- | --- | --- |
+| Dialog / AlertDialog / Sheet / Drawer | Triggerと`dialog`を`aria-controls`で結び、TitleとDescriptionを`aria-labelledby` / `aria-describedby`で参照する。開閉時は`aria-expanded`を同期する | ネイティブ`<dialog>`のモーダルフォーカス管理、Tab巡回、Escapeで閉じてTriggerへ戻る |
+| Tabs | TriggerとPanelを`aria-controls` / `aria-labelledby`で相互参照し、`aria-selected`、`tabindex`、`hidden`を同期する | 向きに応じた矢印キー、Home / Endで選択とフォーカスを移動する |
+| Combobox | Input、Listbox、Optionを`aria-controls` / `aria-labelledby` / `aria-activedescendant`で結び、候補の`aria-selected`を同期する | Inputにフォーカスを保ち、矢印キー、Home / End、Enter、Escapeで候補を操作する |
+| Select | Trigger、Listbox、Optionを`aria-controls` / `aria-labelledby` / `aria-activedescendant`で結び、開閉・選択状態を同期する | Triggerにフォーカスを保ち、矢印キー、Home / End、Enter / Space、Escape、Tabで操作する |
+| Accordion | TriggerとContentを`aria-controls` / `aria-labelledby`で相互参照し、`aria-expanded`を同期する | ネイティブ`<summary>`のEnter / Space操作を保つ |
+| Resizable | Handleを`separator`として前方Panelへ結び、`aria-valuemin` / `aria-valuemax` / `aria-valuenow`を同期する | 向きに応じた矢印キーで5%ずつ、Home / Endで最小値・最大値へ変更する |
+| Calendar | GridをCaptionへ結び、日付セルの`aria-selected`、当日の`aria-current`、日付ボタンの読み上げ名を設定する | 表示中の月表内で矢印キーを日・週単位、Home / Endを行の先頭・末尾への移動に使う |
+
 注意: 純Rubyのコード(`#call` 内等)で複数の子を `render` で連ねるときはブロックの
 戻り値しか使われないため `safe_join([...])` で連結する(ERBでは出力バッファが連結するため不要)。
 

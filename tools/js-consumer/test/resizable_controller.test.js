@@ -41,6 +41,10 @@ describe("shadcn--resizable", () => {
     document.dispatchEvent(new MouseEvent("mousemove", { clientX: 50 }))
     expect(firstBefore.style.flexBasis).toBe("70%")
     expect(parseFloat(firstAfter.style.flexBasis)).toBeCloseTo(30)
+    expect(firstHandle.getAttribute("aria-controls")).toBe(firstBefore.id)
+    expect(firstHandle.getAttribute("aria-valuemin")).toBe("10")
+    expect(firstHandle.getAttribute("aria-valuemax")).toBe("90")
+    expect(firstHandle.getAttribute("aria-valuenow")).toBe("70")
     expect(secondBefore.style.flexBasis).toBe("")
 
     document.dispatchEvent(new MouseEvent("mouseup"))
@@ -49,7 +53,18 @@ describe("shadcn--resizable", () => {
 
     firstHandle.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: "ArrowRight" }))
     expect(firstBefore.style.flexBasis).toBe("75%")
+    expect(firstHandle.getAttribute("aria-valuenow")).toBe("75")
     expect(secondBefore.style.flexBasis).toBe("")
+
+    firstHandle.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: "Home" }))
+    expect(firstBefore.style.flexBasis).toBe("10%")
+    expect(firstHandle.getAttribute("aria-valuenow")).toBe("10")
+
+    firstHandle.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: "End" }))
+    expect(firstBefore.style.flexBasis).toBe("90%")
+    expect(firstHandle.getAttribute("aria-valuenow")).toBe("90")
+    firstHandle.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: "ArrowRight" }))
+    expect(firstHandle.getAttribute("aria-valuenow")).toBe("90")
   })
 
   it("discards drag state and listeners when disconnected mid-drag", async () => {
@@ -75,5 +90,36 @@ describe("shadcn--resizable", () => {
 
     document.dispatchEvent(new MouseEvent("mousemove", { clientX: 90 }))
     expect(before.style.flexBasis).toBe("")
+  })
+
+  it("preserves user IDs and ARIA limits while isolating a nested panel group", async () => {
+    const lifecycle = await mount(`
+      <div id="outer" data-controller="shadcn--resizable" data-slot="resizable-panel-group">
+        <div id="user-primary" data-slot="resizable-panel"></div>
+        <button id="user-handle" data-slot="resizable-handle" role="separator"
+                aria-orientation="vertical" aria-controls="user-primary"
+                aria-valuemin="20" aria-valuemax="80" aria-valuenow="30"
+                data-action="mousedown->shadcn--resizable#startDrag keydown->shadcn--resizable#nudge"></button>
+        <div data-slot="resizable-panel">
+          ${resizableRoot("inner")}
+        </div>
+      </div>
+    `)
+    const outer = document.querySelector("#outer")
+    const outerHandle = document.querySelector("#user-handle")
+    const innerHandle = document.querySelector("#inner-handle")
+
+    expect(outerHandle.id).toBe("user-handle")
+    expect(outerHandle.getAttribute("aria-controls")).toBe("user-primary")
+    expect(outerHandle.getAttribute("aria-valuemin")).toBe("20")
+    expect(outerHandle.getAttribute("aria-valuemax")).toBe("80")
+    expect(outerHandle.getAttribute("aria-valuenow")).toBe("30")
+    expect(innerHandle.getAttribute("aria-controls")).toBe("inner-before")
+
+    outerHandle.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: "End" }))
+    expect(outerHandle.getAttribute("aria-valuenow")).toBe("80")
+    expect(innerHandle.getAttribute("aria-valuenow")).toBe("50")
+
+    await lifecycle.disconnect(outer)
   })
 })

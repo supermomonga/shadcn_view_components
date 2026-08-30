@@ -264,9 +264,21 @@ RSpec.describe "Menu and Resizable behavior", type: :system do
 
     basis = "parseFloat(getComputedStyle(document.querySelector('#panel-left')).flexBasis)"
     before = page.evaluate_script(basis)
-    find("#resize-handle").send_keys(:right)
+    handle = find("#resize-handle")
+    expect(handle["aria-controls"]).to eq("panel-left")
+    expect(handle["aria-valuemin"]).to eq("10")
+    expect(handle["aria-valuemax"]).to eq("90")
+    initial_value = handle["aria-valuenow"].to_f
+
+    handle.send_keys(:right)
     after = page.evaluate_script(basis)
 
     expect(after).to be > (before.zero? ? 0 : before)
+    expect(handle["aria-valuenow"].to_f).to be > initial_value
+
+    handle.send_keys(:home)
+    expect(handle["aria-valuenow"]).to eq("10")
+    handle.send_keys(:end)
+    expect(handle["aria-valuenow"]).to eq("90")
   end
 end

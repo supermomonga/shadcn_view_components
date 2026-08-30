@@ -4,6 +4,7 @@
   "type": "module",
   "exports": {
     ".": "./index.js",
+    "./aria_relationships": "./aria_relationships.js",
     "./controllers/*": "./controllers/*.js",
     "./floating_position": "./floating_position.js",
     "./hide_after_exit": "./hide_after_exit.js",

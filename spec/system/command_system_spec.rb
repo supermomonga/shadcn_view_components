@@ -73,11 +73,15 @@ RSpec.describe "Command and Combobox behavior", type: :system do
     page.execute_script("document.querySelector('#combobox-demo [data-slot=input-group-button]').focus()")
     press_key(:enter)
     expect(page.evaluate_script("document.activeElement === document.querySelector('#combobox-input')")).to be(true)
+    expect(find("#combobox-input")["aria-controls"]).to eq("combobox-content")
+    expect(find("#combobox-content", visible: :all)["aria-labelledby"]).to eq("combobox-input")
     press_key(:down)
     expect(page).to have_selector("#cb-hanami[data-highlighted]")
+    expect(find("#combobox-input")["aria-activedescendant"]).to eq("cb-hanami")
     press_key(:enter)
 
     expect(page).to have_selector("#combobox-content", visible: :hidden)
+    expect(find("#combobox-input")["aria-activedescendant"]).to be_nil
     expect(find("#combobox-input").value).to eq("Hanami Framework")
     expect(page.evaluate_script(<<~JS)).to eq("hanami")
       document.querySelector("#combobox [data-slot='combobox-form-control']").value
