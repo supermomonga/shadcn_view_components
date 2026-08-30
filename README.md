@@ -240,6 +240,38 @@ end
 貼り付け、one-time-codeの自動入力、caretはStimulusが同じ実inputから各Slotへ反映する。
 JavaScriptが無効な場合は、同梱の`noscript`スタイルによって実input自体を通常のテキスト欄として表示する。
 
+### Checkbox、RadioGroup、Switchをフォームで使う
+
+`Checkbox`、`RadioGroup::Item`、`Switch`は、ネイティブinputの`checked`プロパティを状態の唯一の
+情報源にする。`data-checked` / `data-unchecked`は見た目と外部コード向けの投影であり、初期描画、
+利用者操作、フォームのreset、Turboによる再接続のたびに現在の`checked`へ同期される。プログラムから
+`input.checked`を変更した場合、ブラウザは`change`イベントを自動では発火しないため、変更後に
+bubblingする`change`イベントをdispatchする。
+
+```erb
+<%= render(Shadcn::Checkbox.new(
+  id: "terms",
+  name: "account[terms]",
+  value: "accepted",
+  required: true,
+  aria: { label: "利用規約に同意する" }
+)) %>
+
+<%= render(Shadcn::RadioGroup.new(aria: { label: "プラン" })) do %>
+  <%= render(Shadcn::RadioGroup::Item.new(name: "account[plan]", value: "free", checked: true, aria: { label: "無料" })) %>
+  <%= render(Shadcn::RadioGroup::Item.new(name: "account[plan]", value: "pro", aria: { label: "プロ" })) %>
+<% end %>
+
+<%= render(Shadcn::Switch.new(name: "account[notifications]", value: "enabled", aria: { label: "通知" })) %>
+```
+
+Radioの`name`、`value`、`checked`、`required`、`disabled`、`form`は`RadioGroup`ではなく各`Item`へ
+指定する。同じフォーム所有者と`name`を持つItemは、ブラウザのネイティブな排他グループになる。
+CheckboxとSwitchは未選択時にはフォーム値を送信せず、Radioは選択されたItemの値だけを送信する。
+未選択値も必要な場合はRailsのフォームヘルパと同様にhidden inputを別途置く。`checked`属性は初期値と
+reset後の復帰先を表す。JavaScriptが無効でも、選択・キーボード操作・フォーム送信・表示色と印の切替は
+ネイティブinputと`:checked` CSSで動作する。
+
 ### Sliderをフォームで使う
 
 `Slider`はネイティブの`input[type="range"]`を値の唯一の情報源にする。`id`、`name`、`form`、

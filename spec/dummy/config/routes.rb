@@ -14,6 +14,7 @@ Dummy::Application.routes.draw do
   get "pages/select", to: "pages#select"
   get "pages/input_otp", to: "pages#input_otp"
   get "pages/slider", to: "pages#slider"
+  get "pages/checked_states", to: "pages#checked_states"
   get "pages/sidebar", to: "pages#sidebar"
   get "pages/calendar", to: "pages#calendar"
   get "pages/carousel", to: "pages#carousel"

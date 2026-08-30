@@ -34,20 +34,20 @@ checkbox:
     # 契約がunchecked側の属性を記録しないため許可)、appearance-none はネイティブ
     # ウィジェット描画を消す装飾(dark時の白箱問題)
     class_mode: contains
-    attributes: [type, data-checked, data-unchecked]
+    attributes: [type, data-checked, data-unchecked, data-controller, data-action]
 switch:
   Switch:
     # checkbox と同じ理由の data-checked / data-unchecked / appearance-none
     # (peer-checked のための peer 含む)
     class_mode: contains
-    attributes: [type, role, data-checked, data-unchecked]
+    attributes: [type, role, data-checked, data-unchecked, data-controller, data-action]
 radio-group:
   RadioGroup:
     attributes: [role]
   RadioGroupItem:
     # checkbox と同じ理由の data-checked / data-unchecked / appearance-none / peer
     class_mode: contains
-    attributes: [type, data-checked, data-unchecked]
+    attributes: [type, data-checked, data-unchecked, data-controller, data-action]
 toggle:
   Toggle:
     # shadcn--toggle コントローラの状態属性と button 既定の type

@@ -16,6 +16,7 @@
 import AccordionController from "@supermomonga/shadcn-view-components/controllers/accordion_controller"
 import CalendarController from "@supermomonga/shadcn-view-components/controllers/calendar_controller"
 import CarouselController from "@supermomonga/shadcn-view-components/controllers/carousel_controller"
+import CheckedStateController from "@supermomonga/shadcn-view-components/controllers/checked_state_controller"
 import ComboboxController from "@supermomonga/shadcn-view-components/controllers/combobox_controller"
 import CommandController from "@supermomonga/shadcn-view-components/controllers/command_controller"
 import DialogController from "@supermomonga/shadcn-view-components/controllers/dialog_controller"
@@ -41,6 +42,7 @@ export function register(application) {
   application.register("shadcn--accordion", AccordionController)
   application.register("shadcn--calendar", CalendarController)
   application.register("shadcn--carousel", CarouselController)
+  application.register("shadcn--checked-state", CheckedStateController)
   application.register("shadcn--combobox", ComboboxController)
   application.register("shadcn--command", CommandController)
   application.register("shadcn--dialog", DialogController)

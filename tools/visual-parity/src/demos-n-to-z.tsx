@@ -187,9 +187,21 @@ export const demosNToZ: Record<string, ComponentType> = {
   ),
 
   "radio-group/default": () => (
-    <RadioGroup>
-      <RadioGroupItem name="plan" value="free" />
-      <RadioGroupItem name="plan" value="pro" />
+    <RadioGroup aria-label="プラン">
+      <RadioGroupItem name="plan" value="free" aria-label="無料" />
+      <RadioGroupItem name="plan" value="pro" aria-label="プロ" />
+    </RadioGroup>
+  ),
+
+  "radio-group/checked": () => (
+    <RadioGroup aria-label="プラン" defaultValue="pro">
+      <RadioGroupItem value="pro" aria-label="選択済みプラン" />
+    </RadioGroup>
+  ),
+
+  "radio-group/unchecked": () => (
+    <RadioGroup aria-label="プラン">
+      <RadioGroupItem value="pro" aria-label="未選択プラン" />
     </RadioGroup>
   ),
 
@@ -290,7 +302,11 @@ export const demosNToZ: Record<string, ComponentType> = {
 
   "spinner/large": () => <Spinner className="size-8" />,
 
-  "switch/default": () => <Switch id="switch" name="switch" />,
+  "switch/default": () => <Switch id="switch" name="switch" aria-label="通知" />,
+
+  "switch/checked": () => <Switch defaultChecked aria-label="通知オン" />,
+
+  "switch/unchecked": () => <Switch defaultChecked={false} aria-label="通知オフ" />,
 
   "switch/small": () => <Switch size="sm" name="switch-sm" />,
 

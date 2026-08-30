@@ -51,6 +51,8 @@ class PagesController < ApplicationController
 
   def slider; end
 
+  def checked_states; end
+
   def sidebar; end
 
   def calendar

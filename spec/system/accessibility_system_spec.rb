@@ -16,7 +16,10 @@ RSpec.describe "Representative preview accessibility", type: :system do
     { path: "slider/default" },
     { path: "input_otp/default" },
     { path: "carousel/default" },
-    { path: "calendar/default" }
+    { path: "calendar/default" },
+    { path: "checkbox/default" },
+    { path: "radio_group/default" },
+    { path: "switch/default" }
   ]
 
   scenarios.each do |scenario|

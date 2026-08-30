@@ -6,6 +6,17 @@ All notable changes to this project will be documented in this file.
 
 Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
+### Checkbox・RadioGroup・Switchの状態同期
+
+- ネイティブinputの`checked`を唯一の状態源とし、初期描画、利用者操作、フォームreset、Turbo再接続で
+  `data-checked` / `data-unchecked`を同期する共通controller契約を追加した
+- 同名かつ同じフォームに属するRadioを一括同期し、利用者のStimulus controller / actionと内部処理を
+  重複なく合成する。任意dataとARIAは保持し、状態dataはネイティブ値を常に優先する
+- `:checked`と`peer-checked`による装飾を追加し、JavaScriptが無効でも選択色、indicator、Switch thumbを
+  ネイティブ操作へ追従させた。装飾要素はアクセシビリティツリーから除外した
+- checked / uncheckedのLookbook previewとupstream visual parity、フォームAPIと初期状態のcomponent
+  spec、代表プレビューのアクセシビリティ検査を追加した
+
 ### Carouselの縦方向・RTL・リサイズ時の状態を同期
 
 - Rootの`orientation:`と`direction:`を公開プロパティ契約へ追加し、正規化した値を

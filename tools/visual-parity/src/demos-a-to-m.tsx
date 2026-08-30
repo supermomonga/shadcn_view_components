@@ -252,7 +252,11 @@ export const demosAToM: Record<string, ComponentType> = {
     </Carousel>
   ),
 
-  "checkbox/default": () => <Checkbox id="check" name="check" />,
+  "checkbox/default": () => <Checkbox id="check" name="check" aria-label="通知を受け取る" />,
+
+  "checkbox/checked": () => <Checkbox defaultChecked aria-label="選択済み" />,
+
+  "checkbox/unchecked": () => <Checkbox defaultChecked={false} aria-label="未選択" />,
 
   "checkbox/disabled": () => <Checkbox disabled />,
 

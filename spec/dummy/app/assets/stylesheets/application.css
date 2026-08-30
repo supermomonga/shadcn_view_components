@@ -1052,6 +1052,16 @@
   .gap-\[--spacing\(var\(--gap\)\)\] {
     gap: calc(var(--spacing) * var(--gap));
   }
+  :where(.space-y-2 > :not(:last-child)) {
+    --tw-space-y-reverse: 0;
+    margin-block-start: calc(calc(var(--spacing) * 2) * var(--tw-space-y-reverse));
+    margin-block-end: calc(calc(var(--spacing) * 2) * calc(1 - var(--tw-space-y-reverse)));
+  }
+  :where(.space-y-4 > :not(:last-child)) {
+    --tw-space-y-reverse: 0;
+    margin-block-start: calc(calc(var(--spacing) * 4) * var(--tw-space-y-reverse));
+    margin-block-end: calc(calc(var(--spacing) * 4) * calc(1 - var(--tw-space-y-reverse)));
+  }
   :where(.-space-x-2 > :not(:last-child)) {
     --tw-space-x-reverse: 0;
     margin-inline-start: calc(calc(var(--spacing) * -2) * var(--tw-space-x-reverse));
@@ -1839,6 +1849,15 @@
     border-bottom-style: var(--tw-border-style);
     border-bottom-width: 1px;
   }
+  .not-checked\:border-input:not(:checked) {
+    border-color: var(--input);
+  }
+  .not-checked\:bg-input:not(:checked) {
+    background-color: var(--input);
+  }
+  .not-checked\:bg-transparent:not(:checked) {
+    background-color: transparent;
+  }
   .group-focus\/context-menu-item\:text-accent-foreground:is(:where(.group\/context-menu-item):focus *) {
     color: var(--accent-foreground);
   }
@@ -2327,6 +2346,10 @@
   .group-\[\[data-orientation\=horizontal\]\[data-direction\=rtl\]\]\/carousel\:rotate-180:is(:where(.group\/carousel):is([data-orientation=horizontal][data-direction=rtl]) *) {
     rotate: 180deg;
   }
+  .peer-not-checked\:translate-x-0:is(:where(.peer):not(:checked) ~ *) {
+    --tw-translate-x: 0px;
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
   .peer-checked\:flex:is(:where(.peer):checked ~ *) {
     display: flex;
   }
@@ -2608,6 +2631,18 @@
   .last\:rounded-r-lg:last-child {
     border-top-right-radius: var(--radius);
     border-bottom-right-radius: var(--radius);
+  }
+  .checked\:border-primary:checked {
+    border-color: var(--primary);
+  }
+  .checked\:bg-primary:checked {
+    background-color: var(--primary);
+  }
+  .checked\:text-primary-foreground:checked {
+    color: var(--primary-foreground);
+  }
+  .group-has-\[\:focus-visible\]\/field-label\:checked\:border-primary:is(:where(.group\/field-label):has(:is(:focus-visible)) *):checked {
+    border-color: var(--primary);
   }
   .focus-within\:border-ring:focus-within {
     border-color: var(--ring);
@@ -4089,6 +4124,9 @@
     .sm\:justify-end {
       justify-content: flex-end;
     }
+    .sm\:gap-3 {
+      gap: calc(var(--spacing) * 3);
+    }
     .sm\:group-data-\[size\=default\]\/alert-dialog-content\:row-span-2:is(:where(.group\/alert-dialog-content)[data-size="default"] *) {
       grid-row: span 2 / span 2;
     }
@@ -4208,9 +4246,30 @@
   .dark\:text-muted-foreground:is(.dark *) {
     color: var(--muted-foreground);
   }
+  .dark\:not-checked\:bg-input\/30:is(.dark *):not(:checked) {
+    background-color: var(--input);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--input) 30%, transparent);
+    }
+  }
+  .dark\:not-checked\:bg-input\/80:is(.dark *):not(:checked) {
+    background-color: var(--input);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--input) 80%, transparent);
+    }
+  }
+  .dark\:peer-not-checked\:bg-foreground:is(.dark *):is(:where(.peer):not(:checked) ~ *) {
+    background-color: var(--foreground);
+  }
+  .dark\:peer-checked\:bg-primary-foreground:is(.dark *):is(:where(.peer):checked ~ *) {
+    background-color: var(--primary-foreground);
+  }
   .dark\:after\:mix-blend-lighten:is(.dark *)::after {
     content: var(--tw-content);
     mix-blend-mode: lighten;
+  }
+  .dark\:checked\:bg-primary:is(.dark *):checked {
+    background-color: var(--primary);
   }
   @media (hover: hover) {
     .dark\:hover\:bg-destructive\/30:is(.dark *):hover {
@@ -5363,6 +5422,11 @@ summary[data-slot='collapsible-trigger']::marker {
   inherits: false;
   initial-value: proximity;
 }
+@property --tw-space-y-reverse {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
 @property --tw-space-x-reverse {
   syntax: "*";
   inherits: false;
@@ -5713,6 +5777,7 @@ summary[data-slot='collapsible-trigger']::marker {
       --tw-skew-x: initial;
       --tw-skew-y: initial;
       --tw-scroll-snap-strictness: proximity;
+      --tw-space-y-reverse: 0;
       --tw-space-x-reverse: 0;
       --tw-border-style: solid;
       --tw-leading: initial;

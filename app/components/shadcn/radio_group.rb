@@ -13,6 +13,14 @@ module Shadcn
     end
 
     class Item < BaseComponent
+      include NativeCheckedState
+
+      NATIVE_STATE_CLASS = T.let([
+        "not-checked:border-input not-checked:bg-transparent dark:not-checked:bg-input/30",
+        "checked:border-primary checked:bg-primary checked:text-primary-foreground",
+        "group-has-[:focus-visible]/field-label:checked:border-primary dark:checked:bg-primary"
+      ].join(" ").freeze, String)
+
       # 契約タグは RadioGroupPrimitive.Item。ネイティブな input[type=radio] として描く
       sig { override.returns(String) }
       def default_tag
@@ -21,27 +29,21 @@ module Shadcn
 
       sig { override.returns(String) }
       def call
-        safe_join([input_element, indicator_element])
+        content_tag(:span, class: "relative flex w-fit") do
+          safe_join([input_element, indicator_element])
+        end
       end
 
       private
-
-      # base-nova の契約クラスは data-checked / data-unchecked(属性の存在)を参照する
-      sig { returns(T::Hash[Symbol, T.untyped]) }
-      def state_attributes
-        @html_args[:checked] ? { checked: "" } : { unchecked: "" }
-      end
 
       sig { returns(String) }
       def input_element
         attributes = html_attributes.merge(type: "radio")
         # ネイティブウィジェット描画を消す(dark時の白箱問題 — checkbox.rb と同じ理由)。
         # 印の表示は indicator を peer-checked で出すため peer も付与する
-        attributes[:class] = [attributes[:class], "appearance-none peer"].compact.join(" ")
-        merge_nested(attributes, :data, state_attributes)
-        content_tag(:input, **attributes) { "".html_safe }
-          .then { |markup| markup.sub(%r{></input>\z}, ">") }
-          .then(&:html_safe)
+        attributes[:class] = [attributes[:class], "appearance-none peer", NATIVE_STATE_CLASS].compact.join(" ")
+        merge_native_checked_state(attributes, checked: native_checked?(@html_args))
+        void_tag("input", **attributes)
       end
 
       # 契約のスロット構造(radio-group-indicator)を保つ。普段は非表示で、
@@ -49,7 +51,12 @@ module Shadcn
       sig { returns(String) }
       def indicator_element
         indicator_class = T.cast(contract_slot("radio-group-indicator").dig(:static_attributes, :class), T.nilable(String))
-        content_tag(:span, data: { slot: "radio-group-indicator" }, class: [indicator_class, "hidden peer-checked:flex"].compact.join(" ")) do
+        content_tag(
+          :span,
+          data: { slot: "radio-group-indicator" },
+          aria: { hidden: "true" },
+          class: [indicator_class, "pointer-events-none absolute inset-0 hidden peer-checked:flex"].compact.join(" ")
+        ) do
           content_tag(
             :svg,
             xmlns: "http://www.w3.org/2000/svg",
