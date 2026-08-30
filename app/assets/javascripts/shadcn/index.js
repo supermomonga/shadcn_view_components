@@ -22,6 +22,7 @@ import MenuController from "@supermomonga/shadcn-view-components/controllers/men
 import MessageScrollerController from "@supermomonga/shadcn-view-components/controllers/message_scroller_controller"
 import PopoverController from "@supermomonga/shadcn-view-components/controllers/popover_controller"
 import ResizableController from "@supermomonga/shadcn-view-components/controllers/resizable_controller"
+import SelectController from "@supermomonga/shadcn-view-components/controllers/select_controller"
 import SidebarController from "@supermomonga/shadcn-view-components/controllers/sidebar_controller"
 import TabsController from "@supermomonga/shadcn-view-components/controllers/tabs_controller"
 import ToggleController from "@supermomonga/shadcn-view-components/controllers/toggle_controller"
@@ -40,6 +41,7 @@ export function register(application) {
   application.register("shadcn--message-scroller", MessageScrollerController)
   application.register("shadcn--popover", PopoverController)
   application.register("shadcn--resizable", ResizableController)
+  application.register("shadcn--select", SelectController)
   application.register("shadcn--sidebar", SidebarController)
   application.register("shadcn--tabs", TabsController)
   application.register("shadcn--toggle", ToggleController)

@@ -36,7 +36,9 @@ RSpec.describe "public property validation", type: :component do
     Shadcn::Sidebar::MenuSubButton => [:size, %w[sm md], "md"],
     Shadcn::AlertDialog::Content => [:size, %w[default sm], "default"],
     Shadcn::Avatar => [:size, %w[default sm lg], "default"],
-    Shadcn::Switch => [:size, %w[default sm], "default"]
+    Shadcn::Switch => [:size, %w[default sm], "default"],
+    Shadcn::Select::Trigger => [:size, %w[default sm], "default"],
+    Shadcn::NativeSelect => [:size, %w[default sm], "default"]
   }
 
   enum_contracts.each do |component_class, (property, values, default)|

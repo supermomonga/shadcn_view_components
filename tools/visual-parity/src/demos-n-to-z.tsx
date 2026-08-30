@@ -32,6 +32,10 @@ import {
   ResizableHandle, ResizablePanel, ResizablePanelGroup,
 } from "./components/ui/resizable.tsx"
 import { ScrollArea } from "./components/ui/scroll-area.tsx"
+import {
+  Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger,
+  SelectValue,
+} from "./components/ui/select.tsx"
 import { Separator } from "./components/ui/separator.tsx"
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "./components/ui/sheet.tsx"
 import { Skeleton } from "./components/ui/skeleton.tsx"
@@ -45,6 +49,12 @@ import { Textarea } from "./components/ui/textarea.tsx"
 import { Toggle } from "./components/ui/toggle.tsx"
 import { ToggleGroup, ToggleGroupItem } from "./components/ui/toggle-group.tsx"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./components/ui/tooltip.tsx"
+
+const selectLabels = {
+  apple: "りんご",
+  banana: "バナナ",
+  orange: "オレンジ",
+} as const
 
 export const demosNToZ: Record<string, ComponentType> = {
   "input/default": () => <Input type="email" placeholder="email@example.com" />,
@@ -202,6 +212,25 @@ export const demosNToZ: Record<string, ComponentType> = {
         <div key={i} className="p-2">行 {i + 1}</div>
       ))}
     </ScrollArea>
+  ),
+
+  "select/default": () => (
+    <Select defaultValue="apple">
+      <SelectTrigger>
+        <SelectValue placeholder="果物を選択">
+          {(value) => value == null ? "果物を選択" : selectLabels[value as keyof typeof selectLabels]}
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectLabel>果物</SelectLabel>
+          <SelectItem value="apple">りんご</SelectItem>
+          <SelectItem value="banana">バナナ</SelectItem>
+          <SelectSeparator />
+          <SelectItem value="orange">オレンジ</SelectItem>
+        </SelectGroup>
+      </SelectContent>
+    </Select>
   ),
 
   "separator/horizontal": () => <Separator />,

@@ -6,10 +6,16 @@ module Shadcn
   # 利用者属性(name/id/required 等)はすべて実際の <select> に渡す
   # (ラッパーは gem 内部要素のため name 等が届かないフォーム送信の破壊を防ぐ)
   class NativeSelect < BaseComponent
+    sig { params(size: T.any(Symbol, String), args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
+    def initialize(size: self.class.property_default(:size), **args)
+      @size = T.let(normalize_property(:size, size), String)
+      super(**args)
+    end
+
     sig { override.returns(String) }
     def call
       # base-nova ではユーザークラス(className)はラッパーへ流れる
-      content_tag(:div, class: wrapper_class, data: { slot: "native-select-wrapper" }) do
+      content_tag(:div, class: wrapper_class, data: { slot: "native-select-wrapper", size: @size }) do
         safe_join([select_element, chevron_icon])
       end
     end
@@ -20,7 +26,7 @@ module Shadcn
     sig { returns(String) }
     def select_element
       attributes = @html_args.merge(class: select_class)
-      merge_nested(attributes, :data, { slot: "native-select" })
+      merge_nested(attributes, :data, { slot: "native-select", size: @size })
       content_tag(:select, **attributes) { content }
     end
 

@@ -9,7 +9,9 @@ import { resolveCnCombinations, resolveConstrainedCombinations } from "../derive
 import { renderContractRuby } from "../emit/ruby.ts"
 import { renderThemeCss } from "../emit/css.ts"
 import { snakeCase } from "../normalize.ts"
+import { extractContractFromItem } from "../pipeline.ts"
 import type { Contract } from "../contract.ts"
+import type { Manifest } from "../manifest.ts"
 
 /**
  * 簡退化させた固定フィクスチャTSX(03-extraction-codegen §9)。
@@ -73,6 +75,50 @@ describe("parse: cva", () => {
 })
 
 describe("parse: exports and slots", () => {
+  it("keeps exported primitive Root aliases as canonical empty contracts", async () => {
+    const source = `
+      const Select = SelectPrimitive.Root
+      const Combobox = ComboboxPrimitive.Root
+      const ConfigurationRoot = Configuration.Root
+      const variants = cva("base", {})
+      export { Select, Combobox, ConfigurationRoot, variants }
+    `
+    const ast = parseTsx(source)
+    const discovered = discoverExports(ast, "picker", "ui/picker.tsx")
+    expect(discovered.map(({ name, primitiveRootTag }) => [name, primitiveRootTag])).toEqual([
+      ["Select", "SelectPrimitive.Root"],
+      ["Combobox", "ComboboxPrimitive.Root"],
+      ["ConfigurationRoot", null],
+      ["variants", null],
+    ])
+
+    const contract = await extractContractFromItem(
+      "",
+      { items: {} } as Manifest,
+      "picker",
+      { name: "picker", files: [{ path: "ui/picker.tsx", content: source }] },
+      "abc123",
+      {},
+    )
+    expect(contract.exports.Select).toEqual({
+      root_slot: "",
+      classes_slot: "",
+      component_class: "Shadcn::Select",
+      cva: { prop_names: [], defaults: {}, compound: [] },
+      combinations: { "": "" },
+      slots: [{
+        name: "",
+        tag: "SelectPrimitive.Root",
+        static_attributes: {},
+        dynamic_attributes: [],
+      }],
+      passthrough_class: false,
+    })
+    expect(contract.exports.Combobox?.slots[0]?.tag).toBe("ComboboxPrimitive.Root")
+    expect(contract.exports.ConfigurationRoot).toBeUndefined()
+    expect(contract.exports.variants).toBeUndefined()
+  })
+
   it("binds JSX elements to the Button export and collects data-slot structure", () => {
     const ast = parseTsx(FIXTURE_BUTTON_TSX)
     const exports = discoverExports(ast, "button", "ui/button.tsx")

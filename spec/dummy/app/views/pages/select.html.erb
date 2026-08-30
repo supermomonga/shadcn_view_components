@@ -1,0 +1,35 @@
+<main class="select-page">
+  <h1>Select</h1>
+
+  <form id="select-form" action="/pages/echo" method="get">
+    <%= render(Shadcn::Select.new(id: "fruit-select", name: "q", default_value: "banana")) do %>
+      <%= render(Shadcn::Select::Trigger.new(id: "fruit-trigger")) do %>
+        <%= render(Shadcn::Select::Value.new(placeholder: "果物を選択")) %>
+      <% end %>
+      <%= render(Shadcn::Select::Content.new(id: "fruit-content", style: "max-height: 90px")) do %>
+        <%= render(Shadcn::Select::Group.new) do %>
+          <%= render(Shadcn::Select::Label.new) { "果物" } %>
+          <%= render(Shadcn::Select::Item.new(id: "option-apple", value: "apple")) { "りんご" } %>
+          <%= render(Shadcn::Select::Item.new(id: "option-banana", value: "banana")) { "バナナ" } %>
+          <%= render(Shadcn::Select::Item.new(id: "option-pear", value: "pear", disabled: true)) { "なし（品切れ）" } %>
+          <%= render(Shadcn::Select::Separator.new) %>
+          <%= render(Shadcn::Select::Item.new(id: "option-orange", value: "orange")) { "オレンジ" } %>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <%= render(Shadcn::Button.new(id: "select-submit", type: "submit")) { "送信" } %>
+    <%= link_to "別ページへ移動", "/pages/button", id: "select-away" %>
+  </form>
+
+  <section id="disabled-select-fixture">
+    <%= render(Shadcn::Select.new(id: "disabled-select", name: "disabled_q", default_value: "apple", disabled: true)) do %>
+      <%= render(Shadcn::Select::Trigger.new(id: "disabled-select-trigger")) do %>
+        <%= render(Shadcn::Select::Value.new(placeholder: "選択できません")) %>
+      <% end %>
+      <%= render(Shadcn::Select::Content.new(id: "disabled-select-content")) do %>
+        <%= render(Shadcn::Select::Item.new(id: "disabled-select-option", value: "apple")) { "りんご" } %>
+      <% end %>
+    <% end %>
+  </section>
+</main>

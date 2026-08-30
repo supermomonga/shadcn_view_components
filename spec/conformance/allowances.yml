@@ -255,6 +255,8 @@ command:
   CommandEmpty:
     attributes: [hidden]
 combobox:
+  Combobox:
+    attributes: [data-controller]
   ComboboxInput:
     # upstream の ComboboxInput は <InputGroup>(別アイテム)でラップし、トリガーを
     # <InputGroupAddon> に置く。契約(combobox側)には上書き分のみ記録されるため、
@@ -290,13 +292,26 @@ input-otp:
     attributes: [type, inputmode, maxlength, autocomplete, value]
 select:
   Select:
-    attributes: [data-controller]
+    # upstreamのRoot別名はDOMを持たない。Ruby版の状態ホストと
+    # フォーム送信用inputは明示的な追加スロットとして許可する。
+    slots_mode: superset
+    attributes: [data-slot, data-controller, data-action]
   SelectTrigger:
     attributes: [type, role, aria-haspopup, aria-expanded, data-action]
   SelectContent:
-    attributes: [role, popover, data-state, style]
+    # Scroll buttonsと浮動位置のラッパーはRuby版の合成構造。
+    slots_mode: superset
+    attributes: [role, popover, data-state, data-closed, data-position-side, data-position-align, data-position-side-offset, data-position-align-offset, data-position-collision-padding, style]
+  SelectGroup:
+    attributes: [role]
   SelectItem:
-    attributes: [role, tabindex, data-value, aria-selected]
+    attributes: [role, tabindex, data-value, data-selected, data-action, aria-selected]
+  SelectSeparator:
+    attributes: [role]
+  SelectScrollUpButton:
+    attributes: [hidden, style, aria-hidden, data-scroll-direction, data-action]
+  SelectScrollDownButton:
+    attributes: [hidden, style, aria-hidden, data-scroll-direction, data-action]
 field:
   FieldLabel:
     # upstream の FieldLabel は <Label>(別アイテム)を描くため、描画は label 契約の

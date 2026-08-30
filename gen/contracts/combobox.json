@@ -5,6 +5,28 @@
     "light": {}
   },
   "exports": {
+    "Combobox": {
+      "classes_slot": "",
+      "combinations": {
+        "": ""
+      },
+      "component_class": "Shadcn::Combobox",
+      "cva": {
+        "compound": [],
+        "defaults": {},
+        "prop_names": []
+      },
+      "passthrough_class": false,
+      "root_slot": "",
+      "slots": [
+        {
+          "dynamic_attributes": [],
+          "name": "",
+          "static_attributes": {},
+          "tag": "ComboboxPrimitive.Root"
+        }
+      ]
+    },
     "ComboboxChip": {
       "classes_slot": "combobox-chip",
       "combinations": {

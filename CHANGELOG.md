@@ -6,6 +6,17 @@ All notable changes to this project will be documented in this file.
 
 Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
+### Selectをフォーム送信可能なlistboxとして完成
+
+- primitive Rootの別名exportも抽出契約へ残し、Selectルートだけ契約面が欠けて描画時に例外となる
+  原因を生成パイプラインから解消した
+- `shadcn--menu`への誤った依存を廃止し、hidden inputを確定値の唯一の情報源とする専用
+  `shadcn--select` controllerでクリック、全キーボード操作、disabled option、再接続を扱う
+- Trigger・listbox・optionをIDとARIAで関連付け、表示値・選択状態・フォーム値を同じ値から同期する
+- Selectのcomponent / DOM / system / visual parity検証とLookbook previewを追加した
+- JS不要・native validation向けの`NativeSelect`との責務を明記し、装飾用sizeがHTMLの行数属性へ
+  誤って流れないよう`data-size`へ分離した
+
 ### 公開プロパティの値域検証を統一
 
 - CVAバリアントとは別に、Rails側でdata属性・ARIA・CSS値へ変換する列挙値と数値の

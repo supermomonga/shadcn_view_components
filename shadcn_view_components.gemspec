@@ -52,4 +52,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rubocop-sorbet"
   spec.add_development_dependency "sorbet-static", "~> 0.5"
   spec.add_development_dependency "tapioca"
+  spec.add_development_dependency "turbo-rails"
 end

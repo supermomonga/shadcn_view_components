@@ -129,6 +129,21 @@ render(Shadcn::Popover::Content.new(
   align_offset: 0,
   collision_padding: 5
 )) { "内容" }
+
+# JSで操作する装飾Select。default_valueはhidden inputへ入り、nameでフォーム送信される
+render(Shadcn::Select.new(name: "framework", default_value: "rails")) do
+  safe_join([
+    render(Shadcn::Select::Trigger.new) do
+      render(Shadcn::Select::Value.new(placeholder: "選択してください"))
+    end,
+    render(Shadcn::Select::Content.new) do
+      safe_join([
+        render(Shadcn::Select::Item.new(value: "rails")) { "Ruby on Rails" },
+        render(Shadcn::Select::Item.new(value: "hanami")) { "Hanami" }
+      ])
+    end
+  ])
+end
 ```
 
 注意: 純Rubyのコード(`#call` 内等)で複数の子を `render` で連ねるときはブロックの
@@ -142,6 +157,8 @@ render(Shadcn::Popover::Content.new(
   個別の制約は `Shadcn::Progress.property_contract(:value)` のように確認できる
 - 浮動要素の `side` は `top/right/bottom/left/inline-start/inline-end`、`align` は
   `start/center/end`。画面端では実配置を反転・調整し、scrollやresizeにも追従する
+- `Select` は単一値の装飾listboxで、Stimulus登録が必要。JS不要、`multiple`、ブラウザ標準の
+  制約検証が必要なフォームには、実際の`<select>`を描く`NativeSelect`を使う
 - `class:` で渡した追加クラスは `tailwind_merge` により契約クラスと統合される(利用者の上書きが後勝ち)
 - テーマのカスタマイズは CSS変数の上書きが唯一の公式経路(`@import` より後に書く)
 

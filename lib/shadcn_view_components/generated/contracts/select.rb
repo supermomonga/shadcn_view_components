@@ -8,6 +8,27 @@
 module ShadcnViewComponents
   module Contracts
     module Select
+      ROOT_SLOT = T.let("", String)
+
+      DEFAULTS = T.let({}.freeze, T::Hash[Symbol, Symbol])
+
+      VARIANTS = T.let({}.freeze, T::Hash[Symbol, T::Array[Symbol]])
+
+      # キーはソート済みpropペア。値は事前解決済みの最終クラス文字列
+      COMBINATIONS = T.let({
+        {} => ""
+      }.freeze, T::Hash[T::Hash[Symbol, Symbol], String])
+
+      SLOTS = T.let([
+        { name: "", tag: "SelectPrimitive.Root", static_attributes: {}.freeze, dynamic_attributes: [].freeze }.freeze
+      ].freeze, T::Array[T::Hash[Symbol, T.untyped]])
+
+      extend T::Sig
+
+      sig { params(options: T::Hash[Symbol, Symbol]).returns(String) }
+      module_function def combination(options)
+        COMBINATIONS.fetch(options)
+      end
       module Content
       ROOT_SLOT = T.let("", String)
 

@@ -9,8 +9,8 @@ module Shadcn
   class Combobox < BaseComponent
     CONTROLLER = "shadcn--command"
 
-    # upstream の Combobox ルートは描画物を持たない(コンテキストのみ)ため契約は無い。
-    # 本gemではトリガー入力とリストを同じコントローラスコープに置くラッパーとして描く
+    # upstream の Combobox ルートは描画物を持たないprimitive aliasで、生成契約も
+    # その空の契約面を記録する。本gemでは入力とリストを束ねるラッパーとして描く。
     sig { override.returns(String) }
     def call
       attributes = @html_args.merge(class: @user_class)

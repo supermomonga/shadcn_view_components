@@ -10,6 +10,7 @@ Dummy::Application.routes.draw do
   get "pages/popovers", to: "pages#popovers"
   get "pages/menus", to: "pages#menus"
   get "pages/commands", to: "pages#commands"
+  get "pages/select", to: "pages#select"
   get "pages/sidebar", to: "pages#sidebar"
   get "pages/calendar", to: "pages#calendar"
   get "pages/carousel", to: "pages#carousel"

@@ -98,6 +98,7 @@ PARITY_SCENARIOS = [
   %w[shadcn/resizable/default resizable/default],
   %w[shadcn/resizable/vertical resizable/vertical],
   %w[shadcn/scroll_area/default scroll-area/default],
+  %w[shadcn/select/default select/default],
   %w[shadcn/separator/horizontal separator/horizontal],
   %w[shadcn/separator/vertical separator/vertical],
   %w[shadcn/sheet/default sheet/default],
@@ -121,7 +122,7 @@ PARITY_SCENARIOS = [
 ].freeze
 
 # スクリーンショットの保存はこの検証の本題(Lint/Debugger は spec/visual を対象外にしている)
-def parity_capture(page, body_path, dark: false)
+def parity_capture(page, body_path, dark: false, min_height: 1)
   # animate-pulse 等の非決定性を両側で同じように止めてからbody要素を撮る
   # (Cuprite の selector: オプションで要素単位のスクリーンショットになる)。
   # 内容が表示高さ0のときも要素撮影が失敗しないよう最小高さを両側で同値に保証する。
@@ -132,7 +133,7 @@ def parity_capture(page, body_path, dark: false)
   dark_js = dark ? "document.documentElement.classList.add('dark');document.body.style.backgroundColor='var(--background)';" : ""
   page.execute_script(
     "const s=document.createElement('style');s.textContent='*{animation:none!important;transition:none!important}';document.head.append(s);" \
-    "document.body.style.minHeight='1px';document.body.style.padding='0';#{dark_js}"
+    "document.body.style.minHeight='#{min_height}px';document.body.style.padding='0';#{dark_js}"
   )
   # 戻り値は注入後の body の計算背景色(dark適用の確認に使う)
   bg = page.evaluate_script("getComputedStyle(document.body).backgroundColor")
@@ -156,6 +157,7 @@ RSpec.describe "visual parity", :parity, type: :system do
           scenario_threshold || PARITY_THRESHOLD
         end
       it "#{ours_path} が upstream(#{demo_id}) と一致する(#{mode})" do
+        min_height = demo_id == "select/default" ? 220 : 1
         dir = ParityArtifacts.scenario_dir(demo_id, mode)
         FileUtils.mkdir_p(dir)
         ours_png = File.join(dir, "ours.png")
@@ -164,10 +166,18 @@ RSpec.describe "visual parity", :parity, type: :system do
         report_json = File.join(dir, "report.json")
 
         visit "http://127.0.0.1:4173/?demo=#{demo_id}"
-        upstream_bg = parity_capture(page, upstream_png, dark: dark)
+        if demo_id == "select/default"
+          find("[data-slot='select-trigger']").click
+          find("[data-slot='select-content']")
+        end
+        upstream_bg = parity_capture(page, upstream_png, dark: dark, min_height: min_height)
 
         visit "/preview/#{ours_path}"
-        ours_bg = parity_capture(page, ours_png, dark: dark)
+        if demo_id == "select/default"
+          find("[data-slot='select-trigger']").click
+          find("[data-slot='select-content']")
+        end
+        ours_bg = parity_capture(page, ours_png, dark: dark, min_height: min_height)
 
         if dark
           # .dark 注入の空振り(=ライト同士の比較になって誤って緑化)を防ぐ担保。

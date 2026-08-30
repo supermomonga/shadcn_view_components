@@ -68,6 +68,12 @@ module ShadcnViewComponents
       switch: {
         size: { kind: :enum, default: "default", values: %w[default sm].freeze }.freeze
       }.freeze,
+      "select/trigger": {
+        size: { kind: :enum, default: "default", values: %w[default sm].freeze }.freeze
+      }.freeze,
+      native_select: {
+        size: { kind: :enum, default: "default", values: %w[default sm].freeze }.freeze
+      }.freeze,
       aspect_ratio: {
         ratio: { kind: :number, default: nil, allow_nil: true, minimum: 0, exclusive_minimum: true }.freeze
       }.freeze,

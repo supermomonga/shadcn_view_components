@@ -130,6 +130,7 @@ collapsible:
 
 combobox:
   exports:
+    - { component: Shadcn::Combobox, export: Combobox }
     - { component: Shadcn::Combobox::Input, export: ComboboxInput }
     - { component: Shadcn::Combobox::Trigger, export: ComboboxTrigger }
     - { component: Shadcn::Combobox::Content, export: ComboboxContent }
@@ -392,12 +393,12 @@ scroll-area:
 
 select:
   exports:
-    # base-nova で Select ルートはプリミティブ別名(契約面なし)のため非対象
+    - { component: Shadcn::Select, export: Select }
     - { component: Shadcn::Select::Trigger, export: SelectTrigger }
     - { component: Shadcn::Select::Value, export: SelectValue }
     - { component: Shadcn::Select::Content, export: SelectContent }
     - { component: Shadcn::Select::Group, export: SelectGroup }
-    - { component: Shadcn::Select::Item, export: SelectItem }
+    - { component: Shadcn::Select::Item, export: SelectItem, args: { value: test } }
     - { component: Shadcn::Select::Label, export: SelectLabel }
     - { component: Shadcn::Select::Separator, export: SelectSeparator }
     - { component: Shadcn::Select::ScrollUpButton, export: SelectScrollUpButton }

@@ -19,6 +19,8 @@ class PagesController < ApplicationController
 
   def commands; end
 
+  def select; end
+
   def sidebar; end
 
   def calendar
