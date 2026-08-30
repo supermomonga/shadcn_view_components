@@ -6,6 +6,20 @@ All notable changes to this project will be documented in this file.
 
 Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
+### ComboboxとchipsをRailsフォームへ接続
+
+- 検索文字列、候補のハイライト、確定した送信値を分離し、確定値だけをルート直下の
+  ネイティブ`select`で管理する専用`shadcn--combobox` controllerを追加した
+- ルートに`name:`、`default_value:`、`multiple:`、`disabled:`、`required:`、`form:`を追加し、
+  単一選択はラベルと値を分け、chipsは追加・削除・自由入力をRailsの配列パラメータへ反映する
+- 空値と重複を除外し、動的chipもRubyと同じ完全なSSR templateから生成する。Turbo再接続では
+  確定値から表示を復元し、初期化イベントや一時的な検索文字列を残さない
+- 確定値が変わったときだけ、canonical selectからbubblingする`input`、`change`を順に発火する
+- disabled / requiredのネイティブ動作と可視入力のARIAを同期し、実Rails controllerへの送信、
+  422再描画、連続chip削除をcomponent / JavaScript / system specで検証した
+- 空の単一値と全削除したchipsもフォーム上で明示し、chipsの空文字markerは受信側で空配列へ正規化する。
+  候補はmanual popoverとしてroot外pointer・focus・Escapeで閉じ、検索inputの操作では開いた状態を保つ
+
 ### Menubar・NavigationMenuの状態管理を分離
 
 - 単一の`shadcn--menu`が先頭のpopoverだけを操作していた構造を廃止し、Menubarと

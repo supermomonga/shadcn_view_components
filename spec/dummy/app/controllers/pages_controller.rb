@@ -17,7 +17,33 @@ class PagesController < ApplicationController
 
   def menus; end
 
-  def commands; end
+  def commands
+    @framework = params[:empty] == "true" ? nil : "rails"
+    @tags = %w[rails hanami]
+    @framework_disabled = params[:disabled] == "true"
+    @combobox_error = nil
+    @submitted_profile = nil
+    @tags_parameter_present = nil
+    @submitted_raw_tags = nil
+  end
+
+  def submit_commands
+    profile = command_profile_params
+    @framework = profile[:framework].presence
+    @tags_parameter_present = profile.key?(:tags)
+    @submitted_raw_tags = Array(profile[:tags]).map(&:to_s)
+    @tags = @submitted_raw_tags.compact_blank
+    @framework_disabled = false
+    @submitted_profile = { framework: @framework, tags: @tags }
+
+    if @tags.include?("invalid")
+      @combobox_error = "invalid はタグとして使用できません"
+      render :commands, status: :unprocessable_entity
+    else
+      @combobox_error = nil
+      render :commands
+    end
+  end
 
   def select; end
 
@@ -45,5 +71,11 @@ class PagesController < ApplicationController
       @email_error = "有効なメールアドレスを入力してください"
       render :form, status: :unprocessable_entity
     end
+  end
+
+  private
+
+  def command_profile_params
+    params.require(:profile).permit(:framework, tags: [])
   end
 end

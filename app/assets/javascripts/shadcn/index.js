@@ -15,6 +15,7 @@
 // digest付きassetとNode module resolutionのどちらでも同じentry pointを使える。
 import AccordionController from "@supermomonga/shadcn-view-components/controllers/accordion_controller"
 import CarouselController from "@supermomonga/shadcn-view-components/controllers/carousel_controller"
+import ComboboxController from "@supermomonga/shadcn-view-components/controllers/combobox_controller"
 import CommandController from "@supermomonga/shadcn-view-components/controllers/command_controller"
 import DialogController from "@supermomonga/shadcn-view-components/controllers/dialog_controller"
 import HoverCardController from "@supermomonga/shadcn-view-components/controllers/hover_card_controller"
@@ -36,6 +37,7 @@ import ToastController from "@supermomonga/shadcn-view-components/controllers/to
 export function register(application) {
   application.register("shadcn--accordion", AccordionController)
   application.register("shadcn--carousel", CarouselController)
+  application.register("shadcn--combobox", ComboboxController)
   application.register("shadcn--command", CommandController)
   application.register("shadcn--dialog", DialogController)
   application.register("shadcn--hover-card", HoverCardController)

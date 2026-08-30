@@ -257,6 +257,8 @@ command:
     attributes: [hidden]
 combobox:
   Combobox:
+    # primitive Root内部のform controlをRails側ではSSRする
+    slots_mode: superset
     attributes: [data-controller]
   ComboboxInput:
     # upstream の ComboboxInput は <InputGroup>(別アイテム)でラップし、トリガーを
@@ -275,9 +277,14 @@ combobox:
   ComboboxEmpty:
     attributes: [hidden]
   ComboboxChipsInput:
-    attributes: [type]
+    attributes: [type, role, aria-expanded, aria-haspopup, data-action]
+  ComboboxChips:
+    # 動的chipも同じRuby描画へ戻せるようtemplateをSSRする
+    slots_mode: superset
+    attributes: []
   ComboboxChip:
-    attributes: [aria-label]
+    slots_mode: superset
+    attributes: [data-value]
 progress:
   Progress:
     attributes: [role, aria-valuenow, aria-valuemin, aria-valuemax, style]

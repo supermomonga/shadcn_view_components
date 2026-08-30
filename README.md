@@ -158,6 +158,50 @@ render(Shadcn::Select.new(name: "framework", default_value: "rails")) do
 end
 ```
 
+### ComboboxをRailsフォームで使う
+
+`Combobox`ルートが確定値を持ち、`Input` / `ChipsInput`は候補を検索する表示用inputとして働く。
+`name:`、`default_value:`、`disabled:`、`required:`、`form:`はルートへ渡す。
+候補の表示ラベルと送信値は`Item`の本文と`value:`で分ける。
+
+```erb
+<%= render(Shadcn::Combobox.new(
+  name: "profile[framework]",
+  default_value: "rails",
+  required: true
+)) do %>
+  <%= render(Shadcn::Combobox::Input.new(placeholder: "検索…")) %>
+  <%= render(Shadcn::Combobox::Content.new) do %>
+    <%= render(Shadcn::Combobox::List.new) do %>
+      <%= render(Shadcn::Combobox::Item.new(value: "rails")) { "Ruby on Rails" } %>
+      <%= render(Shadcn::Combobox::Item.new(value: "hanami")) { "Hanami" } %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<%= render(Shadcn::Combobox.new(
+  name: "profile[tags][]",
+  default_value: %w[rails hanami],
+  multiple: true
+)) do %>
+  <%= render(Shadcn::Combobox::Chips.new) do %>
+    <%= render(Shadcn::Combobox::Chip.new(value: "rails")) { "Rails" } %>
+    <%= render(Shadcn::Combobox::Chip.new(value: "hanami")) { "Hanami" } %>
+    <%= render(Shadcn::Combobox::ChipsInput.new(placeholder: "追加…")) %>
+  <% end %>
+<% end %>
+```
+
+複数値の`[]`は自動付与しないため、Railsの配列パラメータには上例のような`name:`を指定する。
+単一選択を空にすると空文字を送信する。chipsをすべて削除した場合もRailsへキーを送るため、
+空文字のhidden inputを有効にする。受信側では`Array(params.dig(:profile, :tags)).compact_blank`のように
+空文字を除いて空配列へ正規化する。空の自由入力と既存値の重複は無視される。
+単一選択では未確定の検索文字列だけでは送信値を変えず、検索入力を空にしたときに空文字へ更新する。
+確定値が実際に変わったときだけ、ルート内の
+`select[data-slot="combobox-form-control"]`から、bubblingする`input`、`change`の順で発火する。
+初期描画、Turboによる再接続、同じ値の再選択では発火しない。バリデーションエラー時は、
+サーバへ届いた値を`default_value:`へ戻して再描画する。
+
 注意: 純Rubyのコード(`#call` 内等)で複数の子を `render` で連ねるときはブロックの
 戻り値しか使われないため `safe_join([...])` で連結する(ERBでは出力バッファが連結するため不要)。
 

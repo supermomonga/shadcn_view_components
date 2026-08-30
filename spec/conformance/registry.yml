@@ -135,7 +135,7 @@ combobox:
     - { component: Shadcn::Combobox::Trigger, export: ComboboxTrigger }
     - { component: Shadcn::Combobox::Content, export: ComboboxContent }
     - { component: Shadcn::Combobox::List, export: ComboboxList }
-    - { component: Shadcn::Combobox::Item, export: ComboboxItem }
+    - { component: Shadcn::Combobox::Item, export: ComboboxItem, args: { value: test } }
     - { component: Shadcn::Combobox::Group, export: ComboboxGroup }
     - { component: Shadcn::Combobox::Label, export: ComboboxLabel }
     - { component: Shadcn::Combobox::Empty, export: ComboboxEmpty }
@@ -143,7 +143,7 @@ combobox:
     - { component: Shadcn::Combobox::Collection, export: ComboboxCollection }
     - { component: Shadcn::Combobox::Value, export: ComboboxValue }
     - { component: Shadcn::Combobox::Chips, export: ComboboxChips }
-    - { component: Shadcn::Combobox::Chip, export: ComboboxChip }
+    - { component: Shadcn::Combobox::Chip, export: ComboboxChip, args: { value: test } }
     - { component: Shadcn::Combobox::ChipsInput, export: ComboboxChipsInput }
 command:
   exports:

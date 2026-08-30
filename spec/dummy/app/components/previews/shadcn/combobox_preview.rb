@@ -10,7 +10,7 @@ module Shadcn
             render(Shadcn::Combobox::List.new) do
               safe_join([
                 render(Shadcn::Combobox::Empty.new) { "見つかりません" },
-                render(Shadcn::Combobox::Item.new(value: "rails", selected: true)) { "Ruby on Rails" },
+                render(Shadcn::Combobox::Item.new(value: "rails")) { "Ruby on Rails" },
                 render(Shadcn::Combobox::Item.new(value: "hanami")) { "Hanami" },
                 render(Shadcn::Combobox::Item.new(value: "sinatra")) { "Sinatra" }
               ])
@@ -21,11 +21,11 @@ module Shadcn
     end
 
     def chips
-      render(Shadcn::Combobox.new) do
+      render(Shadcn::Combobox.new(default_value: %w[rails hanami], multiple: true)) do
         render(Shadcn::Combobox::Chips.new) do
           safe_join([
-            render(Shadcn::Combobox::Chip.new) { "Rails" },
-            render(Shadcn::Combobox::Chip.new) { "Hanami" },
+            render(Shadcn::Combobox::Chip.new(value: "rails")) { "Rails" },
+            render(Shadcn::Combobox::Chip.new(value: "hanami")) { "Hanami" },
             render(Shadcn::Combobox::ChipsInput.new(placeholder: "追加…"))
           ])
         end
