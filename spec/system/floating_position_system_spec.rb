@@ -104,7 +104,17 @@ module FloatingPositionSystemHelpers
   end
 end
 
-RSpec.describe "Floating element positioning", type: :system do
+RSpec.describe(
+  "Floating element positioning",
+  type: :system,
+  component_coverage: {
+    "dropdown-menu" => %i[position],
+    "context-menu" => %i[position],
+    "popover" => %i[position],
+    "hover-card" => %i[position],
+    "tooltip" => %i[position]
+  }
+) do
   include FloatingPositionSystemHelpers
 
   it "flips at all four viewport edges and reports the rendered side" do

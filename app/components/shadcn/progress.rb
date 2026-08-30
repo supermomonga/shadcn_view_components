@@ -18,10 +18,7 @@ module Shadcn
     sig { override.returns(String) }
     def call
       content_tag(tag, **html_attributes) do
-        # base-nova では Track / Indicator が独立エクスポートになり、Progress 本体の
-        # 契約スロットは progress のみ。内部要素は data-slot 無しで装飾する
-        content_tag(:div, class: indicator_class,
-                          style: "transform: translateX(-#{100 - (@value || 0)}%)") { "".html_safe }
+        safe_join([content, progress_track])
       end
     end
 
@@ -37,9 +34,16 @@ module Shadcn
 
     private
 
-    sig { returns(T.nilable(String)) }
-    def indicator_class
-      T.cast(contract_slot("progress-indicator").dig(:static_attributes, :class), T.nilable(String))
+    sig { returns(String) }
+    def progress_track
+      content_tag(:div, class: ShadcnViewComponents::Classes.resolve(:progress_track), data: { slot: "progress-track" }) do
+        content_tag(
+          :div,
+          class: ShadcnViewComponents::Classes.resolve(:progress_indicator),
+          style: "width: #{@value || 0}%",
+          data: { slot: "progress-indicator" }
+        ) { "".html_safe }
+      end
     end
   end
 end

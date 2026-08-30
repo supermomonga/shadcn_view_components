@@ -2,7 +2,11 @@
 
 require "rails_helper"
 
-RSpec.describe "Select behavior", type: :system do
+RSpec.describe(
+  "Select behavior",
+  type: :system,
+  component_coverage: { "select" => %i[pointer keyboard state form reconnect accessibility] }
+) do
   define_method(:dispatch_key) do |selector, key|
     page.execute_script(<<~JS)
       document.querySelector(#{selector.to_json}).dispatchEvent(

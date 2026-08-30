@@ -4,7 +4,11 @@
 # ARIA tabs パターン: クリック選択・パネル切替・roving tabindex(05 §4)
 require "rails_helper"
 
-RSpec.describe "Tabs behavior", type: :system do
+RSpec.describe(
+  "Tabs behavior",
+  type: :system,
+  component_coverage: { "tabs" => %i[pointer keyboard state accessibility] }
+) do
   it "activates the first trigger and shows its panel on connect" do
     visit "/pages/tabs"
 

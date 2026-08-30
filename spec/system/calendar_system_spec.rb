@@ -3,7 +3,11 @@
 # Phase 4 個別評価: calendar(react-day-picker 非依存の月テーブル)
 require "rails_helper"
 
-RSpec.describe "Calendar behavior", type: :system do
+RSpec.describe(
+  "Calendar behavior",
+  type: :system,
+  component_coverage: { "calendar" => %i[pointer keyboard state] }
+) do
   include ActiveSupport::Testing::TimeHelpers
 
   around do |example|

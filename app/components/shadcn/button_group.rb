@@ -17,9 +17,20 @@ module Shadcn
 
     class Separator < BaseComponent
       # div(契約クラスは upstream の separator 上書き分を事前解決したもの)
-      sig { override.returns(T::Hash[Symbol, T.untyped]) }
-      def html_attributes
-        super.tap { |attributes| attributes[:role] = "separator" }
+      sig { params(orientation: T.any(Symbol, String), args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
+      def initialize(orientation: :vertical, **args)
+        value = orientation.to_s
+        raise ArgumentError, "unknown orientation value #{orientation.inspect} (valid: :horizontal, :vertical)" unless %w[horizontal vertical].include?(value)
+
+        @orientation = T.let(value, String)
+        super(**args)
+      end
+
+      sig { override.returns(String) }
+      def call
+        attributes = @html_args.merge(class: self.class.classes(extra: @user_class))
+        merge_nested(attributes, :data, { slot: "button-group-separator" })
+        render(Shadcn::Separator.new(orientation: @orientation, **attributes))
       end
     end
 

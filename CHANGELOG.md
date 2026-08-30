@@ -6,6 +6,20 @@ All notable changes to this project will be documented in this file.
 
 Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
+### 全コンポーネントのテスト範囲を一元管理
+
+- 実装済み61 registry itemについて、全公開exportの最小描画、Lookbook preview、upstreamとの
+  light / dark見た目比較、実ブラウザ操作テストの対応を`spec/coverage/registry.yml`へ集約した
+- coverage registryと実装registry、preview、Stimulus controller、visual parity scenario、system specの
+  対応を双方向に検査し、今後itemを追加したのに検証範囲を指定しなかった場合はCIを失敗させる
+- 全itemへLookbook previewを用意し、Attachment、Bubble、ButtonGroup、InputGroup、Message、
+  NativeSelect、Progressのupstream visual parityを追加した。技術的に同じ状態を比較できない項目には
+  その理由を台帳へ明記した
+- 新しい見た目比較で判明したButtonGroupのSeparator合成、InputGroupの標準Input / Textarea合成と
+  `data-align`、ProgressのTrack / Indicator構造の欠落を、生成契約を参照する実装へ修正した
+- system specごとにpointer、keyboard、state、form、reset、reconnect、no-JS、accessibility等の
+  確認項目を宣言し、Collapsible、MessageScroller、NativeSelect、Sonnerの実ブラウザ検証を追加した
+
 ### Checkbox・RadioGroup・Switchの状態同期
 
 - ネイティブinputの`checked`を唯一の状態源とし、初期描画、利用者操作、フォームreset、Turbo再接続で

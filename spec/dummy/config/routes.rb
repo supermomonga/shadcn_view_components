@@ -20,6 +20,7 @@ Dummy::Application.routes.draw do
   get "pages/carousel", to: "pages#carousel"
   get "pages/form", to: "pages#form"
   post "pages/form", to: "pages#submit_form"
+  get "pages/coverage_interactions", to: "pages#coverage_interactions"
 
   # Lookbookをルートパスで開く。エンジン内部に /*path のcatch-allルートがあるため、
   # pages/* の明示ルートより後に置く必要がある(先に置くとpagesが吸い込まれる)

@@ -2,7 +2,15 @@
 
 require "rails_helper"
 
-RSpec.describe "Native checked state behavior", type: :system do
+RSpec.describe(
+  "Native checked state behavior",
+  type: :system,
+  component_coverage: {
+    "checkbox" => %i[pointer keyboard state form reset reconnect no_js accessibility],
+    "radio-group" => %i[pointer keyboard state form reset reconnect no_js accessibility],
+    "switch" => %i[pointer keyboard state form reset reconnect no_js accessibility]
+  }
+) do
   define_method(:press_key) do |key|
     page.driver.browser.page.keyboard.type(key)
   end

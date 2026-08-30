@@ -72,7 +72,15 @@ public_component_entries.each do |entry|
 
       component = component_class.new(**entry.args)
       component = component.with_content(entry.content) unless entry.content.nil?
-      expect(ApplicationController.render(component)).to be_a(String)
+      rendered = ApplicationController.render(component, layout: false)
+      expect(rendered).to be_a(String).and be_present
+
+      document = Nokogiri::HTML5.fragment(rendered)
+      if root_slot.empty?
+        expect(document.element_children.first).not_to be_nil
+      else
+        expect(rendered).to match(/\bdata-slot=(["'])#{Regexp.escape(root_slot)}\1/)
+      end
     end
   end
 end

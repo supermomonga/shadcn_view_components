@@ -8,12 +8,16 @@ import { Input } from "./components/ui/input.tsx"
 import {
   InputOTP, InputOTPGroup, InputOTPSlot,
 } from "./components/ui/input-otp.tsx"
+import { InputGroup, InputGroupAddon, InputGroupInput } from "./components/ui/input-group.tsx"
 import {
   Item, ItemContent, ItemDescription, ItemGroup, ItemMedia, ItemSeparator, ItemTitle,
 } from "./components/ui/item.tsx"
 import { Kbd, KbdGroup } from "./components/ui/kbd.tsx"
 import { Label } from "./components/ui/label.tsx"
 import { Marker, MarkerContent } from "./components/ui/marker.tsx"
+import {
+  Message, MessageAvatar, MessageContent, MessageFooter, MessageGroup, MessageHeader,
+} from "./components/ui/message.tsx"
 import {
   Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarShortcut,
   MenubarTrigger,
@@ -22,6 +26,7 @@ import {
   NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink,
   NavigationMenuList, NavigationMenuTrigger,
 } from "./components/ui/navigation-menu.tsx"
+import { NativeSelect, NativeSelectOption } from "./components/ui/native-select.tsx"
 import {
   Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink,
   PaginationNext, PaginationPrevious,
@@ -29,6 +34,7 @@ import {
 import {
   Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger,
 } from "./components/ui/popover.tsx"
+import { Progress } from "./components/ui/progress.tsx"
 import { Button } from "./components/ui/button.tsx"
 import { RadioGroup, RadioGroupItem } from "./components/ui/radio-group.tsx"
 import {
@@ -78,6 +84,13 @@ export const demosNToZ: Record<string, ComponentType> = {
     </InputOTP>
   ),
 
+  "input-group/default": () => (
+    <InputGroup className="max-w-xs">
+      <InputGroupAddon>https://</InputGroupAddon>
+      <InputGroupInput type="text" placeholder="example.com" aria-label="Webサイト" />
+    </InputGroup>
+  ),
+
   "item/default": () => (
     <ItemGroup>
       <Item>
@@ -124,6 +137,19 @@ export const demosNToZ: Record<string, ComponentType> = {
     </>
   ),
 
+  "message/default": () => (
+    <MessageGroup aria-label="会話">
+      <Message>
+        <MessageAvatar aria-hidden="true">🤖</MessageAvatar>
+        <MessageContent>
+          <MessageHeader>アシスタント</MessageHeader>
+          <p>ご用件をお聞かせください。</p>
+          <MessageFooter>たった今</MessageFooter>
+        </MessageContent>
+      </Message>
+    </MessageGroup>
+  ),
+
   "menubar/default": () => (
     <Menubar>
       <MenubarMenu>
@@ -161,6 +187,13 @@ export const demosNToZ: Record<string, ComponentType> = {
     </NavigationMenu>
   ),
 
+  "native-select/default": () => (
+    <NativeSelect name="fruit" aria-label="果物">
+      <NativeSelectOption value="apple">りんご</NativeSelectOption>
+      <NativeSelectOption value="banana">バナナ</NativeSelectOption>
+    </NativeSelect>
+  ),
+
   "pagination/default": () => (
     <Pagination>
       <PaginationContent>
@@ -185,6 +218,8 @@ export const demosNToZ: Record<string, ComponentType> = {
       </PopoverContent>
     </Popover>
   ),
+
+  "progress/default": () => <Progress value={60} aria-label="アップロード進捗" />,
 
   "radio-group/default": () => (
     <RadioGroup aria-label="プラン">

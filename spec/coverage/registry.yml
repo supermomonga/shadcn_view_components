@@ -1,0 +1,1149 @@
+accordion:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/accordion/default
+  parity:
+    scenarios:
+    - preview: shadcn/accordion/default
+      demo: accordion/default
+  interaction:
+    kind: controller
+    controllers:
+    - shadcn--accordion
+  system:
+    specs:
+    - spec/system/toggle_system_spec.rb
+    behaviors:
+    - keyboard
+    - pointer
+    - state
+alert:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/alert/default
+  parity:
+    scenarios:
+    - preview: shadcn/alert/default
+      demo: alert/default
+    - preview: shadcn/alert/destructive
+      demo: alert/destructive
+  interaction:
+    kind: static
+    controllers: []
+  system:
+    excluded:
+      reason: This component has no independent browser interaction beyond render and visual coverage.
+alert-dialog:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/alert_dialog/default
+  parity:
+    scenarios:
+    - preview: shadcn/alert_dialog/default
+      demo: alert-dialog/default
+  interaction:
+    kind: controller
+    controllers:
+    - shadcn--dialog
+  system:
+    specs:
+    - spec/system/dialog_system_spec.rb
+    behaviors:
+    - accessibility
+    - keyboard
+    - pointer
+    - state
+aspect-ratio:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/aspect_ratio/default
+  parity:
+    scenarios:
+    - preview: shadcn/aspect_ratio/default
+      demo: aspect-ratio/default
+  interaction:
+    kind: static
+    controllers: []
+  system:
+    excluded:
+      reason: This component has no independent browser interaction beyond render and visual coverage.
+attachment:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/attachment/default
+  parity:
+    scenarios:
+    - preview: shadcn/attachment/default
+      demo: attachment/default
+  interaction:
+    kind: static
+    controllers: []
+  system:
+    excluded:
+      reason: This component has no independent browser interaction beyond render and visual coverage.
+avatar:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/avatar/default
+  parity:
+    scenarios:
+    - preview: shadcn/avatar/default
+      demo: avatar/default
+    - preview: shadcn/avatar/group
+      demo: avatar/group
+    - preview: shadcn/avatar/sizes
+      demo: avatar/sizes
+  interaction:
+    kind: static
+    controllers: []
+  system:
+    excluded:
+      reason: This component has no independent browser interaction beyond render and visual coverage.
+badge:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/badge/default
+  parity:
+    scenarios:
+    - preview: shadcn/badge/default
+      demo: badge/default
+    - preview: shadcn/badge/variants
+      demo: badge/variants
+  interaction:
+    kind: static
+    controllers: []
+  system:
+    excluded:
+      reason: This component has no independent browser interaction beyond render and visual coverage.
+breadcrumb:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/breadcrumb/default
+  parity:
+    scenarios:
+    - preview: shadcn/breadcrumb/default
+      demo: breadcrumb/default
+    - preview: shadcn/breadcrumb/ellipsis
+      demo: breadcrumb/ellipsis
+  interaction:
+    kind: static
+    controllers: []
+  system:
+    excluded:
+      reason: This component has no independent browser interaction beyond render and visual coverage.
+bubble:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/bubble/default
+  parity:
+    scenarios:
+    - preview: shadcn/bubble/default
+      demo: bubble/default
+  interaction:
+    kind: static
+    controllers: []
+  system:
+    excluded:
+      reason: This component has no independent browser interaction beyond render and visual coverage.
+button:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/button/default
+  parity:
+    scenarios:
+    - preview: shadcn/button/as_link
+      demo: button/as-link
+    - preview: shadcn/button/default
+      demo: button/default
+    - preview: shadcn/button/destructive
+      demo: button/destructive
+    - preview: shadcn/button/ghost
+      demo: button/ghost
+    - preview: shadcn/button/link
+      demo: button/link
+    - preview: shadcn/button/outline
+      demo: button/outline
+    - preview: shadcn/button/sizes
+      demo: button/sizes
+    - preview: shadcn/button/variants
+      demo: button/variants
+    - preview: shadcn/button/with_icon
+      demo: button/with-icon
+  interaction:
+    kind: native
+    controllers: []
+  system:
+    specs:
+    - spec/system/button_system_spec.rb
+    behaviors:
+    - form
+    - keyboard
+    - pointer
+button-group:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/button_group/default
+  parity:
+    scenarios:
+    - preview: shadcn/button_group/default
+      demo: button-group/default
+  interaction:
+    kind: static
+    controllers: []
+  system:
+    excluded:
+      reason: This component has no independent browser interaction beyond render and visual coverage.
+calendar:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/calendar/default
+  parity:
+    scenarios:
+    - preview: shadcn/calendar/default
+      demo: calendar/default
+      threshold: 0.02
+      dark_threshold: 0.06
+    - preview: shadcn/calendar/plain
+      demo: calendar/plain
+      threshold: 0.02
+      dark_threshold: 0.06
+  interaction:
+    kind: controller
+    controllers:
+    - shadcn--calendar
+  system:
+    specs:
+    - spec/system/calendar_system_spec.rb
+    behaviors:
+    - keyboard
+    - pointer
+    - state
+card:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/card/default
+  parity:
+    scenarios:
+    - preview: shadcn/card/default
+      demo: card/default
+    - preview: shadcn/card/with_action
+      demo: card/with-action
+  interaction:
+    kind: static
+    controllers: []
+  system:
+    excluded:
+      reason: This component has no independent browser interaction beyond render and visual coverage.
+carousel:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/carousel/default
+  parity:
+    scenarios:
+    - preview: shadcn/carousel/default
+      demo: carousel/default
+    - preview: shadcn/carousel/rtl
+      demo: carousel/rtl
+    - preview: shadcn/carousel/vertical
+      demo: carousel/vertical
+  interaction:
+    kind: controller
+    controllers:
+    - shadcn--carousel
+  system:
+    specs:
+    - spec/system/carousel_system_spec.rb
+    behaviors:
+    - accessibility
+    - keyboard
+    - pointer
+    - state
+chart:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/chart/default
+  parity:
+    excluded:
+      reason: The gem covers library-independent container, legend, and tooltip output, while upstream rendering requires Recharts.
+  interaction:
+    kind: static
+    controllers: []
+  system:
+    excluded:
+      reason: This component has no independent browser interaction beyond render and visual coverage.
+checkbox:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/checkbox/default
+  parity:
+    scenarios:
+    - preview: shadcn/checkbox/default
+      demo: checkbox/default
+    - preview: shadcn/checkbox/checked
+      demo: checkbox/checked
+    - preview: shadcn/checkbox/unchecked
+      demo: checkbox/unchecked
+    - preview: shadcn/checkbox/disabled
+      demo: checkbox/disabled
+  interaction:
+    kind: controller
+    controllers:
+    - shadcn--checked-state
+  system:
+    specs:
+    - spec/system/checked_state_system_spec.rb
+    behaviors:
+    - accessibility
+    - form
+    - keyboard
+    - no_js
+    - pointer
+    - reconnect
+    - reset
+    - state
+collapsible:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/collapsible/default
+  parity:
+    scenarios:
+    - preview: shadcn/collapsible/default
+      demo: collapsible/default
+  interaction:
+    kind: native
+    controllers: []
+  system:
+    specs:
+    - spec/system/coverage_interactions_system_spec.rb
+    behaviors:
+    - keyboard
+    - no_js
+    - pointer
+    - state
+combobox:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/combobox/default
+  parity:
+    scenarios:
+    - preview: shadcn/combobox/chips
+      demo: combobox/chips
+    - preview: shadcn/combobox/default
+      demo: combobox/default
+  interaction:
+    kind: controller
+    controllers:
+    - shadcn--combobox
+  system:
+    specs:
+    - spec/system/command_system_spec.rb
+    behaviors:
+    - form
+    - keyboard
+    - pointer
+    - state
+command:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/command/default
+  parity:
+    scenarios:
+    - preview: shadcn/command/default
+      demo: command/default
+  interaction:
+    kind: controller
+    controllers:
+    - shadcn--command
+  system:
+    specs:
+    - spec/system/command_system_spec.rb
+    behaviors:
+    - keyboard
+    - state
+context-menu:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/context_menu/default
+  parity:
+    scenarios:
+    - preview: shadcn/context_menu/default
+      demo: context-menu/default
+  interaction:
+    kind: controller
+    controllers:
+    - shadcn--menu
+  system:
+    specs:
+    - spec/system/floating_position_system_spec.rb
+    - spec/system/menu_system_spec.rb
+    behaviors:
+    - keyboard
+    - pointer
+    - position
+    - state
+dialog:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/dialog/default
+  parity:
+    scenarios:
+    - preview: shadcn/dialog/default
+      demo: dialog/default
+  interaction:
+    kind: controller
+    controllers:
+    - shadcn--dialog
+  system:
+    specs:
+    - spec/system/dialog_system_spec.rb
+    behaviors:
+    - accessibility
+    - form
+    - keyboard
+    - pointer
+    - state
+direction:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/direction/default
+  parity:
+    excluded:
+      reason: Direction is a context provider with no independent visual output to compare.
+  interaction:
+    kind: static
+    controllers: []
+  system:
+    excluded:
+      reason: This component has no independent browser interaction beyond render and visual coverage.
+drawer:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/drawer/default
+  parity:
+    scenarios:
+    - preview: shadcn/drawer/default
+      demo: drawer/default
+  interaction:
+    kind: controller
+    controllers:
+    - shadcn--dialog
+  system:
+    specs:
+    - spec/system/sheet_system_spec.rb
+    behaviors:
+    - accessibility
+    - keyboard
+    - pointer
+    - state
+dropdown-menu:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/dropdown_menu/default
+  parity:
+    scenarios:
+    - preview: shadcn/dropdown_menu/default
+      demo: dropdown-menu/default
+  interaction:
+    kind: controller
+    controllers:
+    - shadcn--menu
+  system:
+    specs:
+    - spec/system/floating_position_system_spec.rb
+    - spec/system/menu_system_spec.rb
+    behaviors:
+    - keyboard
+    - pointer
+    - position
+    - state
+empty:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/empty/default
+  parity:
+    scenarios:
+    - preview: shadcn/empty/default
+      demo: empty/default
+  interaction:
+    kind: static
+    controllers: []
+  system:
+    excluded:
+      reason: This component has no independent browser interaction beyond render and visual coverage.
+field:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/field/default
+  parity:
+    scenarios:
+    - preview: shadcn/field/default
+      demo: field/default
+    - preview: shadcn/field/horizontal
+      demo: field/horizontal
+  interaction:
+    kind: static
+    controllers: []
+  system:
+    excluded:
+      reason: This component has no independent browser interaction beyond render and visual coverage.
+form:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/form/default
+  parity:
+    scenarios:
+    - preview: shadcn/form/default
+      demo: form/default
+    - preview: shadcn/form/without_error
+      demo: form/without-error
+  interaction:
+    kind: native
+    controllers: []
+  system:
+    specs:
+    - spec/system/form_system_spec.rb
+    behaviors:
+    - accessibility
+    - form
+    - keyboard
+    - pointer
+    - state
+hover-card:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/hover_card/default
+  parity:
+    scenarios:
+    - preview: shadcn/hover_card/default
+      demo: hover-card/default
+  interaction:
+    kind: controller
+    controllers:
+    - shadcn--hover-card
+  system:
+    specs:
+    - spec/system/floating_position_system_spec.rb
+    - spec/system/popover_system_spec.rb
+    behaviors:
+    - keyboard
+    - pointer
+    - position
+    - state
+input:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/input/default
+  parity:
+    scenarios:
+    - preview: shadcn/input/default
+      demo: input/default
+    - preview: shadcn/input/disabled
+      demo: input/disabled
+  interaction:
+    kind: static
+    controllers: []
+  system:
+    excluded:
+      reason: This component has no independent browser interaction beyond render and visual coverage.
+input-group:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/input_group/default
+  parity:
+    scenarios:
+    - preview: shadcn/input_group/default
+      demo: input-group/default
+  interaction:
+    kind: static
+    controllers: []
+  system:
+    excluded:
+      reason: This component has no independent browser interaction beyond render and visual coverage.
+input-otp:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/input_otp/default
+  parity:
+    scenarios:
+    - preview: shadcn/input_otp/default
+      demo: input-otp/default
+  interaction:
+    kind: controller
+    controllers:
+    - shadcn--input-otp
+  system:
+    specs:
+    - spec/system/input_otp_system_spec.rb
+    behaviors:
+    - accessibility
+    - form
+    - keyboard
+    - no_js
+    - pointer
+    - state
+item:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/item/default
+  parity:
+    scenarios:
+    - preview: shadcn/item/default
+      demo: item/default
+  interaction:
+    kind: static
+    controllers: []
+  system:
+    excluded:
+      reason: This component has no independent browser interaction beyond render and visual coverage.
+kbd:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/kbd/default
+  parity:
+    scenarios:
+    - preview: shadcn/kbd/default
+      demo: kbd/default
+    - preview: shadcn/kbd/group
+      demo: kbd/group
+  interaction:
+    kind: static
+    controllers: []
+  system:
+    excluded:
+      reason: This component has no independent browser interaction beyond render and visual coverage.
+label:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/label/default
+  parity:
+    scenarios:
+    - preview: shadcn/label/default
+      demo: label/default
+    - preview: shadcn/label/with_input
+      demo: label/with-input
+  interaction:
+    kind: static
+    controllers: []
+  system:
+    excluded:
+      reason: This component has no independent browser interaction beyond render and visual coverage.
+marker:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/marker/default
+  parity:
+    scenarios:
+    - preview: shadcn/marker/default
+      demo: marker/default
+    - preview: shadcn/marker/variants
+      demo: marker/variants
+  interaction:
+    kind: static
+    controllers: []
+  system:
+    excluded:
+      reason: This component has no independent browser interaction beyond render and visual coverage.
+menubar:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/menubar/default
+  parity:
+    scenarios:
+    - preview: shadcn/menubar/default
+      demo: menubar/default
+  interaction:
+    kind: controller
+    controllers:
+    - shadcn--menubar
+  system:
+    specs:
+    - spec/system/menu_system_spec.rb
+    behaviors:
+    - keyboard
+    - pointer
+    - state
+message:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/message/default
+  parity:
+    scenarios:
+    - preview: shadcn/message/default
+      demo: message/default
+  interaction:
+    kind: static
+    controllers: []
+  system:
+    excluded:
+      reason: This component has no independent browser interaction beyond render and visual coverage.
+message-scroller:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/message_scroller/default
+  parity:
+    excluded:
+      reason: Upstream depends on @shadcn/react/message-scroller and uses a different behavior and layout model; the gem behavior is verified by system tests.
+  interaction:
+    kind: controller
+    controllers:
+    - shadcn--message-scroller
+  system:
+    specs:
+    - spec/system/coverage_interactions_system_spec.rb
+    behaviors:
+    - keyboard
+    - pointer
+    - state
+native-select:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/native_select/default
+  parity:
+    scenarios:
+    - preview: shadcn/native_select/default
+      demo: native-select/default
+  interaction:
+    kind: native
+    controllers: []
+  system:
+    specs:
+    - spec/system/coverage_interactions_system_spec.rb
+    behaviors:
+    - accessibility
+    - form
+    - keyboard
+    - no_js
+    - pointer
+    - state
+navigation-menu:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/navigation_menu/default
+  parity:
+    scenarios:
+    - preview: shadcn/navigation_menu/default
+      demo: navigation-menu/default
+    - preview: shadcn/navigation_menu/with_trigger
+      demo: navigation-menu/with-trigger
+  interaction:
+    kind: controller
+    controllers:
+    - shadcn--navigation-menu
+  system:
+    specs:
+    - spec/system/menu_system_spec.rb
+    behaviors:
+    - keyboard
+    - pointer
+    - state
+pagination:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/pagination/default
+  parity:
+    scenarios:
+    - preview: shadcn/pagination/default
+      demo: pagination/default
+  interaction:
+    kind: static
+    controllers: []
+  system:
+    excluded:
+      reason: This component has no independent browser interaction beyond render and visual coverage.
+popover:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/popover/default
+  parity:
+    scenarios:
+    - preview: shadcn/popover/default
+      demo: popover/default
+  interaction:
+    kind: controller
+    controllers:
+    - shadcn--popover
+  system:
+    specs:
+    - spec/system/floating_position_system_spec.rb
+    - spec/system/popover_system_spec.rb
+    behaviors:
+    - keyboard
+    - pointer
+    - position
+    - state
+progress:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/progress/default
+  parity:
+    scenarios:
+    - preview: shadcn/progress/default
+      demo: progress/default
+  interaction:
+    kind: static
+    controllers: []
+  system:
+    excluded:
+      reason: This component has no independent browser interaction beyond render and visual coverage.
+radio-group:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/radio_group/default
+  parity:
+    scenarios:
+    - preview: shadcn/radio_group/default
+      demo: radio-group/default
+    - preview: shadcn/radio_group/checked
+      demo: radio-group/checked
+    - preview: shadcn/radio_group/unchecked
+      demo: radio-group/unchecked
+  interaction:
+    kind: controller
+    controllers:
+    - shadcn--checked-state
+  system:
+    specs:
+    - spec/system/checked_state_system_spec.rb
+    behaviors:
+    - accessibility
+    - form
+    - keyboard
+    - no_js
+    - pointer
+    - reconnect
+    - reset
+    - state
+resizable:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/resizable/default
+  parity:
+    scenarios:
+    - preview: shadcn/resizable/default
+      demo: resizable/default
+    - preview: shadcn/resizable/vertical
+      demo: resizable/vertical
+  interaction:
+    kind: controller
+    controllers:
+    - shadcn--resizable
+  system:
+    specs:
+    - spec/system/menu_system_spec.rb
+    behaviors:
+    - keyboard
+    - pointer
+    - state
+scroll-area:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/scroll_area/default
+  parity:
+    scenarios:
+    - preview: shadcn/scroll_area/default
+      demo: scroll-area/default
+  interaction:
+    kind: static
+    controllers: []
+  system:
+    excluded:
+      reason: This component has no independent browser interaction beyond render and visual coverage.
+select:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/select/default
+  parity:
+    scenarios:
+    - preview: shadcn/select/default
+      demo: select/default
+      min_height: 220
+  interaction:
+    kind: controller
+    controllers:
+    - shadcn--select
+  system:
+    specs:
+    - spec/system/select_system_spec.rb
+    behaviors:
+    - accessibility
+    - form
+    - keyboard
+    - pointer
+    - reconnect
+    - state
+separator:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/separator/horizontal
+  parity:
+    scenarios:
+    - preview: shadcn/separator/horizontal
+      demo: separator/horizontal
+    - preview: shadcn/separator/vertical
+      demo: separator/vertical
+  interaction:
+    kind: static
+    controllers: []
+  system:
+    excluded:
+      reason: This component has no independent browser interaction beyond render and visual coverage.
+sheet:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/sheet/default
+  parity:
+    scenarios:
+    - preview: shadcn/sheet/default
+      demo: sheet/default
+  interaction:
+    kind: controller
+    controllers:
+    - shadcn--dialog
+  system:
+    specs:
+    - spec/system/sheet_system_spec.rb
+    behaviors:
+    - accessibility
+    - keyboard
+    - pointer
+    - state
+sidebar:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/sidebar/default
+  parity:
+    excluded:
+      reason: The gem implements a desktop and server-state subset, while upstream uses context, a mobile Sheet, and cookies, so an identical state cannot be constructed.
+  interaction:
+    kind: controller
+    controllers:
+    - shadcn--sidebar
+  system:
+    specs:
+    - spec/system/sidebar_system_spec.rb
+    behaviors:
+    - keyboard
+    - pointer
+    - reconnect
+    - state
+skeleton:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/skeleton/default
+  parity:
+    scenarios:
+    - preview: shadcn/skeleton/default
+      demo: skeleton/default
+  interaction:
+    kind: static
+    controllers: []
+  system:
+    excluded:
+      reason: This component has no independent browser interaction beyond render and visual coverage.
+slider:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/slider/default
+  parity:
+    scenarios:
+    - preview: shadcn/slider/default
+      demo: slider/default
+    - preview: shadcn/slider/vertical
+      demo: slider/vertical
+  interaction:
+    kind: controller
+    controllers:
+    - shadcn--slider
+  system:
+    specs:
+    - spec/system/slider_system_spec.rb
+    behaviors:
+    - accessibility
+    - form
+    - keyboard
+    - pointer
+    - state
+sonner:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/sonner/default
+  parity:
+    excluded:
+      reason: The gem uses CustomEvent and Stimulus, while upstream uses a Sonner portal and timer, so a deterministic identical state cannot be constructed.
+  interaction:
+    kind: event
+    controllers:
+    - shadcn--toast
+  system:
+    specs:
+    - spec/system/coverage_interactions_system_spec.rb
+    behaviors:
+    - accessibility
+    - event
+    - state
+    - timing
+spinner:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/spinner/default
+  parity:
+    scenarios:
+    - preview: shadcn/spinner/default
+      demo: spinner/default
+    - preview: shadcn/spinner/large
+      demo: spinner/large
+  interaction:
+    kind: static
+    controllers: []
+  system:
+    excluded:
+      reason: This component has no independent browser interaction beyond render and visual coverage.
+switch:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/switch/default
+  parity:
+    scenarios:
+    - preview: shadcn/switch/default
+      demo: switch/default
+    - preview: shadcn/switch/checked
+      demo: switch/checked
+    - preview: shadcn/switch/unchecked
+      demo: switch/unchecked
+    - preview: shadcn/switch/small
+      demo: switch/small
+  interaction:
+    kind: controller
+    controllers:
+    - shadcn--checked-state
+  system:
+    specs:
+    - spec/system/checked_state_system_spec.rb
+    behaviors:
+    - accessibility
+    - form
+    - keyboard
+    - no_js
+    - pointer
+    - reconnect
+    - reset
+    - state
+table:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/table/default
+  parity:
+    scenarios:
+    - preview: shadcn/table/default
+      demo: table/default
+  interaction:
+    kind: static
+    controllers: []
+  system:
+    excluded:
+      reason: This component has no independent browser interaction beyond render and visual coverage.
+tabs:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/tabs/default
+  parity:
+    scenarios:
+    - preview: shadcn/tabs/default
+      demo: tabs/default
+    - preview: shadcn/tabs/line
+      demo: tabs/line
+    - preview: shadcn/tabs/vertical
+      demo: tabs/vertical
+  interaction:
+    kind: controller
+    controllers:
+    - shadcn--tabs
+  system:
+    specs:
+    - spec/system/tabs_system_spec.rb
+    behaviors:
+    - accessibility
+    - keyboard
+    - pointer
+    - state
+textarea:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/textarea/default
+  parity:
+    scenarios:
+    - preview: shadcn/textarea/default
+      demo: textarea/default
+  interaction:
+    kind: static
+    controllers: []
+  system:
+    excluded:
+      reason: This component has no independent browser interaction beyond render and visual coverage.
+toggle:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/toggle/default
+  parity:
+    scenarios:
+    - preview: shadcn/toggle/default
+      demo: toggle/default
+    - preview: shadcn/toggle/pressed
+      demo: toggle/pressed
+    - preview: shadcn/toggle/sizes
+      demo: toggle/sizes
+    - preview: shadcn/toggle/variants
+      demo: toggle/variants
+  interaction:
+    kind: controller
+    controllers:
+    - shadcn--toggle
+  system:
+    specs:
+    - spec/system/toggle_system_spec.rb
+    behaviors:
+    - keyboard
+    - pointer
+    - state
+toggle-group:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/toggle_group/single
+  parity:
+    scenarios:
+    - preview: shadcn/toggle_group/multiple
+      demo: toggle-group/multiple
+    - preview: shadcn/toggle_group/single
+      demo: toggle-group/single
+  interaction:
+    kind: controller
+    controllers:
+    - shadcn--toggle-group
+  system:
+    specs:
+    - spec/system/toggle_system_spec.rb
+    behaviors:
+    - keyboard
+    - pointer
+    - state
+tooltip:
+  render_smoke: all_exports
+  preview:
+    path: shadcn/tooltip/default
+  parity:
+    scenarios:
+    - preview: shadcn/tooltip/default
+      demo: tooltip/default
+  interaction:
+    kind: controller
+    controllers:
+    - shadcn--tooltip
+  system:
+    specs:
+    - spec/system/floating_position_system_spec.rb
+    - spec/system/popover_system_spec.rb
+    behaviors:
+    - keyboard
+    - pointer
+    - position
+    - state

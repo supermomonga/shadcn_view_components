@@ -2,7 +2,11 @@
 
 require "rails_helper"
 
-RSpec.describe "Input OTP behavior", type: :system do
+RSpec.describe(
+  "Input OTP behavior",
+  type: :system,
+  component_coverage: { "input-otp" => %i[pointer keyboard state form no_js accessibility] }
+) do
   define_method(:press_key) do |key|
     page.driver.browser.page.keyboard.type(key)
   end

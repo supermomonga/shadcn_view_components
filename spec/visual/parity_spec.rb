@@ -3,6 +3,7 @@
 require "rails_helper"
 require "open3"
 require_relative "../support/parity_artifacts"
+require_relative "../support/component_coverage"
 
 # 見た目の upstream パリティ検証(ビジュアルリグレッション)。
 #
@@ -25,112 +26,8 @@ PARITY_THRESHOLD = (ENV.fetch("PARITY_RATIO", nil) || "0.005").to_f
 # このモードでしか検出できない(ライトのみだと盲点になる: dark はクラスベースで
 # Lookbook プレビューには .dark が付かないため、通常描画は常にライトになる)
 PARITY_MODES = %i[light dark].freeze
-# calendar は手書き実装(10-roadmap: 抽出対象外)で、upstream は react-day-picker の
-# 描画結果のため厳密な像素一致は対象外。概形一致(枠・曜日行・日付グリッド・選択表示)を
-# 緩い閾値(2%)で保証する。第3要素でシナリオ個別の閾値を上書きできる
-# calendar の手書き実装は upstream と高さ差がある(白背景では比較パディングの白に溶けるが、
-# dark では背景が黒く出るため同じ差が差分ピクセルとして計上される)。概形一致の保証水準を
-# light に揃えるため、このシナリオは dark だけ閾値をさらに緩める
-PARITY_DARK_THRESHOLDS = {
-  "calendar/default" => 0.06,
-  "calendar/plain" => 0.06
-}.freeze
-
-PARITY_SCENARIOS = [
-  # [lookbookプレビューのパス, upstreamデモID, (省略可)個別閾値]
-  %w[shadcn/accordion/default accordion/default],
-  %w[shadcn/alert_dialog/default alert-dialog/default],
-  %w[shadcn/alert/default alert/default],
-  %w[shadcn/alert/destructive alert/destructive],
-  %w[shadcn/aspect_ratio/default aspect-ratio/default],
-  %w[shadcn/avatar/default avatar/default],
-  %w[shadcn/avatar/group avatar/group],
-  %w[shadcn/avatar/sizes avatar/sizes],
-  %w[shadcn/badge/default badge/default],
-  %w[shadcn/badge/variants badge/variants],
-  %w[shadcn/breadcrumb/default breadcrumb/default],
-  %w[shadcn/breadcrumb/ellipsis breadcrumb/ellipsis],
-  %w[shadcn/button/as_link button/as-link],
-  %w[shadcn/button/default button/default],
-  %w[shadcn/button/destructive button/destructive],
-  %w[shadcn/button/ghost button/ghost],
-  %w[shadcn/button/link button/link],
-  %w[shadcn/button/outline button/outline],
-  %w[shadcn/button/sizes button/sizes],
-  %w[shadcn/button/variants button/variants],
-  %w[shadcn/button/with_icon button/with-icon],
-  %w[shadcn/calendar/default calendar/default 0.02],
-  %w[shadcn/calendar/plain calendar/plain 0.02],
-  %w[shadcn/card/default card/default],
-  %w[shadcn/card/with_action card/with-action],
-  %w[shadcn/carousel/default carousel/default],
-  %w[shadcn/carousel/rtl carousel/rtl],
-  %w[shadcn/carousel/vertical carousel/vertical],
-  %w[shadcn/checkbox/default checkbox/default],
-  %w[shadcn/checkbox/checked checkbox/checked],
-  %w[shadcn/checkbox/unchecked checkbox/unchecked],
-  %w[shadcn/checkbox/disabled checkbox/disabled],
-  %w[shadcn/collapsible/default collapsible/default],
-  %w[shadcn/combobox/chips combobox/chips],
-  %w[shadcn/combobox/default combobox/default],
-  %w[shadcn/command/default command/default],
-  %w[shadcn/context_menu/default context-menu/default],
-  %w[shadcn/dialog/default dialog/default],
-  %w[shadcn/drawer/default drawer/default],
-  %w[shadcn/dropdown_menu/default dropdown-menu/default],
-  %w[shadcn/empty/default empty/default],
-  %w[shadcn/field/default field/default],
-  %w[shadcn/field/horizontal field/horizontal],
-  %w[shadcn/form/default form/default],
-  %w[shadcn/form/without_error form/without-error],
-  %w[shadcn/hover_card/default hover-card/default],
-  %w[shadcn/input/default input/default],
-  %w[shadcn/input/disabled input/disabled],
-  %w[shadcn/input_otp/default input-otp/default],
-  %w[shadcn/item/default item/default],
-  %w[shadcn/kbd/default kbd/default],
-  %w[shadcn/kbd/group kbd/group],
-  %w[shadcn/label/default label/default],
-  %w[shadcn/label/with_input label/with-input],
-  %w[shadcn/marker/default marker/default],
-  %w[shadcn/marker/variants marker/variants],
-  %w[shadcn/menubar/default menubar/default],
-  %w[shadcn/navigation_menu/default navigation-menu/default],
-  %w[shadcn/navigation_menu/with_trigger navigation-menu/with-trigger],
-  %w[shadcn/pagination/default pagination/default],
-  %w[shadcn/popover/default popover/default],
-  %w[shadcn/radio_group/default radio-group/default],
-  %w[shadcn/radio_group/checked radio-group/checked],
-  %w[shadcn/radio_group/unchecked radio-group/unchecked],
-  %w[shadcn/resizable/default resizable/default],
-  %w[shadcn/resizable/vertical resizable/vertical],
-  %w[shadcn/scroll_area/default scroll-area/default],
-  %w[shadcn/select/default select/default],
-  %w[shadcn/separator/horizontal separator/horizontal],
-  %w[shadcn/separator/vertical separator/vertical],
-  %w[shadcn/sheet/default sheet/default],
-  %w[shadcn/skeleton/default skeleton/default],
-  %w[shadcn/slider/default slider/default],
-  %w[shadcn/slider/vertical slider/vertical],
-  %w[shadcn/spinner/default spinner/default],
-  %w[shadcn/spinner/large spinner/large],
-  %w[shadcn/switch/default switch/default],
-  %w[shadcn/switch/checked switch/checked],
-  %w[shadcn/switch/unchecked switch/unchecked],
-  %w[shadcn/switch/small switch/small],
-  %w[shadcn/table/default table/default],
-  %w[shadcn/tabs/default tabs/default],
-  %w[shadcn/tabs/line tabs/line],
-  %w[shadcn/tabs/vertical tabs/vertical],
-  %w[shadcn/textarea/default textarea/default],
-  %w[shadcn/toggle/default toggle/default],
-  %w[shadcn/toggle/pressed toggle/pressed],
-  %w[shadcn/toggle/sizes toggle/sizes],
-  %w[shadcn/toggle/variants toggle/variants],
-  %w[shadcn/toggle_group/multiple toggle-group/multiple],
-  %w[shadcn/toggle_group/single toggle-group/single],
-  %w[shadcn/tooltip/default tooltip/default]
-].freeze
+# シナリオ、個別閾値、dark閾値はcomponent coverage registryを唯一の情報源とする。
+PARITY_SCENARIOS = ComponentCoverage.parity_scenarios.freeze
 
 # スクリーンショットの保存はこの検証の本題(Lint/Debugger は spec/visual を対象外にしている)
 def parity_capture(page, body_path, dark: false, min_height: 1)
@@ -158,17 +55,18 @@ RSpec.describe "visual parity", :parity, type: :system do
     page.current_window.resize_to(1024, 768)
   end
 
-  PARITY_SCENARIOS.each do |ours_path, demo_id, scenario_threshold|
+  PARITY_SCENARIOS.each do |scenario|
+    ours_path = scenario.fetch("preview")
+    demo_id = scenario.fetch("demo")
     PARITY_MODES.each do |mode|
       dark = mode == :dark
-      threshold =
-        if dark && PARITY_DARK_THRESHOLDS.key?(demo_id)
-          PARITY_DARK_THRESHOLDS.fetch(demo_id)
-        else
-          scenario_threshold || PARITY_THRESHOLD
-        end
+      threshold = if dark
+                    scenario.fetch("dark_threshold", scenario.fetch("threshold", PARITY_THRESHOLD))
+                  else
+                    scenario.fetch("threshold", PARITY_THRESHOLD)
+                  end
       it "#{ours_path} が upstream(#{demo_id}) と一致する(#{mode})" do
-        min_height = demo_id == "select/default" ? 220 : 1
+        min_height = scenario.fetch("min_height", 1)
         dir = ParityArtifacts.scenario_dir(demo_id, mode)
         FileUtils.mkdir_p(dir)
         ours_png = File.join(dir, "ours.png")

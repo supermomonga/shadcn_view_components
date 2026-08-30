@@ -5,7 +5,14 @@
 # turbo:submit-end 標準フックを検証する
 require "rails_helper"
 
-RSpec.describe "Dialog behavior", type: :system do
+RSpec.describe(
+  "Dialog behavior",
+  type: :system,
+  component_coverage: {
+    "dialog" => %i[pointer keyboard state form accessibility],
+    "alert-dialog" => %i[pointer keyboard state accessibility]
+  }
+) do
   it "opens with showModal, marks the trigger expanded, and closes via the close button" do
     visit "/pages/dialogs"
 

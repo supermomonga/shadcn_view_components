@@ -3,7 +3,14 @@
 # Phase 3: sheet / drawer(ネイティブ <dialog> のスライド変形)
 require "rails_helper"
 
-RSpec.describe "Sheet and Drawer behavior", type: :system do
+RSpec.describe(
+  "Sheet and Drawer behavior",
+  type: :system,
+  component_coverage: {
+    "sheet" => %i[pointer keyboard state accessibility],
+    "drawer" => %i[pointer keyboard state accessibility]
+  }
+) do
   it "opens the sheet from its trigger and closes via Escape" do
     visit "/pages/sheets"
 
@@ -22,7 +29,7 @@ RSpec.describe "Sheet and Drawer behavior", type: :system do
     expect(page).to have_selector("#open-sheet[aria-expanded='false']")
   end
 
-  it "opens the drawer from its trigger and closes via its close button" do
+  it "opens the drawer from its trigger and closes via its close button or Escape" do
     visit "/pages/sheets"
 
     find("#open-drawer").click
@@ -35,5 +42,11 @@ RSpec.describe "Sheet and Drawer behavior", type: :system do
     find("#close-drawer").click
     # close は exitアニメーション(フォールバック300ms)を待ってから発火するため再試行付きで待つ
     expect(page).to have_no_selector("#demo-drawer[open]")
+
+    find("#open-drawer").click
+    expect(page).to have_selector("#demo-drawer[open]")
+    find("#demo-drawer").send_keys(:escape)
+    expect(page).to have_no_selector("#demo-drawer[open]", visible: :all)
+    expect(page).to have_selector("#open-drawer[aria-expanded='false']")
   end
 end

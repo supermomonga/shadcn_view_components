@@ -3,7 +3,14 @@
 # Phase 3 wave3e(後半): command(フィルタ)と combobox(listbox)
 require "rails_helper"
 
-RSpec.describe "Command and Combobox behavior", type: :system do
+RSpec.describe(
+  "Command and Combobox behavior",
+  type: :system,
+  component_coverage: {
+    "command" => %i[keyboard state],
+    "combobox" => %i[pointer keyboard state form]
+  }
+) do
   # CupriteのNode#send_keysは対象をclickしてから送る。clickでfocusが検索inputへ
   # 移るtriggerには使わず、既存focusへCDPから実キーを送る。
   define_method(:press_key) do |key|

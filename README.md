@@ -398,6 +398,18 @@ Lookbook は dummy アプリのルートパス(`/`)で開く。プレビュー�
 ボタンは Lookbook の display option「theme」(select)のテンプレートを差し替えたもので
 (`spec/dummy/config/initializers/lookbook_theme_toggle.rb` 参照)、動作経路は Lookbook 組み込みのままである。
 
+### コンポーネント別テスト範囲
+
+`spec/coverage/registry.yml` は、実装済みの全61 registry itemについて、最小描画、
+Lookbookプレビュー、upstreamとの見た目比較、ブラウザ操作テストの対応を管理する正本である。
+見た目比較またはブラウザ操作テストを行わない項目にも、機械検査できる除外理由を必ず記載する。
+契約registryへ実装済みitemを追加したのにcoverage行がない場合、存在しないpreview・controller・
+system specを指定した場合、あるいはsystem spec側の対象・確認項目と台帳が一致しない場合はCIが失敗する。
+
+全公開exportの最小構成はcomponent contract specが実際に描画し、全preview exampleはrequest specが
+HTTP描画する。操作を持つコンポーネントはsystem specの`component_coverage` metadataで、pointer、
+keyboard、state、form、reset、reconnect、no-JS、accessibilityなど、実際に確認するふるまいを宣言する。
+
 ### 生成パイプライン
 
 ```
@@ -429,6 +441,7 @@ rake shadcn:check     # 決定論性検証(一時ディレクトリ生成とコ�
 1. `tools/extractor/config/targets.json` にアイテム名を追加 → `rake shadcn:generate`
 2. `app/components/shadcn/<name>.rb` + `<name>.html.erb` を実装(クラスは `Classes.resolve` 経由のみ。04 §7のチェックリスト参照)
 3. `spec/conformance/registry.yml` に1行追加(該当アイテムを `pending` から実装へ)→ 適合試験が自動的に全組み合わせを検証
+4. `spec/coverage/registry.yml` にpreview、見た目比較、操作テストの対応を追加する。対象外にする検証には具体的な理由を書く
 
 ### 週次upstream追従
 
@@ -476,7 +489,7 @@ bundle exec rake parity:update                   # 追跡baselineを意図して
 
 1. 対象コンポーネントの Lookbook プレビュー(`spec/dummy/app/components/previews/shadcn/*_preview.rb`)を用意
 2. `tools/visual-parity/src/demos.tsx` に同じテキスト・props・並びのJSXデモを追加(キーは `<コンポーネント>/<シナリオ>`)
-3. `spec/visual/parity_spec.rb` の `SCENARIOS` に `[プレビューのパス, デモID]` を1行追加
+3. `spec/coverage/registry.yml` の対象itemの`parity.scenarios`にプレビューのパスとデモIDを追加
 
 `tools/visual-parity/src/components/ui/`(展開したupstreamソース)と `dist/` は gitignore 済みで、`pnpm run unpack` / `vite build` が常に `vendor/shadcn` から再生成する(sha256検証つき)。
 

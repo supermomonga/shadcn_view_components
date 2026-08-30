@@ -4,7 +4,11 @@
 # 値の送出とバリデーションエラー表示(aria-invalid / data-invalid / メッセージ要素)
 require "rails_helper"
 
-RSpec.describe "Form integration", type: :system do
+RSpec.describe(
+  "Form integration",
+  type: :system,
+  component_coverage: { "form" => %i[pointer keyboard state form accessibility] }
+) do
   it "renders no error element when there is no error" do
     visit "/pages/form"
 
@@ -30,7 +34,8 @@ RSpec.describe "Form integration", type: :system do
     visit "/pages/form"
 
     fill_in "email", with: "user@example.com"
-    click_button "登録する"
+    page.execute_script("document.querySelector('#subscribe-form button[type=submit]').focus()")
+    page.driver.browser.page.keyboard.type(:enter)
 
     expect(page).to have_text("登録しました: user@example.com")
     expect(page).to have_no_selector("#email-message")

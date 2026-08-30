@@ -2,7 +2,11 @@
 
 require "rails_helper"
 
-RSpec.describe "Slider behavior", type: :system do
+RSpec.describe(
+  "Slider behavior",
+  type: :system,
+  component_coverage: { "slider" => %i[pointer keyboard state form accessibility] }
+) do
   define_method(:press_key) do |key|
     page.driver.browser.page.keyboard.type(key)
   end
@@ -52,6 +56,28 @@ RSpec.describe "Slider behavior", type: :system do
 
     click_button "送信"
     expect(page).to have_selector("#echo-result", text: "90")
+  end
+
+  it "synchronizes the native range and decoration after pointer input" do
+    visit "/pages/slider"
+
+    input = find("#volume", visible: :all)
+    root = input.ancestor("[data-slot='slider']")
+    range = root.find("[data-slot='slider-range']")
+    thumb = root.find("[data-slot='slider-thumb']")
+    rect = page.evaluate_script(<<~JS)
+      (() => {
+        const rect = document.getElementById("volume").getBoundingClientRect()
+        return { x: rect.left + rect.width * 0.75, y: rect.top + rect.height / 2 }
+      })()
+    JS
+
+    page.driver.browser.mouse.click(x: rect.fetch("x"), y: rect.fetch("y"))
+
+    expect(input.value).to eq("70")
+    percentage = ((input.value.to_f - 10) / 80) * 100
+    expect(range.evaluate_script("parseFloat(this.style.width)")).to be_within(0.01).of(percentage)
+    expect(thumb.evaluate_script("parseFloat(this.style.left)")).to be_within(0.01).of(percentage)
   end
 
   it "synchronizes vertical geometry while keeping the thumb centered" do

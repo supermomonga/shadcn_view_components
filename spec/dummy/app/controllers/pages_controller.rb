@@ -57,11 +57,13 @@ class PagesController < ApplicationController
 
   def calendar
     @month = Date.parse("#{params[:month]}-01")
-  rescue ArgumentError, TypeError, Date::Error
+  rescue ArgumentError, TypeError
     @month = Date.current.beginning_of_month
   end
 
   def carousel; end
+
+  def coverage_interactions; end
 
   def form
     @email_error = nil

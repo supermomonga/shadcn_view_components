@@ -162,7 +162,11 @@ module CarouselSystemHelpers
   end
 end
 
-RSpec.describe "Carousel behavior", type: :system do
+RSpec.describe(
+  "Carousel behavior",
+  type: :system,
+  component_coverage: { "carousel" => %i[pointer keyboard state accessibility] }
+) do
   include CarouselSystemHelpers
 
   fixtures = {

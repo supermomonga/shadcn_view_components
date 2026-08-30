@@ -3,7 +3,17 @@
 # Phase 3 wave3d: メニュー族(ARIA menu)とリサイズハンドル
 require "rails_helper"
 
-RSpec.describe "Menu and Resizable behavior", type: :system do
+RSpec.describe(
+  "Menu and Resizable behavior",
+  type: :system,
+  component_coverage: {
+    "dropdown-menu" => %i[pointer keyboard state],
+    "context-menu" => %i[pointer keyboard state],
+    "menubar" => %i[pointer keyboard state],
+    "navigation-menu" => %i[pointer keyboard state],
+    "resizable" => %i[pointer keyboard state]
+  }
+) do
   define_method(:press_key) do |key|
     page.driver.browser.page.keyboard.type(key)
   end
@@ -280,5 +290,31 @@ RSpec.describe "Menu and Resizable behavior", type: :system do
     expect(handle["aria-valuenow"]).to eq("10")
     handle.send_keys(:end)
     expect(handle["aria-valuenow"]).to eq("90")
+  end
+
+  it "resizes panels by dragging the handle with the pointer" do
+    visit "/pages/menus"
+
+    page.execute_script("document.getElementById('resize-handle').scrollIntoView({ block: 'center' })")
+    handle = find("#resize-handle")
+    initial_value = handle["aria-valuenow"].to_f
+    rect = page.evaluate_script(<<~JS)
+      (() => {
+        const rect = document.getElementById("resize-handle").getBoundingClientRect()
+        return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
+      })()
+    JS
+
+    mouse = page.driver.browser.mouse
+    mouse.move(x: rect.fetch("x"), y: rect.fetch("y"))
+    begin
+      mouse.down
+      mouse.move(x: rect.fetch("x") + 80, y: rect.fetch("y"), steps: 5)
+    ensure
+      mouse.up
+    end
+
+    expect(handle["aria-valuenow"].to_f).to be > initial_value
+    expect(find("#panel-left").evaluate_script("this.style.flexBasis").to_f).to be > initial_value
   end
 end

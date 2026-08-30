@@ -295,6 +295,7 @@ combobox:
     attributes: [data-value]
 progress:
   Progress:
+    slots_mode: superset
     attributes: [role, aria-valuenow, aria-valuemin, aria-valuemax, style]
 slider:
   Slider:
@@ -342,6 +343,12 @@ field:
     class_mode: contains
     attributes: [for]
 input-group:
+  InputGroupInput:
+    # upstream は Input(別アイテム)に上書きクラスを足す
+    class_mode: contains
+  InputGroupTextarea:
+    # upstream は Textarea(別アイテム)に上書きクラスを足す
+    class_mode: contains
   InputGroupButton:
     class_mode: contains
     attributes: [type, data-size, data-action, data-state, aria-haspopup]
