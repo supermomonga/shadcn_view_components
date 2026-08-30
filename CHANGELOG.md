@@ -244,6 +244,10 @@ Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
 - `bin/setup` でmise toolchain、Ruby gems、root / Extractor / Visual Parityの
   JavaScript依存をまとめて導入し、通常CIの全jobとupstream同期も同じsetup経路を使う
+- visual parityの静的icon shimを生成対象から分離し、clean checkoutでも参照アプリを
+  ビルドできるようにした
+- dummy CSSの鮮度比較では、native変換がOSごとに等価な表現を選ぶTailwind preflightを
+  除外し、リポジトリが所有するtheme・utilities・追加base層を比較する
 - `rake verify` / `rake verify:full` がCI必須の8検査をすべて実行し、CIの各jobも
   対応する `verify:*` subtaskを呼ぶようにした
 - 各CI jobが対応taskを`LOCAL_VERIFY_TASK`として宣言し、契約specが全jobと

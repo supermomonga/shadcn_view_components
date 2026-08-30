@@ -11,6 +11,7 @@ import { tmpdir } from "node:os"
 import path from "node:path"
 
 import { DEFAULT_PATHS, REPO_ROOT } from "./paths.ts"
+import { withoutDependencyPreflight } from "./tailwind-freshness.ts"
 
 /** 契約に現れる代表的なユーティリティ。生成CSSに含まれるべき宣言。 */
 const EXPECTED_UTILITY_SUBSTRINGS = [
@@ -97,7 +98,7 @@ async function main(): Promise<number> {
     readFile(dummyOutputPath, "utf8"),
     readFile(committedDummyCssPath, "utf8"),
   ])
-  if (generatedDummyCss !== committedDummyCss) {
+  if (withoutDependencyPreflight(generatedDummyCss) !== withoutDependencyPreflight(committedDummyCss)) {
     process.stderr.write(
       "dummy Tailwind CSS is stale — run `mise run build-css` and commit " +
         "spec/dummy/app/assets/stylesheets/application.css\n",
