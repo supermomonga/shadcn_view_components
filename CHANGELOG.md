@@ -13,6 +13,19 @@ Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 - 同一responseの再同期ではvendorスナップショット全体がバイト単位で不変になり、内容または
   revisionが変わった時だけ対応するmetadataが更新されることを固定時刻のテストで保証する
 
+### upstream同期を整合したsnapshot単位で確定
+
+- release metadataとlive registry一式を同期の前後で二度取得し、index、全item、theme、
+  style bootstrapの集合hashとrelease tag / SHAが安定している場合だけ更新する
+- manifestをversion 2へ更新し、正規化したindex / style bootstrap本体と個別SHA、registry一式の
+  content SHA、二重取得の整合条件を記録する。GitHub release SHAはregistry revisionとはみなさず、
+  exact versionのTailwind CSSを特定するための参考情報として分離した
+- 全成果物とlocal overrideを同一filesystem上のstaging directoryへ作成・checksum検証してから
+  directory単位で置換する。overrideは保存byteそのものをhash化し、確定直前と現snapshotを
+  backupへ移した直後にも変更がないことを確認する。確定失敗や中断時は以前のdirectoryを復元する
+- index掲載itemの404、通信、JSON、schema、metadata不一致を別の同期エラーとして中止し、
+  Tailwind CSSの旧版流用やstyle依存の空配列化を廃止。どの部分失敗でも既存snapshotを保つ
+
 ### pnpm toolchainとdependency build policyの固定
 
 - `mise.toml` と各 `package.json` で pnpm 10.22.0 を固定し、ローカルとCIが

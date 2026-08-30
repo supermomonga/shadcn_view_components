@@ -65,6 +65,9 @@ RSpec.describe "generated outputs integrity", type: :conformance do
     it "matches items.*.sha256 against the vendored files" do
       manifest = JSON.parse(File.read(File.join(REPO_ROOT, "vendor/shadcn/manifest.json")))
 
+      expect(manifest.fetch("version")).to eq(2)
+      expect(manifest.dig("source", "registry_snapshot", "consistency")).to eq("double-fetch")
+
       manifest["items"].each do |name, entry|
         path = File.join(REPO_ROOT, "vendor/shadcn", entry["path"])
         expect(Digest::SHA256.file(path).hexdigest).to eq(entry["sha256"]), "#{name} does not match its manifest sha256"
@@ -72,6 +75,12 @@ RSpec.describe "generated outputs integrity", type: :conformance do
 
       theme_path = File.join(REPO_ROOT, "vendor/shadcn", manifest.dig("theme", "path"))
       expect(Digest::SHA256.file(theme_path).hexdigest).to eq(manifest.dig("theme", "sha256"))
+
+      %w[index style].each do |artifact|
+        entry = manifest.dig("source", "registry_snapshot")
+        path = File.join(REPO_ROOT, "vendor/shadcn", entry.fetch("#{artifact}_path"))
+        expect(Digest::SHA256.file(path).hexdigest).to eq(entry.fetch("#{artifact}_sha256"))
+      end
     end
   end
 

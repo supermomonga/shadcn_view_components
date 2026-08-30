@@ -152,6 +152,10 @@ rake shadcn:check     # 決定論性検証(一時ディレクトリ生成とコ�
 
 `shadcn:sync` は、upstream の内容と revision が前回から変わらない場合、manifest の
 `fetched_at` / `checked_at` を保持する。同じ入力を再同期しても時刻だけの差分は作られない。
+同期時は unversioned なregistry一式とGitHub release metadataを処理の前後で二度確認し、
+内容が安定している場合だけ完成済みstaging directoryを `vendor/shadcn` へ置換する。404、
+通信失敗、JSON/schema不正、同期中の変更では既存snapshotを変更せず、`[sync:<種別>]` と
+`retryable=true|false` をエラーへ出す。
 
 編集ポリシー(詳細は `docs.local/01-architecture.md` §2):
 

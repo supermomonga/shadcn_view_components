@@ -5,10 +5,12 @@
  * URL構造の変更が同期コードの一点に閉じるよう、すべてのURL定義をこのファイルに集約する
  * (02-upstream-sync §2 補記)。
  */
-import { mkdir, readdir, readFile, rename, rm, writeFile } from "node:fs/promises"
+import { access, mkdir, mkdtemp, readdir, readFile, rename, rm, writeFile } from "node:fs/promises"
 import path from "node:path"
 
-import { normalizeRegistryItem, sha256Hex } from "./normalize.ts"
+import { z } from "zod"
+
+import { normalizeRegistryItem, sha256Hex, sortKeysDeep, stableJsonStringify } from "./normalize.ts"
 import type { Manifest, ManifestItem, ManifestTailwindCss, UpstreamRelease } from "./manifest.ts"
 
 export const REGISTRY_BASE_URL = "https://ui.shadcn.com/r"
@@ -58,73 +60,184 @@ export interface SyncOptions {
   now?: () => Date
 }
 
+export type SyncFailureKind =
+  | "network"
+  | "http"
+  | "not-found"
+  | "invalid-json"
+  | "invalid-schema"
+  | "inconsistent-metadata"
+  | "filesystem"
+  | "commit"
+
+/** CIログから再試行可能な通信失敗と、再試行では直らない形式不正を判別できる同期エラー。 */
+export class SyncError extends Error {
+  readonly retryable: boolean
+
+  constructor(
+    readonly kind: SyncFailureKind,
+    readonly item: string,
+    readonly file: string,
+    message: string,
+    options: { retryable?: boolean, snapshotUnchanged?: boolean } = {},
+  ) {
+    const retryable = options.retryable ?? !["invalid-json", "invalid-schema"].includes(kind)
+    const snapshotState = (options.snapshotUnchanged ?? true)
+      ? "; existing snapshot unchanged"
+      : "; inspect the reported backup path before retrying"
+    super(`[sync:${kind}] retryable=${retryable} ${item}/${file}: ${message}${snapshotState}`)
+    this.name = "SyncError"
+    this.retryable = retryable
+  }
+}
+
 interface FetchContext {
   item: string
   file: string
+}
+
+const RegistryNameSchema = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+const RegistryIndexSchema = z.array(z.object({
+  name: RegistryNameSchema,
+  type: z.string(),
+}).passthrough())
+const RegistryFileSchema = z.object({
+  path: z.string().min(1),
+  content: z.string(),
+  type: z.string().min(1),
+}).passthrough()
+const RegistryItemSchema = z.object({
+  name: RegistryNameSchema,
+  type: z.literal("registry:ui"),
+  files: z.array(RegistryFileSchema).optional(),
+  registryDependencies: z.array(z.string()).optional(),
+}).passthrough()
+const ColorsSchema = z.object({
+  cssVars: z.object({
+    light: z.record(z.string()),
+    dark: z.record(z.string()),
+  }).passthrough(),
+}).passthrough()
+const StyleDependenciesSchema = z.object({
+  name: z.literal("index"),
+  type: z.literal("registry:style"),
+  dependencies: z.array(z.string()),
+  devDependencies: z.array(z.string()),
+}).passthrough()
+const ReleaseSchema = z.object({ tag_name: z.string().min(1) }).passthrough()
+const GitShaSchema = z.string().regex(/^[0-9a-f]{40}$/i)
+const GitRefSchema = z.object({
+  object: z.object({
+    sha: GitShaSchema,
+    type: z.enum(["commit", "tag"]),
+    url: z.string().url().optional(),
+  }).passthrough(),
+}).passthrough()
+const GitTagObjectSchema = z.object({
+  object: z.object({ sha: GitShaSchema }).passthrough(),
+}).passthrough()
+
+function validationMessage(error: z.ZodError): string {
+  return error.issues.slice(0, 3).map((issue) => {
+    const location = issue.path.length > 0 ? issue.path.join(".") : "response"
+    return `${location}: ${issue.message}`
+  }).join("; ")
+}
+
+function validateJson<T>(schema: z.ZodType<T>, value: unknown, ctx: FetchContext): T {
+  const result = schema.safeParse(value)
+  if (!result.success) {
+    throw new SyncError("invalid-schema", ctx.item, ctx.file, validationMessage(result.error))
+  }
+  return result.data
 }
 
 async function getJson(
   url: string,
   ctx: FetchContext,
   init?: RequestInit,
-): Promise<{ status: number, json: unknown }> {
-  const response = await fetch(url, { ...init, signal: AbortSignal.timeout(30_000) })
-  if (!response.ok) {
-    return { status: response.status, json: null }
+): Promise<unknown> {
+  let response: Response
+  try {
+    response = await fetch(url, { ...init, signal: AbortSignal.timeout(30_000) })
+  } catch (cause) {
+    throw new SyncError("network", ctx.item, ctx.file, `request failed for ${url}: ${String(cause)}`)
   }
-  const json: unknown = await response.json().catch((cause) => {
-    throw new Error(`${ctx.item}/${ctx.file}: invalid JSON from ${url}: ${String(cause)}`)
-  })
-  return { status: response.status, json }
+  if (!response.ok) {
+    const kind = response.status === 404 ? "not-found" : "http"
+    const retryable = response.status === 404 || response.status === 429 || response.status >= 500
+    throw new SyncError(kind, ctx.item, ctx.file, `HTTP ${response.status} for ${url}`, { retryable })
+  }
+  try {
+    return await response.json() as unknown
+  } catch (cause) {
+    throw new SyncError("invalid-json", ctx.item, ctx.file, `invalid JSON from ${url}: ${String(cause)}`)
+  }
 }
 
 async function requireJson(url: string, ctx: FetchContext, init?: RequestInit): Promise<unknown> {
-  const { status, json } = await getJson(url, ctx, init)
-  if (json === null) {
-    throw new Error(`${ctx.item}/${ctx.file}: HTTP ${status} for ${url}`)
-  }
-  return json
+  return getJson(url, ctx, init)
 }
 
-interface RegistryIndexEntry {
-  name: string
-  type: string
+interface RegistryIndexCapture {
+  names: string[]
+  content: string
+  sha256: string
+}
+
+async function fetchRegistryIndex(): Promise<RegistryIndexCapture> {
+  const ctx: FetchContext = { item: "index", file: "index.json" }
+  const index = validateJson(RegistryIndexSchema, await requireJson(indexUrl(), ctx), ctx)
+  const names = index.filter((entry) => entry.type === "registry:ui").map((entry) => entry.name).sort()
+  const duplicate = names.find((name, index) => name === names[index - 1])
+  if (duplicate !== undefined) {
+    throw new SyncError("inconsistent-metadata", ctx.item, ctx.file, `duplicate registry:ui item '${duplicate}'`)
+  }
+  const content = normalizeRegistryItem(JSON.stringify(index))
+  return { names, content, sha256: sha256Hex(content) }
 }
 
 /** レジストリインデックスに列挙される全 registry:ui アイテム名(ソート済み)。 */
 export async function listUiItems(): Promise<string[]> {
-  const ctx: FetchContext = { item: "index", file: "index.json" }
-  const index = (await requireJson(indexUrl(), ctx)) as RegistryIndexEntry[]
-  if (!Array.isArray(index)) throw new Error("index.json: expected an array")
-  return index.filter((e) => e.type === "registry:ui").map((e) => e.name).sort()
+  return (await fetchRegistryIndex()).names
 }
 
 /**
  * GitHub APIで最新releaseを解決して出所の参考情報を得る(02-upstream-sync §4 規則1)。
- * ロックの本体はitems.*.sha256であり、ここは参考情報にすぎないため、
- * 失敗時は警告の上 null で続行する(レート制限等)。
+ * tailwind.css の不変URLをこのtagから決めるため、取得・形式検証に失敗したsnapshotは
+ * 確定しない。registry本体との同一revisionは主張せず、registryは別のcontent hashで固定する。
  */
-export async function resolveUpstreamRelease(checkedAt = new Date().toISOString()): Promise<UpstreamRelease | null> {
+export async function resolveUpstreamRelease(checkedAt = new Date().toISOString()): Promise<UpstreamRelease> {
   const ctx: FetchContext = { item: "github", file: "releases/latest" }
   const headers: Record<string, string> = { Accept: "application/vnd.github+json", "User-Agent": "shadcn_view_components-sync" }
   if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`
-  try {
-    const release = (await requireJson("https://api.github.com/repos/shadcn-ui/ui/releases/latest", ctx, { headers })) as {
-      tag_name: string
-    }
-    const ref = (await requireJson(`https://api.github.com/repos/shadcn-ui/ui/git/ref/tags/${release.tag_name}`, ctx, { headers })) as {
-      object: { sha: string, type: string, url?: string },
-    }
-    let sha = ref.object.sha
-    if (ref.object.type === "tag" && ref.object.url) {
-      const tagObject = (await requireJson(ref.object.url, ctx, { headers })) as { object: { sha: string } }
-      sha = tagObject.object.sha
-    }
-    return { tag: release.tag_name, resolved_sha: sha, checked_at: checkedAt }
-  } catch (error) {
-    process.stderr.write(`WARN: could not resolve upstream release metadata: ${String(error)}\n`)
-    return null
+  const release = validateJson(
+    ReleaseSchema,
+    await requireJson("https://api.github.com/repos/shadcn-ui/ui/releases/latest", ctx, { headers }),
+    ctx,
+  )
+  if (versionFromReleaseTag(release.tag_name) === null) {
+    throw new SyncError(
+      "inconsistent-metadata",
+      ctx.item,
+      ctx.file,
+      `latest release tag '${release.tag_name}' does not identify an npm shadcn version`,
+    )
   }
+  const ref = validateJson(
+    GitRefSchema,
+    await requireJson(`https://api.github.com/repos/shadcn-ui/ui/git/ref/tags/${release.tag_name}`, ctx, { headers }),
+    ctx,
+  )
+  let sha = ref.object.sha
+  if (ref.object.type === "tag") {
+    if (ref.object.url === undefined) {
+      throw new SyncError("inconsistent-metadata", ctx.item, ctx.file, `annotated tag '${release.tag_name}' has no object URL`)
+    }
+    const tagObject = validateJson(GitTagObjectSchema, await requireJson(ref.object.url, ctx, { headers }), ctx)
+    sha = tagObject.object.sha
+  }
+  return { tag: release.tag_name, resolved_sha: sha, checked_at: checkedAt }
 }
 
 export interface StyleDependencies {
@@ -132,23 +245,31 @@ export interface StyleDependencies {
   style_dev_dependencies: string[]
 }
 
+interface StyleBootstrapCapture {
+  content: string
+  dependencies: StyleDependencies
+  sha256: string
+}
+
 /**
  * スタイル共通のnpm依存宣言を取得する。base-nova のようにアイテム毎の dependencies を
  * 持たないスタイルでは、ブートストラップアイテム(registry:style)が唯一の依存情報源。
- * 参考情報であり失敗時は警告して空配列で続行する(ロックの本体は items.*.sha256)。
+ * snapshotの構成要素なので、取得・形式検証に失敗した場合は同期全体を失敗させる。
  */
-export async function fetchStyleDependencies(): Promise<StyleDependencies> {
+async function captureStyleBootstrap(): Promise<StyleBootstrapCapture> {
   const ctx: FetchContext = { item: "style-index", file: "index.json" }
-  try {
-    const json = (await requireJson(styleIndexUrl(), ctx)) as {
-      dependencies?: string[]
-      devDependencies?: string[]
-    }
-    return { style_dependencies: json.dependencies ?? [], style_dev_dependencies: json.devDependencies ?? [] }
-  } catch (error) {
-    process.stderr.write(`WARN: could not fetch the style bootstrap item (reference info only): ${String(error)}\n`)
-    return { style_dependencies: [], style_dev_dependencies: [] }
+  const raw = await requireJson(styleIndexUrl(), ctx)
+  const json = validateJson(StyleDependenciesSchema, raw, ctx)
+  const content = normalizeRegistryItem(JSON.stringify(raw))
+  return {
+    content,
+    dependencies: { style_dependencies: json.dependencies, style_dev_dependencies: json.devDependencies },
+    sha256: sha256Hex(content),
   }
+}
+
+export async function fetchStyleDependencies(): Promise<StyleDependencies> {
+  return (await captureStyleBootstrap()).dependencies
 }
 
 async function writeAtomic(filePath: string, content: string): Promise<void> {
@@ -193,165 +314,453 @@ export function preserveUnchangedTimestamps(candidate: Manifest, previous: Manif
   return next
 }
 
-/**
- * vendorスナップショットを更新する。全アイテム取得が成功してから一括で書き込む
- * (アトミック性。部分更新で終わらせない — 02-upstream-sync §5.1)。
- */
-export async function syncVendor(vendorDir: string, options: SyncOptions = {}): Promise<SyncResult> {
-  const syncedAt = (options.now ?? (() => new Date()))().toISOString()
-  const itemsDir = path.join(vendorDir, "registry", "items")
-  const overridesDir = path.join(vendorDir, "overrides", "items")
-  const colorsPath = path.join(vendorDir, "registry", "colors", `${DEFAULT_BASE_COLOR}.json`)
-  const manifestPath = path.join(vendorDir, "manifest.json")
+interface SnapshotItem {
+  content: string
+  json: z.infer<typeof RegistryItemSchema>
+  origin: "upstream" | "local-override"
+}
 
-  const upstreamNames = await listUiItems()
+interface RemoteRegistryCapture {
+  indexContent: string
+  indexSha256: string
+  styleContent: string
+  styleSha256: string
+  contentSha256: string
+  items: Map<string, SnapshotItem>
+  colorsContent: string
+  styleDependencies: StyleDependencies
+}
 
-  // 既存manifest(差分サマリ用)と既存オーバーライドを読む
-  let previous: Manifest | null = null
-  try {
-    previous = JSON.parse(await readFile(manifestPath, "utf8")) as Manifest
-  } catch {
-    previous = null
+interface LocalOverridesCapture {
+  contentSha256: string
+  items: Map<string, SnapshotItem>
+}
+
+function snapshotContentSha256(
+  indexSha256: string,
+  items: Map<string, SnapshotItem>,
+  colorsContent: string,
+  styleSha256: string,
+): string {
+  const itemHashes = Object.fromEntries([...items.entries()].sort(([left], [right]) => left.localeCompare(right))
+    .map(([name, item]) => [name, sha256Hex(item.content)]))
+  return sha256Hex(stableJsonStringify(sortKeysDeep({
+    index_sha256: indexSha256,
+    items: itemHashes,
+    style_sha256: styleSha256,
+    theme_sha256: sha256Hex(colorsContent),
+  })))
+}
+
+async function captureRemoteRegistry(): Promise<RemoteRegistryCapture> {
+  const index = await fetchRegistryIndex()
+  if (index.names.length === 0) {
+    throw new SyncError("inconsistent-metadata", "index", "index.json", "registry:ui item list is empty")
   }
-  let overrideNames: string[] = []
-  try {
-    overrideNames = (await readdir(overridesDir)).filter((f) => f.endsWith(".json")).map((f) => f.replace(/\.json$/, "")).sort()
-  } catch {
-    overrideNames = []
-  }
 
-  // (1) 全アイテムをメモリに取得(1件でも失敗したら書き込まず非ゼロexit)。
-  //     ただしインデックスに列挙されているのにupstreamが404を返すアイテムは
-  //     「upstream側の不整合」として警告付きスキップする。
-  const fetched = new Map<string, { content: string, json: Record<string, unknown>, origin: "upstream" | "local-override" }>()
-  for (const name of upstreamNames) {
+  const items = new Map<string, SnapshotItem>()
+  for (const name of index.names) {
     const ctx: FetchContext = { item: name, file: `${name}.json` }
-    const { status, json } = await getJson(itemUrl(name), ctx)
-    if (json === null) {
-      if (status === 404) {
-        process.stderr.write(`WARN: '${name}' is listed in the registry index but upstream returns 404 — skipped\n`)
-        continue
-      }
-      throw new Error(`${name}/${name}.json: HTTP ${status} for ${itemUrl(name)}`)
+    const raw = await requireJson(itemUrl(name), ctx)
+    const json = validateJson(RegistryItemSchema, raw, ctx)
+    if (json.name !== name) {
+      throw new SyncError(
+        "inconsistent-metadata",
+        ctx.item,
+        ctx.file,
+        `index requested '${name}', but response identifies '${json.name}'`,
+      )
     }
-    fetched.set(name, { content: normalizeRegistryItem(JSON.stringify(json)), json: json as Record<string, unknown>, origin: "upstream" })
+    items.set(name, { content: normalizeRegistryItem(JSON.stringify(raw)), json, origin: "upstream" })
   }
 
-  // (2) テーマ(デフォルトbase color)。2026年のレジストリでは cssVars はUIアイテムから
-  //     colorsエンドポイントに分離しているため、テーマもスナップショットに含める。
   const colorsCtx: FetchContext = { item: `colors/${DEFAULT_BASE_COLOR}`, file: `${DEFAULT_BASE_COLOR}.json` }
-  const colorsJson = (await requireJson(colorsUrl(DEFAULT_BASE_COLOR), colorsCtx)) as Record<string, unknown>
-  const colorsContent = normalizeRegistryItem(JSON.stringify(colorsJson))
+  const colorsRaw = await requireJson(colorsUrl(DEFAULT_BASE_COLOR), colorsCtx)
+  validateJson(ColorsSchema, colorsRaw, colorsCtx)
+  const colorsContent = normalizeRegistryItem(JSON.stringify(colorsRaw))
+  const style = await captureStyleBootstrap()
 
-  // (3) オーバーライドをマージ(同名のupstreamアイテムがあれば警告してオーバーライド優先)
-  for (const name of overrideNames) {
-    const filePath = path.join(overridesDir, `${name}.json`)
-    const raw = await readFile(filePath, "utf8")
-    if (fetched.has(name)) {
-      process.stderr.write(`WARN: local override '${name}' shadows an upstream item\n`)
-    }
-    fetched.set(name, { content: normalizeRegistryItem(raw), json: JSON.parse(raw) as Record<string, unknown>, origin: "local-override" })
+  return {
+    indexContent: index.content,
+    indexSha256: index.sha256,
+    styleContent: style.content,
+    styleSha256: style.sha256,
+    contentSha256: snapshotContentSha256(index.sha256, items, colorsContent, style.sha256),
+    items,
+    colorsContent,
+    styleDependencies: style.dependencies,
+  }
+}
+
+async function captureLocalOverrides(vendorDir: string): Promise<LocalOverridesCapture> {
+  const overridesDir = path.join(vendorDir, "overrides", "items")
+  let filenames: string[] = []
+  try {
+    filenames = (await readdir(overridesDir)).filter((file) => file.endsWith(".json")).sort()
+  } catch (cause) {
+    if ((cause as NodeJS.ErrnoException).code !== "ENOENT") throw cause
   }
 
-  // (4) 一括書き込み + 廃止検知(インデックスから消えたアイテムの削除)
+  const items = new Map<string, SnapshotItem>()
+  const contentHashes: Record<string, string> = {}
+  for (const filename of filenames) {
+    const name = filename.replace(/\.json$/, "")
+    const ctx: FetchContext = { item: name, file: filename }
+    const raw = await readFile(path.join(overridesDir, filename), "utf8")
+    let parsed: unknown
+    try {
+      parsed = JSON.parse(raw) as unknown
+    } catch (cause) {
+      throw new SyncError("invalid-json", ctx.item, ctx.file, `invalid local override JSON: ${String(cause)}`)
+    }
+    const json = validateJson(RegistryItemSchema, parsed, ctx)
+    if (json.name !== name) {
+      throw new SyncError(
+        "inconsistent-metadata",
+        ctx.item,
+        ctx.file,
+        `override filename identifies '${name}', but content identifies '${json.name}'`,
+      )
+    }
+    items.set(name, { content: raw, json, origin: "local-override" })
+    contentHashes[name] = sha256Hex(raw)
+  }
+  return { contentSha256: sha256Hex(stableJsonStringify(contentHashes)), items }
+}
+
+async function fetchTailwindCss(version: string): Promise<string> {
+  const ctx: FetchContext = { item: `shadcn@${version}`, file: "tailwind.css" }
+  const url = tailwindCssUrl(version)
+  let response: Response
+  try {
+    response = await fetch(url, { signal: AbortSignal.timeout(30_000) })
+  } catch (cause) {
+    throw new SyncError("network", ctx.item, ctx.file, `request failed for ${url}: ${String(cause)}`)
+  }
+  if (!response.ok) {
+    const kind = response.status === 404 ? "not-found" : "http"
+    const retryable = response.status === 429 || response.status >= 500
+    throw new SyncError(kind, ctx.item, ctx.file, `HTTP ${response.status} for ${url}`, { retryable })
+  }
+  const raw = await response.text()
+  if (raw.trim().length === 0) {
+    throw new SyncError("invalid-schema", ctx.item, ctx.file, "response body is empty")
+  }
+  return raw.endsWith("\n") ? raw : `${raw}\n`
+}
+
+function mergeSnapshotItems(remote: RemoteRegistryCapture, overrides: LocalOverridesCapture): Map<string, SnapshotItem> {
+  const items = new Map(remote.items)
+  for (const [name, item] of overrides.items) {
+    if (items.has(name)) process.stderr.write(`WARN: local override '${name}' shadows an upstream item\n`)
+    items.set(name, item)
+  }
+  return items
+}
+
+function buildManifestItems(items: Map<string, SnapshotItem>): Record<string, ManifestItem> {
+  const result: Record<string, ManifestItem> = {}
+  for (const [name, item] of [...items.entries()].sort(([left], [right]) => left.localeCompare(right))) {
+    result[name] = {
+      path: item.origin === "upstream" ? `registry/items/${name}.json` : `overrides/items/${name}.json`,
+      sha256: sha256Hex(item.content),
+      file_count: item.json.files?.length ?? 0,
+      registry_dependencies: item.json.registryDependencies ?? [],
+      origin: item.origin,
+    }
+  }
+  return result
+}
+
+function summarizeChanges(previous: Manifest | null, items: Record<string, ManifestItem>): SyncResult {
   const added: string[] = []
   const changed: string[] = []
   let unchanged = 0
-  const items: Record<string, ManifestItem> = {}
-  for (const name of [...fetched.keys()].sort()) {
-    const entry = fetched.get(name)!
-    const isOverride = entry.origin === "local-override"
-    const filePath = isOverride ? path.join(overridesDir, `${name}.json`) : path.join(itemsDir, `${name}.json`)
-    const relativePath = path.relative(vendorDir, filePath)
-    const files = (entry.json["files"] as Array<unknown> | undefined) ?? []
-    const registryDeps = (entry.json["registryDependencies"] as Array<string> | undefined) ?? []
-    items[name] = {
-      path: relativePath.split(path.sep).join("/"),
-      sha256: sha256Hex(entry.content),
-      file_count: files.length,
-      registry_dependencies: registryDeps,
-      origin: entry.origin,
-    }
+  for (const [name, item] of Object.entries(items)) {
     const before = previous?.items[name]
-    if (!before) {
-      added.push(name)
-    } else if (before.sha256 !== items[name]!.sha256) {
-      changed.push(name)
-    } else {
-      unchanged += 1
-    }
-    // オーバーライドはユーザー管理ファイルなので上書きしない
-    if (!isOverride) await writeAtomic(filePath, entry.content)
+    if (before === undefined) added.push(name)
+    else if (before.sha256 !== item.sha256 || before.origin !== item.origin) changed.push(name)
+    else unchanged += 1
   }
+  const removed = previous === null ? [] : Object.keys(previous.items).filter((name) => !(name in items)).sort()
+  return { added, removed, changed, unchanged }
+}
 
-  const removed: string[] = []
+async function materializeSnapshot(
+  stagedDir: string,
+  remote: RemoteRegistryCapture,
+  overrideItems: Map<string, SnapshotItem>,
+  tailwindContent: string,
+  manifest: Manifest,
+): Promise<void> {
+  for (const [name, item] of remote.items) {
+    await writeAtomic(path.join(stagedDir, "registry", "items", `${name}.json`), item.content)
+  }
+  for (const [name, item] of overrideItems) {
+    await writeAtomic(path.join(stagedDir, "overrides", "items", `${name}.json`), item.content)
+  }
+  await writeAtomic(path.join(stagedDir, manifest.source.registry_snapshot.index_path), remote.indexContent)
+  await writeAtomic(path.join(stagedDir, manifest.source.registry_snapshot.style_path), remote.styleContent)
+  await writeAtomic(path.join(stagedDir, manifest.theme.path), remote.colorsContent)
+  const tailwind = manifest.source.tailwind_css
+  if (tailwind === null) throw new SyncError("inconsistent-metadata", "manifest", "tailwind_css", "required entry is null")
+  await writeAtomic(path.join(stagedDir, tailwind.path), tailwindContent)
+  await writeAtomic(path.join(stagedDir, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`)
+}
+
+async function validateStagedSnapshot(
+  stagedDir: string,
+  expected: Manifest,
+  remote: RemoteRegistryCapture,
+): Promise<void> {
+  const manifestPath = path.join(stagedDir, "manifest.json")
+  const actual = JSON.parse(await readFile(manifestPath, "utf8")) as Manifest
+  if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+    throw new SyncError("commit", "manifest", "manifest.json", "staged manifest does not match the validated candidate")
+  }
+  for (const [name, item] of Object.entries(actual.items)) {
+    const content = await readFile(path.join(stagedDir, item.path), "utf8")
+    if (sha256Hex(content) !== item.sha256) {
+      throw new SyncError("commit", name, item.path, "staged item checksum mismatch")
+    }
+  }
+  const theme = await readFile(path.join(stagedDir, actual.theme.path), "utf8")
+  if (sha256Hex(theme) !== actual.theme.sha256) {
+    throw new SyncError("commit", "theme", actual.theme.path, "staged theme checksum mismatch")
+  }
+  const indexContent = await readFile(path.join(stagedDir, actual.source.registry_snapshot.index_path), "utf8")
+  if (sha256Hex(indexContent) !== actual.source.registry_snapshot.index_sha256) {
+    throw new SyncError("commit", "index", actual.source.registry_snapshot.index_path, "staged index checksum mismatch")
+  }
+  const styleContent = await readFile(path.join(stagedDir, actual.source.registry_snapshot.style_path), "utf8")
+  if (sha256Hex(styleContent) !== actual.source.registry_snapshot.style_sha256) {
+    throw new SyncError("commit", "style-index", actual.source.registry_snapshot.style_path, "staged style checksum mismatch")
+  }
+  const tailwind = actual.source.tailwind_css
+  if (tailwind === null) throw new SyncError("commit", "manifest", "tailwind_css", "required entry is null")
+  const tailwindContent = await readFile(path.join(stagedDir, tailwind.path), "utf8")
+  if (sha256Hex(tailwindContent) !== tailwind.sha256) {
+    throw new SyncError("commit", "tailwind", tailwind.path, "staged Tailwind checksum mismatch")
+  }
+  for (const [name, item] of remote.items) {
+    const content = await readFile(path.join(stagedDir, "registry", "items", `${name}.json`), "utf8")
+    if (sha256Hex(content) !== sha256Hex(item.content)) {
+      throw new SyncError("commit", name, `registry/items/${name}.json`, "staged remote item checksum mismatch")
+    }
+  }
+  const stagedContentSha256 = snapshotContentSha256(
+    actual.source.registry_snapshot.index_sha256,
+    remote.items,
+    theme,
+    actual.source.registry_snapshot.style_sha256,
+  )
+  if (stagedContentSha256 !== actual.source.registry_snapshot.content_sha256) {
+    throw new SyncError("commit", "registry", "snapshot", "staged registry content hash mismatch")
+  }
+}
+
+export async function commitStagedSnapshot(
+  stagedDir: string,
+  vendorDir: string,
+  expectedOverridesSha256?: string,
+): Promise<void> {
+  const backupDir = path.join(path.dirname(vendorDir), `.${path.basename(vendorDir)}.sync-backup`)
+  let hasPrevious = false
   try {
-    const existing = await readdir(itemsDir)
-    for (const file of existing.filter((f) => f.endsWith(".json"))) {
-      const name = file.replace(/\.json$/, "")
-      if (!fetched.has(name) || fetched.get(name)!.origin !== "upstream") {
-        removed.push(name)
-        await rm(path.join(itemsDir, file))
-        process.stderr.write(`WARN: item '${name}' no longer exists in the upstream index (removed from vendor)\n`)
-      }
+    await rename(vendorDir, backupDir)
+    hasPrevious = true
+  } catch (cause) {
+    if ((cause as NodeJS.ErrnoException).code !== "ENOENT") {
+      throw new SyncError("commit", "snapshot", vendorDir, `could not move existing snapshot aside: ${String(cause)}`)
     }
-  } catch {
-    // items ディレクトリがまだ無いだけ
   }
 
-  await writeAtomic(colorsPath, colorsContent)
+  try {
+    if (hasPrevious && expectedOverridesSha256 !== undefined) {
+      const currentOverrides = await captureLocalOverrides(backupDir)
+      if (currentOverrides.contentSha256 !== expectedOverridesSha256) {
+        throw new SyncError("inconsistent-metadata", "overrides", "items", "local overrides changed before directory commit")
+      }
+    }
+    await rename(stagedDir, vendorDir)
+  } catch (cause) {
+    if (hasPrevious) {
+      try {
+        await rename(backupDir, vendorDir)
+      } catch (rollbackCause) {
+        throw new SyncError(
+          "commit",
+          "snapshot",
+          vendorDir,
+          `commit failed (${String(cause)}) and rollback failed (${String(rollbackCause)}); previous snapshot remains at ${backupDir}`,
+          { snapshotUnchanged: false },
+        )
+      }
+    }
+    if (cause instanceof SyncError) throw cause
+    throw new SyncError("commit", "snapshot", vendorDir, `could not install staged snapshot: ${String(cause)}`)
+  }
 
-  // (5) npm shadcn パッケージの tailwind.css(index.json の `@import "shadcn/tailwind.css"`
-  //     の実体。カスタムバリアントや scroll-fade 等のスタイル共通定義)。バージョンは
-  //     upstream_release.tag に固定する。release解決に失敗したときは前回manifestの
-  //     バージョンで取得を試み、取得失敗時は既存スナップショットを維持する
-  const upstreamRelease = await resolveUpstreamRelease(syncedAt)
-  let tailwindCss: ManifestTailwindCss | null = null
-  const tailwindVersion = (upstreamRelease !== null ? versionFromReleaseTag(upstreamRelease.tag) : null)
-    ?? previous?.source.tailwind_css?.version ?? null
-  if (tailwindVersion === null) {
-    process.stderr.write("WARN: could not resolve the shadcn package version for tailwind.css — snapshot kept as-is\n")
-    tailwindCss = previous?.source.tailwind_css ?? null
-  } else {
-    const ctx: FetchContext = { item: `shadcn@${tailwindVersion}`, file: "tailwind.css" }
+  if (hasPrevious) {
     try {
-      const response = await fetch(tailwindCssUrl(tailwindVersion), { signal: AbortSignal.timeout(30_000) })
-      if (!response.ok) throw new Error(`HTTP ${response.status} for ${tailwindCssUrl(tailwindVersion)}`)
-      const raw = await response.text()
-      const content = raw.endsWith("\n") ? raw : `${raw}\n`
-      const tailwindPath = path.join(vendorDir, "style", "tailwind.css")
-      await writeAtomic(tailwindPath, content)
-      tailwindCss = {
-        package: "shadcn",
-        version: tailwindVersion,
-        path: path.relative(vendorDir, tailwindPath).split(path.sep).join("/"),
-        sha256: sha256Hex(content),
-      }
-    } catch (error) {
-      process.stderr.write(`WARN: ${ctx.item}/${ctx.file}: ${String(error)} — snapshot kept as-is\n`)
-      tailwindCss = previous?.source.tailwind_css ?? null
+      await rm(backupDir, { recursive: true, force: true })
+    } catch (cause) {
+      process.stderr.write(`WARN: committed snapshot, but could not remove backup ${backupDir}: ${String(cause)}\n`)
     }
   }
+}
 
+async function pathExists(filePath: string): Promise<boolean> {
+  try {
+    await access(filePath)
+    return true
+  } catch (cause) {
+    if ((cause as NodeJS.ErrnoException).code === "ENOENT") return false
+    throw cause
+  }
+}
+
+/** 前回プロセスがdirectory交換の途中で終了していた場合、確定済みまたは旧snapshotへ収束させる。 */
+async function recoverInterruptedCommit(vendorDir: string): Promise<void> {
+  const parentDir = path.dirname(vendorDir)
+  const basename = path.basename(vendorDir)
+  const backupDir = path.join(parentDir, `.${basename}.sync-backup`)
+  const [vendorExists, backupExists] = await Promise.all([pathExists(vendorDir), pathExists(backupDir)])
+
+  if (!vendorExists && backupExists) {
+    await rename(backupDir, vendorDir)
+    process.stderr.write(`WARN: restored interrupted snapshot commit from ${backupDir}\n`)
+  } else if (vendorExists && backupExists) {
+    await rm(backupDir, { recursive: true, force: true })
+    process.stderr.write(`WARN: removed backup left after a completed snapshot commit: ${backupDir}\n`)
+  }
+
+  let entries: string[] = []
+  try {
+    entries = await readdir(parentDir)
+  } catch (cause) {
+    if ((cause as NodeJS.ErrnoException).code !== "ENOENT") throw cause
+  }
+  const stagingPrefix = `.${basename}-sync-`
+  for (const entry of entries.filter((name) => name.startsWith(stagingPrefix))) {
+    await rm(path.join(parentDir, entry), { recursive: true, force: true })
+  }
+}
+
+/**
+ * upstreamを二度取得して内容が安定していることを確認し、完成したsnapshotを同一filesystem上の
+ * 一時ディレクトリで検証してからディレクトリ単位で確定する。
+ */
+async function performSyncVendor(vendorDir: string, options: SyncOptions): Promise<SyncResult> {
+  const syncedAt = (options.now ?? (() => new Date()))().toISOString()
+  await recoverInterruptedCommit(vendorDir)
+  const manifestPath = path.join(vendorDir, "manifest.json")
+  let previous: Manifest | null = null
+  try {
+    previous = JSON.parse(await readFile(manifestPath, "utf8")) as Manifest
+  } catch (cause) {
+    if ((cause as NodeJS.ErrnoException).code !== "ENOENT") throw cause
+  }
+
+  const overrides = await captureLocalOverrides(vendorDir)
+  const releaseBefore = await resolveUpstreamRelease(syncedAt)
+  const firstCapture = await captureRemoteRegistry()
+  const tailwindVersion = versionFromReleaseTag(releaseBefore.tag)
+  if (tailwindVersion === null) {
+    throw new SyncError("inconsistent-metadata", "github", "releases/latest", `unsupported tag '${releaseBefore.tag}'`)
+  }
+  const tailwindContent = await fetchTailwindCss(tailwindVersion)
+  const secondCapture = await captureRemoteRegistry()
+  const releaseAfter = await resolveUpstreamRelease(syncedAt)
+
+  if (firstCapture.contentSha256 !== secondCapture.contentSha256) {
+    throw new SyncError(
+      "inconsistent-metadata",
+      "registry",
+      "snapshot",
+      `content changed during sync (${firstCapture.contentSha256} -> ${secondCapture.contentSha256})`,
+    )
+  }
+  if (!sameRelease(releaseBefore, releaseAfter)) {
+    throw new SyncError(
+      "inconsistent-metadata",
+      "github",
+      "releases/latest",
+      `release changed during sync (${releaseBefore.tag}@${releaseBefore.resolved_sha} -> ${releaseAfter.tag}@${releaseAfter.resolved_sha})`,
+    )
+  }
+
+  const items = mergeSnapshotItems(secondCapture, overrides)
+  const manifestItems = buildManifestItems(items)
+  const tailwindCss: ManifestTailwindCss = {
+    package: "shadcn",
+    version: tailwindVersion,
+    path: "style/tailwind.css",
+    sha256: sha256Hex(tailwindContent),
+  }
   const candidateManifest: Manifest = {
-    version: 1,
+    version: 2,
     source: {
       style: STYLE,
       registry_base_url: REGISTRY_BASE_URL,
-      ...await fetchStyleDependencies(),
-      upstream_release: upstreamRelease,
+      ...secondCapture.styleDependencies,
+      registry_snapshot: {
+        consistency: "double-fetch",
+        index_path: "registry/index.json",
+        index_sha256: secondCapture.indexSha256,
+        style_path: `registry/styles/${STYLE}/index.json`,
+        style_sha256: secondCapture.styleSha256,
+        content_sha256: secondCapture.contentSha256,
+      },
+      upstream_release: releaseAfter,
       tailwind_css: tailwindCss,
     },
     fetched_at: syncedAt,
     theme: {
       base_color: DEFAULT_BASE_COLOR,
-      path: path.relative(vendorDir, colorsPath).split(path.sep).join("/"),
-      sha256: sha256Hex(colorsContent),
+      path: `registry/colors/${DEFAULT_BASE_COLOR}.json`,
+      sha256: sha256Hex(secondCapture.colorsContent),
     },
-    items,
+    items: manifestItems,
   }
   const manifest = preserveUnchangedTimestamps(candidateManifest, previous)
-  await writeAtomic(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`)
+  const result = summarizeChanges(previous, manifestItems)
 
-  return { added, removed, changed, unchanged }
+  await mkdir(path.dirname(vendorDir), { recursive: true })
+  const stagedDir = await mkdtemp(path.join(path.dirname(vendorDir), `.${path.basename(vendorDir)}-sync-`))
+  try {
+    await materializeSnapshot(
+      stagedDir,
+      secondCapture,
+      overrides.items,
+      tailwindContent,
+      manifest,
+    )
+    await validateStagedSnapshot(stagedDir, manifest, secondCapture)
+    const overridesBeforeCommit = await captureLocalOverrides(vendorDir)
+    if (overrides.contentSha256 !== overridesBeforeCommit.contentSha256) {
+      throw new SyncError("inconsistent-metadata", "overrides", "items", "local overrides changed during sync")
+    }
+    await commitStagedSnapshot(stagedDir, vendorDir, overrides.contentSha256)
+  } finally {
+    try {
+      await rm(stagedDir, { recursive: true, force: true })
+    } catch (cause) {
+      process.stderr.write(`WARN: could not remove staged snapshot ${stagedDir}: ${String(cause)}\n`)
+    }
+  }
+
+  for (const name of result.removed) {
+    process.stderr.write(`WARN: item '${name}' no longer exists in the stable upstream snapshot (removed from vendor)\n`)
+  }
+  return result
+}
+
+export async function syncVendor(vendorDir: string, options: SyncOptions = {}): Promise<SyncResult> {
+  try {
+    return await performSyncVendor(vendorDir, options)
+  } catch (cause) {
+    if (cause instanceof SyncError) throw cause
+    throw new SyncError("filesystem", "snapshot", vendorDir, String(cause))
+  }
 }

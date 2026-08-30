@@ -82,8 +82,7 @@ export async function extractContracts(pipeline: PipelinePaths, only?: string[])
 
     const itemPath = path.join(pipeline.vendorDir, manifestItem.path)
     const content = await readFile(itemPath, "utf8")
-    const normalized = content.endsWith("\n") ? content : `${content}\n`
-    const actualSha = sha256Hex(normalized)
+    const actualSha = sha256Hex(content)
     if (actualSha !== manifestItem.sha256) {
       failures.push(new Error(`${name}: sha256 mismatch — vendor item was hand-edited (rerun rake shadcn:sync)`))
       continue
