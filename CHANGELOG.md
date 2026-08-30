@@ -6,6 +6,17 @@ All notable changes to this project will be documented in this file.
 
 Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
+### 浮動要素の位置決めを共通化
+
+- Popover、Tooltip、Hover Card、Dropdown / Context / Menubar / Navigation Menuと
+  Submenuの座標計算を一つの位置決めmoduleへ集約し、controllerは開閉・ARIA・anchor選択だけを担う
+- `side`、`align`、`side_offset`、`align_offset`、`collision_padding`をContentの共通optionとして公開し、
+  upstream既定値をSSRの`data-position-*`へ出力する。実配置の`data-side` / `data-align`とは分離する
+- 四辺のviewport衝突でside / alignを反転・調整し、RTLのstart/endとinline-start/inline-end、
+  `--anchor-*` / `--available-*` / `--transform-origin` CSS変数を共通処理する
+- overflow ancestorのscroll、window / visual viewportのresize、anchor / contentのsize変更、
+  anchorのlayout移動を監視し、close・light dismiss・Stimulus切断時に全購読と予約済み更新を解除する
+
 ### 配布Stimulus controllersの検証を必須化
 
 - gemから配布するJavaScript全体をESLintとTypeScript `checkJs`の対象にし、構文だけでなく

@@ -5,7 +5,9 @@ const browserGlobals = Object.fromEntries(
   [
     "clearTimeout",
     "document",
+    "DOMRect",
     "Element",
+    "HTMLElement",
     "Node",
     "setTimeout",
     "window",

@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest"
 
+import { intersectionObserverCount, resizeObserverCount } from "./support/browser.js"
 import { listenerCount } from "./support/listener_ledger.js"
 import { flushStimulus, mount } from "./support/stimulus.js"
 
@@ -68,6 +69,8 @@ describe("shadcn--tooltip", () => {
     const secondContent = document.querySelector("#exit-content")
     secondTrigger.dispatchEvent(new MouseEvent("mouseenter"))
     vi.runOnlyPendingTimers()
+    expect(resizeObserverCount()).toBe(1)
+    expect(intersectionObserverCount()).toBe(1)
     secondTrigger.dispatchEvent(new MouseEvent("mouseleave"))
     expect(listenerCount(secondContent, "animationend")).toBe(1)
 
@@ -77,6 +80,8 @@ describe("shadcn--tooltip", () => {
     expect(listenerCount(secondContent, "animationcancel")).toBe(0)
     expect(vi.getTimerCount()).toBe(0)
     expect(secondContent.hidden).toBe(true)
+    expect(resizeObserverCount()).toBe(0)
+    expect(intersectionObserverCount()).toBe(0)
 
     document.body.appendChild(secondRoot)
     await flushStimulus()

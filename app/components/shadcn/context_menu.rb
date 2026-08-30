@@ -23,6 +23,11 @@ module Shadcn
     end
 
     class Content < DropdownMenu::Content
+      FLOATING_POSITION_DEFAULTS = T.let(
+        { side: :right, align: :start, side_offset: 0, align_offset: 4, collision_padding: 5 }.freeze,
+        T::Hash[Symbol, T.untyped]
+      )
+
       # 右クリックで開く際、イベント列の途中で light dismiss されないよう manual にする
       sig { override.returns(T::Hash[Symbol, T.untyped]) }
       def html_attributes
@@ -64,6 +69,11 @@ module Shadcn
 
     class SubTrigger < DropdownMenu::SubTrigger; end
 
-    class SubContent < DropdownMenu::SubContent; end
+    class SubContent < DropdownMenu::SubContent
+      FLOATING_POSITION_DEFAULTS = T.let(
+        { side: :right, align: :start, side_offset: 0, align_offset: 4, collision_padding: 5 }.freeze,
+        T::Hash[Symbol, T.untyped]
+      )
+    end
   end
 end

@@ -120,12 +120,23 @@ Shadcn::Button.classes(variant: :link)
   <% end %>
   <%= render(Shadcn::Card::Content.new) { "本文" } %>
 <% end %>
+
+# 浮動要素の配置(Popover / Tooltip / HoverCard / Menu系Contentで共通)
+render(Shadcn::Popover::Content.new(
+  side: :right,
+  align: :start,
+  side_offset: 8,
+  align_offset: 0,
+  collision_padding: 5
+)) { "内容" }
 ```
 
 注意: 純Rubyのコード(`#call` 内等)で複数の子を `render` で連ねるときはブロックの
 戻り値しか使われないため `safe_join([...])` で連結する(ERBでは出力バッファが連結するため不要)。
 
 - バリアント値は Symbol / String 両方を受け付ける。契約に存在しない値は `ArgumentError`(fail-fast)
+- 浮動要素の `side` は `top/right/bottom/left/inline-start/inline-end`、`align` は
+  `start/center/end`。画面端では実配置を反転・調整し、scrollやresizeにも追従する
 - `class:` で渡した追加クラスは `tailwind_merge` により契約クラスと統合される(利用者の上書きが後勝ち)
 - テーマのカスタマイズは CSS変数の上書きが唯一の公式経路(`@import` より後に書く)
 

@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 
+import { startFloatingPosition } from "@supermomonga/shadcn-view-components/floating_position"
 import { hideAfterExit } from "@supermomonga/shadcn-view-components/hide_after_exit"
 import { applyStateAttrs } from "@supermomonga/shadcn-view-components/state_attrs"
 
@@ -20,11 +21,15 @@ export default class PopoverController extends Controller {
   /** @type {() => void} */
   cancelExit = noop
 
+  /** @type {{ update: () => void, destroy: () => void } | null} */
+  positioning = null
+
   /** @type {() => void} */
   onToggle = () => this.syncState()
 
   connect() {
     this.cancelPendingExit()
+    this.stopPositioning()
     this.content = this.element.querySelector("[popover]")
     this.trigger = this.element.querySelector("[data-slot='popover-trigger']")
     this.content?.addEventListener("toggle", this.onToggle)
@@ -35,6 +40,7 @@ export default class PopoverController extends Controller {
     const content = this.content
     const finishExit = content?.dataset.state === "closed" && content.matches(":popover-open")
     this.cancelPendingExit()
+    this.stopPositioning()
     content?.removeEventListener("toggle", this.onToggle)
     if (finishExit) content.hidePopover()
     this.content = null
@@ -51,6 +57,7 @@ export default class PopoverController extends Controller {
       this.applyState("closed")
       this.cancelExit = hideAfterExit(content, () => {
         if (this.content !== content || content.dataset.state === "open") return
+        this.stopPositioning()
         content.hidePopover()
       })
       return
@@ -59,7 +66,7 @@ export default class PopoverController extends Controller {
     this.cancelPendingExit()
     this.applyState("open")
     if (!content.matches(":popover-open")) content.showPopover()
-    this.position()
+    this.startPositioning()
   }
 
   syncState() {
@@ -69,7 +76,8 @@ export default class PopoverController extends Controller {
     const state = content.matches(":popover-open") ? "open" : "closed"
     if (state === "open") this.cancelPendingExit()
     this.applyState(state)
-    if (state === "open") this.position()
+    if (state === "open") this.startPositioning()
+    else this.stopPositioning()
   }
 
   /** @param {"open" | "closed"} state */
@@ -81,22 +89,25 @@ export default class PopoverController extends Controller {
     this.trigger?.setAttribute("aria-expanded", String(state === "open"))
   }
 
-  // align=center / sideOffset 既定(下方向)の位置合わせ。
-  // anchor positioning 非対応環境でも成立するよう JS で算出する
-  position() {
+  startPositioning() {
     const content = this.content
     const trigger = this.trigger
     if (!content || !trigger) return
 
-    content.dataset.side = "bottom"
-    const rect = trigger.getBoundingClientRect()
-    const offset = Number(content.dataset.sideOffset ?? 4)
-    const style = content.style
-    style.position = "fixed"
-    style.margin = "0"
-    const left = rect.left + rect.width / 2 - content.offsetWidth / 2
-    style.left = `${Math.max(8, Math.min(left, window.innerWidth - content.offsetWidth - 8))}px`
-    style.top = `${rect.bottom + offset}px`
+    this.stopPositioning()
+    this.positioning = startFloatingPosition({
+      align: "center",
+      anchor: trigger,
+      collisionPadding: 5,
+      floating: content,
+      side: "bottom",
+      sideOffset: 4,
+    })
+  }
+
+  stopPositioning() {
+    this.positioning?.destroy()
+    this.positioning = null
   }
 
   cancelPendingExit() {

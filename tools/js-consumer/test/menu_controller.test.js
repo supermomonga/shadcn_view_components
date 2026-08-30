@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest"
 
-import { animationEvent } from "./support/browser.js"
+import { animationEvent, intersectionObserverCount, resizeObserverCount } from "./support/browser.js"
 import { listenerCount } from "./support/listener_ledger.js"
 import { flushStimulus, mount } from "./support/stimulus.js"
 
@@ -35,8 +35,8 @@ function submenuFixture(id) {
               data-action="shadcn--menu#toggle">Open</button>
       <div id="${id}-content" popover="auto" role="menu" data-state="closed">
         <div data-slot="dropdown-menu-sub">
-          <button id="${id}-sub-trigger" role="menuitem" data-slot="dropdown-menu-sub-trigger"
-                  data-action="shadcn--menu#toggleSub">Submenu</button>
+          <div id="${id}-sub-trigger" role="menuitem" data-slot="dropdown-menu-sub-trigger"
+               data-action="click->shadcn--menu#toggleSub">Submenu</div>
           <div id="${id}-sub" popover="auto" role="menu" data-state="closed">
             <button role="menuitem" data-action="shadcn--menu#activate">Nested item</button>
           </div>
@@ -102,6 +102,9 @@ describe("shadcn--menu", () => {
     expect(event.defaultPrevented).toBe(true)
     expect(content.matches(":popover-open")).toBe(true)
     expect(content.dataset.state).toBe("open")
+    expect(content.dataset.side).toBe("right")
+    expect(content.style.left).toBe("24px")
+    expect(content.style.top).toBe("36px")
     expect(listenerCount(document, "pointerdown")).toBe(pointerdownBaseline + 1)
 
     vi.clearAllTimers()
@@ -137,9 +140,12 @@ describe("shadcn--menu", () => {
     const submenu = document.querySelector("#nested-sub")
 
     document.querySelector("#nested-trigger").click()
+    expect(resizeObserverCount()).toBe(1)
     submenuTrigger.click()
     expect(submenu.matches(":popover-open")).toBe(true)
     expect(submenu.dataset.state).toBe("open")
+    expect(resizeObserverCount()).toBe(2)
+    expect(intersectionObserverCount()).toBe(2)
 
     vi.clearAllTimers()
     submenuTrigger.click()
@@ -152,5 +158,7 @@ describe("shadcn--menu", () => {
     expect(vi.getTimerCount()).toBe(0)
 
     await harness.disconnect(root)
+    expect(resizeObserverCount()).toBe(0)
+    expect(intersectionObserverCount()).toBe(0)
   })
 })

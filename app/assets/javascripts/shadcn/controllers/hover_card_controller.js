@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 
+import { startFloatingPosition } from "@supermomonga/shadcn-view-components/floating_position"
 import { hideAfterExit } from "@supermomonga/shadcn-view-components/hide_after_exit"
 import { applyStateAttrs } from "@supermomonga/shadcn-view-components/state_attrs"
 
@@ -25,8 +26,12 @@ export default class HoverCardController extends Controller {
   /** @type {() => void} */
   cancelExit = noop
 
+  /** @type {{ update: () => void, destroy: () => void } | null} */
+  positioning = null
+
   connect() {
     this.cancelPendingWork()
+    this.stopPositioning()
     this.content = this.element.querySelector("[data-slot='hover-card-content']")
     this.trigger = this.element.querySelector("[data-slot='hover-card-trigger']")
   }
@@ -36,6 +41,7 @@ export default class HoverCardController extends Controller {
     const finishHide = this.hideTimer !== undefined
     const finishExit = content?.dataset.state === "closed" && !content.hidden
     this.cancelPendingWork()
+    this.stopPositioning()
     if (content && (finishHide || finishExit)) {
       content.dataset.state = "closed"
       applyStateAttrs(content, "closed")
@@ -73,6 +79,7 @@ export default class HoverCardController extends Controller {
       this.cancelPendingExit()
       this.cancelExit = hideAfterExit(content, () => {
         if (this.content !== content || content.dataset.state === "open") return
+        this.stopPositioning()
         content.hidden = true
       })
     }, 150)
@@ -87,16 +94,30 @@ export default class HoverCardController extends Controller {
     content.dataset.state = state
     applyStateAttrs(content, state)
     content.hidden = state === "closed"
-    if (state === "open" && this.trigger) {
-      content.dataset.side = "bottom"
-      const rect = this.trigger.getBoundingClientRect()
-      const style = content.style
-      style.position = "fixed"
-      style.margin = "0"
-      const left = rect.left + rect.width / 2 - content.offsetWidth / 2
-      style.left = `${Math.max(8, Math.min(left, window.innerWidth - content.offsetWidth - 8))}px`
-      style.top = `${rect.bottom + 4}px`
-    }
+    if (state === "open") this.startPositioning()
+    else this.stopPositioning()
+  }
+
+  startPositioning() {
+    const content = this.content
+    const trigger = this.trigger
+    if (!content || !trigger) return
+
+    this.stopPositioning()
+    this.positioning = startFloatingPosition({
+      align: "center",
+      alignOffset: 4,
+      anchor: trigger,
+      collisionPadding: 5,
+      floating: content,
+      side: "bottom",
+      sideOffset: 4,
+    })
+  }
+
+  stopPositioning() {
+    this.positioning?.destroy()
+    this.positioning = null
   }
 
   clearShowTimer() {

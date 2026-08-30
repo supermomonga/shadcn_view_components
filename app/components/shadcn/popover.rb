@@ -35,20 +35,18 @@ module Shadcn
     # base-nova では Anchor が廃止されたため非対応(位置決めはTrigger基準)
 
     class Content < BaseComponent
-      # align=center / sideOffset=4 相当の位置合わせはコントローラが行う
-      sig { params(side_offset: T.any(Integer, String), args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
-      def initialize(side_offset: 4, **args)
-        @side_offset = T.let(side_offset.to_i, Integer)
-        super(**args)
-      end
+      include Shadcn::FloatingPositionOptions
+
+      FLOATING_POSITION_DEFAULTS = T.let(
+        { side: :bottom, align: :center, side_offset: 4, align_offset: 0, collision_padding: 5 }.freeze,
+        T::Hash[Symbol, T.untyped]
+      )
 
       sig { override.returns(T::Hash[Symbol, T.untyped]) }
       def html_attributes
         attributes = super
         attributes[:popover] = "auto"
-        data = T.cast(attributes[:data], T.nilable(T::Hash[Symbol, T.untyped])) || {}
-        attributes[:data] = { state: "closed", side_offset: @side_offset }.merge(data)
-        attributes
+        merge_floating_position_data(attributes, state: "closed")
       end
     end
 

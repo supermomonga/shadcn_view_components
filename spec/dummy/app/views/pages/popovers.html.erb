@@ -3,6 +3,11 @@
     border: 1px solid #ccc; border-radius: 8px; padding: 12px; background: #fff; max-width: 280px;
   }
   [data-slot='tooltip-content'] { background: #222; color: #fff; }
+  #floating-position-popover-fixtures[hidden] { display: none; }
+  #fp-scroll-box {
+    position: fixed; top: 340px; left: 32vw; width: 320px; height: 160px;
+    overflow: auto; overscroll-behavior: contain; border: 1px solid transparent;
+  }
 </style>
 <main class="popover-page">
   <h1>Popover / HoverCard / Tooltip</h1>
@@ -34,6 +39,130 @@
         <%= render(Shadcn::Tooltip::Trigger.new(id: "tooltip-trigger")) { "ホバーしてね" } %>
         <%= render(Shadcn::Tooltip::Content.new(id: "tooltip-content")) { "ツールチップの内容" } %>
       <% end %>
+    <% end %>
+  </section>
+
+  <%# 実Chromeでだけ有効化する位置決めfixture。hidden中は既存system specのlayoutを変えない。 %>
+  <section id="floating-position-popover-fixtures" hidden>
+    <%= render(Shadcn::Popover.new(id: "fp-collision-top-root")) do %>
+      <%= render(Shadcn::Popover::Trigger.new(
+        id: "fp-collision-top-trigger",
+        style: "position: fixed; top: 4px; left: 48vw; width: 80px; height: 28px; box-sizing: border-box"
+      )) { "top" } %>
+      <%= render(Shadcn::Popover::Content.new(
+        id: "fp-collision-top-content",
+        side: :top,
+        style: "width: 120px; height: 48px; box-sizing: border-box"
+      )) { "top content" } %>
+    <% end %>
+
+    <%= render(Shadcn::Popover.new(id: "fp-collision-bottom-root")) do %>
+      <%= render(Shadcn::Popover::Trigger.new(
+        id: "fp-collision-bottom-trigger",
+        style: "position: fixed; bottom: 4px; left: 48vw; width: 80px; height: 28px; box-sizing: border-box"
+      )) { "bottom" } %>
+      <%= render(Shadcn::Popover::Content.new(
+        id: "fp-collision-bottom-content",
+        side: :bottom,
+        style: "width: 120px; height: 48px; box-sizing: border-box"
+      )) { "bottom content" } %>
+    <% end %>
+
+    <%= render(Shadcn::Popover.new(id: "fp-collision-left-root")) do %>
+      <%= render(Shadcn::Popover::Trigger.new(
+        id: "fp-collision-left-trigger",
+        style: "position: fixed; top: 48vh; left: 4px; width: 80px; height: 28px; box-sizing: border-box"
+      )) { "left" } %>
+      <%= render(Shadcn::Popover::Content.new(
+        id: "fp-collision-left-content",
+        side: :left,
+        style: "width: 120px; height: 48px; box-sizing: border-box"
+      )) { "left content" } %>
+    <% end %>
+
+    <%= render(Shadcn::Popover.new(id: "fp-collision-right-root")) do %>
+      <%= render(Shadcn::Popover::Trigger.new(
+        id: "fp-collision-right-trigger",
+        style: "position: fixed; top: 48vh; right: 4px; width: 80px; height: 28px; box-sizing: border-box"
+      )) { "right" } %>
+      <%= render(Shadcn::Popover::Content.new(
+        id: "fp-collision-right-content",
+        side: :right,
+        style: "width: 120px; height: 48px; box-sizing: border-box"
+      )) { "right content" } %>
+    <% end %>
+
+    <div dir="ltr">
+      <%= render(Shadcn::Popover.new(id: "fp-ltr-start-root")) do %>
+        <%= render(Shadcn::Popover::Trigger.new(
+          id: "fp-ltr-start-trigger",
+          style: "position: fixed; top: 140px; left: 25vw; width: 80px; height: 28px; box-sizing: border-box"
+        )) { "LTR start" } %>
+        <%= render(Shadcn::Popover::Content.new(
+          id: "fp-ltr-start-content",
+          side: :bottom,
+          align: :start,
+          style: "width: 120px; height: 48px; box-sizing: border-box"
+        )) { "LTR start content" } %>
+      <% end %>
+    </div>
+
+    <div dir="rtl">
+      <%= render(Shadcn::Popover.new(id: "fp-rtl-start-root")) do %>
+        <%= render(Shadcn::Popover::Trigger.new(
+          id: "fp-rtl-start-trigger",
+          style: "position: fixed; top: 140px; left: 58vw; width: 80px; height: 28px; box-sizing: border-box"
+        )) { "RTL start" } %>
+        <%= render(Shadcn::Popover::Content.new(
+          id: "fp-rtl-start-content",
+          side: :bottom,
+          align: :start,
+          style: "width: 120px; height: 48px; box-sizing: border-box"
+        )) { "RTL start content" } %>
+      <% end %>
+
+      <%= render(Shadcn::Popover.new(id: "fp-rtl-end-root")) do %>
+        <%= render(Shadcn::Popover::Trigger.new(
+          id: "fp-rtl-end-trigger",
+          style: "position: fixed; top: 220px; left: 58vw; width: 80px; height: 28px; box-sizing: border-box"
+        )) { "RTL end" } %>
+        <%= render(Shadcn::Popover::Content.new(
+          id: "fp-rtl-end-content",
+          side: :bottom,
+          align: :end,
+          style: "width: 120px; height: 48px; box-sizing: border-box"
+        )) { "RTL end content" } %>
+      <% end %>
+    </div>
+
+    <div id="fp-scroll-box">
+      <div style="height: 180px"></div>
+      <%= render(Shadcn::Popover.new(id: "fp-scroll-root")) do %>
+        <%= render(Shadcn::Popover::Trigger.new(
+          id: "fp-scroll-trigger",
+          style: "width: 80px; height: 28px; box-sizing: border-box"
+        )) { "scroll" } %>
+        <%= render(Shadcn::Popover::Content.new(
+          id: "fp-scroll-content",
+          side: :bottom,
+          align: :center,
+          style: "width: 120px; height: 48px; box-sizing: border-box"
+        )) { "scroll content" } %>
+      <% end %>
+      <div style="height: 260px"></div>
+    </div>
+
+    <%= render(Shadcn::Popover.new(id: "fp-resize-root")) do %>
+      <%= render(Shadcn::Popover::Trigger.new(
+        id: "fp-resize-trigger",
+        style: "position: fixed; top: 270px; left: 420px; width: 80px; height: 28px; box-sizing: border-box"
+      )) { "resize" } %>
+      <%= render(Shadcn::Popover::Content.new(
+        id: "fp-resize-content",
+        side: :bottom,
+        align: :center,
+        style: "width: 120px; height: 60px; box-sizing: border-box"
+      )) { "resize content" } %>
     <% end %>
   </section>
 </main>

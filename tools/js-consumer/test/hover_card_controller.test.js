@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest"
 
+import { intersectionObserverCount, resizeObserverCount } from "./support/browser.js"
 import { listenerCount } from "./support/listener_ledger.js"
 import { flushStimulus, mount } from "./support/stimulus.js"
 
@@ -76,6 +77,8 @@ describe("shadcn--hover-card", () => {
     const hideContent = document.querySelector("#hide-delay-content")
     mouse(hideTrigger, "mouseenter")
     vi.advanceTimersByTime(100)
+    expect(resizeObserverCount()).toBe(1)
+    expect(intersectionObserverCount()).toBe(1)
     mouse(hideTrigger, "mouseleave")
     vi.advanceTimersByTime(10)
 
@@ -84,6 +87,8 @@ describe("shadcn--hover-card", () => {
     expect(vi.getTimerCount()).toBe(0)
     expect(hideContent.dataset.state).toBe("closed")
     expect(hideContent.hidden).toBe(true)
+    expect(resizeObserverCount()).toBe(0)
+    expect(intersectionObserverCount()).toBe(0)
 
     document.body.appendChild(hideRoot)
     await flushStimulus()

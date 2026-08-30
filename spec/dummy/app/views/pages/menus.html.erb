@@ -3,6 +3,7 @@
   [data-slot='dropdown-menu-item'], [data-slot='context-menu-item'] { padding: 6px 8px; border-radius: 4px; cursor: default; }
   [data-highlighted='true'] { background: #eee; outline: none; }
   [data-slot='resizable-handle'] { width: 8px; }
+  #floating-position-menu-fixtures[hidden] { display: none; }
 </style>
 <main class="menu-page">
   <h1>Menus / Resizable</h1>
@@ -67,6 +68,46 @@
       <%= render(Shadcn::Resizable::Handle.new(id: "resize-handle")) %>
       <%= render(Shadcn::Resizable::Panel.new(id: "panel-right")) do %>
         <div style="padding: 8px">右</div>
+      <% end %>
+    <% end %>
+  </section>
+
+  <%# 実Chromeでだけ有効化する位置決めfixture。hidden中は既存system specのlayoutを変えない。 %>
+  <section id="floating-position-menu-fixtures" hidden>
+    <%= render(Shadcn::ContextMenu.new(id: "fp-context-root")) do %>
+      <%= render(Shadcn::ContextMenu::Trigger.new(
+        id: "fp-context-trigger",
+        style: "position: fixed; right: 10px; bottom: 10px; width: 120px; height: 60px; box-sizing: border-box"
+      )) { "context point" } %>
+      <%= render(Shadcn::ContextMenu::Content.new(
+        id: "fp-context-content",
+        style: "width: 160px; height: 96px; box-sizing: border-box"
+      )) do %>
+        <%= render(Shadcn::ContextMenu::Item.new(id: "fp-context-item")) { "item" } %>
+      <% end %>
+    <% end %>
+
+    <%= render(Shadcn::DropdownMenu.new(id: "fp-submenu-root")) do %>
+      <%= render(Shadcn::DropdownMenu::Trigger.new(
+        id: "fp-submenu-main-trigger",
+        style: "position: fixed; top: 180px; left: 300px; width: 100px; height: 28px; box-sizing: border-box"
+      )) { "submenu" } %>
+      <%= render(Shadcn::DropdownMenu::Content.new(
+        id: "fp-submenu-main-content",
+        style: "width: 200px; box-sizing: border-box"
+      )) do %>
+        <%= render(Shadcn::DropdownMenu::Sub.new(id: "fp-submenu-scope")) do %>
+          <%= render(Shadcn::DropdownMenu::SubTrigger.new(
+            id: "fp-submenu-trigger",
+            style: "display: block; width: 160px; height: 32px; box-sizing: border-box"
+          )) { "nested" } %>
+          <%= render(Shadcn::DropdownMenu::SubContent.new(
+            id: "fp-submenu-content",
+            style: "width: 140px; height: 70px; box-sizing: border-box"
+          )) do %>
+            <%= render(Shadcn::DropdownMenu::Item.new(id: "fp-submenu-item")) { "nested item" } %>
+          <% end %>
+        <% end %>
       <% end %>
     <% end %>
   </section>

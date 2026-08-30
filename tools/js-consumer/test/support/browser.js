@@ -1,5 +1,7 @@
 let openPopovers = new WeakSet()
 let reducedMotion = false
+let resizeObservers = new Set()
+let intersectionObservers = new Set()
 
 const originalMatches = Element.prototype.matches
 
@@ -51,15 +53,92 @@ export function installBrowserShims() {
     },
     writable: true,
   })
+
+  class TestResizeObserver {
+    constructor(callback) {
+      this.callback = callback
+      this.targets = new Set()
+      resizeObservers.add(this)
+    }
+
+    observe(target) {
+      this.targets.add(target)
+    }
+
+    unobserve(target) {
+      this.targets.delete(target)
+    }
+
+    disconnect() {
+      this.targets.clear()
+      resizeObservers.delete(this)
+    }
+  }
+
+  class TestIntersectionObserver {
+    constructor(callback) {
+      this.callback = callback
+      this.targets = new Set()
+      intersectionObservers.add(this)
+    }
+
+    observe(target) {
+      this.targets.add(target)
+    }
+
+    unobserve(target) {
+      this.targets.delete(target)
+    }
+
+    disconnect() {
+      this.targets.clear()
+      intersectionObservers.delete(this)
+    }
+  }
+
+  Object.defineProperty(window, "ResizeObserver", {
+    configurable: true,
+    value: TestResizeObserver,
+  })
+  Object.defineProperty(window, "IntersectionObserver", {
+    configurable: true,
+    value: TestIntersectionObserver,
+  })
 }
 
 export function resetBrowserShims() {
   openPopovers = new WeakSet()
   reducedMotion = false
+  for (const observer of [...resizeObservers]) observer.disconnect()
+  for (const observer of [...intersectionObservers]) observer.disconnect()
+  resizeObservers = new Set()
+  intersectionObservers = new Set()
 }
 
 export function setReducedMotion(value) {
   reducedMotion = value
+}
+
+export function notifyResize(target) {
+  for (const observer of [...resizeObservers]) {
+    if (observer.targets.has(target)) observer.callback([], observer)
+  }
+}
+
+export function notifyAnchorMove(target) {
+  for (const observer of [...intersectionObservers]) {
+    if (observer.targets.has(target)) observer.callback([], observer)
+  }
+}
+
+export function resizeObserverCount(target) {
+  if (!target) return resizeObservers.size
+  return [...resizeObservers].filter((observer) => observer.targets.has(target)).length
+}
+
+export function intersectionObserverCount(target) {
+  if (!target) return intersectionObservers.size
+  return [...intersectionObservers].filter((observer) => observer.targets.has(target)).length
 }
 
 /**

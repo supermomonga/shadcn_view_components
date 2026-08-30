@@ -15,7 +15,11 @@ RSpec.describe "JavaScript distribution", type: :conformance do
     expect(package).to include(
       "name" => package_name,
       "type" => "module",
-      "exports" => include("." => "./index.js", "./controllers/*" => "./controllers/*.js")
+      "exports" => include(
+        "." => "./index.js",
+        "./controllers/*" => "./controllers/*.js",
+        "./floating_position" => "./floating_position.js"
+      )
     )
     expect(gemspec.files).to include(
       "config/importmap.rb",

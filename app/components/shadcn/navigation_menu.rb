@@ -84,6 +84,13 @@ module Shadcn
     end
 
     class Content < BaseComponent
+      include Shadcn::FloatingPositionOptions
+
+      FLOATING_POSITION_DEFAULTS = T.let(
+        { side: :bottom, align: :start, side_offset: 8, align_offset: 0, collision_padding: 5 }.freeze,
+        T::Hash[Symbol, T.untyped]
+      )
+
       # Popover API で開閉(ul)
       sig { override.returns(String) }
       def default_tag
@@ -94,9 +101,7 @@ module Shadcn
       def html_attributes
         attributes = super
         attributes[:popover] = "auto"
-        data = T.cast(attributes[:data], T.nilable(T::Hash[Symbol, T.untyped])) || {}
-        attributes[:data] = { state: "closed" }.merge(data)
-        attributes
+        merge_floating_position_data(attributes, state: "closed")
       end
     end
 

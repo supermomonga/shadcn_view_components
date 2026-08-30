@@ -21,6 +21,11 @@ module Shadcn
     end
 
     class Content < DropdownMenu::Content
+      FLOATING_POSITION_DEFAULTS = T.let(
+        { side: :bottom, align: :start, side_offset: 8, align_offset: -4, collision_padding: 5 }.freeze,
+        T::Hash[Symbol, T.untyped]
+      )
+
       # popover=auto の ARIA menu
     end
 

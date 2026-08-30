@@ -37,6 +37,13 @@ module Shadcn
     end
 
     class Content < BaseComponent
+      include Shadcn::FloatingPositionOptions
+
+      FLOATING_POSITION_DEFAULTS = T.let(
+        { side: :bottom, align: :start, side_offset: 4, align_offset: 0, collision_padding: 5 }.freeze,
+        T::Hash[Symbol, T.untyped]
+      )
+
       # role=menu + popover=auto(light dismiss)。位置合わせはコントローラが行う
       sig { override.returns(T::Hash[Symbol, T.untyped]) }
       def html_attributes
@@ -44,9 +51,7 @@ module Shadcn
         attributes[:role] = "menu"
         attributes[:popover] = "auto"
         attributes[:tabindex] = "-1"
-        data = T.cast(attributes[:data], T.nilable(T::Hash[Symbol, T.untyped])) || {}
-        attributes[:data] = { state: "closed" }.merge(data)
-        attributes
+        merge_floating_position_data(attributes, state: "closed")
       end
     end
 
@@ -68,8 +73,15 @@ module Shadcn
         attributes = super
         attributes[:role] = "menuitem"
         attributes[:tabindex] = "-1"
-        merge_nested(attributes, :data, { action: "#{DropdownMenu::CONTROLLER}#activate" })
+        merge_nested(attributes, :data, { action: default_action })
         attributes
+      end
+
+      private
+
+      sig { returns(String) }
+      def default_action
+        "#{DropdownMenu::CONTROLLER}#activate"
       end
     end
 
@@ -190,12 +202,23 @@ module Shadcn
       def html_attributes
         attributes = super
         merge_nested(attributes, :aria, { haspopup: "menu", expanded: "false" })
-        merge_nested(attributes, :data, { action: "#{DropdownMenu::CONTROLLER}#toggleSub" })
         attributes
+      end
+
+      private
+
+      sig { override.returns(String) }
+      def default_action
+        "click->#{DropdownMenu::CONTROLLER}#toggleSub"
       end
     end
 
     class SubContent < Content
+      FLOATING_POSITION_DEFAULTS = T.let(
+        { side: :right, align: :start, side_offset: 0, align_offset: -3, collision_padding: 5 }.freeze,
+        T::Hash[Symbol, T.untyped]
+      )
+
       # 親Contentと同じ popover=auto。ネストはコントローラが処理する
     end
   end

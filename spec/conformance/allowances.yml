@@ -141,14 +141,14 @@ popover:
   PopoverTrigger:
     attributes: [type, aria-expanded, aria-haspopup, data-action]
   PopoverContent:
-    attributes: [popover, data-state, data-side-offset, style]
+    attributes: [popover, data-state, data-position-side, data-position-align, data-position-side-offset, data-position-align-offset, data-position-collision-padding, style]
 hover-card:
   HoverCard:
     attributes: [data-controller]
   HoverCardTrigger:
     attributes: [data-action]
   HoverCardContent:
-    attributes: [hidden, data-state, data-action, style]
+    attributes: [hidden, data-state, data-action, data-position-side, data-position-align, data-position-side-offset, data-position-align-offset, data-position-collision-padding, style]
 tooltip:
   Tooltip:
     attributes: [data-controller]
@@ -158,14 +158,14 @@ tooltip:
     # button 要素として描くための type 属性(他トリガーと同じ)
     attributes: [data-action, aria-describedby, type]
   TooltipContent:
-    attributes: [role, hidden, data-state]
+    attributes: [role, hidden, data-state, data-position-side, data-position-align, data-position-side-offset, data-position-align-offset, data-position-collision-padding]
 dropdown-menu:
   DropdownMenu:
     attributes: [data-controller]
   DropdownMenuTrigger:
     attributes: [type, aria-haspopup, aria-expanded, data-action]
   DropdownMenuContent:
-    attributes: [role, popover, tabindex, data-state, style]
+    attributes: [role, popover, tabindex, data-state, data-position-side, data-position-align, data-position-side-offset, data-position-align-offset, data-position-collision-padding, style]
   DropdownMenuGroup:
     attributes: [role]
   DropdownMenuItem:
@@ -179,7 +179,7 @@ dropdown-menu:
   DropdownMenuSubTrigger:
     attributes: [role, tabindex, data-action, data-highlighted, aria-haspopup, aria-expanded]
   DropdownMenuSubContent:
-    attributes: [role, popover, tabindex, data-state, style]
+    attributes: [role, popover, tabindex, data-state, data-position-side, data-position-align, data-position-side-offset, data-position-align-offset, data-position-collision-padding, style]
 context-menu:
   ContextMenu:
     attributes: [data-controller]
@@ -187,7 +187,7 @@ context-menu:
     # DropdownMenu::Trigger を継承するため button 既定の属性も出る
     attributes: [type, aria-haspopup, aria-expanded, data-action]
   ContextMenuContent:
-    attributes: [role, popover, tabindex, data-state, style]
+    attributes: [role, popover, tabindex, data-state, data-position-side, data-position-align, data-position-side-offset, data-position-align-offset, data-position-collision-padding, style]
   ContextMenuGroup:
     attributes: [role]
   ContextMenuItem:
@@ -201,7 +201,7 @@ context-menu:
   ContextMenuSubTrigger:
     attributes: [role, tabindex, data-action, data-highlighted, aria-haspopup, aria-expanded]
   ContextMenuSubContent:
-    attributes: [role, popover, tabindex, data-state, style]
+    attributes: [role, popover, tabindex, data-state, data-position-side, data-position-align, data-position-side-offset, data-position-align-offset, data-position-collision-padding, style]
 resizable:
   ResizablePanelGroup:
     attributes: [role, style, data-controller, aria-orientation]
@@ -215,7 +215,7 @@ menubar:
   MenubarTrigger:
     attributes: [type, aria-haspopup, aria-expanded, data-action]
   MenubarContent:
-    attributes: [role, popover, tabindex, data-state, style]
+    attributes: [role, popover, tabindex, data-state, data-position-side, data-position-align, data-position-side-offset, data-position-align-offset, data-position-collision-padding, style]
   MenubarGroup:
     attributes: [role]
   MenubarItem:
@@ -229,14 +229,14 @@ menubar:
   MenubarSubTrigger:
     attributes: [role, tabindex, data-action, data-highlighted, aria-haspopup, aria-expanded]
   MenubarSubContent:
-    attributes: [role, popover, tabindex, data-state, style]
+    attributes: [role, popover, tabindex, data-state, data-position-side, data-position-align, data-position-side-offset, data-position-align-offset, data-position-collision-padding, style]
 navigation-menu:
   NavigationMenu:
     attributes: [data-controller]
   NavigationMenuTrigger:
     attributes: [type, aria-haspopup, aria-expanded, data-action]
   NavigationMenuContent:
-    attributes: [popover, data-state]
+    attributes: [popover, data-state, data-position-side, data-position-align, data-position-side-offset, data-position-align-offset, data-position-collision-padding]
 command:
   Command:
     attributes: [data-controller]

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest"
 
-import { animationEvent } from "./support/browser.js"
+import { animationEvent, intersectionObserverCount, resizeObserverCount } from "./support/browser.js"
 import { listenerCount } from "./support/listener_ledger.js"
 import { flushStimulus, mount } from "./support/stimulus.js"
 
@@ -9,7 +9,7 @@ function popoverFixture(id) {
     <section id="${id}" data-controller="shadcn--popover">
       <button id="${id}-trigger" type="button" data-slot="popover-trigger"
               aria-expanded="false" data-action="shadcn--popover#toggle">Toggle</button>
-      <div id="${id}-content" popover="auto" data-state="closed" data-side-offset="6">Content</div>
+      <div id="${id}-content" popover="auto" data-state="closed" data-position-side-offset="6">Content</div>
     </section>
   `
 }
@@ -63,10 +63,14 @@ describe("shadcn--popover", () => {
     const root = document.querySelector("#cleanup")
     const trigger = document.querySelector("#cleanup-trigger")
     const content = document.querySelector("#cleanup-content")
+    const scrollBaseline = listenerCount(document, "scroll")
 
     expect(listenerCount(content, "toggle")).toBe(1)
     expect(listenerCount(trigger, "click")).toBe(1)
     trigger.click()
+    expect(listenerCount(document, "scroll")).toBe(scrollBaseline + 1)
+    expect(resizeObserverCount()).toBe(1)
+    expect(intersectionObserverCount()).toBe(1)
     trigger.click()
     expect(vi.getTimerCount()).toBe(1)
 
@@ -78,6 +82,9 @@ describe("shadcn--popover", () => {
     expect(listenerCount(content, "animationcancel")).toBe(0)
     expect(vi.getTimerCount()).toBe(0)
     expect(content.matches(":popover-open")).toBe(false)
+    expect(listenerCount(document, "scroll")).toBe(scrollBaseline)
+    expect(resizeObserverCount()).toBe(0)
+    expect(intersectionObserverCount()).toBe(0)
 
     document.body.appendChild(root)
     await flushStimulus()

@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 
+import { startFloatingPosition } from "@supermomonga/shadcn-view-components/floating_position"
 import { hideAfterExit } from "@supermomonga/shadcn-view-components/hide_after_exit"
 import { applyStateAttrs } from "@supermomonga/shadcn-view-components/state_attrs"
 
@@ -22,8 +23,12 @@ export default class TooltipController extends Controller {
   /** @type {() => void} */
   cancelExit = noop
 
+  /** @type {{ update: () => void, destroy: () => void } | null} */
+  positioning = null
+
   connect() {
     this.cancelPendingWork()
+    this.stopPositioning()
     this.content = this.element.querySelector("[data-slot='tooltip-content']")
     this.trigger = this.element.querySelector("[data-slot='tooltip-trigger']")
     if (this.content?.id && this.trigger) this.trigger.setAttribute("aria-describedby", this.content.id)
@@ -33,6 +38,7 @@ export default class TooltipController extends Controller {
     const content = this.content
     const finishExit = content?.dataset.state === "closed" && !content.hidden
     this.cancelPendingWork()
+    this.stopPositioning()
     if (finishExit) content.hidden = true
     this.content = null
     this.trigger = null
@@ -60,6 +66,7 @@ export default class TooltipController extends Controller {
     applyStateAttrs(content, "closed")
     this.cancelExit = hideAfterExit(content, () => {
       if (this.content !== content || content.dataset.state === "open") return
+      this.stopPositioning()
       content.hidden = true
     })
   }
@@ -73,23 +80,29 @@ export default class TooltipController extends Controller {
     content.dataset.state = state
     applyStateAttrs(content, state)
     content.hidden = state === "closed"
-    if (state === "open" && this.trigger) {
-      const rect = this.trigger.getBoundingClientRect()
-      const style = content.style
-      style.position = "fixed"
-      style.margin = "0"
-      const left = rect.left + rect.width / 2 - content.offsetWidth / 2
-      style.left = `${Math.max(8, Math.min(left, window.innerWidth - content.offsetWidth - 8))}px`
-      // 上側に置くのが既定(upstream と同じ side=top)。上端と衝突する場合は
-      // upstream(Radix)と同じく下側へ反転させ、data-side も実際の配置に合わせる
-      if (rect.top - content.offsetHeight - 4 >= 0) {
-        content.dataset.side = "top"
-        style.top = `${rect.top - content.offsetHeight - 4}px`
-      } else {
-        content.dataset.side = "bottom"
-        style.top = `${rect.bottom + 4}px`
-      }
-    }
+    if (state === "open") this.startPositioning()
+    else this.stopPositioning()
+  }
+
+  startPositioning() {
+    const content = this.content
+    const trigger = this.trigger
+    if (!content || !trigger) return
+
+    this.stopPositioning()
+    this.positioning = startFloatingPosition({
+      align: "center",
+      anchor: trigger,
+      collisionPadding: 5,
+      floating: content,
+      side: "top",
+      sideOffset: 4,
+    })
+  }
+
+  stopPositioning() {
+    this.positioning?.destroy()
+    this.positioning = null
   }
 
   clearShowTimer() {

@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 
+import { pointAnchor, startFloatingPosition } from "@supermomonga/shadcn-view-components/floating_position"
 import { hideAfterExit } from "@supermomonga/shadcn-view-components/hide_after_exit"
 import { applyStateAttrs } from "@supermomonga/shadcn-view-components/state_attrs"
 
@@ -17,8 +18,20 @@ export default class MenuController extends Controller {
   /** @type {Map<HTMLElement, () => void>} */
   pendingExits = new Map()
 
-  /** @type {() => void} */
-  onToggle = () => this.syncState()
+  /** @type {Map<HTMLElement, { update: () => void, destroy: () => void }>} */
+  positionings = new Map()
+
+  /** @type {HTMLElement[]} */
+  popovers = []
+
+  /** @type {(event: Event) => void} */
+  onToggle = (event) => {
+    const popover = event.currentTarget
+    if (!(popover instanceof HTMLElement)) return
+
+    if (!popover.matches(":popover-open")) this.stopPositioning(popover)
+    if (popover === this.menu) this.syncState()
+  }
 
   /** @type {(event: MouseEvent) => void} */
   onClick = (event) => {
@@ -56,9 +69,11 @@ export default class MenuController extends Controller {
 
   connect() {
     this.cancelAllExits()
+    this.stopAllPositioning()
     // navigation-menu の content は role=menu を持たないため popover 属性のみで探す
-    this.menu = this.element.querySelector("[popover]")
-    this.menu?.addEventListener("toggle", this.onToggle)
+    this.popovers = /** @type {HTMLElement[]} */ ([...this.root.querySelectorAll("[popover]")])
+    this.menu = this.popovers[0] ?? null
+    for (const popover of this.popovers) popover.addEventListener("toggle", this.onToggle)
     this.root.addEventListener("click", this.onClick, true)
     this.root.addEventListener("contextmenu", this.onContextMenu, true)
     this.root.addEventListener("keydown", this.onKeydown, true)
@@ -69,7 +84,8 @@ export default class MenuController extends Controller {
   disconnect() {
     const pendingPopovers = [...this.pendingExits.keys()]
     this.cancelAllExits()
-    this.menu?.removeEventListener("toggle", this.onToggle)
+    this.stopAllPositioning()
+    for (const popover of this.popovers) popover.removeEventListener("toggle", this.onToggle)
     this.root.removeEventListener("click", this.onClick, true)
     this.root.removeEventListener("contextmenu", this.onContextMenu, true)
     this.root.removeEventListener("keydown", this.onKeydown, true)
@@ -78,6 +94,7 @@ export default class MenuController extends Controller {
       if (popover.dataset.state === "closed" && popover.matches(":popover-open")) popover.hidePopover()
     }
     this.menu = null
+    this.popovers = []
   }
 
   /** @returns {HTMLElement[]} */
@@ -88,7 +105,8 @@ export default class MenuController extends Controller {
     )
   }
 
-  toggle() {
+  /** @param {Event} event */
+  toggle(event) {
     const menu = this.menu
     if (!menu) return
 
@@ -96,7 +114,8 @@ export default class MenuController extends Controller {
     if (menu.matches(":popover-open") && !exiting) {
       this.hidePopoverAfterExit(menu)
     } else {
-      this.show()
+      const anchor = event.currentTarget instanceof Element ? event.currentTarget : undefined
+      this.show(anchor)
     }
   }
 
@@ -107,37 +126,37 @@ export default class MenuController extends Controller {
     if (!this.menu) return
 
     event.preventDefault()
-    const style = this.menu.style
-    style.position = "fixed"
-    style.margin = "0"
-    style.left = `${event.clientX}px`
-    style.top = `${event.clientY}px`
-    this.show()
-    this.clampIntoViewport()
-  }
-
-  // 開いた後(popover=manual は display が復帰してから)にビューポート内へ収める。
-  // 閉じた状態の offsetWidth は 0 のため、クランプは show の後にしか計算できない
-  clampIntoViewport() {
-    if (!this.menu) return
-
-    const style = this.menu.style
-    const left = Math.min(parseFloat(style.left), window.innerWidth - this.menu.offsetWidth - 8)
-    const top = Math.min(parseFloat(style.top), window.innerHeight - this.menu.offsetHeight - 8)
-    style.left = `${Math.max(8, left)}px`
-    style.top = `${Math.max(8, top)}px`
+    const contextElement = event.currentTarget instanceof Element ? event.currentTarget : undefined
+    this.show(pointAnchor(event.clientX, event.clientY, contextElement), {
+      align: "start",
+      alignOffset: 4,
+      side: "right",
+      sideOffset: 0,
+    })
   }
 
   // popover="manual" のcontent(右クリック)を開く。外側のpointerdownで閉じる
-  show() {
+  /**
+   * @param {import("@supermomonga/shadcn-view-components/floating_position").Anchor | Element} [anchor]
+   * @param {{side?: "top" | "right" | "bottom" | "left" | "inline-start" | "inline-end", align?: "start" | "center" | "end", sideOffset?: number, alignOffset?: number}} [placement]
+   */
+  show(anchor, placement = {}) {
     const menu = this.menu
     if (!menu) return
 
     this.cancelExit(menu)
     menu.dataset.state = "open"
     applyStateAttrs(menu, "open")
-    menu.dataset.side = "bottom"
     if (!menu.matches(":popover-open")) menu.showPopover()
+    const resolvedAnchor = anchor ?? this.root.querySelector("[aria-haspopup='menu']")
+    if (resolvedAnchor) {
+      this.startPositioning(menu, resolvedAnchor, {
+        align: placement.align ?? "start",
+        alignOffset: placement.alignOffset ?? 0,
+        side: placement.side ?? "bottom",
+        sideOffset: placement.sideOffset ?? 4,
+      })
+    }
     this.focusItem(this.items[0])
   }
 
@@ -158,6 +177,12 @@ export default class MenuController extends Controller {
       sub.dataset.state = "open"
       applyStateAttrs(sub, "open")
       if (!sub.matches(":popover-open")) sub.showPopover()
+      this.startPositioning(sub, event.currentTarget, {
+        align: "start",
+        alignOffset: -3,
+        side: "right",
+        sideOffset: 0,
+      })
     }
   }
 
@@ -199,25 +224,14 @@ export default class MenuController extends Controller {
     for (const trigger of this.root.querySelectorAll("[aria-haspopup='menu']")) {
       trigger.setAttribute("aria-expanded", String(state === "open"))
     }
-    if (state === "open" && !this.menu.style.left) {
-      this.positionBelow(this.root.querySelector("[aria-haspopup='menu']"))
+    if (state === "open") {
+      if (!this.positionings.has(this.menu)) {
+        const trigger = this.root.querySelector("[aria-haspopup='menu']")
+        if (trigger) this.startPositioning(this.menu, trigger, { align: "start", side: "bottom", sideOffset: 4 })
+      }
       this.focusItem(this.items[0])
     }
-    if (state === "closed") this.menu.style.left = ""
-  }
-
-  /** @param {Element | null} trigger */
-  positionBelow(trigger) {
-    if (!trigger || !this.menu) return
-
-    // upstream(Radix)は配置に応じて data-side を設定する。slide-in 系の起点になる
-    this.menu.dataset.side = "bottom"
-    const rect = trigger.getBoundingClientRect()
-    const style = this.menu.style
-    style.position = "fixed"
-    style.margin = "0"
-    style.left = `${Math.max(8, Math.min(rect.left, window.innerWidth - this.menu.offsetWidth - 8))}px`
-    style.top = `${rect.bottom + 4}px`
+    if (state === "closed") this.stopPositioning(this.menu)
   }
 
   /** @param {HTMLElement | undefined} item */
@@ -252,6 +266,7 @@ export default class MenuController extends Controller {
       completed = true
       this.pendingExits.delete(popover)
       if (popover.dataset.state === "open") return
+      this.stopPositioning(popover)
       popover.hidePopover()
     })
     if (!completed) this.pendingExits.set(popover, cancel)
@@ -273,6 +288,32 @@ export default class MenuController extends Controller {
   cancelAllExits() {
     for (const cancel of this.pendingExits.values()) cancel()
     this.pendingExits.clear()
+  }
+
+  /**
+   * @param {HTMLElement} floating
+   * @param {import("@supermomonga/shadcn-view-components/floating_position").Anchor | Element} anchor
+   * @param {{side?: "top" | "right" | "bottom" | "left" | "inline-start" | "inline-end", align?: "start" | "center" | "end", sideOffset?: number, alignOffset?: number}} placement
+   */
+  startPositioning(floating, anchor, placement) {
+    this.stopPositioning(floating)
+    this.positionings.set(floating, startFloatingPosition({
+      ...placement,
+      anchor,
+      collisionPadding: 5,
+      floating,
+    }))
+  }
+
+  /** @param {HTMLElement} floating */
+  stopPositioning(floating) {
+    this.positionings.get(floating)?.destroy()
+    this.positionings.delete(floating)
+  }
+
+  stopAllPositioning() {
+    for (const positioning of this.positionings.values()) positioning.destroy()
+    this.positionings.clear()
   }
 
   /** @returns {HTMLElement} */
