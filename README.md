@@ -119,7 +119,7 @@ Shadcn::Button.classes(variant: :link)
 ## 開発
 
 ```bash
-mise install          # ruby 4.0 / node LTS / pnpm
+mise install          # ruby 4.0 / node LTS / pnpm 10.22.0
 bundle install
 pnpm -C tools/extractor install
 

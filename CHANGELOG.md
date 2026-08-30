@@ -6,6 +6,15 @@ All notable changes to this project will be documented in this file.
 
 Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
+### pnpm toolchainとdependency build policyの固定
+
+- `mise.toml` と各 `package.json` で pnpm 10.22.0 を固定し、ローカルとCIが
+  実行時期に左右されず同じpackage managerを使うようにした
+- Extractorでは `@parcel/watcher` / `esbuild`、Visual Parityでは `esbuild` の
+  install scriptだけを明示的に許可し、未判断のdependency buildは
+  `strictDepBuilds` でinstall failureとして検出する
+- 各toolは従来どおり独立したlockfileを維持し、workspace化による依存解決の変更を避けた
+
 ### 残っていた parity 失敗 8件の解消(不具合修正)
 
 参照側CSSパイプラインの独立化の時点で残っていた8件の失敗(静的5件: command / calendar
