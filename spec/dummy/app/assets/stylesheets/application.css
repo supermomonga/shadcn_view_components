@@ -440,6 +440,9 @@
   .block {
     display: block;
   }
+  .contents {
+    display: contents;
+  }
   .flex {
     display: flex;
   }
@@ -895,6 +898,9 @@
     @supports not (animation-timeline: scroll()) {
       --scroll-fade-b: var(--_scroll-fade-size-b);
     }
+  }
+  .animate-caret-blink {
+    animation: caret-blink 1.25s ease-out infinite;
   }
   .animate-out {
     animation: exit var(--tw-animation-duration,var(--tw-duration,.15s))var(--tw-ease,ease)var(--tw-animation-delay,0s)var(--tw-animation-iteration-count,1)var(--tw-animation-direction,normal)var(--tw-animation-fill-mode,none);
@@ -1728,6 +1734,10 @@
   .duration-450 {
     --tw-duration: 450ms;
     transition-duration: 450ms;
+  }
+  .duration-1000 {
+    --tw-duration: 1000ms;
+    transition-duration: 1000ms;
   }
   .duration-\[0\.35s\] {
     --tw-duration: 0.35s;
@@ -5584,6 +5594,14 @@ summary[data-slot='collapsible-trigger']::marker {
   }
   to {
     height: 0;
+  }
+}
+@keyframes caret-blink {
+  0%,70%,100% {
+    opacity: 1;
+  }
+  20%,50% {
+    opacity: 0;
   }
 }
 @keyframes accordion-down {

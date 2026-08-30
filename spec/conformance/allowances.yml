@@ -298,7 +298,13 @@ native-select:
     attributes: [name, id, required, disabled, multiple, form, autofocus, aria-label]
 input-otp:
   InputOTP:
-    attributes: [type, inputmode, maxlength, autocomplete, value]
+    # Ruby版はdata-slot無しcontainer内で標準Group/Slotと実inputを合成する。
+    slots_mode: superset
+    attributes: [type, inputmode, pattern, maxlength, autocomplete, spellcheck, value, style, data-input-otp, data-action]
+  InputOTPSlot:
+    # characterとfake caretはRuby版の同期表示用内部slot。
+    slots_mode: superset
+    attributes: [data-index, data-active]
 select:
   Select:
     # upstreamのRoot別名はDOMを持たない。Ruby版の状態ホストと

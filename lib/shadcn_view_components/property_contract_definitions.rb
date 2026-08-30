@@ -78,6 +78,9 @@ module ShadcnViewComponents
       }.freeze,
       input_otp: {
         length: { kind: :number, default: 6, integer: true, minimum: 1 }.freeze
+      }.freeze,
+      "input_otp/slot": {
+        index: { kind: :number, default: 0, integer: true, minimum: 0 }.freeze
       }.freeze
     }.freeze, T::Hash[Symbol, T::Hash[Symbol, T::Hash[Symbol, T.untyped]]])
   end

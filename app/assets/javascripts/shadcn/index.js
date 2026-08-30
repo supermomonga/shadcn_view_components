@@ -20,6 +20,7 @@ import ComboboxController from "@supermomonga/shadcn-view-components/controllers
 import CommandController from "@supermomonga/shadcn-view-components/controllers/command_controller"
 import DialogController from "@supermomonga/shadcn-view-components/controllers/dialog_controller"
 import HoverCardController from "@supermomonga/shadcn-view-components/controllers/hover_card_controller"
+import InputOTPController from "@supermomonga/shadcn-view-components/controllers/input_otp_controller"
 import MenuController from "@supermomonga/shadcn-view-components/controllers/menu_controller"
 import MenubarController from "@supermomonga/shadcn-view-components/controllers/menubar_controller"
 import MessageScrollerController from "@supermomonga/shadcn-view-components/controllers/message_scroller_controller"
@@ -44,6 +45,7 @@ export function register(application) {
   application.register("shadcn--command", CommandController)
   application.register("shadcn--dialog", DialogController)
   application.register("shadcn--hover-card", HoverCardController)
+  application.register("shadcn--input-otp", InputOTPController)
   application.register("shadcn--menu", MenuController)
   application.register("shadcn--menubar", MenubarController)
   application.register("shadcn--message-scroller", MessageScrollerController)

@@ -82,6 +82,7 @@ PARITY_SCENARIOS = [
   %w[shadcn/hover_card/default hover-card/default],
   %w[shadcn/input/default input/default],
   %w[shadcn/input/disabled input/disabled],
+  %w[shadcn/input_otp/default input-otp/default],
   %w[shadcn/item/default item/default],
   %w[shadcn/kbd/default kbd/default],
   %w[shadcn/kbd/group kbd/group],

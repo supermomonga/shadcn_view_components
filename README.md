@@ -202,6 +202,44 @@ end
 初期描画、Turboによる再接続、同じ値の再選択では発火しない。バリデーションエラー時は、
 サーバへ届いた値を`default_value:`へ戻して再描画する。
 
+### InputOTPをフォームで使う
+
+`InputOTP`は実際の`input[type="text"]`を値と選択範囲の唯一の情報源にし、各桁の`Slot`を
+表示用として同期する。ブロックを省略すると、`length:`個の`Slot`を1つの`Group`に入れた
+標準構成を自動で描画する。`id`、`name`、`form`、`required`、`disabled`、ARIA、data、
+イベント属性は実inputへ渡るため、Railsフォーム、`label[for]`、エラー要素と直接結び付けられる。
+
+```erb
+<%= render(Shadcn::Form::Item.new(invalid: @code_error.present?)) do %>
+  <%= render(Shadcn::Field::Label.new(for: "verification-code")) { "認証コード" } %>
+  <%= render(Shadcn::InputOTP.new(
+    id: "verification-code",
+    name: "verification[code]",
+    length: 6,
+    value: params.dig(:verification, :code),
+    pattern: '^\d+$',
+    required: true,
+    aria: {
+      invalid: @code_error.present?.to_s,
+      describedby: ("verification-code-error" if @code_error.present?)
+    }
+  )) %>
+  <%= render(Shadcn::Form::Error.new(id: "verification-code-error", message: @code_error)) %>
+<% end %>
+```
+
+`inputmode: "numeric"`はモバイル端末へ数字キーボードを示すヒントであり、文字種を制限しない。
+数字だけに制限する場合は、上例のようにupstreamの`REGEXP_ONLY_DIGITS`と同じ
+`pattern: '^\d+$'`を指定する。patternに一致しない入力・貼り付けは、不正文字だけを除くのではなく
+変更全体を拒否して直前の値を保つ。patternを省略すれば任意の文字を入力できる。
+入力中の判定はJavaScriptの`RegExp`を使うため、`pattern`には`^`と`$`を含めて全体一致を明示する。
+これにより、HTMLのpattern制約によるフォーム送信時の全体一致判定とも結果が一致する。
+
+独自の区切り方が必要な場合は、ブロック内に`Group`、`Slot.new(index:)`、`Separator`を明示する。
+`container_class:`は実inputを覆う表示コンテナへ、`class:`は実inputへ追加される。初期値、入力、削除、
+貼り付け、one-time-codeの自動入力、caretはStimulusが同じ実inputから各Slotへ反映する。
+JavaScriptが無効な場合は、同梱の`noscript`スタイルによって実input自体を通常のテキスト欄として表示する。
+
 ### Sliderをフォームで使う
 
 `Slider`はネイティブの`input[type="range"]`を値の唯一の情報源にする。`id`、`name`、`form`、

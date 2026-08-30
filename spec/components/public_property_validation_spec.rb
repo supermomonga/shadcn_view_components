@@ -265,11 +265,42 @@ RSpec.describe "public property validation", type: :component do
 
     it "requires a positive integer length while accepting a strict integer string" do
       render_inline(described_class.new(length: "1"))
-      expect(rendered_root_element["maxlength"]).to eq("1")
+      expect(rendered_fragment.at_css("input[data-slot='input-otp']")["maxlength"]).to eq("1")
 
       [nil, 0, -1, 1.0, Float::NAN, Float::INFINITY, "1.5", "six"].each do |length|
         expect { described_class.new(length:) }
           .to raise_error(ArgumentError, /length must be a finite integer greater than or equal to 1/)
+      end
+    end
+
+    it "uses the normalized length for the native maximum and initial value" do
+      render_inline(described_class.new(length: "3", value: "1234"))
+
+      input = rendered_fragment.at_css("input[data-slot='input-otp']")
+      expect(input.attributes.transform_values(&:value)).to include(
+        "maxlength" => "3",
+        "value" => "123"
+      )
+    end
+  end
+
+  describe Shadcn::InputOTP::Slot do
+    it "publishes its non-negative integer index contract" do
+      expect(described_class.property_contract(:index)).to eq(
+        kind: :number,
+        default: 0,
+        integer: true,
+        minimum: 0
+      )
+    end
+
+    it "requires a non-negative integer index while accepting a strict integer string" do
+      render_inline(described_class.new(index: "2"))
+      expect(rendered_root_element["data-index"]).to eq("2")
+
+      [nil, -1, 1.5, Float::NAN, Float::INFINITY, "1.5", "first"].each do |index|
+        expect { described_class.new(index:) }
+          .to raise_error(ArgumentError, /index must be a finite integer greater than or equal to 0/)
       end
     end
   end

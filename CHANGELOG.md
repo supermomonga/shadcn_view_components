@@ -6,6 +6,17 @@ All notable changes to this project will be documented in this file.
 
 Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
+### InputOTPの実入力とSlot表示を同期
+
+- 実際の`input[type="text"]`を値と選択範囲の唯一の情報源にし、初期値、入力、削除、貼り付け、
+  IME、one-time-code自動入力、caretを各Slotへ同期する`shadcn--input-otp` controllerを追加した
+- ブロック省略時に`length`個のSlotを1つのGroupへ描画する標準構成を追加し、明示構成では
+  `Slot(index:)`と`Separator`を使えるようにした。実inputと表示コンテナの属性・クラスも分離した
+- `inputmode`はキーボードのヒントで文字制限ではないことを明記し、`pattern`不一致の入力・貼り付けは
+  一部の文字を除去せず変更全体を拒否するupstream互換の規則へ統一した
+- JavaScript無効時に実inputを通常の入力欄へ戻す`noscript`スタイルと、フォーム・ラベル・エラー、
+  caret・選択範囲、disabledを検証するsystem spec、Lookbook preview、light / dark visual parityを追加した
+
 ### Sliderをネイティブrange inputへ接続
 
 - `id`、`name`、`form`、`disabled`、`required`、ARIA、data、イベント属性を外側の装飾ではなく

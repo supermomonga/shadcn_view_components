@@ -6,6 +6,9 @@ import type { ComponentType } from "react"
 
 import { Input } from "./components/ui/input.tsx"
 import {
+  InputOTP, InputOTPGroup, InputOTPSlot,
+} from "./components/ui/input-otp.tsx"
+import {
   Item, ItemContent, ItemDescription, ItemGroup, ItemMedia, ItemSeparator, ItemTitle,
 } from "./components/ui/item.tsx"
 import { Kbd, KbdGroup } from "./components/ui/kbd.tsx"
@@ -61,6 +64,19 @@ export const demosNToZ: Record<string, ComponentType> = {
   "input/default": () => <Input type="email" placeholder="email@example.com" />,
 
   "input/disabled": () => <Input placeholder="無効" disabled />,
+
+  "input-otp/default": () => (
+    <InputOTP maxLength={6} defaultValue="12" aria-label="認証コード">
+      <InputOTPGroup>
+        <InputOTPSlot index={0} />
+        <InputOTPSlot index={1} />
+        <InputOTPSlot index={2} />
+        <InputOTPSlot index={3} />
+        <InputOTPSlot index={4} />
+        <InputOTPSlot index={5} />
+      </InputOTPGroup>
+    </InputOTP>
+  ),
 
   "item/default": () => (
     <ItemGroup>

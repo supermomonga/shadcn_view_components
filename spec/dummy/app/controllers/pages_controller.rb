@@ -47,6 +47,8 @@ class PagesController < ApplicationController
 
   def select; end
 
+  def input_otp; end
+
   def slider; end
 
   def sidebar; end

@@ -12,6 +12,7 @@ Dummy::Application.routes.draw do
   get "pages/commands", to: "pages#commands"
   post "pages/commands", to: "pages#submit_commands"
   get "pages/select", to: "pages#select"
+  get "pages/input_otp", to: "pages#input_otp"
   get "pages/slider", to: "pages#slider"
   get "pages/sidebar", to: "pages#sidebar"
   get "pages/calendar", to: "pages#calendar"

@@ -270,7 +270,7 @@ input-otp:
   exports:
     - { component: Shadcn::InputOTP, export: InputOTP }
     - { component: Shadcn::InputOTP::Group, export: InputOTPGroup }
-    - { component: Shadcn::InputOTP::Slot, export: InputOTPSlot }
+    - { component: Shadcn::InputOTP::Slot, export: InputOTPSlot, args: { index: 0 } }
     - { component: Shadcn::InputOTP::Separator, export: InputOTPSeparator }
 item:
   exports:
