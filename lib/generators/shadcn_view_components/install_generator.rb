@@ -23,18 +23,10 @@ module ShadcnViewComponents
       def append_stylesheets
         entry = T.cast(options["stylesheet"], String)
         entry_path = expanded(entry)
-        create_file(entry) unless File.exist?(entry_path)
+        current = File.exist?(entry_path) ? File.binread(entry_path) : ""
+        normalized = stylesheet_with_directives(current)
 
-        unless File.read(entry_path).include?('@import "shadcn/shadcn.css"')
-          append_to_file(entry, <<~CSS)
-            /* shadcn_view_components */
-            @import "shadcn/shadcn.css";
-            @source "#{components_source_path}";
-          CSS
-        end
-
-        # gemアップデートでバージョン付きインストールパスが変わった場合に備え、@source行を最新化する
-        gsub_file(entry, %r{@source ".*?/shadcn_view_components[^/]*/app/components"}, "@source \"#{components_source_path}\"")
+        create_file(entry, normalized, force: true) unless current == normalized
       end
 
       sig { void }
@@ -54,6 +46,71 @@ module ShadcnViewComponents
       end
 
       private
+
+      sig { params(contents: String).returns(String) }
+      def stylesheet_with_directives(contents)
+        newline = contents.include?("\r\n") ? "\r\n" : "\n"
+        lines = contents.lines(chomp: true).reject do |line|
+          managed_comment_line?(line) || import_directive_line?(line) || source_directive_line?(line)
+        end
+        insertion_index = directive_insertion_index(lines)
+        lines.insert(insertion_index, managed_comment, import_directive, source_directive)
+
+        "#{lines.join(newline)}#{newline}"
+      end
+
+      sig { returns(String) }
+      def managed_comment
+        "/* shadcn_view_components */"
+      end
+
+      sig { returns(String) }
+      def import_directive
+        '@import "shadcn/shadcn.css";'
+      end
+
+      sig { returns(String) }
+      def source_directive
+        "@source \"#{components_source_path}\";"
+      end
+
+      sig { params(line: String).returns(T::Boolean) }
+      def managed_comment_line?(line)
+        line.strip == managed_comment
+      end
+
+      sig { params(line: String).returns(T::Boolean) }
+      def import_directive_line?(line)
+        line.match?(%r{\A[ \t]*@import[ \t]+(["'])shadcn/shadcn\.css\1[ \t]*;?[ \t]*\z})
+      end
+
+      sig { params(line: String).returns(T::Boolean) }
+      def source_directive_line?(line)
+        line.match?(%r{\A[ \t]*@source[ \t]+(["'])[^"'\r\n]*/shadcn_view_components[^/"'\r\n]*/app/components\1[ \t]*;?[ \t]*\z})
+      end
+
+      sig { params(lines: T::Array[String]).returns(Integer) }
+      def directive_insertion_index(lines)
+        in_comment = T.let(false, T::Boolean)
+
+        lines.each_with_index do |line, index|
+          stripped = line.strip
+          if in_comment
+            in_comment = false if stripped.include?("*/")
+          elsif stripped.start_with?("/*")
+            in_comment = !stripped.include?("*/")
+          elsif !stripped.empty? && !prologue_directive?(stripped)
+            return index
+          end
+        end
+
+        lines.length
+      end
+
+      sig { params(line: String).returns(T::Boolean) }
+      def prologue_directive?(line)
+        line.match?(/\A@charset[ \t]+/) || line.match?(/\A@import(?:[ \t]+|\()/)
+      end
 
       sig { returns(String) }
       def gem_root

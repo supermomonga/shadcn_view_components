@@ -33,9 +33,9 @@ namespace :verify do
     sh "bundle", "exec", "tapioca", "gem", "--verify"
   end
 
-  desc "Run component, conformance, contract, and request specs"
+  desc "Run component, conformance, contract, generator, and request specs"
   task :spec do
-    sh "bundle", "exec", "rspec", "spec/components", "spec/conformance", "spec/contracts", "spec/requests"
+    sh "bundle", "exec", "rspec", "spec/components", "spec/conformance", "spec/contracts", "spec/generators", "spec/requests"
   end
 
   desc "Run browser interaction specs"

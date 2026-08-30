@@ -6,6 +6,14 @@ All notable changes to this project will be documented in this file.
 
 Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
+### install generatorのTailwind directiveを独立して保証
+
+- host CSSのshadcn importとgem component pathの `@source` を別々に検査し、
+  どちらか一方だけが既にある場合も不足したdirectiveを補う
+- import / sourceの有無による4状態が同じ最終条件に収束し、generatorを再実行しても
+  行の重複やbyte差分を作らないことをgenerator specで保証し、このspecを
+  `verify:spec` の必須対象に加えた
+
 ### 自動upstream同期PRに必須検証を固定
 
 - 差分検出後、PR作成前に `bundle exec rake verify` の8検査を失敗伝播ありで実行し、

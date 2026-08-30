@@ -122,7 +122,7 @@ Shadcn::Button.classes(variant: :link)
 bin/setup              # mise toolchain + Ruby + 全JavaScript依存を導入
 bundle exec rake verify # CI必須検査を同じRake taskで順に実行
 
-bundle exec rake verify:spec           # component/conformance/contract/request
+bundle exec rake verify:spec           # component/conformance/contract/generator/request
 bundle exec rake verify:system         # ふるまい(Cuprite + Chrome)
 bundle exec rake verify:parity         # visual + animation parity
 bundle exec rake verify:javascript     # extractor typecheck + Vitest
