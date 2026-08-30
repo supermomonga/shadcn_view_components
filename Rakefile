@@ -14,6 +14,7 @@ namespace :verify do
   desc "Verify generated contracts are deterministic"
   task :generated do
     Rake::Task["shadcn:check"].invoke
+    Rake::Task["docs:check"].invoke
   end
 
   desc "Run Ruby lint"
@@ -56,6 +57,18 @@ namespace :verify do
 
   desc "Run every verification required by CI"
   task full: %i[generated rubocop javascript sorbet spec system parity tailwind]
+end
+
+namespace :docs do
+  desc "Generate the README component inventory"
+  task :generate do
+    ruby "tools/documentation/readme_inventory.rb", "generate"
+  end
+
+  desc "Verify the README component inventory is current"
+  task :check do
+    ruby "tools/documentation/readme_inventory.rb", "check"
+  end
 end
 
 desc "Run every verification required by CI"

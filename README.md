@@ -6,29 +6,21 @@
 
 1. **決定論的な生成パイプライン** — upstream レジストリから機械的に導出できるもの(クラス文字列・バリアント定義・`data-slot` 構造・CSS変数)はすべて自動抽出・自動生成し、コミットされた生成物として扱う
 2. **自動的な乖離検知** — upstream が変わった際に、適合試験(conformance tests)が互換性の崩れを自動検出する
-3. **型付きコードベース** — Sorbet(`typed: strict`)による静的型検査を全面採用
+3. **型付きコードベース** — `app/`・`lib/`をSorbet(`typed: strict`)で検査
 
 クライアントサイドのふるまいは React/Radix を持ち込まず、**Stimulus + Hotwire + ネイティブHTML要素**による Rails 流の再実装。クラス名・`data-slot`・ARIA属性といった「見た目と構造の契約」は upstream 由来の生成物として維持されるため、視覚的な追従は自動化される。
 
-設計の詳細は `docs.local/` の計画書群(00〜10)を参照。
+設計の詳細は[設計ドキュメント](docs/README.md)を参照。
 
 ## ステータス
 
-Phase 0〜4 完了 — vendor の全61アイテムを実装(calendar は個別契約として提供)。ロードマップは `docs.local/10-roadmap.md` 参照。
+Phase 0〜4 完了 — vendor manifestの63アイテムを追跡し、61アイテムを実装済み（`questionnaire`と`toast`はpending）。calendarは個別契約として提供する。初期実装計画は[ロードマップ（履歴）](docs/10-roadmap.md)を参照。
 
-- 提供コンポーネント(26アイテム / 全エクスポートが適合試験で検証済み):
-  **Button, Badge, Alert, Card, Avatar, Separator, Skeleton, Table, Label, Kbd, Spinner,
-  Empty, AspectRatio, Item, Marker, Input, Textarea, Breadcrumb,
-  Accordion, Checkbox, Collapsible, RadioGroup, ScrollArea, Switch, Toggle, ToggleGroup,
-  Tabs, Carousel, Pagination, Form::Item, Form::Error,
-  Dialog, AlertDialog, Sheet, Drawer, Popover, HoverCard, Tooltip,
-  DropdownMenu, ContextMenu, Menubar, NavigationMenu, Command, Combobox,
-  Resizable::PanelGroup, Resizable::Panel, Resizable::Handle,
-  Progress, Slider, NativeSelect, InputOTP, Select, Field, InputGroup,
-  ButtonGroup, DirectionProvider,
-  Sidebar, Attachment, Bubble, Message, MessageScroller,
-  Chart::Container, Chart::TooltipContent, Chart::LegendContent, Chart::Style, Sonner::Toaster,
-  Calendar**
+<!-- BEGIN GENERATED COMPONENT INVENTORY -->
+- 提供範囲（[適合試験registry](spec/conformance/registry.yml)から生成）: **実装済み 61 アイテム / 描画可能な公開 ViewComponent 322 クラス**
+- 実装済みアイテム:
+  `accordion`, `alert`, `alert-dialog`, `aspect-ratio`, `attachment`, `avatar`, `badge`, `breadcrumb`, `bubble`, `button`, `button-group`, `calendar`, `card`, `carousel`, `chart`, `checkbox`, `collapsible`, `combobox`, `command`, `context-menu`, `dialog`, `direction`, `drawer`, `dropdown-menu`, `empty`, `field`, `form`, `hover-card`, `input`, `input-group`, `input-otp`, `item`, `kbd`, `label`, `marker`, `menubar`, `message`, `message-scroller`, `native-select`, `navigation-menu`, `pagination`, `popover`, `progress`, `radio-group`, `resizable`, `scroll-area`, `select`, `separator`, `sheet`, `sidebar`, `skeleton`, `slider`, `sonner`, `spinner`, `switch`, `table`, `tabs`, `textarea`, `toggle`, `toggle-group`, `tooltip`
+<!-- END GENERATED COMPONENT INVENTORY -->
 - calendar は react-day-picker の実行時クラス合成のため静的抽出の対象外。
   契約は lib/shadcn_view_components/contracts/calendar.rb に個別契約として保守し、
   コンポーネントは月テーブル(年月ナビ・日付ボタン)として提供する
@@ -426,7 +418,7 @@ rake shadcn:check     # 決定論性検証(一時ディレクトリ生成とコ�
 通信失敗、JSON/schema不正、同期中の変更では既存snapshotを変更せず、`[sync:<種別>]` と
 `retryable=true|false` をエラーへ出す。
 
-編集ポリシー(詳細は `docs.local/01-architecture.md` §2):
+編集ポリシー（詳細は[アーキテクチャとリポジトリ構成](docs/01-architecture.md#2-リポジトリ構成)）:
 
 | パス | 性質 | 編集 |
 |---|---|---|
@@ -436,7 +428,7 @@ rake shadcn:check     # 決定論性検証(一時ディレクトリ生成とコ�
 | `vendor/shadcn/` | スナップショット | `rake shadcn:sync` のみ |
 | `gen/contracts/`, `lib/shadcn_view_components/generated/`, `app/assets/stylesheets/shadcn/` | **生成物** | 禁止(再生成) |
 
-### 新規コンポーネント追加(Phase 1以降)
+### 新規コンポーネント追加
 
 1. `tools/extractor/config/targets.json` にアイテム名を追加 → `rake shadcn:generate`
 2. `app/components/shadcn/<name>.rb` + `<name>.html.erb` を実装(クラスは `Classes.resolve` 経由のみ。04 §7のチェックリスト参照)
@@ -483,7 +475,7 @@ bundle exec rake parity:update                   # 追跡baselineを意図して
   `visual-parity-<run id>-<attempt>` artifactとして7日間保存する
 - 追跡中の `spec/visual/baselines/` は通常テストから変更しない。
   `bundle exec rake parity:update` を明示的に実行した場合だけ更新し、画像差分をレビューしてCommitする
-- 初期セットは13シナリオ(うち11がピクセル完全一致、残り2件も0.06〜0.22%)
+- 対象は `spec/coverage/registry.yml` が管理する99シナリオ。各シナリオをlight/darkで比較し、対象外5アイテムは同一状態を比較できない設計差の理由を同registryへ記録する
 
 **シナリオの追加手順**:
 

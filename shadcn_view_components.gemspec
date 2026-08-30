@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.email = ["kamoto@supermomonga.com"]
 
   spec.summary = "shadcn/ui components as Rails ViewComponents with a deterministic sync pipeline"
-  spec.description = "Ports shadcn/ui (new-york-v4) to Rails ViewComponent + Stimulus. " \
+  spec.description = "Ports shadcn/ui (base-nova) to Rails ViewComponent + Stimulus. " \
                      "Class contracts are extracted from the upstream registry and generated " \
                      "deterministically, so upstream drift is detected automatically."
   spec.homepage = "https://github.com/supermomonga/shadcn_view_components"
