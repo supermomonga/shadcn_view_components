@@ -6,6 +6,16 @@ All notable changes to this project will be documented in this file.
 
 Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
+### 配布Stimulus controllersの検証を必須化
+
+- gemから配布するJavaScript全体をESLintとTypeScript `checkJs`の対象にし、構文だけでなく
+  DOM型、event型、未使用変数もrelease前に検出する
+- 実Stimulusとjsdomを使い、全controllerの主要状態遷移、複数instance、再接続、
+  listener・timerの後始末を高速なDOM単体テストで保証する
+- controller一覧とtest一覧の一致を検査し、新規controllerだけが未検証で追加されることを防ぐ
+- 実配布packageへの相対linkをconsumer fixtureで使い、同期直後のsourceをlint・型検査・
+  DOM test・esbuild bundleのすべてで検証する
+
 ### 非Importmap向けJavaScript entry pointを実行可能にする
 
 - gem内の `app/assets/javascripts/shadcn` を固有名のlocal ESM packageとして定義し、内部importを

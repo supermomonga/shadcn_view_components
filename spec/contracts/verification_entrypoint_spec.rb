@@ -36,6 +36,23 @@ RSpec.describe "verification entrypoints", type: :conformance do
     end
   end
 
+  it "runs every distributed JavaScript check through the local entrypoint" do
+    rakefile = File.read(File.join(REPO_ROOT, "Rakefile"))
+    package = JSON.parse(File.read(File.join(REPO_ROOT, "tools/js-consumer/package.json")))
+
+    expect(rakefile).to include('sh "pnpm", "-C", "tools/js-consumer", "run", "verify"')
+    expect(package.fetch("scripts")).to include(
+      "lint" => include("eslint --max-warnings 0"),
+      "typecheck" => include("tsc --project"),
+      "test:unit" => include("vitest run"),
+      "test:bundle" => include("node test.mjs"),
+      "verify" => include("lint", "typecheck", "test:unit", "test:bundle")
+    )
+    expect(package.dig("dependencies", "@supermomonga/shadcn-view-components")).to eq(
+      "link:fixture/vendor/shadcn-view-components"
+    )
+  end
+
   it "provides an executable setup script for every dependency set" do
     setup = File.join(REPO_ROOT, "bin/setup")
     contents = File.read(setup)

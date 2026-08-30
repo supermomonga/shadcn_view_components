@@ -138,7 +138,7 @@ bundle exec rake verify # CI必須検査を同じRake taskで順に実行
 bundle exec rake verify:spec           # component/conformance/contract/generator/request
 bundle exec rake verify:system         # ふるまい(Cuprite + Chrome)
 bundle exec rake verify:parity         # visual + animation parity
-bundle exec rake verify:javascript     # extractor + bundled JS consumer
+bundle exec rake verify:javascript     # extractor + distributed JS lint/typecheck/DOM/bundle tests
 bundle exec rake verify:sorbet         # Sorbet + RBI freshness
 bundle exec rake verify:generated      # 生成物の決定性
 bundle exec rake verify:tailwind       # Tailwind build

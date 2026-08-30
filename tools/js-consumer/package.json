@@ -5,14 +5,23 @@
   "packageManager": "pnpm@10.22.0",
   "scripts": {
     "prepare:fixture": "node prepare.mjs",
-    "test": "node prepare.mjs && node test.mjs"
+    "lint": "node prepare.mjs && eslint --max-warnings 0 fixture/vendor/shadcn-view-components",
+    "typecheck": "node prepare.mjs && tsc --project jsconfig.json",
+    "test:unit": "node prepare.mjs && vitest run",
+    "test:bundle": "node prepare.mjs && node test.mjs",
+    "verify": "pnpm run lint && pnpm run typecheck && pnpm run test:unit && pnpm run test:bundle",
+    "test": "pnpm run verify"
   },
   "dependencies": {
     "@hotwired/stimulus": "3.2.2",
-    "@supermomonga/shadcn-view-components": "file:fixture/vendor/shadcn-view-components"
+    "@supermomonga/shadcn-view-components": "link:fixture/vendor/shadcn-view-components"
   },
   "devDependencies": {
+    "@eslint/js": "10.0.1",
     "esbuild": "0.28.2",
-    "jsdom": "26.1.0"
+    "eslint": "10.0.1",
+    "jsdom": "26.1.0",
+    "typescript": "5.9.3",
+    "vitest": "3.2.7"
   }
 }

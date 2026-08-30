@@ -1,16 +1,24 @@
 import { Controller } from "@hotwired/stimulus"
 
 // メッセージスクロール領域の追従と「一番下へ」ボタン(Phase 4)
+/** @extends {Controller<HTMLElement>} */
 export default class MessageScrollerController extends Controller {
+  /** @type {HTMLElement | null} */
+  viewport = null
+
+  onScroll = () => this.refresh()
+
   connect() {
-    this.viewport = this.element.querySelector("[data-slot='message-scroller-viewport']")
-    this.onScroll = () => this.refresh()
+    this.viewport = /** @type {HTMLElement | null} */ (
+      this.element.querySelector("[data-slot='message-scroller-viewport']")
+    )
     this.viewport?.addEventListener("scroll", this.onScroll, { passive: true })
     this.refresh()
   }
 
   disconnect() {
     this.viewport?.removeEventListener("scroll", this.onScroll)
+    this.viewport = null
   }
 
   scrollToBottom() {
@@ -19,7 +27,9 @@ export default class MessageScrollerController extends Controller {
 
   refresh() {
     if (!this.viewport) return
-    const button = this.element.querySelector("[data-slot='message-scroller-button']")
+    const button = /** @type {HTMLButtonElement | null} */ (
+      this.element.querySelector("[data-slot='message-scroller-button']")
+    )
     if (!button) return
     const distance = this.viewport.scrollHeight - this.viewport.scrollTop - this.viewport.clientHeight
     button.hidden = distance < 24

@@ -29,6 +29,7 @@ import TooltipController from "@supermomonga/shadcn-view-components/controllers/
 import ToggleGroupController from "@supermomonga/shadcn-view-components/controllers/toggle_group_controller"
 import ToastController from "@supermomonga/shadcn-view-components/controllers/toast_controller"
 
+/** @param {import("@hotwired/stimulus").Application} application */
 export function register(application) {
   application.register("shadcn--accordion", AccordionController)
   application.register("shadcn--carousel", CarouselController)

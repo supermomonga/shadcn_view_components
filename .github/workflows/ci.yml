@@ -34,7 +34,7 @@ jobs:
           pnpm -C tools/extractor install --frozen-lockfile
           node tools/js-consumer/prepare.mjs
           pnpm -C tools/js-consumer install --frozen-lockfile
-      - name: Typecheck, unit tests, and bundled consumer test
+      - name: Lint, typecheck, DOM unit tests, and bundled consumer test
         run: bundle exec rake verify:javascript
 
   sorbet:
