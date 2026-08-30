@@ -95,8 +95,15 @@ registry.reject { |_name, entry| entry["pending"] }.each do |name, entry|
           # 分離構造: 契約クラス(cn)はルートの最初の子要素が持つ
           if split_structure && !expected_classes.to_s.empty?
             inner = target.element_children.first
-            expect(inner&.attr("class").to_s.split(/\s+/)).to eq(expected_classes.to_s.split(/\s+/)),
-                                                              "split-structure inner element should carry the contract classes"
+            actual_inner_classes = inner&.attr("class").to_s.split(/\s+/)
+            expected_inner_classes = expected_classes.to_s.split(/\s+/)
+            if class_contains
+              expect(actual_inner_classes).to include(*expected_inner_classes),
+                                              "split-structure inner element should contain the contract classes"
+            else
+              expect(actual_inner_classes).to eq(expected_inner_classes),
+                                              "split-structure inner element should carry the contract classes"
+            end
           end
         end
       end

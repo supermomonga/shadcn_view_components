@@ -217,10 +217,34 @@ export const demosAToM: Record<string, ComponentType> = {
   ),
 
   "carousel/default": () => (
-    <Carousel className="max-w-xs">
+    <Carousel className="max-w-xs" aria-label="サンプルスライド">
       <CarouselContent>
-        {["スライド1", "スライド2", "スライド3", "スライド4"].map((text) => (
-          <CarouselItem key={text}>{box(text)}</CarouselItem>
+        {["スライド1", "スライド2", "スライド3", "スライド4"].map((text, index) => (
+          <CarouselItem key={text} aria-label={`${index + 1} of 4`}>{box(text)}</CarouselItem>
+        ))}
+      </CarouselContent>
+      <CarouselPrevious />
+      <CarouselNext />
+    </Carousel>
+  ),
+
+  "carousel/vertical": () => (
+    <Carousel orientation="vertical" className="max-w-xs" aria-label="サンプルスライド">
+      <CarouselContent className="h-[200px]">
+        {["スライド1", "スライド2", "スライド3", "スライド4"].map((text, index) => (
+          <CarouselItem key={text} aria-label={`${index + 1} of 4`}>{box(text)}</CarouselItem>
+        ))}
+      </CarouselContent>
+      <CarouselPrevious />
+      <CarouselNext />
+    </Carousel>
+  ),
+
+  "carousel/rtl": () => (
+    <Carousel dir="rtl" className="max-w-xs" aria-label="サンプルスライド">
+      <CarouselContent>
+        {["スライド1", "スライド2", "スライド3", "スライド4"].map((text, index) => (
+          <CarouselItem key={text} aria-label={`${index + 1} of 4`}>{box(text)}</CarouselItem>
         ))}
       </CarouselContent>
       <CarouselPrevious />

@@ -86,7 +86,15 @@ carousel:
   Carousel:
     # ルートが Context.Provider の内側にある構造。role/aria-roledescription は
     # 契約スロット(carousel div)由来だが、ルートスロット定義は Provider 側になるため許可リストへ
-    attributes: [data-controller, role, aria-roledescription]
+    class_mode: contains
+    attributes:
+      [id, data-controller, data-action, data-orientation, data-direction, dir, tabindex,
+       data-shadcn-generated-root-id, role, aria-roledescription]
+  CarouselContent:
+    # React Contextのorientationをnamed group variantで再現する追加クラス
+    class_mode: contains
+  CarouselItem:
+    class_mode: contains
   CarouselPrevious:
     # Button(outline/icon)のクラスとの実行時合成
     class_mode: contains

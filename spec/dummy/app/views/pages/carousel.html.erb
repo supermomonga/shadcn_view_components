@@ -1,28 +1,68 @@
-<%# dummyアプリはTailwindをビルドしないため、カルーセルのスクロール検証に必要な
-    最小限のレイアウトだけ補う(契約クラスの描画自体には関与しない) %>
+<%# controllerが参照する実寸法を方向ごとに固定するsystem test fixture。
+    componentの契約classとは独立し、ResizeObserver検証ではCSS custom propertyだけを変更する。 %>
 <style>
-  #carousel [data-slot='carousel-content'] { overflow-x: auto; }
-  #carousel [data-slot='carousel-content'] > div { display: flex; }
-  #carousel [data-slot='carousel-item'] { flex: 0 0 192px; padding-left: 16px; }
-  #carousel [data-slot='carousel-item'] > div {
-    width: 176px; height: 160px; box-sizing: border-box;
-    display: flex; align-items: center; justify-content: center;
-    border: 1px solid #ccc; border-radius: 6px;
+  .carousel-fixture {
+    --carousel-item-block-size: 176px;
+    --carousel-item-inline-size: 192px;
+    position: relative;
+  }
+  .carousel-fixture[data-orientation='horizontal'] { width: 320px; }
+  .carousel-fixture[data-orientation='vertical'] { width: 208px; }
+  .carousel-fixture [data-slot='carousel-content'] {
+    scroll-behavior: auto;
+  }
+  .carousel-fixture[data-orientation='horizontal'] [data-slot='carousel-content'] {
+    overflow-x: auto;
+    overflow-y: hidden;
+    width: 100%;
+  }
+  .carousel-fixture[data-orientation='vertical'] [data-slot='carousel-content'] {
+    height: 260px;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  .carousel-fixture [data-slot='carousel-content'] > div {
+    margin: 0;
+  }
+  .carousel-fixture[data-orientation='horizontal'] [data-slot='carousel-content'] > div {
+    display: flex;
+  }
+  .carousel-fixture[data-orientation='vertical'] [data-slot='carousel-content'] > div {
+    display: flex;
+    flex-direction: column;
+  }
+  .carousel-fixture[data-orientation='horizontal'] [data-slot='carousel-item'] {
+    flex: 0 0 var(--carousel-item-inline-size);
+    padding: 0;
+  }
+  .carousel-fixture[data-orientation='vertical'] [data-slot='carousel-item'] {
+    flex: 0 0 var(--carousel-item-block-size);
+    padding: 0;
+  }
+  .carousel-fixture [data-slot='carousel-item'] > div {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border: 1px solid #ccc;
+    border-radius: 6px;
   }
 </style>
+
 <main class="carousel-page">
   <h1>Carousel</h1>
-  <section id="demo-carousel">
-    <%= render(Shadcn::Carousel.new(id: "carousel", style: "width: 320px")) do %>
-      <%= render(Shadcn::Carousel::Content.new) do %>
-        <% %w[1 2 3 4 5 6].each do |n| %>
-          <%= render(Shadcn::Carousel::Item.new) do %>
-            <div>スライド<%= n %></div>
-          <% end %>
-        <% end %>
-      <% end %>
-      <%= render(Shadcn::Carousel::Previous.new(id: "carousel-prev")) %>
-      <%= render(Shadcn::Carousel::Next.new(id: "carousel-next")) %>
-    <% end %>
-  </section>
+
+  <% [
+       ["horizontal-ltr", :horizontal, :ltr],
+       ["horizontal-rtl", :horizontal, :rtl],
+       ["vertical-ltr", :vertical, :ltr],
+       ["vertical-rtl", :vertical, :rtl]
+     ].each do |id, orientation, direction| %>
+    <%= render(
+      partial: "pages/carousel_fixture",
+      locals: { id:, orientation:, direction: }
+    ) %>
+  <% end %>
 </main>

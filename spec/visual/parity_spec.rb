@@ -64,6 +64,8 @@ PARITY_SCENARIOS = [
   %w[shadcn/card/default card/default],
   %w[shadcn/card/with_action card/with-action],
   %w[shadcn/carousel/default carousel/default],
+  %w[shadcn/carousel/rtl carousel/rtl],
+  %w[shadcn/carousel/vertical carousel/vertical],
   %w[shadcn/checkbox/default checkbox/default],
   %w[shadcn/checkbox/disabled checkbox/disabled],
   %w[shadcn/collapsible/default collapsible/default],

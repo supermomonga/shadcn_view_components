@@ -3,6 +3,7 @@
 
 module ShadcnViewComponents
   module PropertyContracts
+    DIRECTIONS = %w[ltr rtl].freeze
     ORIENTATIONS = %w[horizontal vertical].freeze
     TOGGLE_STATES = %w[off on].freeze
 
@@ -26,6 +27,10 @@ module ShadcnViewComponents
       tabs: {
         orientation: { kind: :enum, default: "horizontal", values: ORIENTATIONS }.freeze
       }.freeze,
+      carousel: {
+        orientation: { kind: :enum, default: "horizontal", values: ORIENTATIONS }.freeze,
+        direction: { kind: :enum, default: "ltr", values: DIRECTIONS }.freeze
+      }.freeze,
       "resizable/panel_group": {
         orientation: { kind: :enum, default: "horizontal", values: ORIENTATIONS }.freeze
       }.freeze,
@@ -47,7 +52,7 @@ module ShadcnViewComponents
         spacing: { kind: :number, default: 2, minimum: 0 }.freeze
       }.freeze,
       direction_provider: {
-        dir: { kind: :enum, default: "ltr", values: %w[ltr rtl].freeze }.freeze
+        dir: { kind: :enum, default: "ltr", values: DIRECTIONS }.freeze
       }.freeze,
       sidebar: {
         state: { kind: :enum, default: "open", values: %w[open closed].freeze }.freeze

@@ -19,28 +19,30 @@ RSpec.describe "public property validation", type: :component do
     end
   end
 
-  enum_contracts = {
-    Shadcn::Sheet::Content => [:side, %w[top right bottom left], "right"],
-    Shadcn::ScrollArea::Scrollbar => [:orientation, %w[horizontal vertical], "vertical"],
-    Shadcn::Tabs => [:orientation, %w[horizontal vertical], "horizontal"],
-    Shadcn::Resizable::PanelGroup => [:orientation, %w[horizontal vertical], "horizontal"],
-    Shadcn::Resizable::Handle => [:orientation, %w[horizontal vertical], "vertical"],
-    Shadcn::Separator => [:orientation, %w[horizontal vertical], "horizontal"],
-    Shadcn::Toggle => [:state, %w[off on], "off"],
-    Shadcn::ToggleGroup => [:type, %w[single multiple], "multiple"],
-    Shadcn::ToggleGroup::Item => [:state, %w[off on], "off"],
-    Shadcn::DirectionProvider => [:dir, %w[ltr rtl], "ltr"],
-    Shadcn::Sidebar => [:state, %w[open closed], "open"],
-    Shadcn::Sidebar::Provider => [:state, %w[open closed], "open"],
-    Shadcn::Sidebar::MenuSubButton => [:size, %w[sm md], "md"],
-    Shadcn::AlertDialog::Content => [:size, %w[default sm], "default"],
-    Shadcn::Avatar => [:size, %w[default sm lg], "default"],
-    Shadcn::Switch => [:size, %w[default sm], "default"],
-    Shadcn::Select::Trigger => [:size, %w[default sm], "default"],
-    Shadcn::NativeSelect => [:size, %w[default sm], "default"]
-  }
+  enum_contracts = [
+    [Shadcn::Sheet::Content, :side, %w[top right bottom left], "right"],
+    [Shadcn::ScrollArea::Scrollbar, :orientation, %w[horizontal vertical], "vertical"],
+    [Shadcn::Tabs, :orientation, %w[horizontal vertical], "horizontal"],
+    [Shadcn::Carousel, :orientation, %w[horizontal vertical], "horizontal"],
+    [Shadcn::Carousel, :direction, %w[ltr rtl], "ltr"],
+    [Shadcn::Resizable::PanelGroup, :orientation, %w[horizontal vertical], "horizontal"],
+    [Shadcn::Resizable::Handle, :orientation, %w[horizontal vertical], "vertical"],
+    [Shadcn::Separator, :orientation, %w[horizontal vertical], "horizontal"],
+    [Shadcn::Toggle, :state, %w[off on], "off"],
+    [Shadcn::ToggleGroup, :type, %w[single multiple], "multiple"],
+    [Shadcn::ToggleGroup::Item, :state, %w[off on], "off"],
+    [Shadcn::DirectionProvider, :dir, %w[ltr rtl], "ltr"],
+    [Shadcn::Sidebar, :state, %w[open closed], "open"],
+    [Shadcn::Sidebar::Provider, :state, %w[open closed], "open"],
+    [Shadcn::Sidebar::MenuSubButton, :size, %w[sm md], "md"],
+    [Shadcn::AlertDialog::Content, :size, %w[default sm], "default"],
+    [Shadcn::Avatar, :size, %w[default sm lg], "default"],
+    [Shadcn::Switch, :size, %w[default sm], "default"],
+    [Shadcn::Select::Trigger, :size, %w[default sm], "default"],
+    [Shadcn::NativeSelect, :size, %w[default sm], "default"]
+  ]
 
-  enum_contracts.each do |component_class, (property, values, default)|
+  enum_contracts.each do |component_class, property, values, default|
     describe "#{component_class}##{property}" do
       it "publishes its allowed values and default" do
         expect(component_class.property_contract(property)).to eq(

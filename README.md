@@ -264,6 +264,46 @@ JavaScriptが無効な場合は、同梱の`noscript`スタイルによって実
 step調整済み中間値を使う。`orientation: :vertical`ではRootへ高さを`style:`または`class:`で指定する。
 ポインタ・矢印キー・Home / Endの値変更はネイティブinputへ委ね、Stimulusはrangeとthumbの表示だけを同期する。
 
+### Carouselの向きと書字方向を指定する
+
+`Carousel`はRootの`orientation:`と`direction:`をレイアウトと移動方向の唯一の指定箇所にする。
+子の`Content`、`Item`、`Previous`、`Next`へ同じ値を繰り返し渡す必要はない。`direction:`はRootの
+`dir`属性にも反映され、ブラウザのRTLレイアウトとcontrollerのスクロール位置正規化を一致させる。
+
+```erb
+<h2 id="recommendations-title">おすすめ</h2>
+<%= render(Shadcn::Carousel.new(
+  orientation: :vertical,
+  direction: :rtl,
+  class: "h-80 max-w-xs",
+  aria: { labelledby: "recommendations-title" }
+)) do %>
+  <%= render(Shadcn::Carousel::Content.new(class: "h-64")) do %>
+    <% recommendations.each_with_index do |recommendation, index| %>
+      <%= render(Shadcn::Carousel::Item.new(
+        aria: { label: "#{index + 1} of #{recommendations.size}" }
+      )) { recommendation.name } %>
+    <% end %>
+  <% end %>
+  <%= render(Shadcn::Carousel::Previous.new) %>
+  <%= render(Shadcn::Carousel::Next.new) %>
+<% end %>
+```
+
+縦向きでは上例のように表示領域の高さを指定する。移動先はviewport幅・高さの固定量ではなく、
+実際の各Itemの位置から決めるため、Itemの寸法が異なる場合やレスポンシブ変更後も同じAPIを使える。
+横LTRでは左矢印が前、右矢印が次、横RTLではその対応が逆になり、縦向きは書字方向にかかわらず
+上矢印が前、下矢印が次になる。Previous / Nextは現在の論理スクロール位置が先頭・末尾に達したとき、
+ネイティブの`disabled`状態へ同期する。Rootは既定で`tabindex="0"`となるため、Rootへフォーカスして
+矢印キーを使える。既存のフォーカス設計へ組み込む場合は`tabindex:`で明示的に上書きできる。
+
+Rootには内容を表す`aria-label`または`aria-labelledby`を指定する。各Itemにも内容名、または上例の
+`1 of N`のような位置を表す名前を指定できる。複数Itemが同時に見える構成もあるため、ライブラリは
+Itemへ一律の`aria-current`や`aria-hidden`を付けない。
+[WAI-ARIA Carousel Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/carousel/)に従い、Rootの
+`role="region"` / `aria-roledescription="carousel"`、Itemの`role="group"` /
+`aria-roledescription="slide"`、ネイティブボタンの操作を保つ。
+
 ### 複合コンポーネントのアクセシビリティ契約
 
 JavaScriptを使う複合コンポーネントは、ルートごとに一意なIDを生成し、子要素間のARIA参照を
@@ -281,6 +321,7 @@ Tabsの向きは`Shadcn::Tabs.new(orientation: :horizontal | :vertical)`へ指�
 | Combobox | Input、Listbox、Optionを`aria-controls` / `aria-labelledby` / `aria-activedescendant`で結び、候補の`aria-selected`を同期する | Inputにフォーカスを保ち、矢印キー、Home / End、Enter、Escapeで候補を操作する |
 | Select | Trigger、Listbox、Optionを`aria-controls` / `aria-labelledby` / `aria-activedescendant`で結び、開閉・選択状態を同期する | Triggerにフォーカスを保ち、矢印キー、Home / End、Enter / Space、Escape、Tabで操作する |
 | Accordion | TriggerとContentを`aria-controls` / `aria-labelledby`で相互参照し、`aria-expanded`を同期する | ネイティブ`<summary>`のEnter / Space操作を保つ |
+| Carousel | Rootを`region`、Itemを`group`として識別し、Previous / Nextの`disabled`を論理スクロール位置へ同期する | 横LTRは左 / 右、横RTLは右 / 左、縦は上 / 下矢印で前後へ移動する。ボタンはEnter / Spaceでも操作できる |
 | Resizable | Handleを`separator`として前方Panelへ結び、`aria-valuemin` / `aria-valuemax` / `aria-valuenow`を同期する | 向きに応じた矢印キーで5%ずつ、Home / Endで最小値・最大値へ変更する |
 | Calendar | GridをCaptionへ結び、日付セルの`aria-selected`、当日の`aria-current`、日付ボタンの読み上げ名を設定する | 表示中の月表内で矢印キーを日・週単位、Home / Endを行の先頭・末尾への移動に使う |
 

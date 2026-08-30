@@ -6,6 +6,18 @@ All notable changes to this project will be documented in this file.
 
 Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
+### Carouselの縦方向・RTL・リサイズ時の状態を同期
+
+- Rootの`orientation:`と`direction:`を公開プロパティ契約へ追加し、正規化した値を
+  `data-orientation`、`data-direction`、`dir`へ出してレイアウトとcontrollerの唯一の状態源にした
+- named group variantでContent、Item、Previous / Nextへ向きを伝播し、upstreamのhorizontal classを
+  保ったままvertical配置とhorizontal RTLのChevron反転を追加した
+- viewportやItemの実寸法に基づく前後移動、RTLのスクロール座標正規化、scroll / ResizeObserverによる
+  ボタン状態の再計算、向きに応じた矢印キー操作を追加した
+- Root / ItemのARIA構造と利用者指定のaccessible nameを保ち、複数Item表示で曖昧になる
+  `aria-current`は追加せず、フォーカス可能なRootの矢印キー操作と現在位置をネイティブPrevious /
+  Nextの`disabled`へ同期した
+
 ### InputOTPの実入力とSlot表示を同期
 
 - 実際の`input[type="text"]`を値と選択範囲の唯一の情報源にし、初期値、入力、削除、貼り付け、

@@ -593,6 +593,9 @@
   .h-48 {
     height: calc(var(--spacing) * 48);
   }
+  .h-\[200px\] {
+    height: 200px;
+  }
   .h-\[calc\(--spacing\(5\.25\)\)\] {
     height: calc(calc(var(--spacing) * 5.25));
   }
@@ -2269,6 +2272,46 @@
   .group-data-horizontal\/tabs\:h-8:is(:where(.group\/tabs):where([data-orientation="horizontal"]) *) {
     height: calc(var(--spacing) * 8);
   }
+  .group-data-vertical\/carousel\:inset-y-auto:is(:where(.group\/carousel):where([data-orientation="vertical"]) *) {
+    inset-block: auto;
+  }
+  .group-data-vertical\/carousel\:-top-12:is(:where(.group\/carousel):where([data-orientation="vertical"]) *) {
+    top: calc(var(--spacing) * -12);
+  }
+  .group-data-vertical\/carousel\:right-auto:is(:where(.group\/carousel):where([data-orientation="vertical"]) *) {
+    right: auto;
+  }
+  .group-data-vertical\/carousel\:-bottom-12:is(:where(.group\/carousel):where([data-orientation="vertical"]) *) {
+    bottom: calc(var(--spacing) * -12);
+  }
+  .group-data-vertical\/carousel\:left-1\/2:is(:where(.group\/carousel):where([data-orientation="vertical"]) *) {
+    left: calc(1 / 2 * 100%);
+  }
+  .group-data-vertical\/carousel\:my-0:is(:where(.group\/carousel):where([data-orientation="vertical"]) *) {
+    margin-block: 0px;
+  }
+  .group-data-vertical\/carousel\:-mt-4:is(:where(.group\/carousel):where([data-orientation="vertical"]) *) {
+    margin-top: calc(var(--spacing) * -4);
+  }
+  .group-data-vertical\/carousel\:ml-0:is(:where(.group\/carousel):where([data-orientation="vertical"]) *) {
+    margin-left: 0px;
+  }
+  .group-data-vertical\/carousel\:-translate-x-1\/2:is(:where(.group\/carousel):where([data-orientation="vertical"]) *) {
+    --tw-translate-x: calc(calc(1 / 2 * 100%) * -1);
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+  .group-data-vertical\/carousel\:rotate-90:is(:where(.group\/carousel):where([data-orientation="vertical"]) *) {
+    rotate: 90deg;
+  }
+  .group-data-vertical\/carousel\:flex-col:is(:where(.group\/carousel):where([data-orientation="vertical"]) *) {
+    flex-direction: column;
+  }
+  .group-data-vertical\/carousel\:pt-4:is(:where(.group\/carousel):where([data-orientation="vertical"]) *) {
+    padding-top: calc(var(--spacing) * 4);
+  }
+  .group-data-vertical\/carousel\:pl-0:is(:where(.group\/carousel):where([data-orientation="vertical"]) *) {
+    padding-left: 0px;
+  }
   .group-data-vertical\/tabs\:h-fit:is(:where(.group\/tabs):where([data-orientation="vertical"]) *) {
     height: fit-content;
   }
@@ -2280,6 +2323,9 @@
   }
   .group-data-vertical\/tabs\:justify-start:is(:where(.group\/tabs):where([data-orientation="vertical"]) *) {
     justify-content: flex-start;
+  }
+  .group-\[\[data-orientation\=horizontal\]\[data-direction\=rtl\]\]\/carousel\:rotate-180:is(:where(.group\/carousel):is([data-orientation=horizontal][data-direction=rtl]) *) {
+    rotate: 180deg;
   }
   .peer-checked\:flex:is(:where(.peer):checked ~ *) {
     display: flex;

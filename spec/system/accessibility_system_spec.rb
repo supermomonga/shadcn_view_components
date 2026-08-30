@@ -15,6 +15,7 @@ RSpec.describe "Representative preview accessibility", type: :system do
     { path: "resizable/default" },
     { path: "slider/default" },
     { path: "input_otp/default" },
+    { path: "carousel/default" },
     { path: "calendar/default" }
   ]
 
