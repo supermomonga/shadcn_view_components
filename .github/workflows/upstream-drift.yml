@@ -31,13 +31,7 @@ jobs:
         uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce # v1
 
       - name: Install dependencies
-        run: |
-          bundle install
-          pnpm install --frozen-lockfile
-          pnpm -C tools/extractor install --frozen-lockfile
-          node tools/js-consumer/prepare.mjs
-          pnpm -C tools/js-consumer install --frozen-lockfile
-          pnpm -C tools/visual-parity install --frozen-lockfile
+        run: bin/setup
 
       - name: rake shadcn:update (sync + generate)
         run: bundle exec rake shadcn:update

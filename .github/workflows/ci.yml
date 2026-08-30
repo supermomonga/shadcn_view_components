@@ -26,8 +26,9 @@ jobs:
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - id: setup_mise
         uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
-      - id: setup_bundle
-        run: bundle install
+      - id: setup_dependencies
+        name: Install all verification dependencies
+        run: bin/setup
       - id: verification
         run: bundle exec rake "$LOCAL_VERIFY_TASK"
 
@@ -40,14 +41,9 @@ jobs:
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - id: setup_mise
         uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
-      - id: setup_bundle
-        run: bundle install
-      - id: setup_javascript
-        name: Install JavaScript verification dependencies
-        run: |
-          pnpm -C tools/extractor install --frozen-lockfile
-          node tools/js-consumer/prepare.mjs
-          pnpm -C tools/js-consumer install --frozen-lockfile
+      - id: setup_dependencies
+        name: Install all verification dependencies
+        run: bin/setup
       - id: verification
         name: Lint, typecheck, DOM unit tests, and bundled consumer test
         run: bundle exec rake "$LOCAL_VERIFY_TASK"
@@ -61,8 +57,9 @@ jobs:
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - id: setup_mise
         uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
-      - id: setup_bundle
-        run: bundle install
+      - id: setup_dependencies
+        name: Install all verification dependencies
+        run: bin/setup
       - id: verification
         name: Static type check and RBI freshness
         run: bundle exec rake "$LOCAL_VERIFY_TASK"
@@ -76,8 +73,9 @@ jobs:
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - id: setup_mise
         uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
-      - id: setup_bundle
-        run: bundle install
+      - id: setup_dependencies
+        name: Install all verification dependencies
+        run: bin/setup
       # 層1(コンポーネント) / 層2(適合試験) / 層4(生成物整合)
       - id: verification
         run: bundle exec rake "$LOCAL_VERIFY_TASK"
@@ -93,11 +91,9 @@ jobs:
         uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
       - id: setup_chrome
         uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce # v1
-      - id: setup_bundle
-        run: bundle install
-      - id: setup_accessibility
-        name: Install accessibility verification dependency
-        run: pnpm install --frozen-lockfile
+      - id: setup_dependencies
+        name: Install all verification dependencies
+        run: bin/setup
       - id: verification
         run: CHROME_BIN=$(which chrome) bundle exec rake "$LOCAL_VERIFY_TASK"
 
@@ -112,11 +108,9 @@ jobs:
         uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
       - id: setup_chrome
         uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce # v1
-      - id: setup_bundle
-        run: bundle install
-      - id: setup_visual_parity
-        name: Install visual-parity harness dependencies
-        run: pnpm -C tools/visual-parity install --frozen-lockfile
+      - id: setup_dependencies
+        name: Install all verification dependencies
+        run: bin/setup
       # ローカルと同じ自己起動パス(ハーネスのキャッシュビルド+vite preview起動)を通す
       - id: verification
         run: CHROME_BIN=$(which chrome) bundle exec rake "$LOCAL_VERIFY_TASK"
@@ -139,10 +133,9 @@ jobs:
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - id: setup_mise
         uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
-      - id: setup_bundle
-        run: bundle install
-      - id: setup_extractor
-        run: pnpm -C tools/extractor install --frozen-lockfile
+      - id: setup_dependencies
+        name: Install all verification dependencies
+        run: bin/setup
       # 最重要ジョブ(09 §2): 「生成物が手編集された」「パイプラインが非決定論化した」の両方を検知
       - id: verification
         name: Determinism and working-tree check
@@ -157,10 +150,9 @@ jobs:
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - id: setup_mise
         uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
-      - id: setup_bundle
-        run: bundle install
-      - id: setup_extractor
-        run: pnpm -C tools/extractor install --frozen-lockfile
+      - id: setup_dependencies
+        name: Install all verification dependencies
+        run: bin/setup
       # 契約クラスが実際にTailwind v4ビルドを通るか(06 §6)
       - id: verification
         run: bundle exec rake "$LOCAL_VERIFY_TASK"

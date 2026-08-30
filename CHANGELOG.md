@@ -243,7 +243,7 @@ Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 ### ローカル検証とCIのentry pointを統一
 
 - `bin/setup` でmise toolchain、Ruby gems、root / Extractor / Visual Parityの
-  JavaScript依存をまとめて導入する
+  JavaScript依存をまとめて導入し、通常CIの全jobとupstream同期も同じsetup経路を使う
 - `rake verify` / `rake verify:full` がCI必須の8検査をすべて実行し、CIの各jobも
   対応する `verify:*` subtaskを呼ぶようにした
 - 各CI jobが対応taskを`LOCAL_VERIFY_TASK`として宣言し、契約specが全jobと

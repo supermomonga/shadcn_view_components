@@ -41,4 +41,15 @@ RSpec.describe "pnpm toolchain configuration", type: :conformance do
       "onlyBuiltDependencies" => %w[esbuild]
     )
   end
+
+  it "declares the visual parity CSS dependency in the harness that imports it" do
+    root_package = JSON.parse(File.read(File.join(REPO_ROOT, "package.json")))
+    visual_package = JSON.parse(File.read(File.join(REPO_ROOT, "tools/visual-parity/package.json")))
+    theme = File.read(File.join(REPO_ROOT, "tools/visual-parity/src/upstream_theme.css"))
+
+    expect(theme).to include('@import "tw-animate-css"')
+    expect(visual_package.dig("dependencies", "tw-animate-css")).to eq(
+      root_package.dig("dependencies", "tw-animate-css")
+    )
+  end
 end

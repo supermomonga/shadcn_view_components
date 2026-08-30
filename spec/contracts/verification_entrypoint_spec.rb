@@ -53,7 +53,7 @@ RSpec.describe "verification entrypoints", type: :conformance do
       expect(invalid_steps).to be_empty, classification_message
       expect(verification_steps.length).to eq(1), "#{job_name} must have exactly one verification step"
       expect(verification_steps.first.fetch("env", {})).not_to have_key("LOCAL_VERIFY_TASK")
-      expect(commands).to include("bundle install"), "#{job_name} must install the Rake task dependencies"
+      expect(commands).to include("bin/setup"), "#{job_name} must use the documented complete setup"
       expect(verification_steps.first.fetch("run").strip).to match(verification_command_pattern), invocation_message
     end
   end
@@ -108,5 +108,10 @@ RSpec.describe "verification entrypoints", type: :conformance do
       "pnpm -C tools/js-consumer install --frozen-lockfile",
       "pnpm -C tools/visual-parity install --frozen-lockfile"
     )
+
+    workflow_commands = ci_jobs.values.flat_map do |job|
+      job.fetch("steps").filter_map { |step| step["run"] }
+    end
+    expect(workflow_commands.count("bin/setup")).to eq(ci_jobs.length)
   end
 end

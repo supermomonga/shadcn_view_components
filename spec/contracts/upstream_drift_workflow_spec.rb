@@ -63,14 +63,7 @@ RSpec.describe "upstream drift workflow", type: :conformance do
     verify = named_step("Run every required verification")
 
     expect(steps.any? { |step| step.fetch("uses", "").start_with?("browser-actions/setup-chrome@") }).to be(true)
-    expect(install).to include(
-      "bundle install",
-      "pnpm install --frozen-lockfile",
-      "pnpm -C tools/extractor install --frozen-lockfile",
-      "node tools/js-consumer/prepare.mjs",
-      "pnpm -C tools/js-consumer install --frozen-lockfile",
-      "pnpm -C tools/visual-parity install --frozen-lockfile"
-    )
+    expect(install).to eq("bin/setup")
     expect(verify.fetch("run")).to include("bundle exec rake verify")
     expect(verify).not_to have_key("continue-on-error")
     expect(step_index("Detect upstream changes")).to be < step_index("Run every required verification")

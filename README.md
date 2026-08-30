@@ -392,6 +392,7 @@ CI検査を追加する場合は、`.github/workflows/ci.yml`のjobへ対応す�
 検査コマンドをworkflowへ直接追加せず、対応する`verify:*` task内へ実装する。
 このworkflowは検証専用とし、他のstepは`setup_*`または`artifact_*`のIDを付ける。
 未分類stepは契約specが拒否し、releaseやdeployのjobは目的別のworkflowへ分ける。
+通常CIとupstream同期は、依存関係の導入にも文書と同じ`bin/setup`を使用する。
 
 Lookbook は dummy アプリのルートパス(`/`)で開く。プレビューツールバーには
 **Theme トグルボタン(月/太陽アイコン)** があり、プレビューの
