@@ -7,11 +7,36 @@ module ShadcnViewComponents
   class Engine < ::Rails::Engine
     isolate_namespace ShadcnViewComponents
 
-    # InputOTP 等、キャメルバックの頭字語を含むコンポーネント定数の autoload 用
-    initializer "shadcn_view_components.inflections" do
-      ActiveSupport::Inflector.inflections(:all) do |inflect|
-        inflect.acronym "OTP"
+    # Rails engineのcomponentはhost applicationとmain loaderを共有する。
+    # fallbackはRails既定のinflectorへ委譲し、このengineのinput_otp.rbだけを
+    # InputOTPへ写像することでhostの同名fileとActiveSupportの命名規則を変更しない。
+    class ComponentInflector
+      extend T::Sig
+
+      sig { params(delegate: T.untyped, input_otp_path: String).void }
+      def initialize(delegate:, input_otp_path:)
+        @delegate = T.let(delegate, T.untyped)
+        @input_otp_path = T.let(File.expand_path(input_otp_path), String)
       end
+
+      sig { params(basename: String, abspath: String).returns(String) }
+      def camelize(basename, abspath)
+        return ShadcnViewComponents::ComponentNaming.constant_name(basename) if basename == "input_otp" && File.expand_path(abspath) == @input_otp_path
+
+        T.cast(@delegate.camelize(basename, abspath), String)
+      end
+
+      sig { params(overrides: T::Hash[String, String]).void }
+      def inflect(overrides)
+        @delegate.inflect(overrides)
+      end
+    end
+    private_constant :ComponentInflector
+
+    initializer "shadcn_view_components.inflector", before: :setup_main_autoloader do
+      loader = Rails.autoloaders.main
+      input_otp_path = ShadcnViewComponents::Engine.root.join("app/components/shadcn/input_otp.rb").to_s
+      loader.inflector = ComponentInflector.new(delegate: loader.inflector, input_otp_path: input_otp_path)
     end
 
     initializer "shadcn_view_components.assets" do |app|

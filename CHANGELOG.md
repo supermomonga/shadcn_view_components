@@ -6,6 +6,15 @@ All notable changes to this project will be documented in this file.
 
 Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
+### OTP inflectionのhost applicationへの副作用を解消
+
+- require時とengine initializerで重複登録していたグローバルな `OTP` acronymを削除した
+- component定数名の規則をgem内部の一箇所へ集約し、契約解決もhostのinflectionから分離した
+- Rails main loaderの既定inflectorをdelegateするpath限定wrapperをengine initializer一箇所で設定し、
+  gem内の `app/components/shadcn/input_otp.rb` だけを `InputOTP` へ写像する
+- 別processの契約specで、require前後とRails boot後のhost inflectionが不変であること、hostの
+  同名fileに写像が漏れないこと、InputOTPのeager load成功を保証した
+
 ### install generatorのTailwind directiveを独立して保証
 
 - host CSSのshadcn importとgem component pathの `@source` を別々に検査し、
@@ -281,8 +290,7 @@ baseページへ307リダイレクト、CLI `init -d`は`--preset=base-nova`、`
   select/optgroup/option、select は Popover API listbox、input-otp は
   autocomplete=one-time-code の素のinput
 - 抽出器: cva のバリアント値・compound における文字列配列の連結対応(field)
-- InputOTP 等、頭字語を含む定数名の autoload 用インフレクション(OTP)を
-  require 時に登録
+- InputOTP の autoload mappingはengine内の対象fileだけに限定し、hostの命名規則に影響させない
 - 残る未実装は重量級8アイテム(sidebar/calendar/chart/sonner/attachment/bubble/
   message/message-scroller)— registry.yml の pending で負債を可視化
 

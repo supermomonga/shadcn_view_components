@@ -23,7 +23,10 @@ module ShadcnViewComponents
 
     sig { params(component: Symbol).returns(T::Module[T.anything]) }
     def contract_for(component)
-      ShadcnViewComponents::Contracts.const_get(component.to_s.camelize)
+      constant_path = component.to_s.split("/").map do |segment|
+        ShadcnViewComponents::ComponentNaming.constant_name(segment)
+      end.join("::")
+      ShadcnViewComponents::Contracts.const_get(constant_path, false)
     end
 
     sig do
