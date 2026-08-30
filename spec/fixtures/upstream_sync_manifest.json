@@ -1,0 +1,13 @@
+{
+  "manifest_version": 2,
+  "fetched_at": "2026-08-30T04:56:32.776Z",
+  "source": {
+    "registry_snapshot": {
+      "content_sha256": "c34a83ec7ac2e133729a680286f534c6ba973c1bbc52a14e654a98fc75b8252f"
+    },
+    "upstream_release": {
+      "tag": "shadcn@4.19.0",
+      "resolved_sha": "1773ecfeeb4a04366978d353e69b5c7ded78dcb2"
+    }
+  }
+}

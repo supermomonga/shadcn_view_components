@@ -6,6 +6,17 @@ All notable changes to this project will be documented in this file.
 
 Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
+### 自動upstream同期PRに必須検証を固定
+
+- 差分検出後、PR作成前に `bundle exec rake verify` の8検査を失敗伝播ありで実行し、
+  失敗した同期内容を成功扱いでPRにしないようにした
+- PR作成credentialを `github.token` に固定。作成後は同じhead branchへ通常CIを
+  `workflow_dispatch` し、`pull_request` eventの再帰防止や外部tokenの有無に関係なく
+  PRに8個のstatus checkを付ける。PRは必ずdraftで作成し、全checkの生成を実確認した
+  後だけreview readyに変更する
+- PR本文とActions summaryにupstreamの完全SHA、registry snapshot hash、取得日時、
+  検証結果とrun URLを表示し、manifest fixtureを使ったworkflow契約specで保証した
+
 ### upstream同期のtimestamp差分を抑止
 
 - upstream の内容と revision が前回から変わらない場合、manifest の `fetched_at` と

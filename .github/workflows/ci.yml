@@ -4,6 +4,8 @@ on:
   pull_request:
   push:
     branches: [main]
+  # GITHUB_TOKENが作成したupstream-sync PRでも、同じheadに必須checkを付ける。
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

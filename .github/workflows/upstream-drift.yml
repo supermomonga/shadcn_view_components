@@ -2,10 +2,9 @@
 #
 # - 毎週月曜 09:00 JST + 手動dispatch
 # - rake shadcn:update でsync+generate
-# - 適合試験は「結果に関わらず続行」。結果はPRのCI statusとして可視化される
-#   (赤でもPRを作る = 検知と修正を同じPRに集約)
-# - PR作成トークンは専用のGitHub App / fine-grained PAT (Secrets: SYNC_TOKEN) を推奨。
-#   未設定の場合は github.token にフォールバックする
+# - 差分があれば全必須検証を実行し、失敗時はPRを作らない
+# - PRはgithub.tokenだけで作成し、同じheadへ通常CIをworkflow_dispatchする
+#   (GITHUB_TOKENが作ったPRでpull_request eventが抑止される仕様に依存しない)
 name: upstream-drift
 
 on:
@@ -14,6 +13,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: write
   contents: write
   pull-requests: write
 
@@ -23,72 +23,73 @@ jobs:
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
-          # 差分が無ければ後続のcreate-pull-requestは何もしない
-          token: ${{ secrets.SYNC_TOKEN || github.token }}
+          persist-credentials: false
 
       - uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
+
+      - name: Install Chrome
+        uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce # v1
 
       - name: Install dependencies
         run: |
           bundle install
+          pnpm install --frozen-lockfile
           pnpm -C tools/extractor install --frozen-lockfile
+          pnpm -C tools/visual-parity install --frozen-lockfile
 
       - name: rake shadcn:update (sync + generate)
-        run: pnpm -C tools/extractor exec tsx src/cli.ts fetch && pnpm -C tools/extractor exec tsx src/cli.ts generate
+        run: bundle exec rake shadcn:update
 
       - name: Detect upstream changes
         id: changes
         run: |
-          if git diff --quiet -- vendor gen lib/shadcn_view_components/generated app/assets/stylesheets; then
+          if [ -z "$(git status --porcelain --untracked-files=all)" ]; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Run conformance specs (結果はPRのCIとして可視化。赤でも続行)
+      - name: Capture change summaries
         if: steps.changes.outputs.changed == 'true'
-        continue-on-error: true
-        run: bundle exec rspec spec/conformance --format progress
+        run: |
+          mkdir -p "$RUNNER_TEMP/upstream-sync"
+          git status --short --untracked-files=all > "$RUNNER_TEMP/upstream-sync/changes.txt"
+          git status --short --untracked-files=all -- gen/contracts > "$RUNNER_TEMP/upstream-sync/contracts.txt"
+
+      - name: Run every required verification
+        if: steps.changes.outputs.changed == 'true'
+        id: verify
+        run: CHROME_BIN="$(command -v chrome)" bundle exec rake verify
+
+      - name: Write the verification summary
+        if: always() && steps.changes.outputs.changed == 'true'
+        env:
+          CHANGES_FILE: ${{ runner.temp }}/upstream-sync/changes.txt
+          CONTRACTS_FILE: ${{ runner.temp }}/upstream-sync/contracts.txt
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          VERIFICATION_OUTCOME: ${{ steps.verify.outcome }}
+        run: ruby .github/scripts/render_upstream_sync_report.rb >> "$GITHUB_STEP_SUMMARY"
 
       - name: Compose PR body
         if: steps.changes.outputs.changed == 'true'
-        run: |
-          mkdir -p "$RUNNER_TEMP/pr"
-          {
-            echo "## upstream sync"
-            echo
-            echo "- 出所: $(ruby -rjson -e 'm = JSON.parse(File.read("vendor/shadcn/manifest.json")); r = m.dig("source", "upstream_release") || {}; puts [r["tag"], r["resolved_sha"]&.slice(0, 7), m["fetched_at"]].compact.join(" / ")')"
-            echo "- 変更サマリ:"
-            echo
-            echo '```'
-            git diff --stat -- vendor/shadcn | tail -20
-            echo '```'
-            echo
-            echo "### 契約差分(レビューの主対象)"
-            echo
-            echo '```'
-            git diff --stat -- gen/contracts | tail -20
-            echo '```'
-            echo
-            echo "### レビュー手順"
-            echo "1. gen/contracts/ のdiffを確認(クラス変更・スロット増減・バリアント増減)"
-            echo "2. CIの適合試験を確認:"
-            echo "   - 緑 → そのままマージ可能(クラス変更が自動反映されるだけ)"
-            echo "   - 赤 → 壊れたコンポーネントの修正をこのPRに追加コミット:"
-            echo "     - data-slot増減 → ERBテンプレート修正"
-            echo "     - バリアント増減 → kwargs・normalize対応"
-            echo "3. アイテム削除があった場合 → 対応コンポーネントのdeprecation判断"
-          } > "$RUNNER_TEMP/pr/body.md"
+        env:
+          CHANGES_FILE: ${{ runner.temp }}/upstream-sync/changes.txt
+          CONTRACTS_FILE: ${{ runner.temp }}/upstream-sync/contracts.txt
+          REPORT_OUTPUT: ${{ runner.temp }}/upstream-sync/body.md
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          VERIFICATION_OUTCOME: ${{ steps.verify.outcome }}
+        run: ruby .github/scripts/render_upstream_sync_report.rb > "$REPORT_OUTPUT"
 
       - name: Extract sync metadata for the PR title
         if: steps.changes.outputs.changed == 'true'
         id: meta
         run: |
-          tag=$(ruby -rjson -e 'r = (JSON.parse(File.read("vendor/shadcn/manifest.json")).dig("source", "upstream_release") || {})["tag"] || "latest"; puts r')
+          tag=$(ruby -rjson -e 'r = JSON.parse(File.read("vendor/shadcn/manifest.json")).fetch("source").fetch("upstream_release"); puts r.fetch("tag")')
           echo "title=chore(upstream): sync shadcn/ui (${tag})" >> "$GITHUB_OUTPUT"
 
       - name: Create / update the upstream-sync PR
         if: steps.changes.outputs.changed == 'true'
+        id: cpr
         uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7
         with:
           # 固定ブランチ = upstream-sync PRは常に1件まで(09 §4)
@@ -98,13 +99,70 @@ jobs:
           labels: |
             upstream-sync
             automated
-          body-path: ${{ runner.temp }}/pr/body.md
-          token: ${{ secrets.SYNC_TOKEN || github.token }}
+          body-path: ${{ runner.temp }}/upstream-sync/body.md
+          # check未作成のPRをmerge可能な状態にしない。更新時も必ずdraftに戻す。
+          draft: always-true
+          token: ${{ github.token }}
+
+      - name: Require the upstream-sync PR metadata
+        if: steps.changes.outputs.changed == 'true'
+        env:
+          PR_BRANCH: ${{ steps.cpr.outputs.pull-request-branch }}
+          PR_NUMBER: ${{ steps.cpr.outputs.pull-request-number }}
+        run: |
+          test -n "$PR_BRANCH"
+          test -n "$PR_NUMBER"
+
+      - name: Run normal CI on the upstream-sync PR head
+        if: steps.changes.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_BRANCH: ${{ steps.cpr.outputs.pull-request-branch }}
+        run: gh workflow run ci.yml --ref "$PR_BRANCH"
+
+      - name: Confirm every required CI check exists on the PR head
+        if: steps.changes.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_HEAD_SHA: ${{ steps.cpr.outputs.pull-request-head-sha }}
+        run: |
+          required_checks=(lint-ruby lint-js sorbet rspec system parity determinism tailwind-build)
+
+          for attempt in {1..20}; do
+            ci_run_id=$(gh run list --workflow ci.yml --event workflow_dispatch --commit "$PR_HEAD_SHA" --limit 1 --json databaseId --jq '.[0].databaseId')
+            if [ -n "$ci_run_id" ]; then
+              jobs=$(gh run view "$ci_run_id" --json jobs --jq '.jobs[].name')
+              missing=false
+              for check in "${required_checks[@]}"; do
+                if ! grep -Fqx "$check" <<< "$jobs"; then
+                  missing=true
+                  break
+                fi
+              done
+              if [ "$missing" = false ]; then
+                echo "All required CI checks exist for $PR_HEAD_SHA (run $ci_run_id)"
+                exit 0
+              fi
+            fi
+            sleep 6
+          done
+
+          echo "::error::Required CI checks were not created for PR head $PR_HEAD_SHA"
+          exit 1
+
+      - name: Mark the verified upstream-sync PR ready for review
+        if: steps.changes.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ steps.cpr.outputs.pull-request-number }}
+        run: gh pr ready "$PR_NUMBER" --repo "$GITHUB_REPOSITORY"
 
       - name: Close stale sync PR when upstream is already in sync
         if: steps.changes.outputs.changed == 'false'
-        run: |
-          # 差分が無い場合、残っている古い自動PRがあれば閉じる(09 §3.2 [4])
-          gh pr close chore/upstream-sync --repo "$GITHUB_REPOSITORY" || true
         env:
-          GH_TOKEN: ${{ secrets.SYNC_TOKEN || github.token }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          pr_number=$(gh pr list --head chore/upstream-sync --state open --json number --jq '.[0].number')
+          if [ -n "$pr_number" ]; then
+            gh pr close "$pr_number" --repo "$GITHUB_REPOSITORY"
+          fi

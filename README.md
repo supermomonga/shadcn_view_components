@@ -175,7 +175,22 @@ rake shadcn:check     # 決定論性検証(一時ディレクトリ生成とコ�
 
 ### 週次upstream追従
 
-`.github/workflows/upstream-drift.yml` が毎週月曜 09:00 JST に `rake shadcn:update` を実行し、差分があれば自動PR(`chore/upstream-sync`)を作成する。人間の仕事はPRのレビューと、赤い場合(適合試験が崩れた場合)の修正のみ。手動実行は workflow_dispatch から。
+`.github/workflows/upstream-drift.yml` が毎週月曜 09:00 JST に `rake shadcn:update`
+を実行する。差分があれば、Chromeを含む全依存を用意して
+`bundle exec rake verify` の8検査を先に実行し、全て成功した場合だけ自動PR
+(`chore/upstream-sync`) を作成する。検証失敗はworkflow自体の失敗となり、PRは作成しない。
+
+PR作成は `github.token` に固定し、最初にdraftで作成する。同じhead branchを指定して
+`CI` workflowを `workflow_dispatch` する。GitHubの再帰防止により、`github.token` が
+作成したPRの `pull_request` eventが起動しない場合でも、PR headに必須の
+8 status checkが付く。その8個が実際に作成された後だけreview readyにする。
+PR本文とActions summaryには、upstreamの完全なcommit SHA、
+registry snapshot hash、取得日時、先行検証の結果とworkflow URLを記録する。手動実行は
+`workflow_dispatch` から行う。
+
+リポジトリ設定ではActionsにPull Request作成を許可し、mainの必須checkを
+`lint-ruby`, `lint-js`, `sorbet`, `rspec`, `system`, `parity`, `determinism`,
+`tailwind-build` に固定する。専用PATやApp tokenは使用しない。
 
 ### 見た目のupstreamパリティ検証(visual parity)
 
