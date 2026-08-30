@@ -477,6 +477,10 @@ bundle exec rake parity:update                   # 追跡baselineを意図して
 
 仕組み: `vendor/shadcn` の tsx を `tools/visual-parity` で展開し、Vite + React で実際に描画(upstream側)。dummy の Lookbook プレビュー(うち側)と同じ Chromium(Cuprite)でスクリーンショットを撮り、pixelmatch で差分率を判定する。upstream側のスタイルは upstream 実アプリの globals.css 相当のみを抽出器が生成した `tools/visual-parity/src/upstream_theme.css`(トークン + npm `shadcn/tailwind.css` の verbatim取り込み)から与えられ、gem の `shadcn.css` とは独立している。これにより shadcn.css への移植漏れ・移植ミス(例: カスタムバリアント未定義でクラスが沈黙する)が upstream 側との差分として検出される(共有してしまうと両側が同じだけ壊れて差分が消えるため)。両側でアニメーションを停止し、同一ブラウザ・同一フォントで比較するため決定論的。各シナリオは **light/dark 両カラースキーム**で撮影する(dark は両側の `<html>` に `.dark` を付与。`dark:bg-destructive/60` 等の dark時ユーティリティや `.dark` トークンの差分はこのモードでしか検出できない)。
 
+画像寸法がわずかに異なる場合は、各画像の右下にあるページ背景色で不足領域を補完する。
+これによりlight/darkのどちらでも背景だけの寸法差を同じように扱い、余分な領域にある
+実コンテンツは引き続き差分として検出する。
+
 さらにアニメーションパリティ(`spec/visual/animation_parity_spec.rb`)では、両側のコンポーネントを開いた直後に WAAPI でアニメーションを取得・停止し、currentTime を同一チェックポイント(0/25/50/75/100%)に固定した上で補間値(opacity / transform / 高さ)とアニメーション名・持続時間・イージングを比較する。時間を仮想化するため実行タイミングに影響されない(drawer は upstream が vaul のJSバネ物理で動くため対象外)。
 
 - 素の `bundle exec rspec` でも**常時実行される**。upstream参照サーバ(vite preview)のキャッシュビルドと起動・停止は `spec/support/parity_server.rb` が自動で行う(ビルド入力のハッシュが変わらなければ再ビルドを省略)。明示的に外したいときだけ `PARITY=0 bundle exec rspec`

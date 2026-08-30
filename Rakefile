@@ -77,6 +77,7 @@ namespace :verify do
 
   desc "Run visual and animation parity specs"
   task :parity do
+    sh "pnpm", "-C", "tools/visual-parity", "run", "test"
     sh "bundle", "exec", "rspec", "spec/visual"
   end
 

@@ -248,6 +248,8 @@ Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
   ビルドできるようにした
 - dummy CSSの鮮度比較では、native変換がOSごとに等価な表現を選ぶTailwind preflightを
   除外し、リポジトリが所有するtheme・utilities・追加base層を比較する
+- parity画像の寸法差を各画像の背景色で補完し、dark時だけ固定の白背景が差分になる
+  偽陽性を解消した
 - `rake verify` / `rake verify:full` がCI必須の8検査をすべて実行し、CIの各jobも
   対応する `verify:*` subtaskを呼ぶようにした
 - 各CI jobが対応taskを`LOCAL_VERIFY_TASK`として宣言し、契約specが全jobと

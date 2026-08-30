@@ -4,6 +4,7 @@
   "type": "module",
   "packageManager": "pnpm@10.22.0",
   "scripts": {
+    "test": "node --test compare.test.mjs",
     "unpack": "node unpack.mjs",
     "build": "pnpm run unpack && vite build",
     "serve": "vite preview --host 127.0.0.1 --port 4173 --strictPort",

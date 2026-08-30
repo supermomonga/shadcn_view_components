@@ -4,9 +4,9 @@
  * 使い方: node compare.mjs <ours.png> <upstream.png> <diff.png> <report.json> [threshold]
  * 終了コード: 差分率が閾値(既定 0.005 = 0.5%)以下なら 0、超えたら 1。
  *
- * 両画像の寸法が違う場合(bodyの高さ差など)は大きい方のキャンバスに白で
- * パディングしてから比較する。パディング領域も差分ピクセルとして数えるため、
- * 僅かな高さ差は低比率で許容され、大きな構造差は高比率で失敗する。
+ * 両画像の寸法が違う場合(bodyの高さ差など)は大きい方のキャンバスへ、各画像の
+ * 右下にあるページ背景色でパディングしてから比較する。light/darkに依存せず、
+ * 余分な領域に実コンテンツがあれば差分ピクセルとして検出する。
  */
 import { readFileSync, writeFileSync } from "node:fs"
 import { PNG } from "pngjs"
@@ -25,12 +25,14 @@ const height = Math.max(ours.height, upstream.height)
 const pad = (source) => {
   if (source.width === width && source.height === height) return source
   const canvas = new PNG({ width, height })
-  // pngjs のビットマップは生成時にゼロ埋め(α=0)のため、白で塗ってから描き写す
+  // body全幅のスクリーンショットでは右下がページ背景になる。不足領域を固定色で
+  // 埋めるとdarkだけ寸法差が偽陽性になるため、画像ごとの背景色を使う。
+  const edgeOffset = ((source.height - 1) * source.width + source.width - 1) * 4
   for (let i = 0; i < canvas.data.length; i += 4) {
-    canvas.data[i] = 0xff
-    canvas.data[i + 1] = 0xff
-    canvas.data[i + 2] = 0xff
-    canvas.data[i + 3] = 0xff
+    canvas.data[i] = source.data[edgeOffset]
+    canvas.data[i + 1] = source.data[edgeOffset + 1]
+    canvas.data[i + 2] = source.data[edgeOffset + 2]
+    canvas.data[i + 3] = source.data[edgeOffset + 3]
   }
   PNG.bitblt(source, canvas, 0, 0, source.width, source.height, 0, 0)
   return canvas
