@@ -21,6 +21,9 @@ Phase 0〜4 完了 — vendor manifestの63アイテムを追跡し、61アイ�
 - 実装済みアイテム:
   `accordion`, `alert`, `alert-dialog`, `aspect-ratio`, `attachment`, `avatar`, `badge`, `breadcrumb`, `bubble`, `button`, `button-group`, `calendar`, `card`, `carousel`, `chart`, `checkbox`, `collapsible`, `combobox`, `command`, `context-menu`, `dialog`, `direction`, `drawer`, `dropdown-menu`, `empty`, `field`, `form`, `hover-card`, `input`, `input-group`, `input-otp`, `item`, `kbd`, `label`, `marker`, `menubar`, `message`, `message-scroller`, `native-select`, `navigation-menu`, `pagination`, `popover`, `progress`, `radio-group`, `resizable`, `scroll-area`, `select`, `separator`, `sheet`, `sidebar`, `skeleton`, `slider`, `sonner`, `spinner`, `switch`, `table`, `tabs`, `textarea`, `toggle`, `toggle-group`, `tooltip`
 <!-- END GENERATED COMPONENT INVENTORY -->
+
+全クラスのinitializer、slot、HTML属性の適用先、フォーム送信、状態、JavaScript要件、upstreamとの差異は[コンポーネントAPIリファレンス](docs/components/README.md)で確認できる。
+
 - calendar は react-day-picker の実行時クラス合成のため静的抽出の対象外。
   契約は lib/shadcn_view_components/contracts/calendar.rb に個別契約として保守し、
   コンポーネントは月テーブル(年月ナビ・日付ボタン)として提供する
@@ -376,7 +379,7 @@ bundle exec rake verify:system         # ふるまい(Cuprite + Chrome)
 bundle exec rake verify:parity         # visual + animation parity
 bundle exec rake verify:javascript     # extractor + distributed JS lint/typecheck/DOM/bundle tests
 bundle exec rake verify:sorbet         # Sorbet + RBI freshness
-bundle exec rake verify:generated      # 生成物の決定性
+bundle exec rake verify:generated      # コード生成物と生成ドキュメントの決定性
 bundle exec rake verify:tailwind       # Tailwind build
 bundle exec rake verify:rubocop        # Ruby lint
 mise run lookbook                      # プレビュー(http://localhost:9292/)

@@ -60,14 +60,16 @@ namespace :verify do
 end
 
 namespace :docs do
-  desc "Generate the README component inventory"
+  desc "Generate the README inventory and component API reference"
   task :generate do
     ruby "tools/documentation/readme_inventory.rb", "generate"
+    ruby "tools/documentation/component_reference.rb", "generate"
   end
 
-  desc "Verify the README component inventory is current"
+  desc "Verify generated documentation is current"
   task :check do
     ruby "tools/documentation/readme_inventory.rb", "check"
+    ruby "tools/documentation/component_reference.rb", "check"
   end
 end
 

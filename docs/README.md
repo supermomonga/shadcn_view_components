@@ -2,6 +2,10 @@
 
 このディレクトリには、`shadcn_view_components` の公開設計資料を収録します。
 
+## 利用者向け資料
+
+- [コンポーネントAPIリファレンス](components/README.md) — 全公開クラスのinitializer、slot、HTML属性、フォーム送信、状態、JavaScript要件、upstreamとの差異
+
 ## 現行の保守者向け資料
 
 次の文書は、現在の実装・運用を理解し変更するメンテナー向けの資料です。

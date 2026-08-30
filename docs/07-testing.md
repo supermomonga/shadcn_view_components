@@ -130,6 +130,8 @@ end
   `questionnaire`と`toast`の2件を`pending: true`として明示している
 - 実装済み61アイテムは`spec/coverage/registry.yml`と完全一致し、render smoke・preview・parity・interaction・systemの判断を必須にする
 - `vendor/shadcn/manifest.json` の `items.*.sha256` が実ファイルと一致すること（手編集の検知）
+- `docs/components/` のAPIリファレンスが、Ruby initializer・生成契約・coverage registry・代表preview・手書きの意味仕様と一致すること。
+  `bundle exec rake docs:check` は生成漏れと古いページを検知し、代表previewの実行可否はrequest specで確認する
 
 ## 7. Lookbookプレビュー
 
