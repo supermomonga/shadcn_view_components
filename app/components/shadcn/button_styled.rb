@@ -21,8 +21,14 @@ module Shadcn
       ).void.checked(:never)
     end
     def initialize(variant: nil, size: nil, **args)
-      @button_variant = T.let(variant && ShadcnViewComponents::Classes.normalize_option(:button, :variant, variant), T.nilable(Symbol))
-      @button_size = T.let(size && ShadcnViewComponents::Classes.normalize_option(:button, :size, size), T.nilable(Symbol))
+      @button_variant = T.let(
+        variant.nil? ? nil : ShadcnViewComponents::Classes.normalize_option(:button, :variant, variant),
+        T.nilable(Symbol)
+      )
+      @button_size = T.let(
+        size.nil? ? nil : ShadcnViewComponents::Classes.normalize_option(:button, :size, size),
+        T.nilable(Symbol)
+      )
       super(**args)
     end
 

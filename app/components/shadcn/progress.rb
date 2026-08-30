@@ -4,9 +4,14 @@
 module Shadcn
   # 進捗バー。role=progressbar と aria 値をネイティブARIAで表現する
   class Progress < BaseComponent
-    sig { params(value: T.nilable(Integer), args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
-    def initialize(value: nil, **args)
-      @value = value
+    sig do
+      params(
+        value: T.nilable(T.any(Integer, Float, String)),
+        args: T::Hash[Symbol, T.untyped]
+      ).void.checked(:never)
+    end
+    def initialize(value: self.class.property_default(:value), **args)
+      @value = T.let(normalize_property(:value, value), T.nilable(T.any(Integer, Float)))
       super(**args)
     end
 
@@ -24,7 +29,9 @@ module Shadcn
     def html_attributes
       attributes = super
       attributes[:role] = "progressbar"
-      merge_nested(attributes, :aria, { valuenow: @value.to_s, valuemin: "0", valuemax: "100" })
+      aria_defaults = T.let({ valuemin: "0", valuemax: "100" }, T::Hash[Symbol, T.untyped])
+      aria_defaults[:valuenow] = @value.to_s if @value
+      merge_nested(attributes, :aria, aria_defaults)
       attributes
     end
 

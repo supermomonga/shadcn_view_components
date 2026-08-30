@@ -14,8 +14,8 @@ module Shadcn
       sig do
         params(orientation: T.any(Symbol, String), args: T::Hash[Symbol, T.untyped]).void.checked(:never)
       end
-      def initialize(orientation: "horizontal", **args)
-        @orientation = T.let(orientation.to_s, String)
+      def initialize(orientation: self.class.property_default(:orientation), **args)
+        @orientation = T.let(normalize_property(:orientation, orientation), String)
         super(**args)
       end
 
@@ -48,8 +48,8 @@ module Shadcn
       sig do
         params(orientation: T.any(Symbol, String), args: T::Hash[Symbol, T.untyped]).void.checked(:never)
       end
-      def initialize(orientation: "vertical", **args)
-        @orientation = T.let(orientation.to_s, String)
+      def initialize(orientation: self.class.property_default(:orientation), **args)
+        @orientation = T.let(normalize_property(:orientation, orientation), String)
         super(**args)
       end
 

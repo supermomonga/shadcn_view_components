@@ -6,6 +6,18 @@ All notable changes to this project will be documented in this file.
 
 Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
+### 公開プロパティの値域検証を統一
+
+- CVAバリアントとは別に、Rails側でdata属性・ARIA・CSS値へ変換する列挙値と数値の
+  `PropertyContracts` を追加し、許容値・既定値・`nil`の可否を一箇所で宣言した
+- Sheet side、orientation、Toggle / Toggle Group状態、direction、状態・サイズ系propを
+  String / Symbolから正規化し、未知値・`nil`・異種型を描画前の`ArgumentError`に統一した
+- Progressは0〜100を検証し、不定状態の`nil`では`aria-valuenow`を省略する。Sliderは有限数、
+  `min < max`、valueの包含範囲を検証し、InputOTP length・AspectRatio ratio・Toggle Group spacingも
+  各境界を初期化時に検証する
+- contract由来variantも型外入力を`ArgumentError`に統一し、Buttonを合成するAPIでは描画時ではなく
+  初期化時にvariant / sizeを検証する
+
 ### 浮動要素の位置決めを共通化
 
 - Popover、Tooltip、Hover Card、Dropdown / Context / Menubar / Navigation Menuと

@@ -7,16 +7,19 @@ module Shadcn
   class Slider < BaseComponent
     sig do
       params(
-        min: T.nilable(T.any(Integer, String)),
-        max: T.nilable(T.any(Integer, String)),
-        value: T.nilable(T.any(Integer, String)),
+        min: T.any(Integer, Float, String),
+        max: T.any(Integer, Float, String),
+        value: T.nilable(T.any(Integer, Float, String)),
         args: T::Hash[Symbol, T.untyped]
       ).void.checked(:never)
     end
-    def initialize(min: 0, max: 100, value: nil, **args)
-      @min = min
-      @max = max
-      @value = value
+    def initialize(min: self.class.property_default(:min),
+                   max: self.class.property_default(:max),
+                   value: self.class.property_default(:value), **args)
+      @min = T.let(normalize_property(:min, min), T.any(Integer, Float))
+      @max = T.let(normalize_property(:max, max), T.any(Integer, Float))
+      @value = T.let(normalize_property(:value, value), T.nilable(T.any(Integer, Float)))
+      validate_range!
       super(**args)
     end
 
@@ -36,9 +39,28 @@ module Shadcn
 
     sig { returns(String) }
     def range_input
-      void_tag("input",
-               type: "range", min: @min, max: @max, value: @value,
-               "aria-label": "slider", class: "absolute inset-0 opacity-0")
+      attributes = T.let(
+        {
+          type: "range",
+          min: @min,
+          max: @max,
+          "aria-label": "slider",
+          class: "absolute inset-0 opacity-0"
+        },
+        T::Hash[Symbol, T.untyped]
+      )
+      attributes[:value] = @value if @value
+      void_tag("input", **attributes)
+    end
+
+    sig { void }
+    def validate_range!
+      raise ArgumentError, "Shadcn::Slider max must be greater than min, got min=#{@min.inspect}, max=#{@max.inspect}" unless @min < @max
+      return unless @value && !@value.between?(@min, @max)
+
+      raise ArgumentError,
+            "Shadcn::Slider value must be between min and max, got value=#{@value.inspect}, " \
+            "min=#{@min.inspect}, max=#{@max.inspect}"
     end
 
     sig { params(name: String).returns(T.nilable(String)) }

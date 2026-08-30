@@ -11,8 +11,8 @@ module Shadcn
     CONTROLLER = "shadcn--sidebar"
 
     sig { params(state: T.any(Symbol, String), args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
-    def initialize(state: "open", **args)
-      @state = T.let(state.to_s, String)
+    def initialize(state: self.class.property_default(:state), **args)
+      @state = T.let(normalize_property(:state, state), String)
       super(**args)
     end
 
@@ -54,8 +54,8 @@ module Shadcn
     class Provider < BaseComponent
       # div(ラッパー)。data-controller を持つ状態の持ち主
       sig { params(state: T.any(Symbol, String), args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
-      def initialize(state: "open", **args)
-        @state = T.let(state.to_s, String)
+      def initialize(state: self.class.property_default(:state), **args)
+        @state = T.let(normalize_property(:state, state), String)
         super(**args)
       end
 
@@ -310,8 +310,8 @@ module Shadcn
           args: T::Hash[Symbol, T.untyped]
         ).void.checked(:never)
       end
-      def initialize(size: :md, active: false, **args)
-        @size = T.let(size.to_sym, Symbol)
+      def initialize(size: self.class.property_default(:size), active: false, **args)
+        @size = T.let(normalize_property(:size, size), String)
         @active = active
         super(**args)
       end
@@ -324,7 +324,7 @@ module Shadcn
       sig { override.returns(T::Hash[Symbol, T.untyped]) }
       def html_attributes
         attributes = super
-        merge_nested(attributes, :data, { active: @active.to_s, size: @size.to_s })
+        merge_nested(attributes, :data, { active: @active.to_s, size: @size })
         attributes
       end
     end

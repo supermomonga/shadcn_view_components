@@ -66,7 +66,7 @@ module Shadcn
       end
       def initialize(is_active: nil, size: :icon, **args)
         @is_active = T.let(is_active.to_s == "true", T::Boolean)
-        @size = T.let(size.to_sym, Symbol)
+        @size = T.let(ShadcnViewComponents::Classes.normalize_option(:button, :size, size), Symbol)
         super(**args)
       end
 

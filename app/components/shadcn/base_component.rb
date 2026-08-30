@@ -48,6 +48,17 @@ module Shadcn
       def classes(extra: nil, **options)
         ShadcnViewComponents::Classes.resolve(contract_path.to_sym, extra: extra, **options)
       end
+
+      # CVAバリアント以外の意味的な公開prop契約を返す。
+      sig { params(prop: Symbol).returns(T::Hash[Symbol, T.untyped]) }
+      def property_contract(prop)
+        ShadcnViewComponents::PropertyContracts.fetch(contract_path.to_sym, prop)
+      end
+
+      sig { params(prop: Symbol).returns(T.untyped) }
+      def property_default(prop)
+        ShadcnViewComponents::PropertyContracts.default(contract_path.to_sym, prop)
+      end
     end
 
     # 構造を持たない単一要素コンポーネントの既定レンダリング。
@@ -107,9 +118,20 @@ module Shadcn
     end
 
     # バリアント値の正規化 + fail-fast検証。契約に存在しない値は ArgumentError
-    sig { params(prop: Symbol, value: T.any(Symbol, String)).returns(Symbol) }
+    sig { params(prop: Symbol, value: T.untyped).returns(Symbol) }
     def normalize_option(prop, value)
       ShadcnViewComponents::Classes.normalize_option(self.class.contract_path.to_sym, prop, value)
+    end
+
+    # data属性・ARIA・CSS値へ出す意味的なpropを、宣言済み契約で正規化する。
+    sig { params(prop: Symbol, value: T.untyped).returns(T.untyped) }
+    def normalize_property(prop, value)
+      ShadcnViewComponents::PropertyContracts.normalize(
+        component: self.class.contract_path.to_sym,
+        owner: self.class.to_s,
+        property: prop,
+        value:
+      )
     end
 
     # コンポーネント固有のバリアント組み合わせ(サブクラスが上書きする)

@@ -16,8 +16,8 @@ module Shadcn
         args: T::Hash[Symbol, T.untyped]
       ).void.checked(:never)
     end
-    def initialize(size: "default", **args)
-      @size = T.let(size.to_s, String)
+    def initialize(size: self.class.property_default(:size), **args)
+      @size = T.let(normalize_property(:size, size), String)
       super(**args)
     end
 

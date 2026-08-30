@@ -8,6 +8,7 @@ require "view_component"
 
 require_relative "shadcn_view_components/version"
 require_relative "shadcn_view_components/component_naming"
+require_relative "shadcn_view_components/property_contracts"
 require_relative "shadcn_view_components/engine"
 require_relative "shadcn_view_components/classes"
 

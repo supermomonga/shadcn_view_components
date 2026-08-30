@@ -16,12 +16,12 @@ module Shadcn
         args: T::Hash[Symbol, T.untyped]
       ).void.checked(:never)
     end
-    def initialize(ratio: nil, **args)
-      @ratio = ratio
+    def initialize(ratio: self.class.property_default(:ratio), **args)
+      @ratio = T.let(normalize_property(:ratio, ratio), T.nilable(T.any(Integer, Float)))
       super(**args)
     end
 
-    sig { returns(T.nilable(T.any(Integer, Float, String))) }
+    sig { returns(T.nilable(T.any(Integer, Float))) }
     attr_reader :ratio
 
     sig { override.returns(T::Hash[Symbol, T.untyped]) }

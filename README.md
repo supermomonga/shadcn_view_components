@@ -135,6 +135,11 @@ render(Shadcn::Popover::Content.new(
 戻り値しか使われないため `safe_join([...])` で連結する(ERBでは出力バッファが連結するため不要)。
 
 - バリアント値は Symbol / String 両方を受け付ける。契約に存在しない値は `ArgumentError`(fail-fast)
+- data属性・ARIA・CSS値になる意味的プロパティも同様に描画前に検証する。たとえば
+  `orientation` は `horizontal/vertical`、Toggle状態は `off/on`、Sheetの `side` は
+  `top/right/bottom/left`、Toggle Groupの `type` は `single/multiple`
+- 数値プロパティは有限の数値または厳密な数値文字列だけを受け付ける。`nil`、上下限、既定値を含む
+  個別の制約は `Shadcn::Progress.property_contract(:value)` のように確認できる
 - 浮動要素の `side` は `top/right/bottom/left/inline-start/inline-end`、`align` は
   `start/center/end`。画面端では実配置を反転・調整し、scrollやresizeにも追従する
 - `class:` で渡した追加クラスは `tailwind_merge` により契約クラスと統合される(利用者の上書きが後勝ち)

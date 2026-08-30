@@ -45,8 +45,8 @@ module Shadcn
       # 契約スロット構成: alert-dialog-content のみ(portal/overlayは契約外)。
       # サイズ(default/sm)は data-size で表現する
       sig { params(size: T.any(Symbol, String), args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
-      def initialize(size: "default", **args)
-        @size = T.let(size.to_s, String)
+      def initialize(size: self.class.property_default(:size), **args)
+        @size = T.let(normalize_property(:size, size), String)
         super(**args)
       end
 
@@ -108,8 +108,8 @@ module Shadcn
         ).void.checked(:never)
       end
       def initialize(variant: :default, size: :default, **args)
-        @variant = variant
-        @size = size
+        @variant = T.let(ShadcnViewComponents::Classes.normalize_option(:button, :variant, variant), Symbol)
+        @size = T.let(ShadcnViewComponents::Classes.normalize_option(:button, :size, size), Symbol)
         super(**args)
       end
 

@@ -14,19 +14,19 @@ module Shadcn
     sig do
       params(
         type: T.any(Symbol, String),
-        spacing: T.any(Integer, Float),
+        spacing: T.any(Integer, Float, String),
         variant: T.nilable(T.any(Symbol, String)),
         size: T.nilable(T.any(Symbol, String)),
         args: T::Hash[Symbol, T.untyped]
       ).void.checked(:never)
     end
-    def initialize(type: :multiple, spacing: 2, variant: nil, size: nil, **args)
-      @group_type = T.let(type.to_s, String)
-      @spacing = spacing
+    def initialize(type: self.class.property_default(:type),
+                   spacing: self.class.property_default(:spacing), variant: nil, size: nil, **args)
+      @group_type = T.let(normalize_property(:type, type), String)
+      @spacing = T.let(normalize_property(:spacing, spacing), T.any(Integer, Float))
       # グループ自身の契約に軸は無いため、Item の許容値で検証する
-      item_variants = ShadcnViewComponents::Contracts::ToggleGroup::Item::VARIANTS
-      @group_variant = T.let(variant && normalize_group_option(item_variants.fetch(:variant), variant, "variant"), T.nilable(Symbol))
-      @group_size = T.let(size && normalize_group_option(item_variants.fetch(:size), size, "size"), T.nilable(Symbol))
+      @group_variant = T.let(variant.nil? ? nil : normalize_group_option(variant, :variant), T.nilable(Symbol))
+      @group_size = T.let(size.nil? ? nil : normalize_group_option(size, :size), T.nilable(Symbol))
       super(**args)
     end
 
@@ -56,12 +56,9 @@ module Shadcn
     private
 
     # グループの variant/size を Item の許容値で fail-fast 検証する
-    sig { params(allowed: T::Array[Symbol], value: T.any(Symbol, String), prop: String).returns(Symbol) }
-    def normalize_group_option(allowed, value, prop)
-      symbol = value.to_sym
-      raise ArgumentError, "unknown #{prop} #{value.inspect} for ToggleGroup (valid: #{allowed.inspect})" unless allowed.include?(symbol)
-
-      symbol
+    sig { params(value: T.untyped, prop: Symbol).returns(Symbol) }
+    def normalize_group_option(value, prop)
+      ShadcnViewComponents::Classes.normalize_option(:"toggle_group/item", prop, value)
     end
 
     class Item < BaseComponent
@@ -74,23 +71,24 @@ module Shadcn
 
       # variant/size はupstreamではグループのcontextから受け取る。Ruby側では
       # 利用者が各Itemに指定する(規約: 省略時は契約の既定値)。
-      # spacing はグループの値(既定 0)を引き継いで data 属性に出力する
+      # spacing はグループと同じ既定値2を使い、data属性に出力する
       sig do
         params(
           variant: T.any(Symbol, String),
           size: T.any(Symbol, String),
           state: T.any(Symbol, String),
-          spacing: T.any(Integer, Float),
+          spacing: T.any(Integer, Float, String),
           args: T::Hash[Symbol, T.untyped]
         ).void.checked(:never)
       end
       def initialize(variant: ShadcnViewComponents::Contracts::ToggleGroup::Item::DEFAULTS.fetch(:variant),
                      size: ShadcnViewComponents::Contracts::ToggleGroup::Item::DEFAULTS.fetch(:size),
-                     state: :off, spacing: 2, **args)
+                     state: self.class.property_default(:state),
+                     spacing: self.class.property_default(:spacing), **args)
         @variant = T.let(normalize_option(:variant, variant), Symbol)
         @size = T.let(normalize_option(:size, size), Symbol)
-        @state = T.let(state.to_s, String)
-        @spacing = spacing
+        @state = T.let(normalize_property(:state, state), String)
+        @spacing = T.let(normalize_property(:spacing, spacing), T.any(Integer, Float))
         super(**args)
       end
 

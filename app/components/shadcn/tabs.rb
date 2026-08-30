@@ -9,8 +9,8 @@ module Shadcn
     CONTROLLER = "shadcn--tabs"
 
     sig { params(orientation: T.any(Symbol, String), args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
-    def initialize(orientation: "horizontal", **args)
-      @orientation = T.let(orientation.to_s, String)
+    def initialize(orientation: self.class.property_default(:orientation), **args)
+      @orientation = T.let(normalize_property(:orientation, orientation), String)
       super(**args)
     end
 
@@ -31,9 +31,9 @@ module Shadcn
         ).void.checked(:never)
       end
       def initialize(variant: ShadcnViewComponents::Contracts::Tabs::List::DEFAULTS.fetch(:variant),
-                     orientation: "horizontal", **args)
+                     orientation: self.class.property_default(:orientation), **args)
         @variant = T.let(normalize_option(:variant, variant), Symbol)
-        @orientation = T.let(orientation.to_s, String)
+        @orientation = T.let(normalize_property(:orientation, orientation), String)
         super(**args)
       end
 

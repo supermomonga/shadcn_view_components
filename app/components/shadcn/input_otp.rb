@@ -7,12 +7,12 @@ module Shadcn
   class InputOTP < BaseComponent
     sig do
       params(
-        length: T.nilable(T.any(Integer, String)),
+        length: T.any(Integer, String),
         args: T::Hash[Symbol, T.untyped]
       ).void.checked(:never)
     end
-    def initialize(length: 6, **args)
-      @length = length
+    def initialize(length: self.class.property_default(:length), **args)
+      @length = T.let(normalize_property(:length, length), Integer)
       super(**args)
     end
 
