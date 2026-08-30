@@ -6,7 +6,8 @@ module Shadcn
   # flex-basis を配分する(10-roadmap Phase 3 の「CSS grid」案を
   # flex-basis で実装したもの。契約・parity は flex 前提)
   # JS無効時フォールバック: Graceful(静的レイアウトとして表示される)
-  class Resizable < BaseComponent
+  # Resizable自体は名前空間であり、描画には配下のクラスを使う。
+  module Resizable
     class PanelGroup < BaseComponent
       # div(水平flex。垂直は aria-orientation のクラス契約に従う)
       CONTROLLER = "shadcn--resizable"

@@ -20,12 +20,14 @@ Phase 0〜4 完了 — vendor の全61アイテムを実装(calendar は個別�
   **Button, Badge, Alert, Card, Avatar, Separator, Skeleton, Table, Label, Kbd, Spinner,
   Empty, AspectRatio, Item, Marker, Input, Textarea, Breadcrumb,
   Accordion, Checkbox, Collapsible, RadioGroup, ScrollArea, Switch, Toggle, ToggleGroup,
-  Tabs, Carousel, Pagination, Form(Item/Error — Fieldベース),
+  Tabs, Carousel, Pagination, Form::Item, Form::Error,
   Dialog, AlertDialog, Sheet, Drawer, Popover, HoverCard, Tooltip,
-  DropdownMenu, ContextMenu, Menubar, NavigationMenu, Command, Combobox, Resizable,
+  DropdownMenu, ContextMenu, Menubar, NavigationMenu, Command, Combobox,
+  Resizable::PanelGroup, Resizable::Panel, Resizable::Handle,
   Progress, Slider, NativeSelect, InputOTP, Select, Field, InputGroup,
   ButtonGroup, DirectionProvider,
-  Sidebar, Attachment, Bubble, Message, MessageScroller, Chart, Sonner(Toaster),
+  Sidebar, Attachment, Bubble, Message, MessageScroller,
+  Chart::Container, Chart::TooltipContent, Chart::LegendContent, Chart::Style, Sonner::Toaster,
   Calendar**
 - calendar は react-day-picker の実行時クラス合成のため静的抽出の対象外。
   契約は lib/shadcn_view_components/contracts/calendar.rb に個別契約として保守し、
@@ -34,6 +36,14 @@ Phase 0〜4 完了 — vendor の全61アイテムを実装(calendar は個別�
   accordion/collapsible は `<details>`/`<summary>`、dialog系は `<dialog>` + showModal、
   popover/tooltip/menu は Popover API
 - upstream 出所: `vendor/shadcn/manifest.json` が唯一の真実の源(現在: shadcn@4.19.0 系)
+
+### 公開コンポーネントの境界
+
+公開コンポーネントとして管理するクラスは、すべて`.new`して描画できるViewComponentである。
+`Shadcn::Chart`、`Shadcn::Form`、`Shadcn::Resizable`、`Shadcn::Sonner`は名前空間であり、
+描画には上記一覧の配下クラスを使う。公開コンポーネントの一覧は
+`spec/conformance/registry.yml`で管理し、各クラスの契約と最小構成での描画を自動検証する。
+基底クラスと内部ナビゲーション用クラスは公開APIに含まれない。
 
 ## インストール
 

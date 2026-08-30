@@ -222,5 +222,7 @@ module Shadcn
                ))
       end
     end
+
+    private_constant :Navigation
   end
 end

@@ -21,16 +21,8 @@ module Shadcn
   # そのまま内側に置ける。JS無効時フォールバック: Graceful(表示は全てサーバ側で完結する)
   # aria-invalid / aria-describedby の紐付けは利用者(またはフォームビルダ拡張)が
   # 持つ — upstream の useFormField 相当の暗黙接続はRailsの流儀に無い
-  class Form < BaseComponent
-    # upstream の Form(=FormProvider)に対応する表示物は無い。
-    # form_with を使うため、このコンポーネントは子をそのまま描くのみ
-    sig { override.returns(String) }
-    def call
-      content
-    end
-  end
-
-  class Form
+  # Form自体は名前空間であり、描画にはItemまたはErrorを使う。
+  module Form
     # upstream docs/forms の <Field data-invalid={...}> 相当。DOM構造・クラスは
     # Field 契約と同一(契約側で fieldVariants を事前解決済み)。
     # data-slot を "field" に保つのは Field 部品の group/field セレクタ互換のため

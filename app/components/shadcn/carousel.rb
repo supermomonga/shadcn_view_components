@@ -138,5 +138,7 @@ module Shadcn
         "next"
       end
     end
+
+    private_constant :Navigation
   end
 end

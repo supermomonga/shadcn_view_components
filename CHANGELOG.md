@@ -6,6 +6,15 @@ All notable changes to this project will be documented in this file.
 
 Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
+### 公開コンポーネントと名前空間の境界を明確化
+
+- `Chart`、`Form`、`Resizable`、`Sonner`を描画クラスではなく名前空間として定義し、
+  実際に描画できる配下クラスだけを公開コンポーネントとした
+- upstreamの非JSX exportを誤ってクラス化していた`Chart::Tooltip`と`Chart::Legend`を削除し、
+  基底クラスと内部ナビゲーション用クラスを非公開にした
+- 公開コンポーネント一覧と適合試験レジストリの一致、ルートスロット契約、全クラスの
+  最小構成での描画を一括検証し、公開したクラスだけが描画時に失敗する状態を検出可能にした
+
 ### Selectをフォーム送信可能なlistboxとして完成
 
 - primitive Rootの別名exportも抽出契約へ残し、Selectルートだけ契約面が欠けて描画時に例外となる

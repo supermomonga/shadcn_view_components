@@ -218,4 +218,6 @@ module Shadcn
       attributes[key] = defaults.merge(user || {})
     end
   end
+
+  private_constant :BaseComponent
 end
