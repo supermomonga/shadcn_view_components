@@ -13,7 +13,9 @@ module ShadcnViewComponents
       slider: {
         min: { kind: :number, default: 0 }.freeze,
         max: { kind: :number, default: 100 }.freeze,
-        value: { kind: :number, default: nil, allow_nil: true }.freeze
+        step: { kind: :number, default: 1, minimum: 0, exclusive_minimum: true }.freeze,
+        value: { kind: :number, default: nil, allow_nil: true }.freeze,
+        orientation: { kind: :enum, default: "horizontal", values: ORIENTATIONS }.freeze
       }.freeze,
       "sheet/content": {
         side: { kind: :enum, default: "right", values: %w[top right bottom left].freeze }.freeze

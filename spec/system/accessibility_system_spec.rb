@@ -13,6 +13,7 @@ RSpec.describe "Representative preview accessibility", type: :system do
     { path: "select/default", open: ["[data-slot='select-trigger']", nil], state: "[data-slot='select-content'][data-state='open']" },
     { path: "accordion/default", open: ["summary", nil], state: "details[open]" },
     { path: "resizable/default" },
+    { path: "slider/default" },
     { path: "calendar/default" }
   ]
 

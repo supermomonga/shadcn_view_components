@@ -140,6 +140,91 @@ describe("parse: exports and slots", () => {
     ])
   })
 
+  it("collects slots rendered by inline collection callbacks without taking nested helper components", () => {
+    const code = `
+      function Slider({ values }) {
+        function UnusedHelper() {
+          return <div data-slot="unrelated" className={cn("unrelated")} />
+        }
+        return (
+          <div data-slot="slider">
+            <SliderPrimitive.Control className="control">
+              {Array.from(values, (_, index) => (
+                <SliderPrimitive.Thumb data-slot="slider-thumb" className={cn("thumb")} key={index} />
+              ))}
+            </SliderPrimitive.Control>
+          </div>
+        )
+      }
+      export { Slider }
+    `
+    const ast = parseTsx(code)
+    const slider = discoverExports(ast, "slider", "ui/slider.tsx")[0]!
+    const slots = collectSlots(ast, slider.functionNode!, "slider", "ui/slider.tsx")
+
+    expect(slots.slots.map((slot) => [slot.name, slot.tag])).toEqual([
+      ["slider", "div"],
+      ["", "SliderPrimitive.Control"],
+      ["slider-thumb", "SliderPrimitive.Thumb"],
+    ])
+    expect(slots.slots[1]?.static_attributes.class).toBe("control")
+    expect(slots.slots[2]?.dynamic_attributes).toEqual([])
+
+    const analysis = analyzeCn(ast, slider.functionNode!, new Map(), "slider", "ui/slider.tsx")
+    expect(analysis.calls.map((call) => call.slot)).toEqual(["slider-thumb"])
+  })
+
+  it("collects map callbacks used as returned JSX children", () => {
+    const code = `
+      function List({ values }) {
+        return (
+          <div data-slot="list">
+            {values.map((value) => (
+              <span data-slot="list-item" className={cn("item")}>{value}</span>
+            ))}
+          </div>
+        )
+      }
+      export { List }
+    `
+    const ast = parseTsx(code)
+    const list = discoverExports(ast, "list", "ui/list.tsx")[0]!
+    const slots = collectSlots(ast, list.functionNode!, "list", "ui/list.tsx")
+    const analysis = analyzeCn(ast, list.functionNode!, new Map(), "list", "ui/list.tsx")
+
+    expect(slots.slots.map((slot) => slot.name)).toEqual(["list", "list-item"])
+    expect(analysis.calls.map((call) => call.slot)).toEqual(["list-item"])
+  })
+
+  it("ignores inline callbacks whose JSX does not flow into the returned render tree", () => {
+    const code = `
+      function List({ values }) {
+        subscribe(() => <span data-slot="event-only" className={cn("event-only")} />)
+        const unusedItems = values.map(() => (
+          <span data-slot="unused-item" className={cn("unused-item")} />
+        ))
+
+        return (
+          <div data-slot="list">
+            {values.map((value) => {
+              subscribe(() => <span data-slot="nested-event" className={cn("nested-event")} />)
+              const unused = <span data-slot="nested-unused" className={cn("nested-unused")} />
+              return <span data-slot="list-item" className={cn("item")}>{value}</span>
+            })}
+          </div>
+        )
+      }
+      export { List }
+    `
+    const ast = parseTsx(code)
+    const list = discoverExports(ast, "list", "ui/list.tsx")[0]!
+    const slots = collectSlots(ast, list.functionNode!, "list", "ui/list.tsx")
+    const analysis = analyzeCn(ast, list.functionNode!, new Map(), "list", "ui/list.tsx")
+
+    expect(slots.slots.map((slot) => slot.name)).toEqual(["list", "list-item"])
+    expect(analysis.calls.map((call) => call.slot)).toEqual(["list-item"])
+  })
+
   it("allows a root element without data-slot (spinner等のアイコン系) and records it as name: \"\"", () => {
     const ast = parseTsx(`function X() { return <div className="x" /> }\nexport { X }`)
     const exports = discoverExports(ast, "x", "ui/x.tsx")

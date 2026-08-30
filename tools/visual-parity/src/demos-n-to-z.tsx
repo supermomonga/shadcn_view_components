@@ -39,6 +39,7 @@ import {
 import { Separator } from "./components/ui/separator.tsx"
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "./components/ui/sheet.tsx"
 import { Skeleton } from "./components/ui/skeleton.tsx"
+import { Slider } from "./components/ui/slider.tsx"
 import { Spinner } from "./components/ui/spinner.tsx"
 import { Switch } from "./components/ui/switch.tsx"
 import {
@@ -253,6 +254,21 @@ export const demosNToZ: Record<string, ComponentType> = {
   ),
 
   "skeleton/default": () => <Skeleton className="h-8 w-full" />,
+
+  "slider/default": () => (
+    <Slider min={0} max={100} defaultValue={[40]} aria-label="音量" />
+  ),
+
+  "slider/vertical": () => (
+    <Slider
+      min={0}
+      max={100}
+      defaultValue={[40]}
+      orientation="vertical"
+      aria-label="音量"
+      style={{ height: "160px" }}
+    />
+  ),
 
   "spinner/default": () => <Spinner />,
 

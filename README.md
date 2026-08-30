@@ -202,6 +202,30 @@ end
 初期描画、Turboによる再接続、同じ値の再選択では発火しない。バリデーションエラー時は、
 サーバへ届いた値を`default_value:`へ戻して再描画する。
 
+### Sliderをフォームで使う
+
+`Slider`はネイティブの`input[type="range"]`を値の唯一の情報源にする。`id`、`name`、`form`、
+`disabled`、`required`、`aria:`、`data:`、イベント属性は実際のinputへ渡り、`class:`、`style:`、
+`tag:`だけが見た目を構成するRootへ渡る。
+
+```erb
+<%= render(Shadcn::Label.new(for: "volume")) { "音量" } %>
+<%= render(Shadcn::Slider.new(
+  id: "volume",
+  name: "settings[volume]",
+  min: 0,
+  max: 100,
+  step: 5,
+  value: 40,
+  aria: { label: "音量" }
+)) %>
+```
+
+`min` / `max` / `step` / `value`は有限数として検証し、`max > min`、`step > 0`、値域、
+`min`を基準にしたstepとの一致を満たさない値は`ArgumentError`にする。`value: nil`ではブラウザ標準の
+step調整済み中間値を使う。`orientation: :vertical`ではRootへ高さを`style:`または`class:`で指定する。
+ポインタ・矢印キー・Home / Endの値変更はネイティブinputへ委ね、Stimulusはrangeとthumbの表示だけを同期する。
+
 ### 複合コンポーネントのアクセシビリティ契約
 
 JavaScriptを使う複合コンポーネントは、ルートごとに一意なIDを生成し、子要素間のARIA参照を

@@ -6,6 +6,19 @@ All notable changes to this project will be documented in this file.
 
 Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
+### Sliderをネイティブrange inputへ接続
+
+- `id`、`name`、`form`、`disabled`、`required`、ARIA、data、イベント属性を外側の装飾ではなく
+  実際の`input[type="range"]`へ渡し、ラベル連携とフォーム送信を成立させた
+- inputを値の唯一の情報源とする`shadcn--slider` controllerを追加し、初期値とネイティブの
+  input / changeイベントから水平・垂直のrangeとthumb位置を同期する
+- `step`と`orientation`を公開プロパティ契約へ追加し、有限数、`max > min`、正のstep、値域、
+  stepとの一致を描画前に検証する。値未指定時はブラウザ標準と同じstep調整済み中間値を使う
+- 抽出器がinline collection callback内の`slider-thumb`とdata-slot無しのControlを取りこぼす原因を修正し、
+  Track / Range / Thumb / Controlのclassをすべてupstream生成契約から取得するようにした
+- 水平・垂直のLookbook preview、light / dark visual parity、ラベル・キーボード・フォーム送信の
+  実ブラウザsystem specを追加した
+
 ### 複合コンポーネントのARIA参照とキーボード操作を整備
 
 - Dialog系、Tabs、Combobox、Select、Accordion、Resizable、Calendarについて、Trigger、

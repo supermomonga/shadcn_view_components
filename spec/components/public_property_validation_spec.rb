@@ -132,13 +132,24 @@ RSpec.describe "public property validation", type: :component do
     it "publishes defaults and nullable value separately" do
       expect(described_class.property_contract(:min)).to eq(kind: :number, default: 0)
       expect(described_class.property_contract(:max)).to eq(kind: :number, default: 100)
+      expect(described_class.property_contract(:step)).to eq(
+        kind: :number,
+        default: 1,
+        minimum: 0,
+        exclusive_minimum: true
+      )
       expect(described_class.property_contract(:value)).to eq(kind: :number, default: nil, allow_nil: true)
+      expect(described_class.property_contract(:orientation)).to eq(
+        kind: :enum,
+        default: "horizontal",
+        values: %w[horizontal vertical]
+      )
     end
 
     it "accepts inclusive value boundaries and normalizes strict numeric strings" do
-      expect { described_class.new(min: "-10.5", max: "20", value: "-10.5") }.not_to raise_error
+      expect { described_class.new(min: "-10.5", max: "20", step: "0.5", value: "-10.5") }.not_to raise_error
 
-      render_inline(described_class.new(min: "-10.5", max: "20", value: "20"))
+      render_inline(described_class.new(min: "-10.5", max: "20", step: "0.5", value: "20"))
       input = rendered_fragment.at_css("input[type='range']")
 
       expect(input.attributes.transform_values(&:value)).to include(
@@ -175,14 +186,24 @@ RSpec.describe "public property validation", type: :component do
       [
         { min: nil },
         { max: nil },
+        { step: nil },
+        { step: 0 },
+        { step: -1 },
         { min: Float::NAN },
         { max: Float::INFINITY },
+        { step: Float::INFINITY },
         { value: Float::NAN },
         { min: "0px" },
+        { step: "any" },
         { value: "" }
       ].each do |options|
         expect { described_class.new(**options) }.to raise_error(ArgumentError, /Shadcn::Slider/)
       end
+    end
+
+    it "rejects unsupported orientations" do
+      expect { described_class.new(orientation: :diagonal) }
+        .to raise_error(ArgumentError, /orientation must be one of/)
     end
   end
 

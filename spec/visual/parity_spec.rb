@@ -103,6 +103,8 @@ PARITY_SCENARIOS = [
   %w[shadcn/separator/vertical separator/vertical],
   %w[shadcn/sheet/default sheet/default],
   %w[shadcn/skeleton/default skeleton/default],
+  %w[shadcn/slider/default slider/default],
+  %w[shadcn/slider/vertical slider/vertical],
   %w[shadcn/spinner/default spinner/default],
   %w[shadcn/spinner/large spinner/large],
   %w[shadcn/switch/default switch/default],

@@ -290,7 +290,8 @@ progress:
     attributes: [role, aria-valuenow, aria-valuemin, aria-valuemax, style]
 slider:
   Slider:
-    attributes: [role]
+    slots_mode: superset
+    attributes: [data-controller, data-orientation]
 native-select:
   NativeSelect:
     # フォーム属性は利用者が <select> に渡す(name/required 等)
