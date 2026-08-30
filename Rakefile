@@ -10,8 +10,55 @@ Dir[File.expand_path("lib/tasks/*.rake", __dir__)].each { |path| load path }
 RSpec::Core::RakeTask.new(:spec)
 RuboCop::RakeTask.new
 
-desc "Run the full local verification suite (mirrors CI)"
-task verify: %w[shadcn:check sorbet:tc rubocop spec]
+namespace :verify do
+  desc "Verify generated contracts are deterministic"
+  task :generated do
+    Rake::Task["shadcn:check"].invoke
+  end
+
+  desc "Run Ruby lint"
+  task :rubocop do
+    Rake::Task["rubocop"].invoke
+  end
+
+  desc "Run extractor TypeScript typecheck and unit tests"
+  task :javascript do
+    sh "pnpm", "-C", "tools/extractor", "run", "typecheck"
+    sh "pnpm", "-C", "tools/extractor", "run", "test"
+  end
+
+  desc "Run Sorbet and verify gem RBI freshness"
+  task :sorbet do
+    Rake::Task["sorbet:tc"].invoke
+    sh "bundle", "exec", "tapioca", "gem", "--verify"
+  end
+
+  desc "Run component, conformance, contract, and request specs"
+  task :spec do
+    sh "bundle", "exec", "rspec", "spec/components", "spec/conformance", "spec/contracts", "spec/requests"
+  end
+
+  desc "Run browser interaction specs"
+  task :system do
+    sh "bundle", "exec", "rspec", "spec/system"
+  end
+
+  desc "Run visual and animation parity specs"
+  task :parity do
+    sh "bundle", "exec", "rspec", "spec/visual"
+  end
+
+  desc "Verify all contract classes compile with Tailwind CSS"
+  task :tailwind do
+    sh "pnpm", "-C", "tools/extractor", "run", "tailwind:check"
+  end
+
+  desc "Run every verification required by CI"
+  task full: %i[generated rubocop javascript sorbet spec system parity tailwind]
+end
+
+desc "Run every verification required by CI"
+task verify: "verify:full"
 
 desc "Build the gem into pkg/"
 task :build_gem do

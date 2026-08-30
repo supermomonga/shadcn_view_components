@@ -119,15 +119,17 @@ Shadcn::Button.classes(variant: :link)
 ## 開発
 
 ```bash
-mise install          # ruby 4.0 / node LTS / pnpm 10.22.0
-bundle install
-pnpm -C tools/extractor install
+bin/setup              # mise toolchain + Ruby + 全JavaScript依存を導入
+bundle exec rake verify # CI必須検査を同じRake taskで順に実行
 
-bundle exec rspec                      # 全テスト(層1/2/3/4)
-bundle exec rspec spec/conformance     # 適合試験のみ(追従PRで最初に見る)
-bundle exec rspec spec/system          # ふるまいのみ(Cuprite + Chrome)
-bundle exec srb tc                     # 型検査
-bundle exec rubocop                    # lint
+bundle exec rake verify:spec           # component/conformance/contract/request
+bundle exec rake verify:system         # ふるまい(Cuprite + Chrome)
+bundle exec rake verify:parity         # visual + animation parity
+bundle exec rake verify:javascript     # extractor typecheck + Vitest
+bundle exec rake verify:sorbet         # Sorbet + RBI freshness
+bundle exec rake verify:generated      # 生成物の決定性
+bundle exec rake verify:tailwind       # Tailwind build
+bundle exec rake verify:rubocop        # Ruby lint
 mise run lookbook                      # プレビュー(http://localhost:9292/)
 mise run build-css                     # Lookbook用の静的スタイル再生成
 ```

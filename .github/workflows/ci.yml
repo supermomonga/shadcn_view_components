@@ -19,19 +19,18 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
       - run: bundle install
-      - run: bundle exec rubocop
+      - run: bundle exec rake verify:rubocop
 
   lint-js:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
+      - run: bundle install
       - name: Install extractor dependencies
         run: pnpm -C tools/extractor install --frozen-lockfile
-      - name: Typecheck (tsc --noEmit)
-        run: pnpm -C tools/extractor run typecheck
-      - name: Unit tests (vitest)
-        run: pnpm -C tools/extractor run test
+      - name: Typecheck and unit tests
+        run: bundle exec rake verify:javascript
 
   sorbet:
     runs-on: ubuntu-latest
@@ -39,12 +38,8 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
       - run: bundle install
-      - name: Static type check
-        run: bundle exec srb tc
-      - name: RBI freshness (コミット済みRBIがGemfile.lockと乖離していないこと)
-        run: |
-          bundle exec tapioca gem
-          git diff --exit-code -- sorbet/rbi/gems
+      - name: Static type check and RBI freshness
+        run: bundle exec rake verify:sorbet
 
   rspec:
     runs-on: ubuntu-latest
@@ -53,7 +48,7 @@ jobs:
       - uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
       - run: bundle install
       # 層1(コンポーネント) / 層2(適合試験) / 層4(生成物整合)
-      - run: bundle exec rspec spec/components spec/conformance spec/contracts
+      - run: bundle exec rake verify:spec
 
   system:
     runs-on: ubuntu-latest
@@ -62,7 +57,7 @@ jobs:
       - uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
       - uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce # v1
       - run: bundle install
-      - run: CHROME_BIN=$(which chrome) bundle exec rspec spec/system
+      - run: CHROME_BIN=$(which chrome) bundle exec rake verify:system
 
   parity:
     runs-on: ubuntu-latest
@@ -74,7 +69,7 @@ jobs:
       - name: Install visual-parity harness dependencies
         run: pnpm -C tools/visual-parity install --frozen-lockfile
       # ローカルと同じ自己起動パス(ハーネスのキャッシュビルド+vite preview起動)を通す
-      - run: CHROME_BIN=$(which chrome) bundle exec rspec spec/visual
+      - run: CHROME_BIN=$(which chrome) bundle exec rake verify:parity
       - name: Upload visual parity artifacts on failure
         if: failure()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -89,10 +84,11 @@ jobs:
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
+      - run: bundle install
       - run: pnpm -C tools/extractor install --frozen-lockfile
       # 最重要ジョブ(09 §2): 「生成物が手編集された」「パイプラインが非決定論化した」の両方を検知
       - name: Determinism check (byte-identical regeneration)
-        run: pnpm -C tools/extractor exec tsx src/cli.ts check
+        run: bundle exec rake verify:generated
       - name: Working tree must be clean
         run: git diff --exit-code
 
@@ -101,6 +97,7 @@ jobs:
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
+      - run: bundle install
       - run: pnpm -C tools/extractor install --frozen-lockfile
       # 契約クラスが実際にTailwind v4ビルドを通るか(06 §6)
-      - run: pnpm -C tools/extractor run tailwind:check
+      - run: bundle exec rake verify:tailwind

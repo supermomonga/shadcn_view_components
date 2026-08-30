@@ -22,6 +22,15 @@ Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 - `rake parity:update` だけが追跡baselineを更新する。CI失敗時のours / upstream /
   diff / reportはGitHub Actions artifactとして7日間保存する
 
+### ローカル検証とCIのentry pointを統一
+
+- `bin/setup` でmise toolchain、Ruby gems、root / Extractor / Visual Parityの
+  JavaScript依存をまとめて導入する
+- `rake verify` / `rake verify:full` がCI必須の8検査をすべて実行し、CIの各jobも
+  対応する `verify:*` subtaskを呼ぶようにした
+- 通常RSpec jobから漏れていたrequest specと、従来のローカルverifyから漏れていた
+  TypeScript、Vitest、Tailwind、RBI freshnessを共通経路へ含めた
+
 ### 残っていた parity 失敗 8件の解消(不具合修正)
 
 参照側CSSパイプラインの独立化の時点で残っていた8件の失敗(静的5件: command / calendar
