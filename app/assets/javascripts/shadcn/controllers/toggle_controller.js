@@ -3,6 +3,7 @@
 // Stimulus本体はホストのものをimportmap等で解決する(本gemはバンドルしない)
 import { Controller } from "@hotwired/stimulus"
 
+/** @extends {Controller<HTMLElement>} */
 export default class ToggleController extends Controller {
   connect() {
     this.element.setAttribute("aria-pressed", this.isOn ? "true" : "false")
@@ -13,6 +14,7 @@ export default class ToggleController extends Controller {
     this.element.setAttribute("aria-pressed", String(this.isOn))
   }
 
+  /** @returns {boolean} */
   get isOn() {
     return this.element.dataset.state === "on"
   }

@@ -2,7 +2,9 @@
   "name": "@shadcn-view-components/visual-parity",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@10.22.0",
   "scripts": {
+    "test": "node --test compare.test.mjs",
     "unpack": "node unpack.mjs",
     "build": "pnpm run unpack && vite build",
     "serve": "vite preview --host 127.0.0.1 --port 4173 --strictPort",
@@ -15,6 +17,7 @@
     "cmdk": "^1.1.1",
     "date-fns": "^4.4.0",
     "embla-carousel-react": "^8.6.0",
+    "input-otp": "1.4.2",
     "lucide-react": "^0.544.0",
     "radix-ui": "^1.4.2",
     "react": "^19.1.0",
@@ -22,6 +25,7 @@
     "react-dom": "^19.1.0",
     "react-resizable-panels": "^4.12.3",
     "tailwind-merge": "^3.3.1",
+    "tw-animate-css": "^1.4.0",
     "vaul": "^1.1.2"
   },
   "devDependencies": {

@@ -23,7 +23,10 @@ module ShadcnViewComponents
 
     sig { params(component: Symbol).returns(T::Module[T.anything]) }
     def contract_for(component)
-      ShadcnViewComponents::Contracts.const_get(component.to_s.camelize)
+      constant_path = component.to_s.split("/").map do |segment|
+        ShadcnViewComponents::ComponentNaming.constant_name(segment)
+      end.join("::")
+      ShadcnViewComponents::Contracts.const_get(constant_path, false)
     end
 
     sig do
@@ -38,7 +41,7 @@ module ShadcnViewComponents
       defaults = T.cast(contract.const_get(:DEFAULTS), T::Hash[Symbol, Symbol])
       normalized = {}
       options.each do |prop, value|
-        normalized[prop] = normalize_option(component, prop, T.cast(value, T.any(Symbol, String))) unless value.nil?
+        normalized[prop] = normalize_option(component, prop, value) unless value.nil?
       end
       resolved = T.cast(T.unsafe(contract).combination(defaults.merge(normalized)), String)
       # 追加クラスが無いときは事前解決済み文字列をそのまま返す(契約との完全一致を保証)。
@@ -50,16 +53,37 @@ module ShadcnViewComponents
 
     # バリアント値の正規化 + fail-fast検証(01-architecture §6.1)。
     # 契約に存在しない値は静かにデフォルトへ落とさず ArgumentError。
-    sig { params(component: Symbol, prop: Symbol, value: T.any(Symbol, String)).returns(Symbol) }
+    sig { params(component: Symbol, prop: Symbol, value: T.untyped).returns(Symbol) }
     def normalize_option(component, prop, value)
       contract = contract_for(component)
+      values = variant_values(contract, prop)
+      invalid_variant_value!(contract, prop, value, values) unless value.is_a?(Symbol) || value.is_a?(String)
+
+      symbol = value.to_sym
+      invalid_variant_value!(contract, prop, value, values) unless values.include?(symbol)
+      symbol
+    end
+
+    sig { params(contract: T::Module[T.anything], prop: Symbol).returns(T::Array[Symbol]) }
+    def variant_values(contract, prop)
       allowed = T.cast(contract.const_get(:VARIANTS), T::Hash[Symbol, T::Array[Symbol]])
-      values = allowed.fetch(prop) do
+      allowed.fetch(prop) do
         Kernel.raise ArgumentError, "unknown variant prop #{prop.inspect} for #{contract} (valid: #{allowed.keys.map(&:inspect).join(', ')})"
       end
-      symbol = value.to_sym
-      Kernel.raise ArgumentError, "unknown variant value #{value.inspect} for #{prop} of #{contract} (valid: #{values.map(&:inspect).join(', ')})" unless values.include?(symbol)
-      symbol
+    end
+
+    sig do
+      params(
+        contract: T::Module[T.anything],
+        prop: Symbol,
+        value: T.untyped,
+        values: T::Array[Symbol]
+      ).returns(T.noreturn)
+    end
+    def invalid_variant_value!(contract, prop, value, values)
+      Kernel.raise ArgumentError,
+                   "unknown variant value #{value.inspect} for #{prop} of #{contract} " \
+                   "(valid: #{values.map(&:inspect).join(', ')})"
     end
   end
 end

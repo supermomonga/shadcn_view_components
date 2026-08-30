@@ -3,6 +3,7 @@
   [data-slot='dropdown-menu-item'], [data-slot='context-menu-item'] { padding: 6px 8px; border-radius: 4px; cursor: default; }
   [data-highlighted='true'] { background: #eee; outline: none; }
   [data-slot='resizable-handle'] { width: 8px; }
+  #floating-position-menu-fixtures[hidden] { display: none; }
 </style>
 <main class="menu-page">
   <h1>Menus / Resizable</h1>
@@ -31,6 +32,13 @@
     <% end %>
   </section>
 
+  <section id="peer-popover-demo">
+    <%= render(Shadcn::Popover.new(id: "peer-popover")) do %>
+      <%= render(Shadcn::Popover::Trigger.new(id: "peer-popover-trigger")) { "ポップオーバーを開く" } %>
+      <%= render(Shadcn::Popover::Content.new(id: "peer-popover-content")) { "ポップオーバー本文" } %>
+    <% end %>
+  </section>
+
   <section id="menubar-demo">
     <%= render(Shadcn::Menubar.new(id: "menubar")) do %>
       <%= render(Shadcn::Menubar::Menu.new) do %>
@@ -38,6 +46,19 @@
         <%= render(Shadcn::Menubar::Content.new(id: "menubar-file-content")) do %>
           <%= render(Shadcn::Menubar::Item.new(id: "menubar-new")) { "新規作成" } %>
           <%= render(Shadcn::Menubar::Item.new(id: "menubar-save")) { "保存" } %>
+          <%= render(Shadcn::Menubar::Sub.new(id: "menubar-recent-scope")) do %>
+            <%= render(Shadcn::Menubar::SubTrigger.new(id: "menubar-recent")) { "最近使った項目" } %>
+            <%= render(Shadcn::Menubar::SubContent.new(id: "menubar-recent-content")) do %>
+              <%= render(Shadcn::Menubar::Item.new(id: "menubar-project")) { "project.rb" } %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+      <%= render(Shadcn::Menubar::Menu.new) do %>
+        <%= render(Shadcn::Menubar::Trigger.new(id: "menubar-edit")) { "編集" } %>
+        <%= render(Shadcn::Menubar::Content.new(id: "menubar-edit-content")) do %>
+          <%= render(Shadcn::Menubar::Item.new(id: "menubar-copy")) { "コピー" } %>
+          <%= render(Shadcn::Menubar::Item.new(id: "menubar-paste")) { "貼り付け" } %>
         <% end %>
       <% end %>
     <% end %>
@@ -53,6 +74,13 @@
           <%= render(Shadcn::NavigationMenu::Trigger.new(id: "nav-docs")) { "ドキュメント" } %>
           <%= render(Shadcn::NavigationMenu::Content.new(id: "nav-docs-content")) do %>
             <%= render(Shadcn::NavigationMenu::Link.new(id: "nav-intro", href: "#intro")) { "はじめに" } %>
+            <%= render(Shadcn::NavigationMenu::Link.new(id: "nav-install", href: "#install")) { "インストール" } %>
+          <% end %>
+        <% end %>
+        <%= render(Shadcn::NavigationMenu::Item.new) do %>
+          <%= render(Shadcn::NavigationMenu::Trigger.new(id: "nav-guides")) { "ガイド" } %>
+          <%= render(Shadcn::NavigationMenu::Content.new(id: "nav-guides-content")) do %>
+            <%= render(Shadcn::NavigationMenu::Link.new(id: "nav-rails", href: "#rails")) { "Rails" } %>
           <% end %>
         <% end %>
       <% end %>
@@ -67,6 +95,46 @@
       <%= render(Shadcn::Resizable::Handle.new(id: "resize-handle")) %>
       <%= render(Shadcn::Resizable::Panel.new(id: "panel-right")) do %>
         <div style="padding: 8px">右</div>
+      <% end %>
+    <% end %>
+  </section>
+
+  <%# 実Chromeでだけ有効化する位置決めfixture。hidden中は既存system specのlayoutを変えない。 %>
+  <section id="floating-position-menu-fixtures" hidden>
+    <%= render(Shadcn::ContextMenu.new(id: "fp-context-root")) do %>
+      <%= render(Shadcn::ContextMenu::Trigger.new(
+        id: "fp-context-trigger",
+        style: "position: fixed; right: 10px; bottom: 10px; width: 120px; height: 60px; box-sizing: border-box"
+      )) { "context point" } %>
+      <%= render(Shadcn::ContextMenu::Content.new(
+        id: "fp-context-content",
+        style: "width: 160px; height: 96px; box-sizing: border-box"
+      )) do %>
+        <%= render(Shadcn::ContextMenu::Item.new(id: "fp-context-item")) { "item" } %>
+      <% end %>
+    <% end %>
+
+    <%= render(Shadcn::DropdownMenu.new(id: "fp-submenu-root")) do %>
+      <%= render(Shadcn::DropdownMenu::Trigger.new(
+        id: "fp-submenu-main-trigger",
+        style: "position: fixed; top: 180px; left: 300px; width: 100px; height: 28px; box-sizing: border-box"
+      )) { "submenu" } %>
+      <%= render(Shadcn::DropdownMenu::Content.new(
+        id: "fp-submenu-main-content",
+        style: "width: 200px; box-sizing: border-box"
+      )) do %>
+        <%= render(Shadcn::DropdownMenu::Sub.new(id: "fp-submenu-scope")) do %>
+          <%= render(Shadcn::DropdownMenu::SubTrigger.new(
+            id: "fp-submenu-trigger",
+            style: "display: block; width: 160px; height: 32px; box-sizing: border-box"
+          )) { "nested" } %>
+          <%= render(Shadcn::DropdownMenu::SubContent.new(
+            id: "fp-submenu-content",
+            style: "width: 140px; height: 70px; box-sizing: border-box"
+          )) do %>
+            <%= render(Shadcn::DropdownMenu::Item.new(id: "fp-submenu-item")) { "nested item" } %>
+          <% end %>
+        <% end %>
       <% end %>
     <% end %>
   </section>

@@ -34,20 +34,20 @@ checkbox:
     # 契約がunchecked側の属性を記録しないため許可)、appearance-none はネイティブ
     # ウィジェット描画を消す装飾(dark時の白箱問題)
     class_mode: contains
-    attributes: [type, data-checked, data-unchecked]
+    attributes: [type, data-checked, data-unchecked, data-controller, data-action]
 switch:
   Switch:
     # checkbox と同じ理由の data-checked / data-unchecked / appearance-none
     # (peer-checked のための peer 含む)
     class_mode: contains
-    attributes: [type, role, data-checked, data-unchecked]
+    attributes: [type, role, data-checked, data-unchecked, data-controller, data-action]
 radio-group:
   RadioGroup:
     attributes: [role]
   RadioGroupItem:
     # checkbox と同じ理由の data-checked / data-unchecked / appearance-none / peer
     class_mode: contains
-    attributes: [type, data-checked, data-unchecked]
+    attributes: [type, data-checked, data-unchecked, data-controller, data-action]
 toggle:
   Toggle:
     # shadcn--toggle コントローラの状態属性と button 既定の type
@@ -75,7 +75,7 @@ pagination:
     attributes: [aria-label, href, data-active, data-slot]
 tabs:
   Tabs:
-    attributes: [data-controller, data-orientation]
+    attributes: [id, data-controller, data-orientation, data-shadcn-generated-root-id]
   TabsList:
     attributes: [role, aria-orientation]
   TabsTrigger:
@@ -86,7 +86,15 @@ carousel:
   Carousel:
     # ルートが Context.Provider の内側にある構造。role/aria-roledescription は
     # 契約スロット(carousel div)由来だが、ルートスロット定義は Provider 側になるため許可リストへ
-    attributes: [data-controller, role, aria-roledescription]
+    class_mode: contains
+    attributes:
+      [id, data-controller, data-action, data-orientation, data-direction, dir, tabindex,
+       data-shadcn-generated-root-id, role, aria-roledescription]
+  CarouselContent:
+    # React Contextのorientationをnamed group variantで再現する追加クラス
+    class_mode: contains
+  CarouselItem:
+    class_mode: contains
   CarouselPrevious:
     # Button(outline/icon)のクラスとの実行時合成
     class_mode: contains
@@ -96,7 +104,7 @@ carousel:
     attributes: [type, disabled, data-action, aria-hidden]
 dialog:
   Dialog:
-    attributes: [data-controller]
+    attributes: [id, data-controller, data-shadcn-generated-root-id]
   DialogTrigger:
     attributes: [type, aria-haspopup, aria-expanded, data-action]
   DialogClose:
@@ -105,7 +113,7 @@ dialog:
     attributes: [aria-modal, data-state, data-action]
 alert-dialog:
   AlertDialog:
-    attributes: [data-controller]
+    attributes: [id, data-controller, data-shadcn-generated-root-id]
   AlertDialogTrigger:
     attributes: [type, aria-haspopup, aria-expanded, data-action]
   AlertDialogContent:
@@ -119,7 +127,7 @@ alert-dialog:
     attributes: [type, data-action, data-state, aria-haspopup]
 sheet:
   Sheet:
-    attributes: [data-controller]
+    attributes: [id, data-controller, data-shadcn-generated-root-id]
   SheetTrigger:
     attributes: [type, aria-haspopup, aria-expanded, data-action]
   SheetClose:
@@ -128,7 +136,7 @@ sheet:
     attributes: [aria-modal, data-state]
 drawer:
   Drawer:
-    attributes: [data-controller, data-slot]
+    attributes: [id, data-controller, data-slot, data-shadcn-generated-root-id]
   DrawerTrigger:
     attributes: [type, aria-haspopup, aria-expanded, data-action]
   DrawerClose:
@@ -141,14 +149,14 @@ popover:
   PopoverTrigger:
     attributes: [type, aria-expanded, aria-haspopup, data-action]
   PopoverContent:
-    attributes: [popover, data-state, data-side-offset, style]
+    attributes: [popover, data-state, data-position-side, data-position-align, data-position-side-offset, data-position-align-offset, data-position-collision-padding, style]
 hover-card:
   HoverCard:
     attributes: [data-controller]
   HoverCardTrigger:
     attributes: [data-action]
   HoverCardContent:
-    attributes: [hidden, data-state, data-action, style]
+    attributes: [hidden, data-state, data-action, data-position-side, data-position-align, data-position-side-offset, data-position-align-offset, data-position-collision-padding, style]
 tooltip:
   Tooltip:
     attributes: [data-controller]
@@ -158,14 +166,14 @@ tooltip:
     # button 要素として描くための type 属性(他トリガーと同じ)
     attributes: [data-action, aria-describedby, type]
   TooltipContent:
-    attributes: [role, hidden, data-state]
+    attributes: [role, hidden, data-state, data-position-side, data-position-align, data-position-side-offset, data-position-align-offset, data-position-collision-padding]
 dropdown-menu:
   DropdownMenu:
     attributes: [data-controller]
   DropdownMenuTrigger:
     attributes: [type, aria-haspopup, aria-expanded, data-action]
   DropdownMenuContent:
-    attributes: [role, popover, tabindex, data-state, style]
+    attributes: [role, popover, tabindex, data-state, data-position-side, data-position-align, data-position-side-offset, data-position-align-offset, data-position-collision-padding, style]
   DropdownMenuGroup:
     attributes: [role]
   DropdownMenuItem:
@@ -179,15 +187,14 @@ dropdown-menu:
   DropdownMenuSubTrigger:
     attributes: [role, tabindex, data-action, data-highlighted, aria-haspopup, aria-expanded]
   DropdownMenuSubContent:
-    attributes: [role, popover, tabindex, data-state, style]
+    attributes: [role, popover, tabindex, data-state, data-position-side, data-position-align, data-position-side-offset, data-position-align-offset, data-position-collision-padding, style]
 context-menu:
   ContextMenu:
     attributes: [data-controller]
   ContextMenuTrigger:
-    # DropdownMenu::Trigger を継承するため button 既定の属性も出る
-    attributes: [type, aria-haspopup, aria-expanded, data-action]
+    attributes: [tabindex, aria-haspopup, data-action]
   ContextMenuContent:
-    attributes: [role, popover, tabindex, data-state, style]
+    attributes: [role, popover, tabindex, data-state, data-position-side, data-position-align, data-position-side-offset, data-position-align-offset, data-position-collision-padding, style]
   ContextMenuGroup:
     attributes: [role]
   ContextMenuItem:
@@ -201,21 +208,23 @@ context-menu:
   ContextMenuSubTrigger:
     attributes: [role, tabindex, data-action, data-highlighted, aria-haspopup, aria-expanded]
   ContextMenuSubContent:
-    attributes: [role, popover, tabindex, data-state, style]
+    attributes: [role, popover, tabindex, data-state, data-position-side, data-position-align, data-position-side-offset, data-position-align-offset, data-position-collision-padding, style]
 resizable:
   ResizablePanelGroup:
-    attributes: [role, style, data-controller, aria-orientation]
+    attributes: [id, role, style, data-controller, data-orientation, data-shadcn-generated-root-id]
   ResizablePanel:
     attributes: [style]
   ResizableHandle:
-    attributes: [role, tabindex, style, aria-orientation, data-action]
+    attributes: [role, tabindex, style, aria-orientation, aria-valuemin, aria-valuemax, aria-valuenow, data-action]
 menubar:
   Menubar:
-    attributes: [data-controller]
+    attributes: [data-controller, role, aria-orientation]
+  MenubarMenu:
+    attributes: [role]
   MenubarTrigger:
-    attributes: [type, aria-haspopup, aria-expanded, data-action]
+    attributes: [type, role, aria-haspopup, aria-expanded, data-action]
   MenubarContent:
-    attributes: [role, popover, tabindex, data-state, style]
+    attributes: [role, popover, tabindex, data-state, data-position-side, data-position-align, data-position-side-offset, data-position-align-offset, data-position-collision-padding, style]
   MenubarGroup:
     attributes: [role]
   MenubarItem:
@@ -229,14 +238,14 @@ menubar:
   MenubarSubTrigger:
     attributes: [role, tabindex, data-action, data-highlighted, aria-haspopup, aria-expanded]
   MenubarSubContent:
-    attributes: [role, popover, tabindex, data-state, style]
+    attributes: [role, popover, tabindex, data-state, data-position-side, data-position-align, data-position-side-offset, data-position-align-offset, data-position-collision-padding, style]
 navigation-menu:
   NavigationMenu:
     attributes: [data-controller]
   NavigationMenuTrigger:
-    attributes: [type, aria-haspopup, aria-expanded, data-action]
+    attributes: [type, aria-expanded, data-action]
   NavigationMenuContent:
-    attributes: [popover, data-state]
+    attributes: [popover, data-state, data-position-side, data-position-align, data-position-side-offset, data-position-align-offset, data-position-collision-padding]
 command:
   Command:
     attributes: [data-controller]
@@ -255,6 +264,10 @@ command:
   CommandEmpty:
     attributes: [hidden]
 combobox:
+  Combobox:
+    # primitive Root内部のform controlをRails側ではSSRする
+    slots_mode: superset
+    attributes: [id, data-controller, data-shadcn-generated-root-id]
   ComboboxInput:
     # upstream の ComboboxInput は <InputGroup>(別アイテム)でラップし、トリガーを
     # <InputGroupAddon> に置く。契約(combobox側)には上書き分のみ記録されるため、
@@ -263,7 +276,7 @@ combobox:
     slots_mode: superset
     attributes: [type, role, aria-expanded, aria-haspopup, data-action]
   ComboboxTrigger:
-    attributes: [type, data-action, aria-label]
+    attributes: [type, data-action, aria-label, aria-haspopup, aria-expanded]
   ComboboxContent:
     attributes: [role, popover, data-state]
   ComboboxItem:
@@ -272,31 +285,57 @@ combobox:
   ComboboxEmpty:
     attributes: [hidden]
   ComboboxChipsInput:
-    attributes: [type]
+    attributes: [type, role, aria-autocomplete, aria-label, aria-expanded, aria-haspopup, data-action]
+  ComboboxChips:
+    # 動的chipも同じRuby描画へ戻せるようtemplateをSSRする
+    slots_mode: superset
+    attributes: []
   ComboboxChip:
-    attributes: [aria-label]
+    slots_mode: superset
+    attributes: [data-value]
 progress:
   Progress:
+    slots_mode: superset
     attributes: [role, aria-valuenow, aria-valuemin, aria-valuemax, style]
 slider:
   Slider:
-    attributes: [role]
+    slots_mode: superset
+    attributes: [data-controller, data-orientation]
 native-select:
   NativeSelect:
     # フォーム属性は利用者が <select> に渡す(name/required 等)
     attributes: [name, id, required, disabled, multiple, form, autofocus, aria-label]
 input-otp:
   InputOTP:
-    attributes: [type, inputmode, maxlength, autocomplete, value]
+    # Ruby版はdata-slot無しcontainer内で標準Group/Slotと実inputを合成する。
+    slots_mode: superset
+    attributes: [type, inputmode, pattern, maxlength, autocomplete, spellcheck, value, style, data-input-otp, data-action]
+  InputOTPSlot:
+    # characterとfake caretはRuby版の同期表示用内部slot。
+    slots_mode: superset
+    attributes: [data-index, data-active]
 select:
   Select:
-    attributes: [data-controller]
+    # upstreamのRoot別名はDOMを持たない。Ruby版の状態ホストと
+    # フォーム送信用inputは明示的な追加スロットとして許可する。
+    slots_mode: superset
+    attributes: [id, data-slot, data-controller, data-action, data-shadcn-generated-root-id]
   SelectTrigger:
     attributes: [type, role, aria-haspopup, aria-expanded, data-action]
   SelectContent:
-    attributes: [role, popover, data-state, style]
+    # Scroll buttonsと浮動位置のラッパーはRuby版の合成構造。
+    slots_mode: superset
+    attributes: [role, popover, data-state, data-closed, data-position-side, data-position-align, data-position-side-offset, data-position-align-offset, data-position-collision-padding, style]
+  SelectGroup:
+    attributes: [role]
   SelectItem:
-    attributes: [role, tabindex, data-value, aria-selected]
+    attributes: [role, tabindex, data-value, data-selected, data-action, aria-selected]
+  SelectSeparator:
+    attributes: [role]
+  SelectScrollUpButton:
+    attributes: [hidden, style, aria-hidden, data-scroll-direction, data-action]
+  SelectScrollDownButton:
+    attributes: [hidden, style, aria-hidden, data-scroll-direction, data-action]
 field:
   FieldLabel:
     # upstream の FieldLabel は <Label>(別アイテム)を描くため、描画は label 契約の
@@ -304,6 +343,12 @@ field:
     class_mode: contains
     attributes: [for]
 input-group:
+  InputGroupInput:
+    # upstream は Input(別アイテム)に上書きクラスを足す
+    class_mode: contains
+  InputGroupTextarea:
+    # upstream は Textarea(別アイテム)に上書きクラスを足す
+    class_mode: contains
   InputGroupButton:
     class_mode: contains
     attributes: [type, data-size, data-action, data-state, aria-haspopup]
@@ -363,7 +408,10 @@ sonner:
 accordion:
   Accordion:
     # 開閉アニメーション同期のため shadcn--accordion コントローラを付ける
-    attributes: [data-controller]
+    attributes: [id, data-controller, data-shadcn-generated-root-id]
+  AccordionItem:
+    # 単独描画でも同じARIA参照とネイティブdetailsの状態同期を提供する
+    attributes: [id, data-controller, data-shadcn-generated-root-id]
   AccordionTrigger:
     # details/summary方式とアイコン切替(group-aria-expanded)の状態属性。
     # base-nova のTriggerは aria-expanded を実行時にprimitiveが付与するため契約に現れない
@@ -372,6 +420,6 @@ calendar:
   Calendar:
     # 内側に DayButton を描く合成構造のため子スロットが増える
     slots_mode: superset
-    attributes: []
+    attributes: [id, data-controller, data-action, data-shadcn-generated-root-id]
   CalendarDayButton:
-    attributes: [type, tabindex, data-day, data-selected-single, data-today, data-outside]
+    attributes: [type, tabindex, aria-label, aria-current, data-day, data-selected-single, data-today, data-outside]

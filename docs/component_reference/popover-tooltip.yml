@@ -1,0 +1,419 @@
+popover:
+  summary: "トリガーを基準に補助内容を重ねて表示するポップオーバー。"
+  composition:
+    required: ["Shadcn::Popover::Trigger", "Shadcn::Popover::Content"]
+    notes: "Header、Title、Descriptionは内容の構造化に使う任意の子要素。"
+  attributes:
+    default_target: "各公開クラスが描画する要素。Contentはpopover属性を持つ浮動要素。"
+    exceptions: ["Triggerのtype既定値はbutton。", "Contentのpopoverはautoに固定される。"]
+  form:
+    kind: none
+    details: "Triggerは既定でtype=buttonのためフォームを送信しない。name/value/disabledや送信値はコンポーネントでは管理しない。"
+  state:
+    mode: native
+    details: "開閉の唯一の実状態はPopover APIが持ち、Stimulusはdata属性とaria-expandedを同期する。外部controlled値はない。"
+  browser:
+    apis: ["Popover API", "CSS Anchor Positioning（対応時。非対応時は座標計算）"]
+    keyboard: ["Escapeでautoポップオーバーを閉じる。", "Triggerのbutton標準操作で開閉する。"]
+  upstream:
+    differences: ["React primitiveではなくブラウザのPopover APIとStimulusで開閉・位置決めする。"]
+    unsupported: ["外部controlled open/onOpenChange。", "独立したAnchor子コンポーネント。"]
+
+progress:
+  summary: "0から100までの進捗値をARIA付きのバーとして表示する。"
+  composition:
+    required: []
+    notes: "trackとindicatorはProgress自身が生成するため公開子クラスは不要。"
+  attributes:
+    default_target: "role=progressbarを持つルート要素。"
+    exceptions: ["valueはaria-valuenowとindicatorの幅へ反映され、未指定時はaria-valuenowを出さない。"]
+  form:
+    kind: none
+    details: "フォームコントロールではなく、name/value/disabledおよび送信値を持たない。"
+  state:
+    mode: server
+    details: "valueは描画時に確定し、ブラウザ側で変更するcontrolled/uncontrolled APIはない。"
+  browser:
+    apis: ["ARIA progressbar semantics"]
+    keyboard: []
+  upstream:
+    differences: ["サーバー描画時にindicator幅とARIA値を確定するRubyコンポーネントである。"]
+    unsupported: []
+
+radio-group:
+  summary: "同じnameを共有するネイティブラジオ入力を視覚的にグループ化する。"
+  composition:
+    required: ["Shadcn::RadioGroup::Item"]
+    notes: "各Itemが実際のinput[type=radio]を描画し、rootはrole=radiogroupの配置コンテナになる。"
+  attributes:
+    default_target: "rootの属性はradiogroup要素、Itemの属性はネイティブradio input。"
+    exceptions: ["rootはrole=radiogroupを持つ。Itemは表示用spanとaria-hiddenのindicatorでinputを包むが、利用者のARIA属性は実radio inputへ渡る。", "checked状態のdata属性はinputとindicatorへ同期される。"]
+  form:
+    kind: native
+    details: "Itemのname/value/disabled/checkedはネイティブradioに渡る。同一フォーム・同一非空nameでは一つだけ選択され、未選択またはdisabledのItemは送信されず、選択Itemのvalue一つだけが送信される。"
+  state:
+    mode: native
+    details: "input.checkedが唯一の状態源。初期checked後はブラウザが管理し、changeで装飾を同期する。外部からpropertyを変更した場合はbubbling changeが必要。"
+  browser:
+    apis: ["HTML radio button grouping", "FormData"]
+    keyboard: ["同名radio間の矢印キー移動と選択はブラウザ標準動作。", "Spaceでフォーカス中のItemを選択する。"]
+  upstream:
+    differences: ["React radio primitiveではなくネイティブinput[type=radio]をフォーム状態源にする。"]
+    unsupported: ["外部controlled value/onValueChange。"]
+
+resizable:
+  summary: "隣接するパネルのflex-basisをドラッグまたはキーボードで変更する。"
+  composition:
+    required: ["Shadcn::Resizable::Panel", "Shadcn::Resizable::Handle"]
+    notes: "PanelGroup内に複数のPanelを置き、その間へHandleを置く。"
+  attributes:
+    default_target: "PanelGroup、Panel、Handleそれぞれが描画する要素。"
+    exceptions: ["PanelGroupのorientationはdata属性とflex方向へ反映される。", "Handleはrole=separator、tabindex、aria-valuenowを自動設定する。"]
+  form:
+    kind: none
+    details: "レイアウト操作でありname/value/disabledやフォーム送信値を持たない。"
+  state:
+    mode: uncontrolled
+    details: "初期flex比率はDOMから読み、以後の比率をStimulusが要素styleで管理する。外部controlled比率はない。"
+  browser:
+    apis: ["MouseEvent", "getBoundingClientRect"]
+    keyboard: ["方向に応じたArrowキーで比率を変更する。", "Home/Endで許容範囲の端へ移動する。"]
+  upstream:
+    differences: ["react-resizable-panelsではなく隣接要素のflex-basisをStimulusが直接更新する。"]
+    unsupported: ["永続化されたlayoutや外部onLayoutコールバック。"]
+
+scroll-area:
+  summary: "ネイティブCSSスクロール領域をshadcnの構造と外観で表示する。"
+  composition:
+    required: []
+    notes: "viewportはrootが自動生成し、Scrollbarは契約構造を必要とする場合だけ追加する。"
+  attributes:
+    default_target: "利用者属性は外側のrootへ、スクロール対象の内容は自動生成viewport内へ入る。"
+    exceptions: ["Scrollbarは装飾構造のみで、実際のスクロール操作はviewportのoverflow-autoが担う。"]
+  form:
+    kind: none
+    details: "フォームコントロールではなくname/value/disabledや送信値を持たない。"
+  state:
+    mode: native
+    details: "scrollTop/scrollLeftはブラウザが管理し、controlled/uncontrolled用の値APIはない。"
+  browser:
+    apis: ["CSS overflow scrolling"]
+    keyboard: []
+  upstream:
+    differences: ["Radixのカスタムスクロールバー動作ではなくネイティブoverflowを使用する。"]
+    unsupported: ["Scrollbar/Thumbによる独自ドラッグ状態管理。", "自動生成viewportへtabindexやARIA属性を直接渡すAPI。"]
+
+select:
+  summary: "hidden inputへ単一の確定値を保持するカスタムcombobox/listbox。"
+  composition:
+    required: ["Shadcn::Select::Trigger", "Shadcn::Select::Value", "Shadcn::Select::Content", "Shadcn::Select::Item"]
+    notes: "Group、Label、Separator、ScrollUpButton、ScrollDownButtonは任意。Contentはスクロールボタンを自動生成する。"
+  attributes:
+    default_target: "root属性は状態ホスト、各子クラスの属性は各子要素。name/default_value/disabledはroot直下のhidden inputへ反映される。"
+    exceptions: ["Triggerはtype=buttonとrole=comboboxを持つ。", "Itemのvalueは必須で、disabledはARIAとdata属性へ反映される。"]
+  form:
+    kind: composite
+    details: "nameがある場合、選択値一つをhidden inputのvalueとして送信する。未選択は空文字、nameなしは送信対象外、disabled=trueはhidden inputもdisabledとなり送信されない。複数値送信は非対応。"
+  state:
+    mode: uncontrolled
+    details: "default_valueは初期値だけを与え、接続後はhidden inputが確定値の唯一の状態源になる。外部controlled valueはない。"
+  browser:
+    apis: ["Popover API", "FormData", "focus management"]
+    keyboard: ["ArrowUp/ArrowDownで項目移動。", "Home/Endで先頭・末尾へ移動。", "Enter/Spaceで開く、または項目を確定する。", "Escapeで閉じ、Tabで通常のフォーカス移動を続ける。"]
+  upstream:
+    differences: ["Base UIのReact Select状態ではなくhidden inputとStimulusで単一選択を管理する。"]
+    unsupported: ["multiple選択。", "ネイティブ制約検証。", "外部controlled value/onValueChange。"]
+
+separator:
+  summary: "水平または垂直の区切りをARIA separatorとして表示する。"
+  composition:
+    required: []
+    notes: "単一要素で完結する。"
+  attributes:
+    default_target: "role=separatorを持つroot要素。"
+    exceptions: ["orientationはdata-orientationとaria-orientationへ反映される。", "利用者がroleを指定した場合は上書きしない。"]
+  form:
+    kind: none
+    details: "装飾・構造要素でありname/value/disabledや送信値を持たない。"
+  state:
+    mode: static
+    details: "orientationはサーバー描画時に確定し、ブラウザ側状態はない。"
+  browser:
+    apis: ["ARIA separator semantics"]
+    keyboard: []
+  upstream:
+    differences: ["React primitiveではなくroleとaria-orientationを持つ単一のdivをサーバー描画する。"]
+    unsupported: []
+
+sheet:
+  summary: "画面端から表示するモーダルパネルをネイティブdialogで提供する。"
+  composition:
+    required: ["Shadcn::Sheet::Trigger", "Shadcn::Sheet::Content", "Shadcn::Sheet::Title"]
+    notes: "TitleはContentのアクセス可能な名前として使う。Titleを置かない場合はContentへaria-labelを必ず指定する。Close、Header、Footer、Descriptionは任意で、Contentは既定で閉じるボタンを生成する。"
+  attributes:
+    default_target: "root属性はcontroller host、子クラスの属性は各子要素。Content属性はdialogへ渡る。"
+    exceptions: ["TriggerとCloseはtype=button。", "Contentのsideはdata-sideへ反映され、aria-modal=trueを既定設定する。", "TitleがあればStimulusがContentのaria-labelledbyへTitleのidを接続する。"]
+  form:
+    kind: none
+    details: "TriggerとCloseは既定でtype=buttonのためフォームを送信しない。name/value/disabledや独自の送信値は管理しない。dialog内のフォームは通常どおり各コントロールを送信できる。"
+  state:
+    mode: uncontrolled
+    details: "dialog.openが開閉の実状態で、Stimulusがdata属性とtriggerのARIAを同期する。外部controlled openはない。"
+  browser:
+    apis: ["HTMLDialogElement.showModal", "HTMLDialogElement.close", "close event"]
+    keyboard: ["Escapeでモーダルdialogを閉じる。", "Trigger/Closeのbutton標準操作を使う。"]
+  upstream:
+    differences: ["React Dialog primitiveとPortalではなくネイティブdialogとStimulusを使う。"]
+    unsupported: ["外部controlled open/onOpenChange。", "Portal先の指定。"]
+
+sidebar:
+  summary: "デスクトップ向けサイドバーの構造、初期開閉状態、操作部品を提供する。"
+  composition:
+    required: ["Shadcn::Sidebar::Provider", "Shadcn::Sidebar::Trigger", "Shadcn::Sidebar::Content"]
+    notes: "Providerを状態ホストにし、Sidebarと必要なHeader、Footer、Group、Menu系の子要素を組み合わせる。"
+  attributes:
+    default_target: "各公開クラスが描画する要素。Sidebar::InputとSeparatorは対応するShadcnコンポーネントへ属性を渡す。"
+    exceptions: ["SidebarとProviderのstateはdata-stateへ出力される。", "Triggerはtype=buttonでaria-expanded/aria-labelを持ち、Railはtype=button、tabindex=-1、aria-labelを持つ。", "MenuButtonはbuttonが既定だがtag=aへ変更できる。"]
+  form:
+    kind: none
+    details: "Sidebar自身はname/value/disabledや送信値を持たない。Inputなど内包したネイティブフォーム部品は各自のname/value/disabled規則で送信され、Trigger/Railは送信しない。"
+  state:
+    mode: uncontrolled
+    details: "stateはSSR初期値で、接続後のopen/closedはProvider配下のStimulusが管理する。サーバーは再描画時に初期値を再提示できるが外部controlled APIはない。"
+  browser:
+    apis: ["DOM data attributes"]
+    keyboard: ["TriggerのEnter/Spaceで開閉する。", "メニュー内のbutton/link/inputは各ネイティブ要素の標準操作に従う。"]
+  upstream:
+    differences: ["gemはデスクトップとサーバー指定初期状態に限定し、React contextではなくProviderのdata-stateを使う。"]
+    unsupported: ["モバイルSheet切替。", "cookieによる状態永続化。", "上流のcontext controlled open/onOpenChange。"]
+
+skeleton:
+  summary: "読み込み中の内容位置を示す静的なプレースホルダー。"
+  composition:
+    required: []
+    notes: "単一要素で完結し、形状はclassで指定する。"
+  attributes:
+    default_target: "Skeletonのroot要素。"
+    exceptions: []
+  form:
+    kind: none
+    details: "表示専用でname/value/disabledや送信値を持たない。"
+  state:
+    mode: static
+    details: "読み込み状態の切替は呼び出し側が描画有無で管理し、コンポーネント内部状態はない。"
+  browser:
+    apis: []
+    keyboard: []
+  upstream:
+    differences: ["React関数ではなく同じ静的プレースホルダー要素をRubyでサーバー描画する。"]
+    unsupported: []
+
+slider:
+  summary: "ネイティブrange inputを状態源にする単一値スライダー。"
+  composition:
+    required: []
+    notes: "track、range、thumb、inputはSlider自身が生成する。"
+  attributes:
+    default_target: "class/style/tagは外側root、それ以外の利用者HTML属性は実際のinput[type=range]。"
+    exceptions: ["min/max/step/value/orientationは検証後にinputと装飾位置へ反映され、aria-orientationも同期する。", "inputのclassは操作面を成立させる内部classに固定される。", "aria-label/aria-labelledby等の利用者ARIA属性は実range inputへ渡る。"]
+  form:
+    kind: native
+    details: "name/value/disabledはrange inputへ渡り、enabledかつnameありなら現在値一つを送信する。disabledまたはnameなしは送信されず、未指定valueはブラウザのrange既定値になる。複数値送信は非対応。"
+  state:
+    mode: native
+    details: "input.valueが唯一の状態源で、input/change時に装飾を同期する。value引数は初期値であり外部controlled更新APIではない。"
+  browser:
+    apis: ["HTML input type=range", "FormData"]
+    keyboard: ["Arrowキー、PageUp/PageDown、Home/Endはrange inputのブラウザ標準動作。"]
+  upstream:
+    differences: ["React slider primitiveではなく透明なネイティブrange inputを操作面と状態源にする。"]
+    unsupported: ["複数thumbのrange選択。", "外部controlled配列値/onValueChange。"]
+
+sonner:
+  summary: "shadcn:toastイベントから通知を生成するaria-live通知領域。"
+  composition:
+    required: []
+    notes: "Sonnerは名前空間で、Toaster単体を配置する。通知要素はcontrollerがイベント受信時に生成する。"
+  attributes:
+    default_target: "Shadcn::Sonner::Toasterが描画するsection。"
+    exceptions: ["aria-live=politeとshadcn--toast controllerを既定設定する。"]
+  form:
+    kind: none
+    details: "通知領域でありname/value/disabledやフォーム送信値を持たない。"
+  state:
+    mode: uncontrolled
+    details: "通知の追加・破棄とタイマーはStimulusが所有し、shadcn:toastイベントが入力になる。サーバーcontrolled通知配列はない。"
+  browser:
+    apis: ["CustomEvent", "setTimeout", "ARIA live region"]
+    keyboard: []
+  upstream:
+    differences: ["sonner Reactライブラリのportal/storeではなくCustomEventとStimulusで通知とタイマーを管理する。"]
+    unsupported: ["sonnerライブラリ固有の命令的APIとReact portal。", "通知を手動で閉じるbutton。"]
+
+spinner:
+  summary: "処理中を示す回転するインラインSVGアイコン。"
+  composition:
+    required: []
+    notes: "単一SVGで完結する。"
+  attributes:
+    default_target: "Spinnerが描画するsvg要素。"
+    exceptions: ["viewBox、stroke、既定寸法とloader-circleのpathはコンポーネントが生成する。"]
+  form:
+    kind: none
+    details: "表示専用でname/value/disabledや送信値を持たない。"
+  state:
+    mode: static
+    details: "回転はCSS表現で、controlled/uncontrolled状態はない。"
+  browser:
+    apis: ["SVG"]
+    keyboard: []
+  upstream:
+    differences: ["Lucide Reactアイコンではなく同等のpathを持つインラインSVGをRubyで描画する。"]
+    unsupported: []
+
+switch:
+  summary: "ネイティブcheckboxを状態源にする二値スイッチ。"
+  composition:
+    required: []
+    notes: "inputと表示用thumbはSwitch自身が生成する。"
+  attributes:
+    default_target: "利用者属性はinput[type=checkbox][role=switch]へ渡る。"
+    exceptions: ["外側spanとaria-hiddenのthumbは内部生成される。", "sizeはinputのdata-sizeとthumb寸法へ反映される。", "checked状態のdata属性はinputとthumbへ同期される。"]
+  form:
+    kind: native
+    details: "name/value/disabled/checkedはcheckboxへ渡る。checkedかつenabledでnameがある場合だけvalue一つを送信し、未選択・disabled・nameなしは送信されない。複数の同名switchは各checked値を複数送信できる。"
+  state:
+    mode: native
+    details: "input.checkedが唯一の状態源でchange時に装飾を同期する。外部property変更時はbubbling changeが必要で、checked引数はcontrolled APIではない。"
+  browser:
+    apis: ["HTML checkbox", "FormData"]
+    keyboard: ["Spaceで切り替える。", "Tabでフォーカスする。"]
+  upstream:
+    differences: ["React Switch primitiveではなくネイティブcheckboxをフォーム状態源にする。"]
+    unsupported: ["外部controlled checked/onCheckedChange。", "三状態indeterminate。"]
+
+table:
+  summary: "横スクロール用container内にセマンティックなHTML tableを構成する。"
+  composition:
+    required: ["Shadcn::Table::Body", "Shadcn::Table::Row", "Shadcn::Table::Cell"]
+    notes: "Header、Footer、Head、Captionは表の内容に応じて追加する。"
+  attributes:
+    default_target: "Tableの利用者属性は内側tableへ、外側containerは契約の静的属性だけを持つ。各子クラスの属性は対応するthead/tbody/tfoot/th/tr/td/captionへ渡る。"
+    exceptions: ["Table rootはoverflow-x-autoのdivを自動生成する。"]
+  form:
+    kind: none
+    details: "表自体はname/value/disabledや送信値を持たない。セル内のフォーム部品は各自の規則で送信される。"
+  state:
+    mode: static
+    details: "表構造と内容はサーバー描画され、内部controlled/uncontrolled状態はない。"
+  browser:
+    apis: ["HTML table semantics", "CSS overflow scrolling"]
+    keyboard: []
+  upstream:
+    differences: ["Reactのtable helper群ではなくHTML table要素群をRubyクラスでサーバー描画する。"]
+    unsupported: []
+
+tabs:
+  summary: "ARIA tabsパターンとroving tabindexで関連パネルを切り替える。"
+  composition:
+    required: ["Shadcn::Tabs::List", "Shadcn::Tabs::Trigger", "Shadcn::Tabs::Content"]
+    notes: "各TriggerとContentは同じ非空valueで対応付ける。"
+  attributes:
+    default_target: "root、List、Trigger、Contentそれぞれが描画する要素。"
+    exceptions: ["Triggerはbuttonが既定でrole=tab、aria-selected、tabindexを持つ。tag=aならtypeは追加しない。", "Contentはrole=tabpanelを持つ。"]
+  form:
+    kind: none
+    details: "button Triggerはtype=buttonでフォームを送信しない。name/value/disabledや送信値は管理せず、disabledを付けたTriggerは操作対象外になる。"
+  state:
+    mode: uncontrolled
+    details: "activeはSSR初期状態で、接続後はStimulusが選択、tabindex、パネル表示を管理する。外部controlled valueはない。"
+  browser:
+    apis: ["ARIA tabs semantics", "focus management"]
+    keyboard: ["方向に応じたArrowキーで隣のtabへ移動・選択する。", "Home/Endで先頭・末尾へ移動する。", "Enter/Spaceとclickで選択する。"]
+  upstream:
+    differences: ["React tabs primitiveのcontextではなくdata-valueとStimulusで選択を管理する。"]
+    unsupported: ["外部controlled value/onValueChange。"]
+
+textarea:
+  summary: "スタイル済みのネイティブtextarea。"
+  composition:
+    required: []
+    notes: "単一のtextarea要素で完結する。"
+  attributes:
+    default_target: "Shadcn::Textareaが描画するtextarea要素。"
+    exceptions: ["aria-label/aria-describedby/aria-invalid等のARIA属性は実textareaへそのまま渡る。"]
+  form:
+    kind: native
+    details: "name/value/disabledはネイティブtextarea規則に従う。enabledかつnameありなら現在の文字列一つを送信し、空欄は空文字、disabledまたはnameなしは送信されない。複数の同名textareaは複数値を送信できる。"
+  state:
+    mode: native
+    details: "現在値はtextarea.valueをブラウザが管理する。内容は初期値であり、コンポーネント独自のcontrolled/uncontrolled APIはない。"
+  browser:
+    apis: ["HTML textarea", "FormData"]
+    keyboard: ["文字入力、選択、改行はブラウザ標準動作。"]
+  upstream:
+    differences: ["React wrapperではなくネイティブtextareaをRubyで直接描画する。"]
+    unsupported: []
+
+toggle:
+  summary: "aria-pressedとdata-stateを切り替える二値button。"
+  composition:
+    required: []
+    notes: "単一buttonで完結する。"
+  attributes:
+    default_target: "Shadcn::Toggleが描画するbutton。"
+    exceptions: ["typeは既定でbutton。", "stateはdata-stateとaria-pressedの初期値へ反映される。"]
+  form:
+    kind: none
+    details: "既定のtype=buttonではフォームを送信しない。name/value/disabledはbutton属性として渡せるが、Toggle独自の選択値送信はなく、typeをsubmitへ明示変更した場合のみ通常のbutton送信規則に従う。"
+  state:
+    mode: uncontrolled
+    details: "stateはSSR初期値で、接続後はStimulusがon/offとaria-pressedを管理する。外部controlled pressedはない。"
+  browser:
+    apis: ["ARIA pressed button"]
+    keyboard: ["Enter/Spaceのbutton標準clickで切り替える。"]
+  upstream:
+    differences: ["React Toggle primitiveではなくbuttonのdata-stateをStimulusが直接切り替える。"]
+    unsupported: ["外部controlled pressed/onPressedChange。"]
+
+toggle-group:
+  summary: "単一選択または複数選択として複数のtoggle buttonをまとめる。"
+  composition:
+    required: ["Shadcn::ToggleGroup::Item"]
+    notes: "rootのtypeがsingleなら排他、multipleなら各Itemを独立して切り替える。"
+  attributes:
+    default_target: "root属性はgroup要素、Item属性は各button。"
+    exceptions: ["rootのtype/variant/size/spacingはdata属性へ出力される。", "Itemはtype=button、data-state、aria-pressedを持つ。"]
+  form:
+    kind: none
+    details: "Itemは既定でtype=buttonのためフォームを送信しない。name/value/disabledはbutton属性として渡せるが、未選択・選択・複数選択をhidden値へ変換する機能はない。"
+  state:
+    mode: uncontrolled
+    details: "各ItemのstateはSSR初期値で、接続後はStimulusがsingleの排他またはmultipleの独立状態を管理する。外部controlled値配列はない。"
+  browser:
+    apis: ["ARIA pressed button"]
+    keyboard: ["各ItemはEnter/Spaceのbutton標準clickで切り替わる。"]
+  upstream:
+    differences: ["React contextではなくrootのdata-typeと各buttonのdata-stateをStimulusが管理する。"]
+    unsupported: ["選択値のフォーム送信。", "外部controlled value/onValueChange。"]
+
+tooltip:
+  summary: "hoverまたはfocus時に遅延表示する説明用ツールチップ。"
+  composition:
+    required: ["Shadcn::Tooltip::Trigger", "Shadcn::Tooltip::Content"]
+    notes: "Providerは配置できるが、各Tooltipの動作に必須ではない。Contentはarrowを自動生成する。"
+  attributes:
+    default_target: "root属性はcontroller host、TriggerとContentの属性は各要素。"
+    exceptions: ["Triggerはtype=buttonが既定。", "ContentはARIA role=tooltip、hidden、浮動位置data属性を持つ。Contentへidを指定するとStimulusがTriggerのaria-describedbyへ接続する。"]
+  form:
+    kind: none
+    details: "Triggerは既定でtype=buttonのためフォームを送信しない。name/value/disabledや送信値はコンポーネントでは管理しない。"
+  state:
+    mode: uncontrolled
+    details: "表示タイマーとopen/closedはStimulusがhover/focusから管理する。外部controlled openはない。"
+  browser:
+    apis: ["CSS Anchor Positioning（対応時。非対応時は座標計算）", "setTimeout"]
+    keyboard: ["Tab等でTriggerへfocusすると表示し、blurで閉じる。", "Escapeによる明示的な閉鎖は提供しない。"]
+  upstream:
+    differences: ["React Tooltip primitive/provider状態ではなくDOMイベント、Stimulus、遅延タイマーで表示する。"]
+    unsupported: ["外部controlled open/onOpenChange。", "Providerによる複数Tooltip間の遅延共有。"]

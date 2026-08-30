@@ -15,13 +15,19 @@ import {
 } from "./components/ui/alert-dialog.tsx"
 import { Alert, AlertDescription, AlertTitle } from "./components/ui/alert.tsx"
 import { AspectRatio } from "./components/ui/aspect-ratio.tsx"
+import {
+  Attachment, AttachmentAction, AttachmentActions, AttachmentContent,
+  AttachmentDescription, AttachmentMedia, AttachmentTitle,
+} from "./components/ui/attachment.tsx"
 import { Avatar, AvatarFallback, AvatarGroup } from "./components/ui/avatar.tsx"
 import { Badge } from "./components/ui/badge.tsx"
+import { Bubble, BubbleContent, BubbleGroup, BubbleReactions } from "./components/ui/bubble.tsx"
 import {
   Breadcrumb, BreadcrumbEllipsis, BreadcrumbItem, BreadcrumbLink, BreadcrumbList,
   BreadcrumbPage, BreadcrumbSeparator,
 } from "./components/ui/breadcrumb.tsx"
 import { Button } from "./components/ui/button.tsx"
+import { ButtonGroup, ButtonGroupSeparator, ButtonGroupText } from "./components/ui/button-group.tsx"
 import { Calendar } from "./components/ui/calendar.tsx"
 import {
   Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle,
@@ -117,6 +123,19 @@ export const demosAToM: Record<string, ComponentType> = {
     <AspectRatio ratio={16 / 9} className="bg-muted">16 / 9</AspectRatio>
   ),
 
+  "attachment/default": () => (
+    <Attachment>
+      <AttachmentMedia variant="icon">📄</AttachmentMedia>
+      <AttachmentContent>
+        <AttachmentTitle>report.pdf</AttachmentTitle>
+        <AttachmentDescription>PDF・2.4 MB</AttachmentDescription>
+      </AttachmentContent>
+      <AttachmentActions>
+        <AttachmentAction aria-label="report.pdfを削除">削除</AttachmentAction>
+      </AttachmentActions>
+    </Attachment>
+  ),
+
   "avatar/default": () => (
     <Avatar>
       <AvatarFallback>AB</AvatarFallback>
@@ -151,6 +170,15 @@ export const demosAToM: Record<string, ComponentType> = {
     </>
   ),
 
+  "bubble/default": () => (
+    <BubbleGroup>
+      <Bubble>
+        <BubbleContent>ご質問ありがとうございます。</BubbleContent>
+        <BubbleReactions aria-label="リアクション">👍 2</BubbleReactions>
+      </Bubble>
+    </BubbleGroup>
+  ),
+
   "breadcrumb/default": () => (
     <Breadcrumb>
       <BreadcrumbList>
@@ -174,6 +202,16 @@ export const demosAToM: Record<string, ComponentType> = {
   ),
 
   "button/default": () => <Button>Button</Button>,
+
+  "button-group/default": () => (
+    <ButtonGroup aria-label="表示倍率">
+      <Button variant="outline" size="sm">縮小</Button>
+      <ButtonGroupSeparator />
+      <ButtonGroupText>100%</ButtonGroupText>
+      <ButtonGroupSeparator />
+      <Button variant="outline" size="sm">拡大</Button>
+    </ButtonGroup>
+  ),
   "button/variants": () => <Button variant="secondary">Secondary</Button>,
   "button/destructive": () => <Button variant="destructive">Destructive</Button>,
   "button/outline": () => <Button variant="outline">Outline</Button>,
@@ -217,10 +255,10 @@ export const demosAToM: Record<string, ComponentType> = {
   ),
 
   "carousel/default": () => (
-    <Carousel className="max-w-xs">
+    <Carousel className="max-w-xs" aria-label="サンプルスライド">
       <CarouselContent>
-        {["スライド1", "スライド2", "スライド3", "スライド4"].map((text) => (
-          <CarouselItem key={text}>{box(text)}</CarouselItem>
+        {["スライド1", "スライド2", "スライド3", "スライド4"].map((text, index) => (
+          <CarouselItem key={text} aria-label={`${index + 1} of 4`}>{box(text)}</CarouselItem>
         ))}
       </CarouselContent>
       <CarouselPrevious />
@@ -228,7 +266,35 @@ export const demosAToM: Record<string, ComponentType> = {
     </Carousel>
   ),
 
-  "checkbox/default": () => <Checkbox id="check" name="check" />,
+  "carousel/vertical": () => (
+    <Carousel orientation="vertical" className="max-w-xs" aria-label="サンプルスライド">
+      <CarouselContent className="h-[200px]">
+        {["スライド1", "スライド2", "スライド3", "スライド4"].map((text, index) => (
+          <CarouselItem key={text} aria-label={`${index + 1} of 4`}>{box(text)}</CarouselItem>
+        ))}
+      </CarouselContent>
+      <CarouselPrevious />
+      <CarouselNext />
+    </Carousel>
+  ),
+
+  "carousel/rtl": () => (
+    <Carousel dir="rtl" className="max-w-xs" aria-label="サンプルスライド">
+      <CarouselContent>
+        {["スライド1", "スライド2", "スライド3", "スライド4"].map((text, index) => (
+          <CarouselItem key={text} aria-label={`${index + 1} of 4`}>{box(text)}</CarouselItem>
+        ))}
+      </CarouselContent>
+      <CarouselPrevious />
+      <CarouselNext />
+    </Carousel>
+  ),
+
+  "checkbox/default": () => <Checkbox id="check" name="check" aria-label="通知を受け取る" />,
+
+  "checkbox/checked": () => <Checkbox defaultChecked aria-label="選択済み" />,
+
+  "checkbox/unchecked": () => <Checkbox defaultChecked={false} aria-label="未選択" />,
 
   "checkbox/disabled": () => <Checkbox disabled />,
 

@@ -1,0 +1,288 @@
+accordion:
+  summary: ネイティブdetailsで開閉するアコーディオン。
+  composition:
+    required: [Shadcn::Accordion::Item, Shadcn::Accordion::Trigger, Shadcn::Accordion::Content]
+    notes: TriggerはItemの直接子に置き、同時に一つだけ開く場合は各Itemへ同じnameを渡す。
+  attributes:
+    default_target: Shadcn::Accordion
+    exceptions: [nameとopenはShadcn::Accordion::Itemへ渡す。, Triggerのaria-expandedはStimulusがdetails.openと同期し、装飾iconはaria-hiddenになる。]
+  form: { kind: none, details: フォーム値は送信しない。 }
+  state: { mode: native, details: open状態はdetailsが保持するuncontrolled状態で、Stimulusはdata-stateとアニメーション寸法だけを同期する。 }
+  browser:
+    apis: [HTML details element]
+    keyboard: [TriggerのEnterまたはSpaceで開閉する。]
+  upstream:
+    differences: [React primitiveの代わりにdetailsとsummaryを使い、upstreamのHeaderラッパーを省略する。]
+    unsupported: [外部から制御するvalueとonValueChange。]
+alert:
+  summary: 状態メッセージを表示する静的なalert領域。
+  composition:
+    required: []
+    notes: TitleとDescriptionは内容に応じて任意に組み合わせる。
+  attributes:
+    default_target: Shadcn::Alert
+    exceptions: [見出しと説明の属性はShadcn::Alert::TitleまたはDescriptionへ渡す。]
+  form: { kind: none, details: フォーム値は送信しない。 }
+  state: { mode: static, details: variantはサーバ描画時に確定し、クライアント状態を持たない。 }
+  browser: { apis: [], keyboard: [] }
+  upstream:
+    differences: [Reactを使わず同じroleとslotをViewComponentで描画する。]
+    unsupported: []
+alert-dialog:
+  summary: 重要な判断を要求するネイティブモーダルダイアログ。
+  composition:
+    required: [Shadcn::AlertDialog::Trigger, Shadcn::AlertDialog::Content, Shadcn::AlertDialog::Title, Shadcn::AlertDialog::Description, Shadcn::AlertDialog::Action, Shadcn::AlertDialog::Cancel]
+    notes: TriggerとContentを同じroot内に置き、ActionとCancelをContent内に置く。
+  attributes:
+    default_target: Shadcn::AlertDialog
+    exceptions: [sizeとdialog要素のARIA属性はContentへ、ボタン属性はTrigger・Action・Cancelへ渡す。]
+  form: { kind: none, details: Action、Cancel、Triggerは既定でtype=buttonであり、コンポーネント自身はフォーム値を送信しない。 }
+  state: { mode: uncontrolled, details: open状態はdialog要素とStimulusが保持し、外部controlled値APIはない。 }
+  browser:
+    apis: [HTMLDialogElement.showModal, HTMLDialogElement.close]
+    keyboard: [Tabでモーダル内を移動する。, Escapeで閉じる。]
+  upstream:
+    differences: [Base UI primitiveの代わりにdialogを使い、Portalはラッパー、Overlayは::backdropで代替する。]
+    unsupported: [controlled openとonOpenChange。]
+aspect-ratio:
+  summary: 指定比率をCSS aspect-ratioで維持するコンテナ。
+  composition: { required: [], notes: 表示内容をrootのブロックとして渡す。 }
+  attributes: { default_target: Shadcn::AspectRatio, exceptions: [] }
+  form: { kind: none, details: フォーム値は送信しない。 }
+  state: { mode: static, details: ratioはサーバ描画時にstyleへ変換される。 }
+  browser: { apis: [CSS aspect-ratio], keyboard: [] }
+  upstream:
+    differences: [React primitiveを使わずネイティブCSSのaspect-ratioを出力する。]
+    unsupported: []
+attachment:
+  summary: 添付ファイルの情報、状態、操作を並べる表示コンテナ。
+  composition:
+    required: []
+    notes: Media、Content、Title、Description、Actions、Action、Triggerは表示内容に応じて組み合わせる。
+  attributes:
+    default_target: Shadcn::Attachment
+    exceptions: [mediaのvariantはMediaへ、ボタン属性はActionまたはTriggerへ渡す。]
+  form: { kind: none, details: ファイルinputを内包せずフォーム値を送信しない。ActionとTriggerは既定でtype=button。 }
+  state: { mode: server, details: orientation、size、data-stateは描画引数または利用者属性で与え、内部controlled状態は持たない。 }
+  browser: { apis: [], keyboard: [ActionとTriggerは通常のbuttonとして操作する。] }
+  upstream:
+    differences: [upload処理やReact contextを持たない表示用ViewComponentとして提供する。]
+    unsupported: [組み込みのファイル選択とアップロード処理。]
+avatar:
+  summary: 画像と代替表示をまとめるアバター。
+  composition:
+    required: []
+    notes: ImageとFallbackを用途に応じて置き、BadgeやGroupは任意に使う。
+  attributes:
+    default_target: Shadcn::Avatar
+    exceptions: [srcとaltはImageへ、グループ件数はGroup::Countへ渡す。]
+  form: { kind: none, details: フォーム値は送信しない。 }
+  state: { mode: static, details: sizeと表示内容はサーバ描画で確定し、画像失敗を切り替える内部状態はない。 }
+  browser: { apis: [HTML image element], keyboard: [] }
+  upstream:
+    differences: [Base UI Avatar primitiveの画像ロード状態管理を持たず、ImageとFallbackをそのままSSRする。]
+    unsupported: [画像ロード失敗時のFallback自動切替。]
+badge:
+  summary: 短い状態や分類を示すインラインラベル。
+  composition: { required: [], notes: テキストまたはアイコンをrootの内容として渡す。 }
+  attributes: { default_target: Shadcn::Badge, exceptions: [] }
+  form: { kind: none, details: フォーム値は送信しない。 }
+  state: { mode: static, details: variantはサーバ描画時に確定する。 }
+  browser: { apis: [], keyboard: [] }
+  upstream:
+    differences: [render propの代わりにtag差し替えでリンク等の要素を描画する。]
+    unsupported: []
+breadcrumb:
+  summary: 現在位置までの階層をナビゲーションとして示す。
+  composition:
+    required: [Shadcn::Breadcrumb::List, Shadcn::Breadcrumb::Item]
+    notes: 各ItemにLinkまたは現在位置のPageを置き、必要に応じてSeparatorやEllipsisを挟む。
+  attributes:
+    default_target: Shadcn::Breadcrumb
+    exceptions: [hrefはLinkへ、aria-current等はPageへ渡す。]
+  form: { kind: none, details: フォーム値は送信しない。 }
+  state: { mode: static, details: 階層と現在位置はサーバ描画で確定する。 }
+  browser: { apis: [HTML navigation and links], keyboard: [Linkは通常のリンクとしてTabとEnterで操作する。] }
+  upstream:
+    differences: [React Slotを使わず公開子ViewComponentを明示的に合成する。]
+    unsupported: []
+bubble:
+  summary: 会話の発言本文と反応を吹き出しとして表示する。
+  composition:
+    required: [Shadcn::Bubble::Content]
+    notes: 複数件はGroupでまとめ、Reactionsは任意に追加する。
+  attributes:
+    default_target: Shadcn::Bubble
+    exceptions: [reaction配置のalignはReactionsへ渡す。]
+  form: { kind: none, details: フォーム値は送信せず、反応操作の送信処理も内蔵しない。 }
+  state: { mode: static, details: variantとalignはサーバ描画時に確定する。 }
+  browser: { apis: [], keyboard: [] }
+  upstream:
+    differences: [反応のイベント処理を持たない表示用ViewComponentとして提供する。]
+    unsupported: [組み込みのreaction追加処理。]
+button:
+  summary: ネイティブbuttonまたは差し替えたリンクを共通スタイルで描画する。
+  composition: { required: [], notes: ラベルを内容として渡し、必要ならtag=:aでリンクにする。 }
+  attributes: { default_target: Shadcn::Button, exceptions: [aria-label等のARIA属性は実buttonへそのまま渡る。] }
+  form: { kind: action, details: button時のname/value/disabled/typeはネイティブ要素へ渡る。submitとして実行された時だけsuccessful controlとなり、nameがあればname=valueを一件送信する。disabledなら送信せず、value省略時の送信値は空文字列。type省略時はHTML既定のsubmitになる。 }
+  state: { mode: native, details: disabledや押下状態はネイティブ要素が担い、controlled状態APIはない。 }
+  browser: { apis: [HTML button element], keyboard: [EnterまたはSpaceでbuttonを実行する。, リンクはEnterで移動する。] }
+  upstream:
+    differences: [asChildまたはrender propの代わりにtag引数で要素を差し替える。]
+    unsupported: []
+button-group:
+  summary: 関連するボタンを横または縦に一体配置する。
+  composition: { required: [], notes: Shadcn::Button等の操作要素を内容として並べ、SeparatorやTextを任意に挟む。 }
+  attributes:
+    default_target: Shadcn::ButtonGroup
+    exceptions: [separatorのorientationはShadcn::ButtonGroup::Separatorへ、各操作属性は個々のButtonへ渡す。]
+  form: { kind: none, details: rootとSeparatorとTextはフォーム値を送信しない。内包する各buttonの送信契約はButton側が担う。 }
+  state: { mode: static, details: orientationはサーバ描画時に確定し、選択状態を管理しない。 }
+  browser: { apis: [], keyboard: [内包する各buttonのネイティブキーボード操作を使う。] }
+  upstream:
+    differences: [ButtonGroupSeparatorは標準SeparatorをViewComponentとして合成する。]
+    unsupported: []
+calendar:
+  summary: 一か月分の日付gridと前後月ナビゲーションをSSRする。
+  composition: { required: [], notes: Navigation、DayButton、月gridはrootが内部生成する。 }
+  attributes:
+    default_target: Shadcn::Calendar
+    exceptions: [month、selected、month_pathはrootのRuby引数でありHTML属性ではない。, 月表はrole=grid/aria-labelledby、日付cellはrole=gridcell/aria-selected、日付buttonは日付のaria-labelを持つ。]
+  form: { kind: none, details: 日付はtype=buttonでフォーム値を送信しない。月移動はフォームcontrolではなくmonth_pathへのGETリンクを使う。 }
+  state: { mode: server, details: 表示月と選択日はサーバ入力が正本で、Stimulusは現在の月grid内のフォーカスだけをuncontrolledに移動する。 }
+  browser:
+    apis: [HTML table grid, HTML links]
+    keyboard: [矢印キーで表示中の42日間を移動する。, HomeとEndで週の端へ移動する。, 前後月リンクはTabで移動しEnterで実行する。]
+  upstream:
+    differences: [react-day-pickerを使わず日曜始まりの月表をRubyで生成し、月移動はGETラウンドトリップにする。]
+    unsupported: [範囲選択、複数選択、複数月表示、upstreamの高度なday-picker設定。]
+card:
+  summary: 見出し、本文、操作、フッターをまとめる静的カード。
+  composition: { required: [], notes: Header、Title、Description、Action、Content、Footerを必要な部分だけ組み合わせる。 }
+  attributes:
+    default_target: Shadcn::Card
+    exceptions: [各領域固有の属性は対応する子classへ渡す。]
+  form: { kind: none, details: コンポーネント自身はフォーム値を送信しない。 }
+  state: { mode: static, details: 内部状態を持たない。 }
+  browser: { apis: [], keyboard: [] }
+  upstream:
+    differences: [Reactコンポーネントの代わりに明示的な子ViewComponentを合成する。]
+    unsupported: []
+carousel:
+  summary: 横または縦方向にスライドをスクロールするカルーセル。
+  composition:
+    required: [Shadcn::Carousel::Content, Shadcn::Carousel::Item]
+    notes: PreviousとNextは任意だが、ボタン操作を提供する場合はroot内へ置く。
+  attributes:
+    default_target: Shadcn::Carousel
+    exceptions: [viewport属性はContentへ、スライド属性はItemへ、ボタン属性はPreviousまたはNextへ渡す。, rootはrole=region/aria-roledescription=carousel、Itemはrole=group/aria-roledescription=slideを持つ。]
+  form: { kind: none, details: ナビゲーションはtype=buttonでname/valueを送信しない。 }
+  state: { mode: uncontrolled, details: スクロール位置はブラウザが保持しStimulusがボタンdisabled状態を同期する。controlled index APIはない。 }
+  browser:
+    apis: [Element.scrollBy, scroll events, CSS scroll snap]
+    keyboard: [横LTRは左右、横RTLは逆方向の左右、縦は上下矢印で移動する。, PreviousとNextはbuttonとしてEnterまたはSpaceで操作する。]
+  upstream:
+    differences: [embla-carouselを使わずネイティブスクロールとscroll snapで再実装する。]
+    unsupported: [Embla plugin、loop、dragFree、外部carousel API。]
+chart:
+  summary: サーバ生成したグラフ内容へテーマ、tooltip、legendの表示枠を提供する。
+  composition:
+    required: [Shadcn::Chart::Container]
+    notes: TooltipContent、LegendContent、Styleを必要に応じてContainer内または同じ描画領域へ置く。
+  attributes:
+    default_target: Shadcn::Chart::Container
+    exceptions: [tooltip、legend、styleの属性は各対応classへ渡す。]
+  form: { kind: none, details: フォーム値は送信しない。 }
+  state: { mode: server, details: グラフ本体と系列設定は利用者がサーバ側で描画し、このitemはクライアント状態を管理しない。 }
+  browser: { apis: [CSS custom properties], keyboard: [] }
+  upstream:
+    differences: [rechartsを同梱せず、描画内容を受け取るコンテナと静的なtooltip・legend・styleだけを提供する。]
+    unsupported: [rechartsの描画、hover連動tooltip、系列データの自動legend生成。]
+checkbox:
+  summary: ネイティブinputを状態の正本にするチェックボックス。
+  composition: { required: [], notes: indicatorはrootが装飾要素として内部生成する。 }
+  attributes: { default_target: Shadcn::Checkbox, exceptions: [利用者のARIA属性は実inputへ渡り、表示用indicatorはaria-hiddenになる。ラベルはidと外部labelのforで接続する。] }
+  form: { kind: native, details: name/value/disabled/form/requiredはinputへ渡る。checkedならvalue（省略時on）を一件送信し、未選択またはdisabledなら送信しない。 }
+  state: { mode: native, details: checkedが唯一の状態源でuncontrolledに変化し、Stimulusはdata-checked/data-uncheckedだけを同期する。programmatic変更はchangeイベントが必要。 }
+  browser: { apis: [HTML checkbox input, form reset], keyboard: [Spaceで選択を切り替える。] }
+  upstream:
+    differences: [Base UI Checkbox primitiveの代わりにinput type=checkboxとCSS peer indicatorを使う。]
+    unsupported: [indeterminate状態の専用API、controlled checkedとonCheckedChange。]
+collapsible:
+  summary: ネイティブdetailsで任意内容を開閉する。
+  composition:
+    required: [Shadcn::Collapsible::Trigger, Shadcn::Collapsible::Content]
+    notes: Triggerをrootの直接子としてContentより前に置く。
+  attributes:
+    default_target: Shadcn::Collapsible
+    exceptions: [trigger固有の属性はTriggerへ、初期開状態はrootのopen属性で指定する。, details/summaryのネイティブアクセシビリティを使い、独自ARIA状態は追加しない。]
+  form: { kind: none, details: フォーム値は送信しない。 }
+  state: { mode: native, details: open状態はdetailsが保持するuncontrolled状態で、JavaScriptを必要としない。 }
+  browser: { apis: [HTML details element], keyboard: [TriggerのEnterまたはSpaceで開閉する。] }
+  upstream:
+    differences: [Base UI Collapsible primitiveの代わりにdetailsとsummaryを使う。]
+    unsupported: [controlled openとonOpenChange。]
+combobox:
+  summary: 候補の絞り込みと単一または複数選択を行うフォーム部品。
+  composition:
+    required: [Shadcn::Combobox::Input, Shadcn::Combobox::Content, Shadcn::Combobox::List, Shadcn::Combobox::Item]
+    notes: Itemにはvalueが必須。複数選択の表示にはChips、Chip、ChipsInputを利用できる。
+  attributes:
+    default_target: Shadcn::Combobox
+    exceptions: [入力属性はInputまたはChipsInputへ、候補値とdisabledはItemへ渡す。name/default_value/multiple/required/form/disabledはrootのフォーム契約。, 入力はrole=comboboxとaria-expanded、候補一覧はrole=listbox、Itemはrole=optionとaria-selected/aria-disabledを持つ。]
+  form: { kind: composite, details: "表示UIとは別にrootが送信用selectを生成する。name指定時、単一選択はname=選択値を一件、未選択はname=空文字列を送信する。multipleは選択値ごとに同じnameで複数件を送り、未選択時は補助hidden inputがname=空文字列を一件送信する。disabled時はselectと補助inputのどちらも送信しない。requiredとformはselectへ反映する。" }
+  state: { mode: uncontrolled, details: default_valueは初期値のみで、以後の選択値、候補表示、filter、chipはStimulusとhidden selectが保持する。controlled value APIはない。 }
+  browser:
+    apis: [Popover API, HTML select element, form reset]
+    keyboard: [入力中の上下矢印で候補を移動する。, Enterで選択する。, Escapeで候補を閉じる。, 複数選択ではBackspaceで直前chipを削除する。]
+  upstream:
+    differences: [Base UI Combobox primitiveの代わりに入力、Popover API listbox、hidden selectを合成する。]
+    unsupported: [controlled valueとonValueChange、仮想化、非文字列フォーム値。]
+command:
+  summary: 入力文字列でコマンド項目を絞り込むリスト。
+  composition:
+    required: [Shadcn::Command::Input, Shadcn::Command::List, Shadcn::Command::Item]
+    notes: Empty、Group、Separator、Shortcutは内容に応じて追加し、Dialog版はShadcn::Command::Dialogを使う。
+  attributes:
+    default_target: Shadcn::Command
+    exceptions: [placeholder等はInputへ、検索対象値はItemのvalueへ渡す。, 検索inputはaria-label=コマンド検索、Itemはrole=optionとdata-selectedを持つ。]
+  form: { kind: none, details: 検索inputはフォーム送信用nameを既定で持たず、Itemも値を送信しない。 }
+  state: { mode: uncontrolled, details: query、可視項目、選択候補はStimulusがDOM上で管理し、controlled filter/value APIはない。 }
+  browser:
+    apis: []
+    keyboard: [上下矢印で可視Itemを移動する。, HomeとEndで端へ移動する。, Enterで選択イベントを発火する。]
+  upstream:
+    differences: [cmdkを使わずSSR済み項目をStimulusで絞り込み、Dialog版は本gemのDialogを合成する。]
+    unsupported: [独自filter関数、score、controlled value、非同期候補管理、listbox/aria-activedescendantによるactive item参照。]
+context-menu:
+  summary: 右クリック位置へ表示するARIA menu。
+  composition:
+    required: [Shadcn::ContextMenu::Trigger, Shadcn::ContextMenu::Content, Shadcn::ContextMenu::Item]
+    notes: CheckboxItem、RadioGroupとRadioItem、SubとSubTriggerとSubContentは必要な選択・階層構造に応じて使う。
+  attributes:
+    default_target: Shadcn::ContextMenu
+    exceptions: [右クリック対象の属性はTriggerへ、配置属性はContent/SubContentへ、選択値やdisabledは各Itemへ渡す。]
+  form: { kind: none, details: menu項目はフォームcontrolではなくname/valueを送信しない。CheckboxItemとRadioItemの状態もフォーム値にはならない。 }
+  state: { mode: uncontrolled, details: 開閉とactive itemはStimulusがDOM上で保持する。checkbox/radioのchecked表示はサーバー描画値で、操作しても自動反転せずcontrolled APIもない。 }
+  browser:
+    apis: [Popover API, contextmenu event]
+    keyboard: [右クリックまたはContext Menu操作で開く。, 上下矢印で項目移動する。, HomeとEndで端へ移動する。, EnterまたはSpaceで実行する。, 右矢印でsubmenuを開き左矢印で戻る。, Escapeで閉じる。]
+  upstream:
+    differences: [Base UI ContextMenu primitiveの代わりにPopover APIと共通menu controllerを使う。]
+    unsupported: [controlled open、modal設定、collision middlewareの完全互換、checkbox/radioのchecked自動更新と変更callback。]
+dialog:
+  summary: ネイティブdialog要素によるモーダルダイアログ。
+  composition:
+    required: [Shadcn::Dialog::Trigger, Shadcn::Dialog::Content, Shadcn::Dialog::Title, Shadcn::Dialog::Description]
+    notes: Close、Header、Footerは任意。TriggerとContentは同じroot内に置く。
+  attributes:
+    default_target: Shadcn::Dialog
+    exceptions: [dialog要素のARIA属性はContentへ、ボタン属性はTriggerまたはCloseへ渡す。]
+  form: { kind: none, details: TriggerとCloseは既定でtype=buttonであり、コンポーネント自身はフォーム値を送信しない。 }
+  state: { mode: uncontrolled, details: open状態はdialog要素とStimulusが保持する。show_close_buttonはSSR構造だけを決め、controlled open APIはない。 }
+  browser:
+    apis: [HTMLDialogElement.showModal, HTMLDialogElement.close]
+    keyboard: [Tabでモーダル内を移動する。, Escapeで閉じる。, TriggerとCloseはEnterまたはSpaceで操作する。]
+  upstream:
+    differences: [Base UI Dialog primitiveの代わりにdialogを使い、RootとPortalは実体ラッパー、Overlayは::backdropで代替する。]
+    unsupported: [controlled openとonOpenChange、Portal先の指定。]

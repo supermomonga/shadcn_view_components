@@ -21,8 +21,10 @@ module ShadcnViewComponents
 
       SLOTS = T.let([
         { name: "slider", tag: "SliderPrimitive.Root", static_attributes: {}.freeze, dynamic_attributes: ["defaultValue", "max", "min", "value"].freeze }.freeze,
+        { name: "", tag: "SliderPrimitive.Control", static_attributes: { class: "relative flex w-full touch-none items-center select-none data-disabled:opacity-50 data-vertical:h-full data-vertical:min-h-40 data-vertical:w-auto data-vertical:flex-col" }.freeze, dynamic_attributes: [].freeze }.freeze,
         { name: "slider-track", tag: "SliderPrimitive.Track", static_attributes: { class: "relative grow overflow-hidden rounded-full bg-muted select-none data-horizontal:h-1 data-horizontal:w-full data-vertical:h-full data-vertical:w-1" }.freeze, dynamic_attributes: [].freeze }.freeze,
-        { name: "slider-range", tag: "SliderPrimitive.Indicator", static_attributes: { class: "bg-primary select-none data-horizontal:h-full data-vertical:w-full" }.freeze, dynamic_attributes: [].freeze }.freeze
+        { name: "slider-range", tag: "SliderPrimitive.Indicator", static_attributes: { class: "bg-primary select-none data-horizontal:h-full data-vertical:w-full" }.freeze, dynamic_attributes: [].freeze }.freeze,
+        { name: "slider-thumb", tag: "SliderPrimitive.Thumb", static_attributes: { class: "relative block size-3 shrink-0 rounded-full border border-ring bg-white ring-ring/50 transition-[color,box-shadow] select-none after:absolute after:-inset-2 hover:ring-3 focus-visible:ring-3 focus-visible:outline-hidden active:ring-3 disabled:pointer-events-none disabled:opacity-50" }.freeze, dynamic_attributes: [].freeze }.freeze
       ].freeze, T::Array[T::Hash[Symbol, T.untyped]])
 
       extend T::Sig

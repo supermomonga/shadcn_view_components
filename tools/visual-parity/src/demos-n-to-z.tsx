@@ -6,11 +6,18 @@ import type { ComponentType } from "react"
 
 import { Input } from "./components/ui/input.tsx"
 import {
+  InputOTP, InputOTPGroup, InputOTPSlot,
+} from "./components/ui/input-otp.tsx"
+import { InputGroup, InputGroupAddon, InputGroupInput } from "./components/ui/input-group.tsx"
+import {
   Item, ItemContent, ItemDescription, ItemGroup, ItemMedia, ItemSeparator, ItemTitle,
 } from "./components/ui/item.tsx"
 import { Kbd, KbdGroup } from "./components/ui/kbd.tsx"
 import { Label } from "./components/ui/label.tsx"
 import { Marker, MarkerContent } from "./components/ui/marker.tsx"
+import {
+  Message, MessageAvatar, MessageContent, MessageFooter, MessageGroup, MessageHeader,
+} from "./components/ui/message.tsx"
 import {
   Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarShortcut,
   MenubarTrigger,
@@ -19,6 +26,7 @@ import {
   NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink,
   NavigationMenuList, NavigationMenuTrigger,
 } from "./components/ui/navigation-menu.tsx"
+import { NativeSelect, NativeSelectOption } from "./components/ui/native-select.tsx"
 import {
   Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink,
   PaginationNext, PaginationPrevious,
@@ -26,15 +34,21 @@ import {
 import {
   Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger,
 } from "./components/ui/popover.tsx"
+import { Progress } from "./components/ui/progress.tsx"
 import { Button } from "./components/ui/button.tsx"
 import { RadioGroup, RadioGroupItem } from "./components/ui/radio-group.tsx"
 import {
   ResizableHandle, ResizablePanel, ResizablePanelGroup,
 } from "./components/ui/resizable.tsx"
 import { ScrollArea } from "./components/ui/scroll-area.tsx"
+import {
+  Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger,
+  SelectValue,
+} from "./components/ui/select.tsx"
 import { Separator } from "./components/ui/separator.tsx"
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "./components/ui/sheet.tsx"
 import { Skeleton } from "./components/ui/skeleton.tsx"
+import { Slider } from "./components/ui/slider.tsx"
 import { Spinner } from "./components/ui/spinner.tsx"
 import { Switch } from "./components/ui/switch.tsx"
 import {
@@ -46,10 +60,36 @@ import { Toggle } from "./components/ui/toggle.tsx"
 import { ToggleGroup, ToggleGroupItem } from "./components/ui/toggle-group.tsx"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./components/ui/tooltip.tsx"
 
+const selectLabels = {
+  apple: "りんご",
+  banana: "バナナ",
+  orange: "オレンジ",
+} as const
+
 export const demosNToZ: Record<string, ComponentType> = {
   "input/default": () => <Input type="email" placeholder="email@example.com" />,
 
   "input/disabled": () => <Input placeholder="無効" disabled />,
+
+  "input-otp/default": () => (
+    <InputOTP maxLength={6} defaultValue="12" aria-label="認証コード">
+      <InputOTPGroup>
+        <InputOTPSlot index={0} />
+        <InputOTPSlot index={1} />
+        <InputOTPSlot index={2} />
+        <InputOTPSlot index={3} />
+        <InputOTPSlot index={4} />
+        <InputOTPSlot index={5} />
+      </InputOTPGroup>
+    </InputOTP>
+  ),
+
+  "input-group/default": () => (
+    <InputGroup className="max-w-xs">
+      <InputGroupAddon>https://</InputGroupAddon>
+      <InputGroupInput type="text" placeholder="example.com" aria-label="Webサイト" />
+    </InputGroup>
+  ),
 
   "item/default": () => (
     <ItemGroup>
@@ -97,6 +137,19 @@ export const demosNToZ: Record<string, ComponentType> = {
     </>
   ),
 
+  "message/default": () => (
+    <MessageGroup aria-label="会話">
+      <Message>
+        <MessageAvatar aria-hidden="true">🤖</MessageAvatar>
+        <MessageContent>
+          <MessageHeader>アシスタント</MessageHeader>
+          <p>ご用件をお聞かせください。</p>
+          <MessageFooter>たった今</MessageFooter>
+        </MessageContent>
+      </Message>
+    </MessageGroup>
+  ),
+
   "menubar/default": () => (
     <Menubar>
       <MenubarMenu>
@@ -134,6 +187,13 @@ export const demosNToZ: Record<string, ComponentType> = {
     </NavigationMenu>
   ),
 
+  "native-select/default": () => (
+    <NativeSelect name="fruit" aria-label="果物">
+      <NativeSelectOption value="apple">りんご</NativeSelectOption>
+      <NativeSelectOption value="banana">バナナ</NativeSelectOption>
+    </NativeSelect>
+  ),
+
   "pagination/default": () => (
     <Pagination>
       <PaginationContent>
@@ -159,10 +219,24 @@ export const demosNToZ: Record<string, ComponentType> = {
     </Popover>
   ),
 
+  "progress/default": () => <Progress value={60} aria-label="アップロード進捗" />,
+
   "radio-group/default": () => (
-    <RadioGroup>
-      <RadioGroupItem name="plan" value="free" />
-      <RadioGroupItem name="plan" value="pro" />
+    <RadioGroup aria-label="プラン">
+      <RadioGroupItem name="plan" value="free" aria-label="無料" />
+      <RadioGroupItem name="plan" value="pro" aria-label="プロ" />
+    </RadioGroup>
+  ),
+
+  "radio-group/checked": () => (
+    <RadioGroup aria-label="プラン" defaultValue="pro">
+      <RadioGroupItem value="pro" aria-label="選択済みプラン" />
+    </RadioGroup>
+  ),
+
+  "radio-group/unchecked": () => (
+    <RadioGroup aria-label="プラン">
+      <RadioGroupItem value="pro" aria-label="未選択プラン" />
     </RadioGroup>
   ),
 
@@ -204,6 +278,25 @@ export const demosNToZ: Record<string, ComponentType> = {
     </ScrollArea>
   ),
 
+  "select/default": () => (
+    <Select defaultValue="apple">
+      <SelectTrigger>
+        <SelectValue placeholder="果物を選択">
+          {(value) => value == null ? "果物を選択" : selectLabels[value as keyof typeof selectLabels]}
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectLabel>果物</SelectLabel>
+          <SelectItem value="apple">りんご</SelectItem>
+          <SelectItem value="banana">バナナ</SelectItem>
+          <SelectSeparator />
+          <SelectItem value="orange">オレンジ</SelectItem>
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  ),
+
   "separator/horizontal": () => <Separator />,
 
   "separator/vertical": () => <Separator orientation="vertical" className="h-8" />,
@@ -225,11 +318,30 @@ export const demosNToZ: Record<string, ComponentType> = {
 
   "skeleton/default": () => <Skeleton className="h-8 w-full" />,
 
+  "slider/default": () => (
+    <Slider min={0} max={100} defaultValue={[40]} aria-label="音量" />
+  ),
+
+  "slider/vertical": () => (
+    <Slider
+      min={0}
+      max={100}
+      defaultValue={[40]}
+      orientation="vertical"
+      aria-label="音量"
+      style={{ height: "160px" }}
+    />
+  ),
+
   "spinner/default": () => <Spinner />,
 
   "spinner/large": () => <Spinner className="size-8" />,
 
-  "switch/default": () => <Switch id="switch" name="switch" />,
+  "switch/default": () => <Switch id="switch" name="switch" aria-label="通知" />,
+
+  "switch/checked": () => <Switch defaultChecked aria-label="通知オン" />,
+
+  "switch/unchecked": () => <Switch defaultChecked={false} aria-label="通知オフ" />,
 
   "switch/small": () => <Switch size="sm" name="switch-sm" />,
 

@@ -130,11 +130,12 @@ collapsible:
 
 combobox:
   exports:
+    - { component: Shadcn::Combobox, export: Combobox }
     - { component: Shadcn::Combobox::Input, export: ComboboxInput }
     - { component: Shadcn::Combobox::Trigger, export: ComboboxTrigger }
     - { component: Shadcn::Combobox::Content, export: ComboboxContent }
     - { component: Shadcn::Combobox::List, export: ComboboxList }
-    - { component: Shadcn::Combobox::Item, export: ComboboxItem }
+    - { component: Shadcn::Combobox::Item, export: ComboboxItem, args: { value: test } }
     - { component: Shadcn::Combobox::Group, export: ComboboxGroup }
     - { component: Shadcn::Combobox::Label, export: ComboboxLabel }
     - { component: Shadcn::Combobox::Empty, export: ComboboxEmpty }
@@ -142,7 +143,7 @@ combobox:
     - { component: Shadcn::Combobox::Collection, export: ComboboxCollection }
     - { component: Shadcn::Combobox::Value, export: ComboboxValue }
     - { component: Shadcn::Combobox::Chips, export: ComboboxChips }
-    - { component: Shadcn::Combobox::Chip, export: ComboboxChip }
+    - { component: Shadcn::Combobox::Chip, export: ComboboxChip, args: { value: test } }
     - { component: Shadcn::Combobox::ChipsInput, export: ComboboxChipsInput }
 command:
   exports:
@@ -269,7 +270,7 @@ input-otp:
   exports:
     - { component: Shadcn::InputOTP, export: InputOTP }
     - { component: Shadcn::InputOTP::Group, export: InputOTPGroup }
-    - { component: Shadcn::InputOTP::Slot, export: InputOTPSlot }
+    - { component: Shadcn::InputOTP::Slot, export: InputOTPSlot, args: { index: 0 } }
     - { component: Shadcn::InputOTP::Separator, export: InputOTPSeparator }
 item:
   exports:
@@ -392,12 +393,12 @@ scroll-area:
 
 select:
   exports:
-    # base-nova で Select ルートはプリミティブ別名(契約面なし)のため非対象
+    - { component: Shadcn::Select, export: Select }
     - { component: Shadcn::Select::Trigger, export: SelectTrigger }
     - { component: Shadcn::Select::Value, export: SelectValue }
     - { component: Shadcn::Select::Content, export: SelectContent }
     - { component: Shadcn::Select::Group, export: SelectGroup }
-    - { component: Shadcn::Select::Item, export: SelectItem }
+    - { component: Shadcn::Select::Item, export: SelectItem, args: { value: test } }
     - { component: Shadcn::Select::Label, export: SelectLabel }
     - { component: Shadcn::Select::Separator, export: SelectSeparator }
     - { component: Shadcn::Select::ScrollUpButton, export: SelectScrollUpButton }
@@ -479,8 +480,8 @@ tabs:
   exports:
     - { component: Shadcn::Tabs, export: Tabs }
     - { component: Shadcn::Tabs::List, export: TabsList }
-    - { component: Shadcn::Tabs::Trigger, export: TabsTrigger }
-    - { component: Shadcn::Tabs::Content, export: TabsContent }
+    - { component: Shadcn::Tabs::Trigger, export: TabsTrigger, args: { value: test } }
+    - { component: Shadcn::Tabs::Content, export: TabsContent, args: { value: test } }
 
 textarea:
   exports:

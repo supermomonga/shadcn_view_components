@@ -38,6 +38,13 @@ module Shadcn
     end
 
     class Content < BaseComponent
+      include Shadcn::FloatingPositionOptions
+
+      FLOATING_POSITION_DEFAULTS = T.let(
+        { side: :top, align: :center, side_offset: 4, align_offset: 0, collision_padding: 5 }.freeze,
+        T::Hash[Symbol, T.untyped]
+      )
+
       # 契約スロット構成: tooltip-content(arrow は data-slot を持たない装飾要素)
       sig { override.returns(String) }
       def call
@@ -51,8 +58,7 @@ module Shadcn
       sig { returns(T::Hash[Symbol, T.untyped]) }
       def content_attributes
         attributes = @html_args.merge(class: self.class.classes(extra: @user_class))
-        data = T.cast(attributes[:data], T.nilable(T::Hash[Symbol, T.untyped])) || {}
-        attributes[:data] = { slot: "tooltip-content", state: "closed" }.merge(data)
+        merge_floating_position_data(attributes, slot: "tooltip-content", state: "closed")
         attributes[:role] = "tooltip"
         attributes[:hidden] = true
         attributes

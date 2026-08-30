@@ -4,6 +4,8 @@ on:
   pull_request:
   push:
     branches: [main]
+  # GITHUB_TOKENが作成したupstream-sync PRでも、同じheadに必須checkを付ける。
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -12,87 +14,145 @@ concurrency:
 permissions:
   contents: read
 
+# このworkflowは検証job専用。各jobのLOCAL_VERIFY_TASKとverify:fullの対応は
+# verification_entrypoint_spec.rbが双方向に検査する。
 jobs:
   lint-ruby:
     runs-on: ubuntu-latest
+    env:
+      LOCAL_VERIFY_TASK: verify:rubocop
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-      - uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
-      - run: bundle install
-      - run: bundle exec rubocop
+      - id: setup_checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - id: setup_mise
+        uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
+      - id: setup_dependencies
+        name: Install all verification dependencies
+        run: bin/setup
+      - id: verification
+        run: bundle exec rake "$LOCAL_VERIFY_TASK"
 
   lint-js:
     runs-on: ubuntu-latest
+    env:
+      LOCAL_VERIFY_TASK: verify:javascript
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-      - uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
-      - name: Install extractor dependencies
-        run: pnpm -C tools/extractor install --frozen-lockfile
-      - name: Typecheck (tsc --noEmit)
-        run: pnpm -C tools/extractor run typecheck
-      - name: Unit tests (vitest)
-        run: pnpm -C tools/extractor run test
+      - id: setup_checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - id: setup_mise
+        uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
+      - id: setup_dependencies
+        name: Install all verification dependencies
+        run: bin/setup
+      - id: verification
+        name: Lint, typecheck, DOM unit tests, and bundled consumer test
+        run: bundle exec rake "$LOCAL_VERIFY_TASK"
 
   sorbet:
     runs-on: ubuntu-latest
+    env:
+      LOCAL_VERIFY_TASK: verify:sorbet
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-      - uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
-      - run: bundle install
-      - name: Static type check
-        run: bundle exec srb tc
-      - name: RBI freshness (コミット済みRBIがGemfile.lockと乖離していないこと)
-        run: |
-          bundle exec tapioca gem
-          git diff --exit-code -- sorbet/rbi/gems
+      - id: setup_checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - id: setup_mise
+        uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
+      - id: setup_dependencies
+        name: Install all verification dependencies
+        run: bin/setup
+      - id: verification
+        name: Static type check and RBI freshness
+        run: bundle exec rake "$LOCAL_VERIFY_TASK"
 
   rspec:
     runs-on: ubuntu-latest
+    env:
+      LOCAL_VERIFY_TASK: verify:spec
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-      - uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
-      - run: bundle install
+      - id: setup_checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - id: setup_mise
+        uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
+      - id: setup_dependencies
+        name: Install all verification dependencies
+        run: bin/setup
       # 層1(コンポーネント) / 層2(適合試験) / 層4(生成物整合)
-      - run: bundle exec rspec spec/components spec/conformance spec/contracts
+      - id: verification
+        run: bundle exec rake "$LOCAL_VERIFY_TASK"
 
   system:
     runs-on: ubuntu-latest
+    env:
+      LOCAL_VERIFY_TASK: verify:system
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-      - uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
-      - uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce # v1
-      - run: bundle install
-      - run: CHROME_BIN=$(which chrome) bundle exec rspec spec/system
+      - id: setup_checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - id: setup_mise
+        uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
+      - id: setup_chrome
+        uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce # v1
+      - id: setup_dependencies
+        name: Install all verification dependencies
+        run: bin/setup
+      - id: verification
+        run: CHROME_BIN=$(which chrome) bundle exec rake "$LOCAL_VERIFY_TASK"
 
   parity:
     runs-on: ubuntu-latest
+    env:
+      LOCAL_VERIFY_TASK: verify:parity
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-      - uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
-      - uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce # v1
-      - run: bundle install
-      - name: Install visual-parity harness dependencies
-        run: pnpm -C tools/visual-parity install --frozen-lockfile
+      - id: setup_checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - id: setup_mise
+        uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
+      - id: setup_chrome
+        uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce # v1
+      - id: setup_dependencies
+        name: Install all verification dependencies
+        run: bin/setup
       # ローカルと同じ自己起動パス(ハーネスのキャッシュビルド+vite preview起動)を通す
-      - run: CHROME_BIN=$(which chrome) bundle exec rspec spec/visual
+      - id: verification
+        run: CHROME_BIN=$(which chrome) bundle exec rake "$LOCAL_VERIFY_TASK"
+      - id: artifact_visual_parity
+        name: Upload visual parity artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: visual-parity-${{ github.run_id }}-${{ github.run_attempt }}
+          path: tmp/visual-parity
+          if-no-files-found: ignore
+          retention-days: 7
 
   determinism:
     runs-on: ubuntu-latest
+    env:
+      LOCAL_VERIFY_TASK: verify:generated
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-      - uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
-      - run: pnpm -C tools/extractor install --frozen-lockfile
+      - id: setup_checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - id: setup_mise
+        uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
+      - id: setup_dependencies
+        name: Install all verification dependencies
+        run: bin/setup
       # 最重要ジョブ(09 §2): 「生成物が手編集された」「パイプラインが非決定論化した」の両方を検知
-      - name: Determinism check (byte-identical regeneration)
-        run: pnpm -C tools/extractor exec tsx src/cli.ts check
-      - name: Working tree must be clean
-        run: git diff --exit-code
+      - id: verification
+        name: Determinism and working-tree check
+        run: bundle exec rake "$LOCAL_VERIFY_TASK"
 
   tailwind-build:
     runs-on: ubuntu-latest
+    env:
+      LOCAL_VERIFY_TASK: verify:tailwind
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-      - uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
-      - run: pnpm -C tools/extractor install --frozen-lockfile
+      - id: setup_checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - id: setup_mise
+        uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
+      - id: setup_dependencies
+        name: Install all verification dependencies
+        run: bin/setup
       # 契約クラスが実際にTailwind v4ビルドを通るか(06 §6)
-      - run: pnpm -C tools/extractor run tailwind:check
+      - id: verification
+        run: bundle exec rake "$LOCAL_VERIFY_TASK"

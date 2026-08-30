@@ -1,173 +1,277 @@
 import { Controller } from "@hotwired/stimulus"
 
-import { hideAfterExit } from "shadcn/hide_after_exit"
-import { applyStateAttrs } from "shadcn/state_attrs"
+import { pointAnchor } from "@supermomonga/shadcn-view-components/floating_position"
+import {
+  activateMenuItemFromKeyboard,
+  applyMenuTriggerState,
+  associateMenuElements,
+  directMenuItems,
+  isOwnedMenuElement,
+  MenuPopoverManager,
+  ownedMenuElements,
+  scopedMenuElement,
+} from "@supermomonga/shadcn-view-components/menu_popover"
 
-// ARIA menu パターンの共通実装(dropdown-menu / context-menu 共用 — 05 §4)。
-// - 矢印 / Home / End でハイライト移動(roving)
-// - Esc で閉じる、項目の activation で閉じる
-// - context-menu は右クリック位置に開く
-//
-// 項目の操作はルート要素へのキャプチャフェースリスナーで一括処理する
-// (popover の top layer 配下でも安定して動作させるため)
+const SUB_SCOPE_SELECTOR = "[data-slot$='-sub']"
+const SUB_TRIGGER_SELECTOR = "[data-slot$='-sub-trigger']"
+
+// DropdownMenu / ContextMenu固有のARIA menu状態を管理する。
+// MenubarとNavigationMenuはDOM構造・操作モデルが異なるため専用controllerを使う。
 export default class MenuController extends Controller {
+  /** @type {HTMLElement | null} */
+  rootMenu = null
+
+  /** @type {HTMLElement | null} */
+  rootTrigger = null
+
+  /** @type {Map<HTMLElement, HTMLElement>} */
+  triggerToPopover = new Map()
+
+  /** @type {Map<HTMLElement, HTMLElement>} */
+  popoverToTrigger = new Map()
+
+  /** @type {MenuPopoverManager | null} */
+  popovers = null
+
+  /** @type {(event: MouseEvent) => void} */
+  onClick = (event) => {
+    if (!(event.target instanceof Element) || !isOwnedMenuElement(this.root, event.target)) return
+
+    const item = /** @type {HTMLElement | null} */ (event.target.closest("[role^='menuitem']"))
+    if (!item || this.triggerToPopover.has(item)) return
+    const menu = /** @type {HTMLElement | null} */ (item.closest("[role='menu']"))
+    if (menu && this.popovers?.isOpen(menu)) this.closeAll()
+  }
+
+  /** @type {(event: KeyboardEvent) => void} */
+  onKeydown = (event) => this.navigate(event)
+
+  /** @type {(event: FocusEvent) => void} */
+  onFocusOut = (event) => {
+    const next = event.relatedTarget
+    if (next instanceof Node && this.popovers?.containsOpenPopover(next)) return
+    this.closeAll()
+  }
+
+  /** @type {(event: PointerEvent) => void} */
+  onDocPointerDown = (event) => {
+    if (!this.popovers) return
+    this.popovers.beginPointerDown()
+    if (!(event.target instanceof Node)) return
+
+    for (const popover of this.popovers.openPopovers().reverse()) {
+      const trigger = this.popoverToTrigger.get(popover)
+      if (popover.contains(event.target)) continue
+      if (!trigger?.matches("[data-slot='context-menu-trigger']") && trigger?.contains(event.target)) {
+        this.popovers.recordOpenTriggerPointerDown(event, popover, trigger)
+        continue
+      }
+      this.popovers.hide(popover)
+    }
+  }
+
   connect() {
-    // navigation-menu の content は role=menu を持たないため popover 属性のみで探す
-    this.menu = this.element.querySelector("[popover]")
-    if (this.menu) {
-      this.onToggle = () => this.syncState()
-      this.menu.addEventListener("toggle", this.onToggle)
-    }
-    this.onClick = (event) => {
-      const item = event.target.closest("[role^='menuitem']")
-      if (item && !item.matches("[data-slot$='-sub-trigger']") && !item.closest("[data-slot$='-sub'] [popover]:not(:popover-open)")) {
-        this.closeAll()
-      }
-    }
-    this.onContextMenu = (event) => {
-      if (event.target.closest("[data-slot='context-menu-trigger']")) this.showAt(event)
-    }
-    this.onKeydown = (event) => this.navigate(event)
-    this.element.addEventListener("click", this.onClick, true)
-    this.element.addEventListener("contextmenu", this.onContextMenu, true)
-    this.element.addEventListener("keydown", this.onKeydown, true)
-    this.onDocPointerDown = (event) => {
-      for (const popover of this.element.querySelectorAll("[popover='manual']")) {
-        if (popover.matches(":popover-open") && !popover.contains(event.target)) this.hidePopoverAfterExit(popover)
-      }
-    }
+    this.configurePairs()
+    this.popovers = new MenuPopoverManager(this.root, (popover, state) => this.syncState(popover, state))
+    this.popovers.connect()
+    this.root.addEventListener("click", this.onClick, true)
+    this.root.addEventListener("keydown", this.onKeydown, true)
+    this.root.addEventListener("focusout", this.onFocusOut)
     document.addEventListener("pointerdown", this.onDocPointerDown)
   }
 
   disconnect() {
-    this.menu?.removeEventListener("toggle", this.onToggle)
-    this.element.removeEventListener("click", this.onClick, true)
-    this.element.removeEventListener("contextmenu", this.onContextMenu, true)
-    this.element.removeEventListener("keydown", this.onKeydown, true)
+    this.root.removeEventListener("click", this.onClick, true)
+    this.root.removeEventListener("keydown", this.onKeydown, true)
+    this.root.removeEventListener("focusout", this.onFocusOut)
     document.removeEventListener("pointerdown", this.onDocPointerDown)
+    this.popovers?.disconnect()
+    this.popovers = null
+    this.rootMenu = null
+    this.rootTrigger = null
+    this.triggerToPopover.clear()
+    this.popoverToTrigger.clear()
   }
 
-  get items() {
-    return [...(this.menu?.querySelectorAll("[role^='menuitem']:not([disabled])") ?? [])]
-  }
+  configurePairs() {
+    this.triggerToPopover.clear()
+    this.popoverToTrigger.clear()
 
-  toggle() {
-    if (!this.menu) return
-    if (this.menu.matches(":popover-open")) {
-      this.hidePopoverAfterExit(this.menu)
-    } else {
-      // toggle イベントは非同期のため、表示前に属性を先に切り替える
-      // (閉状態属性のまま表示され、exit アニメーションで始まってしまうのを防ぐ)
-      this.menu.dataset.state = "open"
-      applyStateAttrs(this.menu, "open")
-      this.menu.dataset.side = "bottom"
-      this.menu.togglePopover()
+    for (const scope of ownedMenuElements(this.root, SUB_SCOPE_SELECTOR)) {
+      const trigger = scopedMenuElement(this.root, scope, SUB_SCOPE_SELECTOR, SUB_TRIGGER_SELECTOR)
+      const popover = scopedMenuElement(this.root, scope, SUB_SCOPE_SELECTOR, "[popover][role='menu']")
+      if (trigger && popover) this.addPair(trigger, popover, "shadcn-submenu")
     }
+
+    this.rootMenu = ownedMenuElements(this.root, "[popover][role='menu']")
+      .find((popover) => !this.popoverToTrigger.has(popover)) ?? null
+    this.rootTrigger = ownedMenuElements(this.root, "[aria-haspopup='menu']")
+      .find((trigger) => !trigger.matches(SUB_TRIGGER_SELECTOR)) ?? null
+    if (this.rootTrigger && this.rootMenu) this.addPair(this.rootTrigger, this.rootMenu, "shadcn-menu")
   }
 
-  // context-menu: 右クリック位置に開く。content は popover="manual" で描かれるため
-  // 右クリックイベント列による自動解散の影響を受けない(外側クリックは自前で閉じる)
+  /** @param {HTMLElement} trigger @param {HTMLElement} popover @param {string} prefix */
+  addPair(trigger, popover, prefix) {
+    associateMenuElements(trigger, popover, prefix)
+    this.triggerToPopover.set(trigger, popover)
+    this.popoverToTrigger.set(popover, trigger)
+  }
+
+  /** @param {Event} event */
+  toggle(event) {
+    if (!(event.currentTarget instanceof HTMLElement)) return
+
+    const popover = this.triggerToPopover.get(event.currentTarget)
+    if (!popover || !this.popovers) return
+    if (this.popovers.consumeOpenTriggerPointer(event, event.currentTarget)) {
+      this.closeMenu(popover)
+      return
+    }
+    if (this.popovers.isOpen(popover)) this.closeMenu(popover)
+    else this.showMenu(popover, event.currentTarget)
+  }
+
+  /** @param {MouseEvent} event */
   showAt(event) {
-    if (!this.menu) return
+    if (!(event.currentTarget instanceof HTMLElement) || !this.rootMenu || !this.popovers) return
+
     event.preventDefault()
-    const style = this.menu.style
-    style.position = "fixed"
-    style.margin = "0"
-    style.left = `${event.clientX}px`
-    style.top = `${event.clientY}px`
-    this.show()
-    this.clampIntoViewport()
+    this.popovers.hideAll([this.rootMenu])
+    this.popovers.show(
+      this.rootMenu,
+      pointAnchor(event.clientX, event.clientY, event.currentTarget),
+      { align: "start", alignOffset: 4, side: "right", sideOffset: 0 },
+    )
+    this.focusBoundaryItem(this.rootMenu, "first")
   }
 
-  // 開いた後(popover=manual は display が復帰してから)にビューポート内へ収める。
-  // 閉じた状態の offsetWidth は 0 のため、クランプは show の後にしか計算できない
-  clampIntoViewport() {
-    if (!this.menu) return
-    const style = this.menu.style
-    const left = Math.min(parseFloat(style.left), window.innerWidth - this.menu.offsetWidth - 8)
-    const top = Math.min(parseFloat(style.top), window.innerHeight - this.menu.offsetHeight - 8)
-    style.left = `${Math.max(8, left)}px`
-    style.top = `${Math.max(8, top)}px`
-  }
-
-  // popover="manual" のcontent(右クリック)を開く。外側のpointerdownで閉じる
-  show() {
-    if (this.menu && !this.menu.matches(":popover-open")) {
-      // toggle イベントは非同期のため、表示前に属性を先に切り替える
-      this.menu.dataset.state = "open"
-      applyStateAttrs(this.menu, "open")
-      this.menu.dataset.side = "bottom"
-      this.menu.showPopover()
-    }
-    this.focusItem(this.items[0])
-  }
-
+  /** @param {Event} event */
   toggleSub(event) {
-    const sub = event.currentTarget.closest("[data-slot$='-sub']")?.querySelector("[popover]")
-    if (!sub) return
-    if (sub.matches(":popover-open")) {
-      this.hidePopoverAfterExit(sub)
-    } else {
-      sub.dataset.state = "open"
-      applyStateAttrs(sub, "open")
-      sub.togglePopover()
+    if (!(event.currentTarget instanceof HTMLElement)) return
+
+    const popover = this.triggerToPopover.get(event.currentTarget)
+    if (!popover || !this.popovers) return
+    if (this.popovers.consumeOpenTriggerPointer(event, event.currentTarget)) {
+      this.closeMenu(popover)
+      return
     }
+    if (this.popovers.isOpen(popover)) this.closeMenu(popover)
+    else this.showMenu(popover, event.currentTarget)
   }
 
   activate() {
     this.closeAll()
   }
 
+  /** @param {KeyboardEvent} event */
   navigate(event) {
-    if (!this.menu?.matches(":popover-open")) return
-    const keys = ["ArrowDown", "ArrowUp", "Home", "End", "Escape"]
-    if (!keys.includes(event.key)) return
-    event.preventDefault()
+    const target = event.target
+    if (!(target instanceof Element) || !isOwnedMenuElement(this.root, target)) return
 
-    const items = this.items
-    if (event.key === "Escape") {
+    if (event.key === "Tab" && (this.popovers?.openPopovers().length ?? 0) > 0) {
       this.closeAll()
       return
     }
-    const current = items.findIndex((item) => item.dataset.highlighted === "true")
+
+    const menu = /** @type {HTMLElement | null} */ (target.closest("[role='menu']"))
+    if (!menu || !this.popovers?.isOpen(menu)) return
+
+    const items = directMenuItems(this.root, menu)
+    const active = menu.ownerDocument.activeElement
+    const current = items.findIndex((item) => (
+      item === target || item.contains(target) || item === active || (active instanceof Node && item.contains(active))
+    ))
+    if (activateMenuItemFromKeyboard(event, items[current])) return
+
+    const keys = ["ArrowDown", "ArrowUp", "ArrowRight", "ArrowLeft", "Home", "End", "Escape"]
+    if (!keys.includes(event.key)) return
+    event.preventDefault()
+    if (event.key === "Escape") {
+      this.escapeMenu(menu)
+      return
+    }
+    if (event.key === "ArrowRight" && current >= 0) {
+      const submenu = this.triggerToPopover.get(items[current])
+      if (submenu) this.showMenu(submenu, items[current])
+      return
+    }
+    if (event.key === "ArrowLeft") {
+      const parentTrigger = this.popoverToTrigger.get(menu)
+      if (menu !== this.rootMenu && parentTrigger) {
+        this.closeMenu(menu)
+        parentTrigger.focus()
+      }
+      return
+    }
+    if (items.length === 0) return
+
     let next = current
     if (event.key === "ArrowDown") next = (current + 1 + items.length) % items.length
     if (event.key === "ArrowUp") next = (current - 1 + items.length) % items.length
     if (event.key === "Home") next = 0
     if (event.key === "End") next = items.length - 1
-    this.focusItem(items[Math.max(0, next)])
+    this.focusItem(menu, items[Math.max(0, next)])
   }
 
-  syncState() {
-    if (!this.menu) return
-    const state = this.menu.matches(":popover-open") ? "open" : "closed"
-    this.menu.dataset.state = state
-    applyStateAttrs(this.menu, state)
-    for (const trigger of this.element.querySelectorAll("[aria-haspopup='menu']")) {
-      trigger.setAttribute("aria-expanded", String(state === "open"))
+  /** @param {HTMLElement} menu */
+  escapeMenu(menu) {
+    const trigger = this.popoverToTrigger.get(menu)
+    if (menu === this.rootMenu) {
+      this.closeAll()
+      trigger?.focus()
+      return
     }
-    if (state === "open" && !this.menu.style.left) {
-      this.positionBelow(this.element.querySelector("[aria-haspopup='menu']"))
-      this.focusItem(this.items[0])
+
+    this.closeMenu(menu)
+    trigger?.focus()
+  }
+
+  /** @param {HTMLElement} menu @param {HTMLElement} anchor */
+  showMenu(menu, anchor) {
+    if (!this.popovers) return
+
+    const isSubmenu = menu !== this.rootMenu
+    this.popovers.show(menu, anchor, isSubmenu
+      ? { align: "start", alignOffset: -3, side: "right", sideOffset: 0 }
+      : { align: "start", side: "bottom", sideOffset: 4 })
+    this.focusBoundaryItem(menu, "first")
+  }
+
+  /** @param {HTMLElement} menu */
+  closeMenu(menu) {
+    this.closeDescendants(menu)
+    this.popovers?.hide(menu)
+  }
+
+  closeAll() {
+    this.popovers?.hideAll()
+  }
+
+  /** @param {HTMLElement} parent */
+  closeDescendants(parent) {
+    for (const popover of this.popovers?.openPopovers() ?? []) {
+      if (popover !== parent && parent.contains(popover)) this.popovers?.hide(popover)
     }
-    if (state === "closed") this.menu.style.left = ""
   }
 
-  positionBelow(trigger) {
-    if (!trigger || !this.menu) return
-    // upstream(Radix)は配置に応じて data-side を設定する。slide-in 系の起点になる
-    this.menu.dataset.side = "bottom"
-    const rect = trigger.getBoundingClientRect()
-    const style = this.menu.style
-    style.position = "fixed"
-    style.margin = "0"
-    style.left = `${Math.max(8, Math.min(rect.left, window.innerWidth - this.menu.offsetWidth - 8))}px`
-    style.top = `${rect.bottom + 4}px`
+  /** @param {HTMLElement} popover @param {"open" | "closed"} state */
+  syncState(popover, state) {
+    const trigger = this.popoverToTrigger.get(popover)
+    applyMenuTriggerState(trigger, state, { expanded: !trigger?.matches("[data-slot='context-menu-trigger']") })
+    if (state === "closed") this.closeDescendants(popover)
   }
 
-  focusItem(item) {
+  /** @param {HTMLElement} menu @param {"first" | "last"} boundary */
+  focusBoundaryItem(menu, boundary) {
+    const items = directMenuItems(this.root, menu)
+    this.focusItem(menu, boundary === "first" ? items[0] : items.at(-1))
+  }
+
+  /** @param {HTMLElement} menu @param {HTMLElement | undefined} item */
+  focusItem(menu, item) {
     if (!item) return
-    for (const candidate of this.items) {
+
+    for (const candidate of directMenuItems(this.root, menu)) {
       const highlighted = candidate === item
       candidate.dataset.highlighted = highlighted ? "true" : "false"
       candidate.tabIndex = highlighted ? 0 : -1
@@ -175,28 +279,8 @@ export default class MenuController extends Controller {
     item.focus()
   }
 
-  // 退出アニメーション(data-[state=closed]:animate-out)を待ってから閉じる。
-  // 退出中に再オープンされた場合は閉じない
-  hidePopoverAfterExit(popover) {
-    if (!popover.matches(":popover-open")) {
-      popover.hidePopover()
-      return
-    }
-    popover.dataset.state = "closed"
-    applyStateAttrs(popover, "closed")
-    // 退出アニメーション中も aria-expanded は即時に閉側へ(a11y 上の状態は操作の瞬間に確定させる)
-    for (const trigger of this.element.querySelectorAll("[aria-haspopup='menu']")) {
-      trigger.setAttribute("aria-expanded", "false")
-    }
-    hideAfterExit(popover, () => {
-      if (popover.dataset.state === "open") return
-      popover.hidePopover()
-    })
-  }
-
-  closeAll() {
-    for (const popover of this.element.querySelectorAll("[popover]")) {
-      if (popover.matches(":popover-open")) this.hidePopoverAfterExit(popover)
-    }
+  /** @returns {HTMLElement} */
+  get root() {
+    return /** @type {HTMLElement} */ (this.element)
   }
 }

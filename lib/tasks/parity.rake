@@ -3,6 +3,7 @@
 # 見た目の upstream パリティ検証(spec/visual)の入口。
 #
 #   bundle exec rake parity:run      ... ハーネスを明示的に再ビルドしてから比較
+#   bundle exec rake parity:update   ... 比較後の成果物で追跡baselineを明示更新
 #   PARITY_RATIO=0.01 rake parity:run ... 閾値を1%に緩めて実行
 #
 # upstream参照サーバ(vite preview)の起動・停止とビルドのキャッシュ判断は
@@ -15,5 +16,11 @@ namespace :parity do
   task :run do
     ParityServer.rebuild!
     sh "bundle exec rspec spec/visual"
+  end
+
+  desc "visual parityの追跡baselineを明示的に更新する"
+  task :update do
+    ParityServer.rebuild!
+    sh({ "PARITY_UPDATE_BASELINES" => "1" }, "bundle exec rspec spec/visual/parity_spec.rb")
   end
 end

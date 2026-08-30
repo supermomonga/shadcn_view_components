@@ -1,8 +1,10 @@
+import type { NodePath } from "@babel/traverse"
 import type { File, JSXAttribute, JSXElement, JSXMemberExpression, JSXOpeningElement, Node, StringLiteral } from "@babel/types"
 
 import { ParseError } from "../errors.ts"
 import { traverse } from "./babel.ts"
 import type { FunctionLike } from "./context.ts"
+import { belongsToRenderFunction } from "./scope.ts"
 
 export interface CollectedSlot {
   /** data-slot 値 */
@@ -39,13 +41,14 @@ export function returnsJsx(ast: File, fnNode: FunctionLike): boolean {
 /**
  * 1コンポーネントエクスポートに属するJSX要素の data-slot / タグ種別 / ARIA属性の収集
  * (03-extraction-codegen §3)。条件レンダリングの分岐も同じ走査で別スロット候補として拾われる。
+ * data-slotを持たないPrimitive.Controlも、Rails側で同じ構造を再現するため匿名partとして保持する。
  */
 export function collectSlots(ast: File, fnNode: FunctionLike, item: string, file: string): SlotsAnalysis {
   const localTags = collectLocalTagBindings(ast)
-  const belongsToFunction = (path: { getFunctionParent(): { node: Node } | null }): boolean => {
-    const parent = path.getFunctionParent()
-    return parent !== null && parent.node === fnNode
-  }
+  const belongsToFunction = (path: Parameters<typeof belongsToRenderFunction>[0]): boolean =>
+    belongsToRenderFunction(path, fnNode)
+  const belongsDirectlyToFunction = (path: NodePath<Node>): boolean =>
+    path.getFunctionParent()?.node === fnNode
 
   const slots: CollectedSlot[] = []
   traverse(ast, {
@@ -56,7 +59,7 @@ export function collectSlots(ast: File, fnNode: FunctionLike, item: string, file
     },
   })
 
-  const rootElement = findRootJsxElement(ast, belongsToFunction)
+  const rootElement = findRootJsxElement(ast, belongsDirectlyToFunction)
   if (!rootElement) {
     throw new ParseError("component function does not return JSX", item, file)
   }
@@ -142,7 +145,7 @@ function memberToString(member: MemberLike): string {
 /** この関数スコープのReturnStatementから、ルートJSX要素を解決する。 */
 function findRootJsxElement(
   ast: File,
-  belongsToFunction: (path: { getFunctionParent(): { node: Node } | null }) => boolean,
+  belongsToFunction: (path: NodePath<Node>) => boolean,
 ): JSXElement | null {
   const found: Array<JSXElement> = []
   traverse(ast, {
@@ -186,7 +189,11 @@ function describeSlotElement(
   file: string,
 ): CollectedSlot | null {
   const slotName = staticAttributeValue(opening, "data-slot")
-  if (slotName === undefined) return null
+  if (slotName === undefined) {
+    const tag = describeTagName(opening, localTags)
+    if (!tag.endsWith(".Control")) return null
+    return describeElement(opening, localTags, "", item, file)
+  }
 
   return describeElement(opening, localTags, slotName, item, file)
 }
@@ -210,8 +217,9 @@ function describeElement(
     if (attribute.type !== "JSXAttribute") continue
     if (attribute.name.type !== "JSXIdentifier") continue
     const name = attribute.name.name
-    // asChild は Radix の描画差し替えpropでDOM属性にはならない
-    if (name === "data-slot" || name === "children" || name === "asChild") continue
+    // asChild は Radix の描画差し替えprop、key はReactが要素識別に消費する
+    // 予約属性で、いずれもDOM属性にはならない。
+    if (name === "data-slot" || name === "children" || name === "asChild" || name === "key") continue
     const value = attribute.value
     if (name === "className" || name === "class") {
       // 静的リテラルのみ記録する(cn(...) 式は analyzeCn の担当)

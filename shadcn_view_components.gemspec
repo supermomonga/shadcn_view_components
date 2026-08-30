@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.email = ["kamoto@supermomonga.com"]
 
   spec.summary = "shadcn/ui components as Rails ViewComponents with a deterministic sync pipeline"
-  spec.description = "Ports shadcn/ui (new-york-v4) to Rails ViewComponent + Stimulus. " \
+  spec.description = "Ports shadcn/ui (base-nova) to Rails ViewComponent + Stimulus. " \
                      "Class contracts are extracted from the upstream registry and generated " \
                      "deterministically, so upstream drift is detected automatically."
   spec.homepage = "https://github.com/supermomonga/shadcn_view_components"
@@ -27,6 +27,7 @@ Gem::Specification.new do |spec|
     "lib/shadcn_view_components/**/*",
     "lib/generators/**/*",
     "lib/tasks/**/*",
+    "config/importmap.rb",
     "app/components/**/*",
     "app/assets/javascripts/**/*",
     "app/assets/stylesheets/**/*"
@@ -51,4 +52,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rubocop-sorbet"
   spec.add_development_dependency "sorbet-static", "~> 0.5"
   spec.add_development_dependency "tapioca"
+  spec.add_development_dependency "turbo-rails"
 end

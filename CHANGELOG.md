@@ -6,6 +6,258 @@ All notable changes to this project will be documented in this file.
 
 Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
+### 全コンポーネントのテスト範囲を一元管理
+
+- 実装済み61 registry itemについて、全公開exportの最小描画、Lookbook preview、upstreamとの
+  light / dark見た目比較、実ブラウザ操作テストの対応を`spec/coverage/registry.yml`へ集約した
+- coverage registryと実装registry、preview、Stimulus controller、visual parity scenario、system specの
+  対応を双方向に検査し、今後itemを追加したのに検証範囲を指定しなかった場合はCIを失敗させる
+- 全itemへLookbook previewを用意し、Attachment、Bubble、ButtonGroup、InputGroup、Message、
+  NativeSelect、Progressのupstream visual parityを追加した。技術的に同じ状態を比較できない項目には
+  その理由を台帳へ明記した
+- 新しい見た目比較で判明したButtonGroupのSeparator合成、InputGroupの標準Input / Textarea合成と
+  `data-align`、ProgressのTrack / Indicator構造の欠落を、生成契約を参照する実装へ修正した
+- system specごとにpointer、keyboard、state、form、reset、reconnect、no-JS、accessibility等の
+  確認項目を宣言し、Collapsible、MessageScroller、NativeSelect、Sonnerの実ブラウザ検証を追加した
+
+### Checkbox・RadioGroup・Switchの状態同期
+
+- ネイティブinputの`checked`を唯一の状態源とし、初期描画、利用者操作、フォームreset、Turbo再接続で
+  `data-checked` / `data-unchecked`を同期する共通controller契約を追加した
+- 同名かつ同じフォームに属するRadioを一括同期し、利用者のStimulus controller / actionと内部処理を
+  重複なく合成する。任意dataとARIAは保持し、状態dataはネイティブ値を常に優先する
+- `:checked`と`peer-checked`による装飾を追加し、JavaScriptが無効でも選択色、indicator、Switch thumbを
+  ネイティブ操作へ追従させた。装飾要素はアクセシビリティツリーから除外した
+- checked / uncheckedのLookbook previewとupstream visual parity、フォームAPIと初期状態のcomponent
+  spec、代表プレビューのアクセシビリティ検査を追加した
+
+### Carouselの縦方向・RTL・リサイズ時の状態を同期
+
+- Rootの`orientation:`と`direction:`を公開プロパティ契約へ追加し、正規化した値を
+  `data-orientation`、`data-direction`、`dir`へ出してレイアウトとcontrollerの唯一の状態源にした
+- named group variantでContent、Item、Previous / Nextへ向きを伝播し、upstreamのhorizontal classを
+  保ったままvertical配置とhorizontal RTLのChevron反転を追加した
+- viewportやItemの実寸法に基づく前後移動、RTLのスクロール座標正規化、scroll / ResizeObserverによる
+  ボタン状態の再計算、向きに応じた矢印キー操作を追加した
+- Root / ItemのARIA構造と利用者指定のaccessible nameを保ち、複数Item表示で曖昧になる
+  `aria-current`は追加せず、フォーカス可能なRootの矢印キー操作と現在位置をネイティブPrevious /
+  Nextの`disabled`へ同期した
+
+### InputOTPの実入力とSlot表示を同期
+
+- 実際の`input[type="text"]`を値と選択範囲の唯一の情報源にし、初期値、入力、削除、貼り付け、
+  IME、one-time-code自動入力、caretを各Slotへ同期する`shadcn--input-otp` controllerを追加した
+- ブロック省略時に`length`個のSlotを1つのGroupへ描画する標準構成を追加し、明示構成では
+  `Slot(index:)`と`Separator`を使えるようにした。実inputと表示コンテナの属性・クラスも分離した
+- `inputmode`はキーボードのヒントで文字制限ではないことを明記し、`pattern`不一致の入力・貼り付けは
+  一部の文字を除去せず変更全体を拒否するupstream互換の規則へ統一した
+- JavaScript無効時に実inputを通常の入力欄へ戻す`noscript`スタイルと、フォーム・ラベル・エラー、
+  caret・選択範囲、disabledを検証するsystem spec、Lookbook preview、light / dark visual parityを追加した
+
+### Sliderをネイティブrange inputへ接続
+
+- `id`、`name`、`form`、`disabled`、`required`、ARIA、data、イベント属性を外側の装飾ではなく
+  実際の`input[type="range"]`へ渡し、ラベル連携とフォーム送信を成立させた
+- inputを値の唯一の情報源とする`shadcn--slider` controllerを追加し、初期値とネイティブの
+  input / changeイベントから水平・垂直のrangeとthumb位置を同期する
+- `step`と`orientation`を公開プロパティ契約へ追加し、有限数、`max > min`、正のstep、値域、
+  stepとの一致を描画前に検証する。値未指定時はブラウザ標準と同じstep調整済み中間値を使う
+- 抽出器がinline collection callback内の`slider-thumb`とdata-slot無しのControlを取りこぼす原因を修正し、
+  Track / Range / Thumb / Controlのclassをすべてupstream生成契約から取得するようにした
+- 水平・垂直のLookbook preview、light / dark visual parity、ラベル・キーボード・フォーム送信の
+  実ブラウザsystem specを追加した
+
+### 複合コンポーネントのARIA参照とキーボード操作を整備
+
+- Dialog系、Tabs、Combobox、Select、Accordion、Resizable、Calendarについて、Trigger、
+  Content、Label、選択項目を一意なIDとARIA参照で結び、開閉・選択・現在値を同期した
+- 利用者指定のIDとARIA属性を保持しつつ未指定値だけを補完し、fragment cacheで自動生成IDが
+  重複した場合は同じルート内の自動生成参照だけを再採番する共通処理を追加した
+- 同種コンポーネントの入れ子を親controllerの探索対象から除外し、TabsのHome / End、
+  Resizableの矢印・Home / End、Calendarの表示月内グリッド移動を追加した
+- Tabsの向きはRootの`orientation:`を唯一の指定箇所とし、Listの`orientation:`は削除した。
+  Listの`aria-orientation`とキーボード操作はRootの値から補完する
+- `axe-core`をCupriteへ直接読み込み、代表LookbookプレビューをWCAG 2.0〜2.2 A/AAの
+  対象ルールで検査するsystem specをCIへ追加した
+
+### ComboboxとchipsをRailsフォームへ接続
+
+- 検索文字列、候補のハイライト、確定した送信値を分離し、確定値だけをルート直下の
+  ネイティブ`select`で管理する専用`shadcn--combobox` controllerを追加した
+- ルートに`name:`、`default_value:`、`multiple:`、`disabled:`、`required:`、`form:`を追加し、
+  単一選択はラベルと値を分け、chipsは追加・削除・自由入力をRailsの配列パラメータへ反映する
+- 空値と重複を除外し、動的chipもRubyと同じ完全なSSR templateから生成する。Turbo再接続では
+  確定値から表示を復元し、初期化イベントや一時的な検索文字列を残さない
+- 確定値が変わったときだけ、canonical selectからbubblingする`input`、`change`を順に発火する
+- disabled / requiredのネイティブ動作と可視入力のARIAを同期し、実Rails controllerへの送信、
+  422再描画、連続chip削除をcomponent / JavaScript / system specで検証した
+- 空の単一値と全削除したchipsもフォーム上で明示し、chipsの空文字markerは受信側で空配列へ正規化する。
+  候補はmanual popoverとしてroot外pointer・focus・Escapeで閉じ、検索inputの操作では開いた状態を保つ
+
+### Menubar・NavigationMenuの状態管理を分離
+
+- 単一の`shadcn--menu`が先頭のpopoverだけを操作していた構造を廃止し、Menubarと
+  NavigationMenuへ各ARIAパターン専用のStimulus controllerを追加した
+- Menubarの各Menu、NavigationMenuの各Item、サブメニューのTriggerとContentを
+  DOM上の親要素から一対一に対応付け、IDと`aria-controls`、ARIA menuの`aria-labelledby`を同期する
+- ContextMenu以外は`popover=auto`のネイティブなlight dismissを維持し、開いているTriggerへの
+  pointer操作を記録して、ブラウザの自動解散後にclickで再び開く競合を解消した。非同期の`toggle`通知より
+  利用者の開閉要求を優先し、開いている親popover内の子だけを残す共有調停で別rootも同時に開かないようにした
+- Menubarの左右移動、NavigationMenuのネイティブリンク操作、段階的なEscape、外側クリック、
+  フォーカス復帰、ARIA menuitemのEnter / Space活性化を実装し、入れ子の別controllerを
+  項目探索や閉じる対象から除外した
+- ContextMenu Triggerをフォーカス可能な右クリック領域へ戻し、左クリックactionが残る継承不具合を解消した。
+  manualのContextMenuを開く際は既存のauto popoverを閉じ、ARIA menuはTab / Shift+Tabで全階層を閉じる。
+  NavigationMenuは`nav`と通常リンクの構造へ戻し、開いたContent内のTab巡回を維持したまま
+  Content外へのfocus移動で閉じる
+- 複数Menu / Item、サブメニュー、入れ子の制御範囲をJavaScript単体テストと実ブラウザテストで検証した
+
+### 公開コンポーネントと名前空間の境界を明確化
+
+- `Chart`、`Form`、`Resizable`、`Sonner`を描画クラスではなく名前空間として定義し、
+  実際に描画できる配下クラスだけを公開コンポーネントとした
+- upstreamの非JSX exportを誤ってクラス化していた`Chart::Tooltip`と`Chart::Legend`を削除し、
+  基底クラスと内部ナビゲーション用クラスを非公開にした
+- 公開コンポーネント一覧と適合試験レジストリの一致、ルートスロット契約、全クラスの
+  最小構成での描画を一括検証し、公開したクラスだけが描画時に失敗する状態を検出可能にした
+
+### Selectをフォーム送信可能なlistboxとして完成
+
+- primitive Rootの別名exportも抽出契約へ残し、Selectルートだけ契約面が欠けて描画時に例外となる
+  原因を生成パイプラインから解消した
+- `shadcn--menu`への誤った依存を廃止し、hidden inputを確定値の唯一の情報源とする専用
+  `shadcn--select` controllerでクリック、全キーボード操作、disabled option、再接続を扱う
+- Trigger・listbox・optionをIDとARIAで関連付け、表示値・選択状態・フォーム値を同じ値から同期する
+- Selectのcomponent / DOM / system / visual parity検証とLookbook previewを追加した
+- JS不要・native validation向けの`NativeSelect`との責務を明記し、装飾用sizeがHTMLの行数属性へ
+  誤って流れないよう`data-size`へ分離した
+
+### 公開プロパティの値域検証を統一
+
+- CVAバリアントとは別に、Rails側でdata属性・ARIA・CSS値へ変換する列挙値と数値の
+  `PropertyContracts` を追加し、許容値・既定値・`nil`の可否を一箇所で宣言した
+- Sheet side、orientation、Toggle / Toggle Group状態、direction、状態・サイズ系propを
+  String / Symbolから正規化し、未知値・`nil`・異種型を描画前の`ArgumentError`に統一した
+- Progressは0〜100を検証し、不定状態の`nil`では`aria-valuenow`を省略する。Sliderは有限数、
+  `min < max`、valueの包含範囲を検証し、InputOTP length・AspectRatio ratio・Toggle Group spacingも
+  各境界を初期化時に検証する
+- contract由来variantも型外入力を`ArgumentError`に統一し、Buttonを合成するAPIでは描画時ではなく
+  初期化時にvariant / sizeを検証する
+
+### 浮動要素の位置決めを共通化
+
+- Popover、Tooltip、Hover Card、Dropdown / Context / Menubar / Navigation Menuと
+  Submenuの座標計算を一つの位置決めmoduleへ集約し、controllerは開閉・ARIA・anchor選択だけを担う
+- `side`、`align`、`side_offset`、`align_offset`、`collision_padding`をContentの共通optionとして公開し、
+  upstream既定値をSSRの`data-position-*`へ出力する。実配置の`data-side` / `data-align`とは分離する
+- 四辺のviewport衝突でside / alignを反転・調整し、RTLのstart/endとinline-start/inline-end、
+  `--anchor-*` / `--available-*` / `--transform-origin` CSS変数を共通処理する
+- overflow ancestorのscroll、window / visual viewportのresize、anchor / contentのsize変更、
+  anchorのlayout移動を監視し、close・light dismiss・Stimulus切断時に全購読と予約済み更新を解除する
+
+### 配布Stimulus controllersの検証を必須化
+
+- gemから配布するJavaScript全体をESLintとTypeScript `checkJs`の対象にし、構文だけでなく
+  DOM型、event型、未使用変数もrelease前に検出する
+- 実Stimulusとjsdomを使い、全controllerの主要状態遷移、複数instance、再接続、
+  listener・timerの後始末を高速なDOM単体テストで保証する
+- controller一覧とtest一覧の一致を検査し、新規controllerだけが未検証で追加されることを防ぐ
+- 実配布packageへの相対linkをconsumer fixtureで使い、同期直後のsourceをlint・型検査・
+  DOM test・esbuild bundleのすべてで検証する
+
+### 非Importmap向けJavaScript entry pointを実行可能にする
+
+- gem内の `app/assets/javascripts/shadcn` を固有名のlocal ESM packageとして定義し、内部importを
+  Node bundlerのpackage self-referenceで解決できるようにした
+- importmapとbundlerのどちらも `@supermomonga/shadcn-view-components` を正式なentry pointとした
+- importmap-railsの標準構成に従い、engineのmap定義とcache監視対象をinitializerで合成する
+- bundler用packageはgeneratorがhost repository内の固定相対pathへ完全同期し、machine固有の
+  gem install pathをpackage.jsonやlockfileへ保存しない
+- 実consumer fixtureをesbuildし、配布済みcontroller全件の登録とToggle操作をCIで検証する
+- README、install generator、ESM source commentの非Importmap手順を同じlocal package方式へ統一した
+
+### OTP inflectionのhost applicationへの副作用を解消
+
+- require時とengine initializerで重複登録していたグローバルな `OTP` acronymを削除した
+- component定数名の規則をgem内部の一箇所へ集約し、契約解決もhostのinflectionから分離した
+- Rails main loaderの既定inflectorをdelegateするpath限定wrapperをengine initializer一箇所で設定し、
+  gem内の `app/components/shadcn/input_otp.rb` だけを `InputOTP` へ写像する
+- 別processの契約specで、require前後とRails boot後のhost inflectionが不変であること、hostの
+  同名fileに写像が漏れないこと、InputOTPのeager load成功を保証した
+
+### install generatorのTailwind directiveを独立して保証
+
+- host CSSのshadcn importとgem component pathの `@source` を別々に検査し、
+  どちらか一方だけが既にある場合も不足したdirectiveを補う
+- import / sourceの有無による4状態が同じ最終条件に収束し、generatorを再実行しても
+  行の重複やbyte差分を作らないことをgenerator specで保証し、このspecを
+  `verify:spec` の必須対象に加えた
+
+### 自動upstream同期PRに必須検証を固定
+
+- 差分検出後、PR作成前に `bundle exec rake verify` の8検査を失敗伝播ありで実行し、
+  失敗した同期内容を成功扱いでPRにしないようにした
+- PR作成credentialを `github.token` に固定。作成後は同じhead branchへ通常CIを
+  `workflow_dispatch` し、`pull_request` eventの再帰防止や外部tokenの有無に関係なく
+  PRに8個のstatus checkを付ける。PRは必ずdraftで作成し、全checkの生成を実確認した
+  後だけreview readyに変更する
+- PR本文とActions summaryにupstreamの完全SHA、registry snapshot hash、取得日時、
+  検証結果とrun URLを表示し、manifest fixtureを使ったworkflow契約specで保証した
+
+### upstream同期のtimestamp差分を抑止
+
+- upstream の内容と revision が前回から変わらない場合、manifest の `fetched_at` と
+  `checked_at` を保持し、定期同期が時刻だけのcommit / Pull Requestを作らないようにした
+- 同一responseの再同期ではvendorスナップショット全体がバイト単位で不変になり、内容または
+  revisionが変わった時だけ対応するmetadataが更新されることを固定時刻のテストで保証する
+
+### upstream同期を整合したsnapshot単位で確定
+
+- release metadataとlive registry一式を同期の前後で二度取得し、index、全item、theme、
+  style bootstrapの集合hashとrelease tag / SHAが安定している場合だけ更新する
+- manifestをversion 2へ更新し、正規化したindex / style bootstrap本体と個別SHA、registry一式の
+  content SHA、二重取得の整合条件を記録する。GitHub release SHAはregistry revisionとはみなさず、
+  exact versionのTailwind CSSを特定するための参考情報として分離した
+- 全成果物とlocal overrideを同一filesystem上のstaging directoryへ作成・checksum検証してから
+  directory単位で置換する。overrideは保存byteそのものをhash化し、確定直前と現snapshotを
+  backupへ移した直後にも変更がないことを確認する。確定失敗や中断時は以前のdirectoryを復元する
+- index掲載itemの404、通信、JSON、schema、metadata不一致を別の同期エラーとして中止し、
+  Tailwind CSSの旧版流用やstyle依存の空配列化を廃止。どの部分失敗でも既存snapshotを保つ
+
+### pnpm toolchainとdependency build policyの固定
+
+- `mise.toml` と各 `package.json` で pnpm 10.22.0 を固定し、ローカルとCIが
+  実行時期に左右されず同じpackage managerを使うようにした
+- Extractorでは `@parcel/watcher` / `esbuild`、Visual Parityでは `esbuild` の
+  install scriptだけを明示的に許可し、未判断のdependency buildは
+  `strictDepBuilds` でinstall failureとして検出する
+- 各toolは従来どおり独立したlockfileを維持し、workspace化による依存解決の変更を避けた
+
+### visual parityの検証出力とbaseline更新を分離
+
+- 通常のvisual specは `tmp/visual-parity/run-<pid>/` へ成果物を出し、追跡中の
+  `spec/visual/baselines/` を書き換えない
+- `rake parity:update` だけが追跡baselineを更新する。CI失敗時のours / upstream /
+  diff / reportはGitHub Actions artifactとして7日間保存する
+
+### ローカル検証とCIのentry pointを統一
+
+- `bin/setup` でmise toolchain、Ruby gems、root / Extractor / Visual Parityの
+  JavaScript依存をまとめて導入し、通常CIの全jobとupstream同期も同じsetup経路を使う
+- visual parityの静的icon shimを生成対象から分離し、clean checkoutでも参照アプリを
+  ビルドできるようにした
+- dummy CSSの鮮度比較では、native変換がOSごとに等価な表現を選ぶTailwind preflightを
+  除外し、リポジトリが所有するtheme・utilities・追加base層を比較する
+- parity画像の寸法差を各画像の背景色で補完し、dark時だけ固定の白背景が差分になる
+  偽陽性を解消した
+- `rake verify` / `rake verify:full` がCI必須の8検査をすべて実行し、CIの各jobも
+  対応する `verify:*` subtaskを呼ぶようにした
+- 各CI jobが対応taskを`LOCAL_VERIFY_TASK`として宣言し、契約specが全jobと
+  `verify:full`の依存taskの完全一致を検査する。workflowの全stepも準備・検証・成果物保存に分類し、
+  検査追加時の片側だけの更新やCIへの検査コマンド直書きをCIで検知する
+- 通常RSpec jobから漏れていたrequest specと、従来のローカルverifyから漏れていた
+  TypeScript、Vitest、Tailwind、RBI freshnessを共通経路へ含めた
+
 ### 残っていた parity 失敗 8件の解消(不具合修正)
 
 参照側CSSパイプラインの独立化の時点で残っていた8件の失敗(静的5件: command / calendar
@@ -79,8 +331,8 @@ root の `data-horizontal:flex-col` も効かないためリストとコンテ�
   - 縦積みグループで上下キーでもリサイズできるようにし、flex-basis は %
     表記のときだけ信頼する
 - `Resizable::PanelGroup` / `Resizable::Handle` に `orientation:` を追加し、
-  垂直グループ(`aria-orientation="vertical"` で flex-col、ハンドルは
-  row-resize)を構成できるように
+  垂直グループ(PanelGroupの`data-orientation="vertical"`でflex-col、Handleの
+  `aria-orientation="horizontal"`でrow-resize)を構成できるように
 - Lookbook に `tabs/vertical` と `resizable/vertical` のシナリオを追加
   (parity の upstream デモ・シナリオも登録)
 
@@ -217,8 +469,7 @@ baseページへ307リダイレクト、CLI `init -d`は`--preset=base-nova`、`
   select/optgroup/option、select は Popover API listbox、input-otp は
   autocomplete=one-time-code の素のinput
 - 抽出器: cva のバリアント値・compound における文字列配列の連結対応(field)
-- InputOTP 等、頭字語を含む定数名の autoload 用インフレクション(OTP)を
-  require 時に登録
+- InputOTP の autoload mappingはengine内の対象fileだけに限定し、hostの命名規則に影響させない
 - 残る未実装は重量級8アイテム(sidebar/calendar/chart/sonner/attachment/bubble/
   message/message-scroller)— registry.yml の pending で負債を可視化
 
@@ -229,7 +480,7 @@ baseページへ307リダイレクト、CLI `init -d`は`--preset=base-nova`、`
   DropdownMenu, ContextMenu, Menubar, NavigationMenu, Command, Combobox, Resizable
 - ネイティブ最優先の本番(05 §3 / 10-roadmap Phase 3):
   - dialog系は `<dialog>` + showModal(フォーカストラップ・背景inert・EscClose・
-    フォーカス復帰はネイティブ提供。alertdialog は cancel抑止)
+    フォーカス復帰はAlertDialogを含めてネイティブ提供)
   - popover/tooltip/menu は Popover API(light dismiss)。context-menu は
     右クリック位置に popover=manual で開く(イベント列の競合回避)
   - resizable はドラッグ + 矢印キーによるパネル配分

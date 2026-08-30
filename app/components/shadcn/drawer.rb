@@ -10,6 +10,12 @@ module Shadcn
   class Drawer < BaseComponent
     CONTROLLER = "shadcn--dialog"
 
+    sig { params(args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
+    def initialize(**args)
+      assign_accessibility_root_id(args, prefix: "drawer")
+      super
+    end
+
     # base-nova では Drawer ルートも data-slot="drawer" を持つ(旧契約には無し)
     sig { override.returns(T::Hash[Symbol, T.untyped]) }
     def contract_data_attributes

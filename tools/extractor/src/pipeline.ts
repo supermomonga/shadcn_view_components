@@ -82,8 +82,7 @@ export async function extractContracts(pipeline: PipelinePaths, only?: string[])
 
     const itemPath = path.join(pipeline.vendorDir, manifestItem.path)
     const content = await readFile(itemPath, "utf8")
-    const normalized = content.endsWith("\n") ? content : `${content}\n`
-    const actualSha = sha256Hex(normalized)
+    const actualSha = sha256Hex(content)
     if (actualSha !== manifestItem.sha256) {
       failures.push(new Error(`${name}: sha256 mismatch — vendor item was hand-edited (rerun rake shadcn:sync)`))
       continue
@@ -313,7 +312,7 @@ async function dependencyCvaDefinitions(
   return definitions
 }
 
-async function extractContractFromItem(
+export async function extractContractFromItem(
   vendorDir: string,
   manifest: Manifest,
   name: string,
@@ -336,7 +335,28 @@ async function extractContractFromItem(
 
     for (const discovered of discoverExports(ast, name, file.path)) {
       const fnNode = discovered.functionNode
-      if (!fnNode) continue // cva定義のみのエクスポート(buttonVariants等)は契約の対象外
+      if (!fnNode) {
+        // shadcnがプリミティブRootをそのまま公開する別名は、DOMや
+        // classの契約面を追加しない。ただし公開コンポーネント自体を
+        // 消すとRuby側で契約が解決できないため、空の正規契約として保持する。
+        if (discovered.primitiveRootTag) {
+          exports[discovered.name] = {
+            root_slot: "",
+            classes_slot: "",
+            component_class: names[discovered.name] ?? `Shadcn::${discovered.name}`,
+            cva: { prop_names: [], defaults: {}, compound: [] },
+            combinations: { "": "" },
+            slots: [{
+              name: "",
+              tag: discovered.primitiveRootTag,
+              static_attributes: {},
+              dynamic_attributes: [],
+            }],
+            passthrough_class: false,
+          }
+        }
+        continue // cva定義・hooks等の非コンポーネントは契約対象外
+      }
       if (!returnsJsx(ast, fnNode)) continue // hooks 等、JSXを返さない出口も対象外(useFormField等)
       const slots = collectSlots(ast, fnNode, name, file.path)
       const analysis = analyzeCn(ast, fnNode, cvaDefinitions, name, file.path)

@@ -26,6 +26,21 @@ export interface ManifestTailwindCss {
   sha256: string
 }
 
+export interface ManifestRegistrySnapshot {
+  /** unversioned registryを同期の前後で二度取得し、必要成果物が一致したことを表す。 */
+  consistency: "double-fetch"
+  /** 保存した正規化registry index response。 */
+  index_path: string
+  /** registry index responseの正規化後SHA256。 */
+  index_sha256: string
+  /** 保存した正規化style bootstrap response。 */
+  style_path: string
+  /** style bootstrap responseの正規化後SHA256。 */
+  style_sha256: string
+  /** index、全remote item、theme、style bootstrapを束ねたcontent hash。 */
+  content_sha256: string
+}
+
 export interface Manifest {
   version: number
   source: {
@@ -34,6 +49,7 @@ export interface Manifest {
     /** スタイル共通のnpm依存(bootstapアイテム registry:style 由来)。出所の参考情報 */
     style_dependencies: string[]
     style_dev_dependencies: string[]
+    registry_snapshot: ManifestRegistrySnapshot
     upstream_release: UpstreamRelease | null
     tailwind_css: ManifestTailwindCss | null
   }

@@ -9,14 +9,16 @@ require "yaml"
 registry = YAML.safe_load_file(File.expand_path("registry.yml", __dir__))
 allowances = YAML.safe_load_file(File.expand_path("allowances.yml", __dir__)) || {}
 
-# レジストリエントリを [component_class, export_name, content] のペアへ正規化する。
+# レジストリエントリを [component_class, export_name, content, args] の組へ正規化する。
 # 単純なアイテムは component/export、複合アイテムは exports: のリストで列挙する。
 # content は「本文が無ければ描かない」コンポーネント(Form::Error 等)への検証用入力
 def normalized_exports(entry)
   if entry["exports"]
-    entry["exports"].map { |export| [export.fetch("component"), export.fetch("export"), export["content"]] }
+    entry["exports"].map do |export|
+      [export.fetch("component"), export.fetch("export"), export["content"], export.fetch("args", {})]
+    end
   elsif entry["component"]
-    [[entry.fetch("component"), entry.fetch("export"), nil]]
+    [[entry.fetch("component"), entry.fetch("export"), nil, entry.fetch("args", {})]]
   else
     []
   end
@@ -25,8 +27,9 @@ end
 registry.reject { |_name, entry| entry["pending"] }.each do |name, entry|
   item_allowances = allowances[name] || {}
 
-  normalized_exports(entry).each do |component_name, export_name, export_content|
+  normalized_exports(entry).each do |component_name, export_name, export_content, export_args|
     component_class = component_name.constantize
+    base_args = export_args.transform_keys(&:to_sym)
     contract = ShadcnViewComponents::Contracts.const_get(component_name.delete_prefix("Shadcn::"))
     root_slot = contract::ROOT_SLOT
     slot_definition = contract::SLOTS.find { |slot| slot[:name] == root_slot } || contract::SLOTS.first || {}
@@ -54,10 +57,11 @@ registry.reject { |_name, entry| entry["pending"] }.each do |name, entry|
     RSpec.describe "conformance: #{name}/#{export_name}", type: :conformance do
       contract::COMBINATIONS.each do |options, expected_classes|
         it "renders classes matching upstream for #{options.inspect}" do
+          args = base_args.merge(options)
           if export_content
-            render_inline(component_class.new(**options)) { export_content }
+            render_inline(component_class.new(**args)) { export_content }
           else
-            render_inline(component_class.new(**options))
+            render_inline(component_class.new(**args))
           end
 
           # クラスが cn でなく静的className として記録された契約(コンボ "" + ルート静的クラス)
@@ -91,17 +95,24 @@ registry.reject { |_name, entry| entry["pending"] }.each do |name, entry|
           # 分離構造: 契約クラス(cn)はルートの最初の子要素が持つ
           if split_structure && !expected_classes.to_s.empty?
             inner = target.element_children.first
-            expect(inner&.attr("class").to_s.split(/\s+/)).to eq(expected_classes.to_s.split(/\s+/)),
-                                                              "split-structure inner element should carry the contract classes"
+            actual_inner_classes = inner&.attr("class").to_s.split(/\s+/)
+            expected_inner_classes = expected_classes.to_s.split(/\s+/)
+            if class_contains
+              expect(actual_inner_classes).to include(*expected_inner_classes),
+                                              "split-structure inner element should contain the contract classes"
+            else
+              expect(actual_inner_classes).to eq(expected_inner_classes),
+                                              "split-structure inner element should carry the contract classes"
+            end
           end
         end
       end
 
       it "renders exactly the contract's data-slot set" do
         if export_content
-          render_inline(component_class.new) { export_content }
+          render_inline(component_class.new(**base_args)) { export_content }
         else
-          render_inline(component_class.new)
+          render_inline(component_class.new(**base_args))
         end
 
         rendered_slots = rendered_fragment.css("[data-slot]").map { |node| node["data-slot"] }.uniq.sort

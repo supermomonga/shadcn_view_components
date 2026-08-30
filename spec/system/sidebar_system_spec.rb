@@ -3,7 +3,15 @@
 # Phase 4: sidebar の開閉と、Turboキャッシュ復帰相当の再接続での冪等性(05 §6.2)
 require "rails_helper"
 
-RSpec.describe "Sidebar behavior", type: :system do
+RSpec.describe(
+  "Sidebar behavior",
+  type: :system,
+  component_coverage: { "sidebar" => %i[pointer keyboard state reconnect] }
+) do
+  define_method(:press_key) do |key|
+    page.driver.browser.page.keyboard.type(key)
+  end
+
   it "toggles data-state and aria-expanded via the trigger" do
     visit "/pages/sidebar"
 
@@ -38,5 +46,18 @@ RSpec.describe "Sidebar behavior", type: :system do
     find("#sidebar-trigger").click
     expect(page).to have_selector("#sidebar-provider[data-state='open']")
     expect(page).to have_selector("#sidebar-trigger[aria-expanded='true']")
+  end
+
+  it "toggles from the focused trigger with Enter" do
+    visit "/pages/sidebar"
+
+    page.execute_script("document.getElementById('sidebar-trigger').focus()")
+    press_key(:enter)
+    expect(page).to have_selector("#sidebar-provider[data-state='closed']")
+    expect(page).to have_selector("#sidebar-trigger[aria-expanded='false']:focus")
+
+    press_key(:enter)
+    expect(page).to have_selector("#sidebar-provider[data-state='open']")
+    expect(page).to have_selector("#sidebar-trigger[aria-expanded='true']:focus")
   end
 end

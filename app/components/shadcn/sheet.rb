@@ -7,6 +7,12 @@ module Shadcn
   class Sheet < BaseComponent
     CONTROLLER = "shadcn--dialog"
 
+    sig { params(args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
+    def initialize(**args)
+      assign_accessibility_root_id(args, prefix: "sheet")
+      super
+    end
+
     sig { override.returns(T::Hash[Symbol, T.untyped]) }
     def contract_data_attributes
       super.merge(controller: CONTROLLER)
@@ -55,8 +61,8 @@ module Shadcn
           args: T::Hash[Symbol, T.untyped]
         ).void.checked(:never)
       end
-      def initialize(side: :right, show_close_button: true, **args)
-        @side = T.let(side.to_sym, Symbol)
+      def initialize(side: self.class.property_default(:side), show_close_button: true, **args)
+        @side = T.let(normalize_property(:side, side), String)
         @show_close_button = show_close_button
         super(**args)
       end
@@ -74,7 +80,7 @@ module Shadcn
       def content_attributes
         attributes = @html_args.merge(class: self.class.classes(extra: @user_class))
         data = T.cast(attributes[:data], T.nilable(T::Hash[Symbol, T.untyped])) || {}
-        attributes[:data] = { slot: "sheet-content", side: @side.to_s }.merge(data)
+        attributes[:data] = { slot: "sheet-content", side: @side }.merge(data)
         aria = T.cast(attributes[:aria], T.nilable(T::Hash[Symbol, T.untyped])) || {}
         attributes[:aria] = { modal: "true" }.merge(aria)
         attributes

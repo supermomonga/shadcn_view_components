@@ -15,7 +15,10 @@ module Shadcn
         ).void.checked(:never)
       end
       def initialize(variant: :ghost, size: "xs", **args)
-        @variant = variant
+        @variant = T.let(
+          ShadcnViewComponents::Classes.normalize_option(:button, :variant, variant),
+          Symbol
+        )
         @size = T.let(normalize_option(:size, size), Symbol)
         super(**args)
       end

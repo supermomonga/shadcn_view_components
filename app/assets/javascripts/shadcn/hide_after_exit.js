@@ -3,29 +3,51 @@
 // 契約クラスの animate-out が終わる前に隠すと退出アニメーションが見えない。
 //
 // 使い方: 事前に data-state=closed を設定してから
-//   hideAfterExit(content, () => popover.hidePopover())
-export function hideAfterExit(element, hide) {
+//   const cancel = hideAfterExit(content, () => popover.hidePopover())
+// open / disconnect 時に cancel() すると、古い退出処理は何も変更しない。
+/**
+ * @param {Element | null | undefined} element
+ * @param {() => void} hide
+ * @param {string} [exitAnimationName]
+ * @returns {() => void}
+ */
+export function hideAfterExit(element, hide, exitAnimationName = "exit") {
   if (!element) {
     hide()
-    return
+    return () => {}
   }
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     hide()
-    return
+    return () => {}
   }
 
   let finished = false
+  /** @type {ReturnType<typeof setTimeout> | undefined} */
+  let timer
+  const cleanup = () => {
+    element.removeEventListener("animationend", onEnd)
+    element.removeEventListener("animationcancel", onEnd)
+    if (timer !== undefined) clearTimeout(timer)
+  }
   const done = () => {
     if (finished) return
     finished = true
-    element.removeEventListener("animationend", onEnd)
-    clearTimeout(timer)
+    cleanup()
     hide()
   }
+  /** @param {Event} event */
   const onEnd = (event) => {
-    if (event.target === element) done()
+    const animationEvent = /** @type {AnimationEvent} */ (event)
+    if (event.target === element && animationEvent.animationName === exitAnimationName) done()
   }
   // animate-out が無い環境・クラスの時のフォールバック(tw-animate の既定は 150ms)
-  const timer = setTimeout(done, 300)
+  timer = setTimeout(done, 300)
   element.addEventListener("animationend", onEnd)
+  element.addEventListener("animationcancel", onEnd)
+
+  return () => {
+    if (finished) return
+    finished = true
+    cleanup()
+  }
 }

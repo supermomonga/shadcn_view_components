@@ -1,6 +1,8 @@
 # typed: strict
 # frozen_string_literal: true
 
+require "securerandom"
+
 module Shadcn
   # 共通基底(04-component-conventions §5-6)。属性マージ・クラス解決・tag差し替えを担う。
   # 利用者が直接参照しない private 扱いのクラス。
@@ -48,6 +50,17 @@ module Shadcn
       def classes(extra: nil, **options)
         ShadcnViewComponents::Classes.resolve(contract_path.to_sym, extra: extra, **options)
       end
+
+      # CVAバリアント以外の意味的な公開prop契約を返す。
+      sig { params(prop: Symbol).returns(T::Hash[Symbol, T.untyped]) }
+      def property_contract(prop)
+        ShadcnViewComponents::PropertyContracts.fetch(contract_path.to_sym, prop)
+      end
+
+      sig { params(prop: Symbol).returns(T.untyped) }
+      def property_default(prop)
+        ShadcnViewComponents::PropertyContracts.default(contract_path.to_sym, prop)
+      end
     end
 
     # 構造を持たない単一要素コンポーネントの既定レンダリング。
@@ -67,6 +80,20 @@ module Shadcn
     end
 
     private
+
+    # 複合コンポーネントのARIA参照で使うルートIDを、ViewComponentの
+    # インスタンス生成時に一度だけ決める。利用者指定IDはそのまま優先する。
+    # 自動生成IDの印は、fragment cache済みの同じHTMLが同一documentへ複数回
+    # 挿入された場合にだけStimulus側で安全に再採番するために使う。
+    sig { params(args: T::Hash[Symbol, T.untyped], prefix: String).void }
+    def assign_accessibility_root_id(args, prefix:)
+      supplied_id = args[:id]
+      return unless supplied_id.nil? || supplied_id.to_s.empty?
+
+      args[:id] = "shadcn-#{prefix}-#{SecureRandom.hex(12)}"
+      data = T.cast(args[:data], T.nilable(T::Hash[Symbol, T.untyped])) || {}
+      args[:data] = data.merge(shadcn_generated_root_id: "true")
+    end
 
     # void要素は閉じタグ無しで出力する。
     # NOTE: content_tag はブロック付き呼び出しでのみ第二引数ハッシュが属性扱いになるため
@@ -107,9 +134,20 @@ module Shadcn
     end
 
     # バリアント値の正規化 + fail-fast検証。契約に存在しない値は ArgumentError
-    sig { params(prop: Symbol, value: T.any(Symbol, String)).returns(Symbol) }
+    sig { params(prop: Symbol, value: T.untyped).returns(Symbol) }
     def normalize_option(prop, value)
       ShadcnViewComponents::Classes.normalize_option(self.class.contract_path.to_sym, prop, value)
+    end
+
+    # data属性・ARIA・CSS値へ出す意味的なpropを、宣言済み契約で正規化する。
+    sig { params(prop: Symbol, value: T.untyped).returns(T.untyped) }
+    def normalize_property(prop, value)
+      ShadcnViewComponents::PropertyContracts.normalize(
+        component: self.class.contract_path.to_sym,
+        owner: self.class.to_s,
+        property: prop,
+        value:
+      )
     end
 
     # コンポーネント固有のバリアント組み合わせ(サブクラスが上書きする)
@@ -196,4 +234,6 @@ module Shadcn
       attributes[key] = defaults.merge(user || {})
     end
   end
+
+  private_constant :BaseComponent
 end

@@ -1,0 +1,5 @@
+strictDepBuilds: true
+
+onlyBuiltDependencies:
+  # Viteが利用するplatform別binaryを導入する。
+  - esbuild

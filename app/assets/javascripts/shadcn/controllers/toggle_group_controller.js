@@ -3,9 +3,11 @@
 // 状態はDOM自身(data-type / data-state)に持たせる(05-stimulus-hotwire §2.3)
 import { Controller } from "@hotwired/stimulus"
 
+/** @extends {Controller<HTMLElement>} */
 export default class ToggleGroupController extends Controller {
+  /** @param {Event} event */
   toggleItem(event) {
-    const item = event.currentTarget
+    const item = /** @type {HTMLElement} */ (event.currentTarget)
     const isOn = item.dataset.state === "on"
 
     if (this.isSingle && !isOn) {
@@ -14,14 +16,20 @@ export default class ToggleGroupController extends Controller {
     this.setState(item, !isOn)
   }
 
+  /** @returns {boolean} */
   get isSingle() {
     return this.element.dataset.type === "single"
   }
 
+  /** @returns {NodeListOf<HTMLElement>} */
   get items() {
     return this.element.querySelectorAll("[data-slot='toggle-group-item']")
   }
 
+  /**
+   * @param {HTMLElement} element
+   * @param {boolean} on
+   */
   setState(element, on) {
     element.dataset.state = on ? "on" : "off"
     element.setAttribute("aria-pressed", String(on))

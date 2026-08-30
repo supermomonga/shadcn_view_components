@@ -2,3 +2,4 @@
 
 pin "application", preload: true
 pin "@hotwired/stimulus", to: "@hotwired--stimulus.js"
+pin "@hotwired/turbo-rails", to: "turbo.min.js"

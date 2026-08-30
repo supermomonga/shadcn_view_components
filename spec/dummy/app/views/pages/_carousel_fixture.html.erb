@@ -1,0 +1,19 @@
+<section id="<%= id %>-fixture">
+  <%= render(Shadcn::Carousel.new(
+    id:,
+    class: "carousel-fixture",
+    orientation:,
+    direction:,
+    aria: { label: "#{orientation} #{direction} carousel" }
+  )) do %>
+    <%= render(Shadcn::Carousel::Content.new) do %>
+      <% (1..6).each do |number| %>
+        <%= render(Shadcn::Carousel::Item.new(aria: { label: "#{number} of 6" })) do %>
+          <div>スライド<%= number %></div>
+        <% end %>
+      <% end %>
+    <% end %>
+    <%= render(Shadcn::Carousel::Previous.new(id: "#{id}-previous")) %>
+    <%= render(Shadcn::Carousel::Next.new(id: "#{id}-next")) %>
+  <% end %>
+</section>

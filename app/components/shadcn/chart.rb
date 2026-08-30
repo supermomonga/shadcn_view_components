@@ -6,7 +6,8 @@ module Shadcn
   # 「容器と凡例・ツールチップの構造」のみを提供し、描画はホストが
   # 好きなライブラリ(Chart.js 等)で行う設計(10-roadmap Phase 4 の個別評価)
   # JS無効時フォールバック: Graceful(容器・凡例はSSR済み)
-  class Chart < BaseComponent
+  # Chart自体は名前空間であり、描画には配下のクラスを使う。
+  module Chart
     class Container < BaseComponent
       # 契約スロット構成: 名前無しラッパー > chart(描画領域)
       sig { override.returns(String) }
@@ -24,20 +25,12 @@ module Shadcn
       end
     end
 
-    class Tooltip < BaseComponent
-      # ツールチップのコンテナ(recharts の Tooltip 相当の位置決めはホスト側)
-    end
-
     class TooltipContent < BaseComponent
       # ツールチップ本体(契約クラスのみ。中身は利用者が組む)
       sig { override.returns(String) }
       def call
         content_tag(tag, **html_attributes) { content }
       end
-    end
-
-    class Legend < BaseComponent
-      # 凡例コンテナ
     end
 
     class LegendContent < BaseComponent

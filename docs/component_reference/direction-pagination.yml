@@ -1,0 +1,608 @@
+direction:
+  summary: "子要素へ書字方向を適用する、dir属性付きのサーバーレンダリングスコープ。"
+  composition:
+    required: []
+    notes: "Shadcn::DirectionProviderのブロックへ任意の公開コンポーネントを置く。専用の子コンポーネントはない。"
+  attributes:
+    default_target: "Shadcn::DirectionProviderが描くルートdiv。"
+    exceptions:
+      - "dir:は契約で許可されたltr/rtlを正規化してルートdivのdir属性へ設定する。"
+  form:
+    kind: none
+    details: "フォームコントロールを描かず、name/value/disabledや送信値を持たない。"
+  state:
+    mode: static
+    details: "dirはサーバー描画時に確定し、クライアント側のcontrolled/uncontrolled状態はない。"
+  browser:
+    apis:
+      - "HTML dir attribute and CSS writing-direction inheritance"
+    keyboard: []
+  upstream:
+    differences:
+      - "Reactの方向コンテキストではなく、実DOMのdiv[dir]で子孫へ方向を継承する。"
+    unsupported: []
+
+drawer:
+  summary: "ネイティブdialogを使い、画面下部から表示するモーダルドロワー。"
+  composition:
+    required:
+      - "Shadcn::Drawer::Trigger"
+      - "Shadcn::Drawer::Content"
+      - "Shadcn::Drawer::Title"
+    notes: "TriggerとContentを同じShadcn::Drawer内へ置く。Titleはダイアログ名を与え、Description、Header、Footer、Closeは内容に応じて加える。PortalとOverlayは公開されるがContentへ自動挿入されない。"
+  attributes:
+    default_target: "各クラスが描く自身のdata-slot要素。"
+    exceptions:
+      - "Drawer::Contentのclass:はdrawer-popupへ、その他の利用者HTML属性は内側のdialogへ渡る。"
+      - "Drawer::Contentはdrawer-portal、dialog、drawer-viewport、drawer-popup、drawer-contentを内部生成する。"
+      - "Drawer::TriggerとDrawer::Closeはtype未指定時にtype=buttonとなる。"
+      - "Triggerはaria-haspopup=dialog/aria-expanded、Contentのdialogはaria-modal=trueを持つ。Title/DescriptionとのARIA参照IDは利用者が指定する。"
+  form:
+    kind: none
+    details: "Trigger/Closeは既定でtype=buttonのためname/valueを送信しない。ドロワー内のフォームコントロールは各自のname/value/disabled規則で送信され、Drawer自体は未選択値や複数値を生成しない。"
+  state:
+    mode: uncontrolled
+    details: "SSR時は閉じており、接続後はdialog.openを唯一の開閉状態としてStimulusがshowModal/closeする。Ruby側にcontrolledなopen引数はない。"
+  browser:
+    apis:
+      - "HTMLDialogElement.showModal()"
+      - "HTMLDialogElement.close()"
+    keyboard:
+      - "Escapeで開いているモーダルを閉じる。"
+      - "Tab移動とフォーカストラップはネイティブdialogへ委ねる。"
+      - "EnterまたはSpaceでTrigger/Closeボタンを作動させる。"
+  upstream:
+    differences:
+      - "vaulのReact Drawerではなく、ネイティブdialogとStimulusで開閉する。"
+      - "OverlayはContentへ入れず、モーダル背景はdialog::backdropで表現する。"
+      - "Portalは公開ラッパーとして描画するだけで、子要素をbody末尾へ移動しない。"
+    unsupported:
+      - "ドラッグ、スワイプ、スナップポイント、入れ子ドロワー、背景スケール。"
+
+dropdown-menu:
+  summary: "Popover APIとARIA menuパターンで開閉・フォーカス移動を提供するメニュー。"
+  composition:
+    required:
+      - "Shadcn::DropdownMenu::Trigger"
+      - "Shadcn::DropdownMenu::Content"
+      - "Shadcn::DropdownMenu::Item"
+    notes: "TriggerとContentを同じShadcn::DropdownMenu内へ置く。Group、Label、CheckboxItem、RadioGroup/RadioItem、Separator、Shortcut、Sub/SubTrigger/SubContentは必要なメニュー構造に応じて追加する。"
+  attributes:
+    default_target: "各公開クラスが描く自身のdata-slot要素。"
+    exceptions:
+      - "Content/SubContentにはrole=menu、popover=auto、tabindex=-1と浮動配置data属性が加わる。"
+      - "Triggerはtype未指定時にtype=buttonとなり、aria-haspopup/expandedと開閉actionが加わる。"
+      - "CheckboxItem/RadioItemのchecked:はaria-checkedと装飾indicatorだけへ反映され、実inputは描かない。"
+  form:
+    kind: none
+    details: "Item、CheckboxItem、RadioItemは実フォームコントロールではなく、name/value/disabledの送信契約を持たない。checked項目も送信されず、未選択・複数値を表すhidden inputは生成しない。Triggerはtype=buttonである。"
+  state:
+    mode: uncontrolled
+    details: "開閉、現在のフォーカス、data-highlightedはPopover APIとStimulusが所有する。checked:はサーバー描画時の表示値で、作動後に自動反転するcontrolled/uncontrolled選択モデルはない。"
+  browser:
+    apis:
+      - "HTML Popover API"
+      - "CSSOM geometry for floating positioning"
+    keyboard:
+      - "ArrowDown/ArrowUpで項目間を巡回する。"
+      - "Home/Endで先頭・末尾へ移動する。"
+      - "ArrowRightでサブメニューを開き、ArrowLeftで親へ戻る。"
+      - "Enter/Spaceで項目を作動させ、Escapeで閉じてTriggerへ戻る。"
+      - "Tabでメニューを閉じ、通常のフォーカス移動を続ける。"
+  upstream:
+    differences:
+      - "Base UIのReact menuではなく、SSR済みARIA要素、Popover API、Stimulusで構成する。"
+      - "CheckboxItem/RadioItemはフォーム入力やクライアント選択モデルを内包しない。"
+    unsupported:
+      - "文字入力によるtypeahead検索。"
+      - "controlled open/checked値とonOpenChange/onCheckedChange相当のコールバック。"
+
+empty:
+  summary: "空状態の見出し、説明、媒体、追加操作を整列する静的表示コンテナ。"
+  composition:
+    required:
+      - "Shadcn::Empty::Header"
+      - "Shadcn::Empty::Title"
+    notes: "Header内へTitleを置き、必要に応じてMediaとDescriptionを加える。Contentはボタン等の追加内容を置く任意領域。"
+  attributes:
+    default_target: "各公開クラスが描く自身のdata-slot要素。"
+    exceptions:
+      - "Empty::Mediaのvariant:はdata-variantと契約クラスをサーバー描画時に決める。"
+  form:
+    kind: none
+    details: "表示専用でname/value/disabledや送信値を持たない。Content内へ置いたフォーム部品は各自の契約に従う。"
+  state:
+    mode: static
+    details: "表示内容とMedia variantはSSR時に確定し、controlled/uncontrolled状態はない。"
+  browser:
+    apis: []
+    keyboard: []
+  upstream:
+    differences:
+      - "Reactコンポーネントの構造をViewComponentの明示的なブロック合成として提供する。"
+    unsupported: []
+
+field:
+  summary: "ラベル、説明、エラー、fieldset等を組み立てるフォームフィールド用レイアウト。"
+  composition:
+    required: []
+    notes: "用途に応じてField::Labelと実フォームコントロール、Description/Errorを同じFieldへ置く。複数項目の集合にはGroupまたはSet/Legendを使うが、固定の子構成は強制しない。"
+  attributes:
+    default_target: "各公開クラスが描く自身のdata-slot要素。"
+    exceptions:
+      - "Fieldのorientation:はdata-orientationと契約クラスへ反映される。"
+      - "Field::Labelはlabel契約のクラスも合成し、for:をネイティブlabelへ渡す。"
+      - "Field::Separatorは内側にfield-separator-content spanを生成する。"
+      - "Field::Errorは本文が空なら要素自体を描画しない。"
+      - "Labelのforとcontrolのid、Description/Errorのidとcontrolのaria-describedby/aria-invalidは利用者が明示接続する。"
+  form:
+    kind: container
+    details: "Field自身はname/valueを送信しない。name/value/disabled、未入力値、複数値の送信は内側の実input/select等が所有する。Field::Setのdisabled等はネイティブfieldset属性として子コントロールへ作用し得る。"
+  state:
+    mode: server
+    details: "orientationとError本文はサーバー描画で決まる。入力値のcontrolled/uncontrolled境界は内側のフォームコントロールが所有し、Fieldは同期しない。"
+  browser:
+    apis:
+      - "Native label/control association"
+      - "HTMLFieldSetElement and HTMLLegendElement semantics"
+    keyboard: []
+  upstream:
+    differences:
+      - "ReactのFieldプリミティブを、Rails側でラベルとコントロールを明示接続するViewComponent群として提供する。"
+      - "Field::Errorは文字列本文だけを扱い、配列エラーはForm::Errorへ分離した。"
+    unsupported:
+      - "Field::Errorへerrors配列を渡すupstreamの複数エラー描画。"
+      - "render prop/asChildによる要素合成。"
+
+form:
+  summary: "Field契約の上に、invalid状態とRailsのエラー配列表示を加えるフォーム統合部品。"
+  composition:
+    required:
+      - "Shadcn::Field::Label"
+    notes: "Shadcn::Formは名前空間で描画ルートを持たない。Form::Itemの中へField::Label、実フォームコントロール、任意のField::Description、Form::Errorを明示的に置く。"
+  attributes:
+    default_target: "Form::ItemまたはForm::Errorが描く自身のdata-slot要素。"
+    exceptions:
+      - "Form::Itemのinvalid:とorientation:はdata-invalid/data-orientationおよび契約クラスへ反映される。"
+      - "Form::Errorはブロック本文を最優先し、message:/errors:を重複除去して1件は平文、複数件はulとして描く。空なら非描画。"
+  form:
+    kind: container
+    details: "form要素や成功コントロールは生成せず、Form::Item/Errorにname/value/disabledや送信値はない。未入力・複数値を含む送信は内側の実コントロールが所有する。"
+  state:
+    mode: server
+    details: "invalid、orientation、エラーメッセージはサーバーが描画する。入力値のcontrolled/uncontrolled状態やaria-invalid/aria-describedbyの接続は利用者が実コントロール側で明示する。"
+  browser:
+    apis:
+      - "Native form submission and constraint validation of nested controls"
+    keyboard:
+      - "内側に置いた実フォームコントロールと送信buttonのネイティブ操作に従う。"
+  upstream:
+    differences:
+      - "base-novaにform registry itemはなく、本項目はupstream docs/formsのField構成をRails向けにしたlocal override。"
+      - "React context/useFormFieldを使わず、id、for、aria-invalid、aria-describedbyを利用者が明示接続する。"
+    unsupported:
+      - "useFormField相当の暗黙なラベル・説明・エラーID接続。"
+      - "フォームモデルやバリデーションライブラリとの自動バインド。"
+
+hover-card:
+  summary: "hover intentとフォーカスで補足カードを遅延表示する、SSR済みの浮動コンテンツ。"
+  composition:
+    required:
+      - "Shadcn::HoverCard::Trigger"
+      - "Shadcn::HoverCard::Content"
+    notes: "TriggerとContentを同じShadcn::HoverCard内へ1組置く。Triggerはhrefがあればa、なければbuttonになる。"
+  attributes:
+    default_target: "各公開クラスが描く自身のdata-slot要素。"
+    exceptions:
+      - "HoverCard::Contentの利用者属性とclass:は内部のhover-card-contentへ渡り、外側にはhover-card-portalラッパーが加わる。"
+      - "Triggerはhrefの有無でa/buttonを選ぶが、button時のtypeは自動設定しない。"
+      - "TriggerとContentのaria-describedby/aria-expandedは自動接続しない。必要なARIA参照は利用者が属性として明示する。"
+  form:
+    kind: none
+    details: "HoverCard自体は送信値を持たない。hrefなしTriggerはbuttonなのでフォーム内では意図しないsubmitを避けるためtype=buttonを明示する。name/value/disabled、未選択・複数値の送信契約はない。"
+  state:
+    mode: uncontrolled
+    details: "SSR時はhidden/closedで、mouseenter/focus後100msに開き、mouseleave/blur後150msに閉じる。Ruby側にcontrolled open値はない。"
+  browser:
+    apis:
+      - "setTimeout()/clearTimeout()"
+      - "CSSOM geometry for floating positioning"
+    keyboard:
+      - "Tab等でTriggerへフォーカスすると開き、フォーカスが外れると閉じる。"
+      - "href付きTriggerのEnter操作はネイティブリンクとして維持される。"
+  upstream:
+    differences:
+      - "React HoverCardではなく、hidden属性、固定hover intent時間、Stimulus配置で表示する。"
+      - "ContentのPortalはbodyへ搬送せずDOM内のラッパーとして描く。"
+    unsupported:
+      - "controlled open値、open変更コールバック、openDelay/closeDelayの公開設定。"
+      - "TriggerとContent間のARIA参照ID自動生成。"
+
+input:
+  summary: "任意のネイティブinput属性をそのまま所有する、装飾済みinput要素。"
+  composition:
+    required: []
+    notes: "void要素のため子コンポーネントを持たない。LabelやFieldと組み合わせる場合はid/forとARIA参照を利用者が接続する。"
+  attributes:
+    default_target: "実際のinput要素。"
+    exceptions:
+      - "type、name、value、disabled、required、multiple、data、ARIA、イベント属性を特別なラッパーなしでinputへ渡す。"
+  form:
+    kind: native
+    details: "name付きでdisabledでないinputが、typeに応じたvalueをネイティブ送信する。空文字の成功コントロールは通常name=として送信され、disabledは省略される。未選択・複数値の扱いはcheckbox/radio/file等の指定typeとmultiple属性のHTML標準に従う。"
+  state:
+    mode: native
+    details: "value/defaultValue相当を含む実行時状態はHTMLInputElementが所有し、本コンポーネントはcontrolled更新を実装しない。"
+  browser:
+    apis:
+      - "HTMLInputElement"
+      - "Native constraint validation and form submission"
+    keyboard:
+      - "編集、選択、増減、ファイル選択等は指定したinput typeのネイティブ操作に従う。"
+  upstream:
+    differences:
+      - "React InputPrimitiveではなく、属性を直接所有する単一のネイティブinputをSSRする。"
+    unsupported:
+      - "render prop/asChildによる別要素への置換。"
+
+input-group:
+  summary: "inputまたはtextareaと、前後のAddon、Button、Textを一体表示する入力コンテナ。"
+  composition:
+    required: []
+    notes: "InputまたはTextareaのどちらか一つを必ず置く。Addon、Button、Textは任意で、同じInputGroup内へ配置する。"
+  attributes:
+    default_target: "各公開クラスが描く自身のdata-slot要素。"
+    exceptions:
+      - "InputGroup::Inputの属性は内側のShadcn::Inputへ、Textareaの属性は内側のShadcn::Textareaへ渡る。"
+      - "InputGroup::Buttonは実buttonを描き、type未指定時はtype=button、sizeはdata-sizeにも反映される。"
+      - "Addonのalign:はdata-alignと契約クラスへ反映される。"
+      - "Input/ Textareaへ渡したARIA属性は内側の実input/textareaへ転送される。"
+  form:
+    kind: container
+    details: "InputGroup自体、Addon、Text、Buttonは値を送信しない。Input/ Textareaの実要素がname/value/disabledを所有し、空文字はname=、disabledは省略される。単一テキスト値が基本で、複数値の合成は行わない。"
+  state:
+    mode: static
+    details: "コンテナに状態はなく、入力中のuncontrolled値は内側の実input/textareaが所有する。Ruby側からのcontrolled同期はない。"
+  browser:
+    apis:
+      - "HTMLInputElement or HTMLTextAreaElement through the control child"
+    keyboard:
+      - "入力編集は実input/textareaへ委ねる。"
+      - "Enter/SpaceでInputGroup::Buttonを作動させる。"
+  upstream:
+    differences:
+      - "Reactのコンポーネント合成を、専用Input/Textarea/Button ViewComponentが実ネイティブ要素へ委譲する形で提供する。"
+    unsupported:
+      - "render prop/asChildによる任意コントロールへの属性合成。"
+
+input-otp:
+  summary: "1つの実inputを送信値の正本とし、各文字をSlotへ投影するワンタイムコード入力。"
+  composition:
+    required: []
+    notes: "ブロックを省略するとlength個のSlotを1つのGroupへ自動生成する。明示構成ではGroup、index:付きSlot、任意のSeparatorをブロック内へ置く。"
+  attributes:
+    default_target: "オーバーレイされた実input[data-slot=input-otp]。"
+    exceptions:
+      - "container_class:だけはdata-slotを持たない外側containerへ適用する。"
+      - "ブロック内容はaria-hiddenの装飾displayへ入り、フォーム属性やARIAを所有しない。"
+      - "typeは常にtext、maxlengthはlength、inputmodeの既定はnumeric、autocompleteの既定はone-time-codeとなる。"
+      - "valueはlengthで切り詰めて実inputとSSR Slotの両方へ反映する。"
+  form:
+    kind: composite
+    details: "実inputだけがname/value/disabled/required/formを所有する。name付きで有効なら空文字もname=として送信し、disabledなら省略する。単一文字列のみでmultiple送信は行わず、SlotやSeparatorは値を送信しない。"
+  state:
+    mode: uncontrolled
+    details: "value:はSSR初期値で、接続後は実input.valueとselectionが唯一の正本。StimulusはSlot、caret、disabled/invalid表示へ投影し、Ruby側にcontrolled value更新や変更コールバックはない。"
+  browser:
+    apis:
+      - "HTMLInputElement selectionStart/selectionEnd/setSelectionRange()"
+      - "InputEvent and composition events"
+      - "ClipboardEvent paste data"
+      - "Native form reset and constraint validation"
+    keyboard:
+      - "文字入力、削除、選択、貼り付けは透明な実inputで行う。"
+      - "満杯時のcaret/selectionを正規化し、次の入力で選択中の桁を置換できる。"
+  upstream:
+    differences:
+      - "input-otp 1.4.2相当の実input/装飾Slot構造をSSRし、Stimulusで同期する。"
+      - "patternは独自numericモードではなく、利用者指定のJavaScript RegExpとして受理・拒否に使う。"
+      - "JavaScript無効時はnoscript CSSで実inputを通常のテキスト欄として表示する。"
+    unsupported:
+      - "controlled value/onChange/onComplete API。"
+      - "pasteTransformer、password-manager badge制御、カスタムrender callback。"
+
+item:
+  summary: "媒体、本文、操作、見出し、区切りを組み立てる汎用リスト項目レイアウト。"
+  composition:
+    required:
+      - "Shadcn::Item::Content"
+    notes: "Content内へTitle/Descriptionを置き、Media、Actions、Header、Footerを必要に応じて加える。複数項目はGroupで囲み、Separatorを間に置ける。"
+  attributes:
+    default_target: "各公開クラスが描く自身のdata-slot要素。"
+    exceptions:
+      - "Itemのvariant:/size:とMediaのvariant:はdata属性と契約クラスへ反映される。"
+      - "Item::SeparatorはSeparator契約クラスを合成したrole=separator要素を描く。"
+  form:
+    kind: none
+    details: "表示専用でname/value/disabledや送信値を持たない。Actions内のボタンやリンクは各自の契約に従う。"
+  state:
+    mode: static
+    details: "variant/sizeと内容はSSR時に固定され、controlled/uncontrolled状態はない。"
+  browser:
+    apis: []
+    keyboard: []
+  upstream:
+    differences:
+      - "ReactのItem合成を、明示的なViewComponent子クラスとサーバー描画variantで提供する。"
+      - "Item::Separatorは別itemのSeparatorクラスをRuby側で合成する。"
+    unsupported:
+      - "render prop/asChildによる任意要素への置換。"
+
+kbd:
+  summary: "キー名やショートカット列を視覚表示する静的kbd部品。"
+  composition:
+    required: []
+    notes: "単一キーはShadcn::Kbdへ文字列を渡す。複数キーは任意のShadcn::Kbd::Group内へKbdを並べる。"
+  attributes:
+    default_target: "KbdまたはKbd::Groupが描く自身のdata-slot要素。"
+    exceptions: []
+  form:
+    kind: none
+    details: "表示専用でname/value/disabledや送信値を持たない。"
+  state:
+    mode: static
+    details: "表示文字列はSSR時に固定され、controlled/uncontrolled状態はない。"
+  browser:
+    apis: []
+    keyboard: []
+  upstream:
+    differences:
+      - "Reactコンポーネントではなく、サーバー描画のKbd/Kbd::Groupとして提供する。"
+    unsupported: []
+
+label:
+  summary: "for属性で実フォームコントロールへ関連付ける装飾済みネイティブlabel。"
+  composition:
+    required: []
+    notes: "ラベル文字列をブロックへ渡し、対象コントロールのidと一致するfor:を指定する。コントロールを内包するHTML構成もネイティブlabelとして利用できる。"
+  attributes:
+    default_target: "実際のlabel要素。"
+    exceptions: []
+  form:
+    kind: none
+    details: "label自体は成功コントロールではなくname/value/disabledや送信値を持たない。関連付けたコントロールの未入力・複数値送信には介入しない。"
+  state:
+    mode: static
+    details: "関連付けはSSRしたfor/idで決まり、controlled/uncontrolled状態はない。"
+  browser:
+    apis:
+      - "Native label/control association"
+    keyboard: []
+  upstream:
+    differences:
+      - "Base UI LabelPrimitiveではなく、単一のネイティブlabelとして描画する。"
+    unsupported:
+      - "render prop/asChildによる別要素への置換。"
+
+marker:
+  summary: "アイコンや短い本文をvariant付きで強調表示する静的マーカー。"
+  composition:
+    required:
+      - "Shadcn::Marker::Content"
+    notes: "本文はMarker::Contentへ置き、必要な場合だけMarker::Iconを同じMarkerへ加える。"
+  attributes:
+    default_target: "各公開クラスが描く自身のdata-slot要素。"
+    exceptions:
+      - "Markerのvariant:はdata-variantと契約クラスへ反映される。"
+  form:
+    kind: none
+    details: "表示専用でname/value/disabledや送信値を持たない。"
+  state:
+    mode: static
+    details: "variantと内容はSSR時に固定され、controlled/uncontrolled状態はない。"
+  browser:
+    apis: []
+    keyboard: []
+  upstream:
+    differences:
+      - "ReactのMarker構造を、Content/Iconの明示的なViewComponent合成として提供する。"
+    unsupported:
+      - "render propによる要素差し替え。"
+
+menubar:
+  summary: "複数のARIA menuを横並びに束ね、トップレベルと各メニューのフォーカスを管理するmenubar。"
+  composition:
+    required:
+      - "Shadcn::Menubar::Menu"
+      - "Shadcn::Menubar::Trigger"
+      - "Shadcn::Menubar::Content"
+      - "Shadcn::Menubar::Item"
+    notes: "各Menu内へ対応するTriggerとContentを置き、Content内へItem群を置く。Group、Label、CheckboxItem、RadioGroup/RadioItem、Sub系はDropdownMenuと同様に任意追加する。"
+  attributes:
+    default_target: "各公開クラスが描く自身のdata-slot要素。"
+    exceptions:
+      - "Menubarルートにはrole=menubarとaria-orientation=horizontalが加わる。"
+      - "Triggerはrole=menuitem、Content/SubContentはpopover=autoのARIA menuとなる。"
+      - "CheckboxItem/RadioItemのchecked:はARIAと装飾だけで、実inputを描かない。"
+  form:
+    kind: none
+    details: "メニュー項目は実フォームコントロールではなくname/value/disabledを送信しない。checked項目、未選択、複数値のhidden inputも生成しない。Triggerはtype=buttonである。"
+  state:
+    mode: uncontrolled
+    details: "開閉、roving tabindex、フォーカス、highlightはPopover APIと専用Stimulus controllerが所有する。checked:はサーバー表示値で、自動更新するcontrolled選択モデルはない。"
+  browser:
+    apis:
+      - "HTML Popover API"
+      - "CSSOM direction and geometry"
+    keyboard:
+      - "ArrowLeft/ArrowRightでRTLを考慮してトップレベルTrigger間を移動する。"
+      - "ArrowDown/ArrowUpでメニューを先頭/末尾から開き、項目間を巡回する。"
+      - "Home/Endでトップレベルまたは項目の端へ移動する。"
+      - "Enter/Spaceで項目を作動させ、Escapeで閉じてTriggerへ戻る。"
+      - "Tabで開いたメニューを閉じて通常のフォーカス移動へ戻る。"
+  upstream:
+    differences:
+      - "Base UI Menubarではなく、DropdownMenuの描画部品を継承しつつ独立したStimulus状態機械を使う。"
+      - "Portalはbodyへ搬送しないラッパーで、Popover APIがtop layerを担う。"
+    unsupported:
+      - "文字入力によるtypeahead検索。"
+      - "controlled open/checked値と変更コールバック。"
+
+message:
+  summary: "チャットの送信者、アバター、本文、補助情報を整列する静的メッセージ行。"
+  composition:
+    required:
+      - "Shadcn::Message::Content"
+    notes: "複数行はMessage::Groupで囲み、各MessageへContentを置く。Avatar、Header、Footerは必要な情報がある場合に加える。"
+  attributes:
+    default_target: "各公開クラスが描く自身のdata-slot要素。"
+    exceptions: []
+  form:
+    kind: none
+    details: "表示専用でname/value/disabledや送信値を持たない。Content内の操作部品は各自の契約に従う。"
+  state:
+    mode: static
+    details: "内容と並びはSSR時に固定され、controlled/uncontrolled状態はない。"
+  browser:
+    apis: []
+    keyboard: []
+  upstream:
+    differences:
+      - "Reactのメッセージ構造を、Group/Message/Content等のサーバー描画ViewComponentとして提供する。"
+    unsupported: []
+
+message-scroller:
+  summary: "メッセージ履歴をスクロールし、末尾から離れたときに「一番下へ」操作を表示する領域。"
+  composition:
+    required:
+      - "Shadcn::MessageScroller::Provider"
+      - "Shadcn::MessageScroller::Viewport"
+      - "Shadcn::MessageScroller::Content"
+      - "Shadcn::MessageScroller::Button"
+    notes: "Provider内へスクロール対象のViewport/ContentとButtonを兄弟として置く。各メッセージは任意のItemで包む。"
+  attributes:
+    default_target: "各公開クラスが描く自身のdata-slot要素。"
+    exceptions:
+      - "Viewportにはキーボードスクロールのためtabindex=0が加わる。"
+      - "Buttonはtype未指定時にtype=buttonとなり、末尾へスクロールするStimulus actionが加わる。"
+      - "Buttonのaria-label等のアクセシブル名は利用者が属性として指定する。"
+  form:
+    kind: none
+    details: "Buttonはtype=buttonでname/valueを送信せず、MessageScrollerも成功コントロールを生成しない。disabled、未選択、複数値の送信契約はない。"
+  state:
+    mode: uncontrolled
+    details: "ViewportのscrollTopが実行時状態の正本で、末尾との差が24px以上ならStimulusがButtonを表示する。Ruby側のcontrolled scroll位置はない。"
+  browser:
+    apis:
+      - "Element scroll event"
+      - "Element.scrollTo()"
+    keyboard:
+      - "Viewportへフォーカス後、Home/End/PageUp/PageDown等のネイティブスクロールキーを利用できる。"
+      - "Enter/SpaceでButtonを作動させ末尾へ戻る。"
+  upstream:
+    differences:
+      - "Reactのスクロール追従部品ではなく、既存DOMのscrollTopとButton表示をStimulusで同期する。"
+    unsupported:
+      - "新規メッセージ追加のMutationObserver監視や、自動的な末尾追従。"
+      - "スクロール挙動や末尾判定しきい値の公開設定。"
+
+native-select:
+  summary: "実select/optgroup/optionを使い、JavaScriptなしで選択・検証・送信できる装飾select。"
+  composition:
+    required:
+      - "Shadcn::NativeSelect::Option"
+    notes: "Optionを直接置くか、必要に応じてOptGroupでまとめる。外側wrapperとchevron iconはNativeSelectが自動生成する。"
+  attributes:
+    default_target: "実際のselect[data-slot=native-select]。"
+    exceptions:
+      - "class:は外側native-select-wrapperへ適用される。"
+      - "size:は装飾variantとしてwrapper/selectのdata-sizeへ反映され、HTMLSelectElement.size属性としては出力されない。"
+      - "OptGroup/Optionへ渡した属性はそれぞれ実optgroup/optionへ適用される。"
+  form:
+    kind: native
+    details: "実selectがname/value/disabled/required/form/multipleを所有する。単一選択は選択optionの値を1件送信し、multipleは同じnameで選択値を複数送信する（Railsではname末尾[]を推奨）。multipleで未選択なら項目自体を送信せず、disabled selectも省略する。初期選択はOptionのselected属性で指定する。"
+  state:
+    mode: native
+    details: "選択状態、フォーカス、制約検証はHTMLSelectElementが所有する。Rubyは専用のcontrolled value/default_value APIを持たず、SSR後の選択変更を同期しない。"
+  browser:
+    apis:
+      - "HTMLSelectElement"
+      - "Native constraint validation and form submission"
+    keyboard:
+      - "矢印、Home/End、文字typeahead等はプラットフォームのネイティブselect操作に従う。"
+      - "関連付けたlabelの作動でselectへフォーカスする。"
+  upstream:
+    differences:
+      - "ReactのNativeSelect構造を、実selectとサーバー描画Option/OptGroupとして提供する。"
+      - "利用者classはupstream同様wrapperへ、フォーム/ARIA属性は実selectへ分離する。"
+    unsupported:
+      - "専用のcontrolled value/onValueChange API。"
+
+navigation-menu:
+  summary: "ネイティブnav/linkを保ちながら、必要な項目だけPopoverで展開するナビゲーション。"
+  composition:
+    required:
+      - "Shadcn::NavigationMenu::List"
+      - "Shadcn::NavigationMenu::Item"
+    notes: "Item内へ直接Linkを置くか、Triggerと対応するContentを置く。Content内の移動先はNavigationMenu::Link等のフォーカス可能要素で構成する。"
+  attributes:
+    default_target: "各公開クラスが描く自身のdata-slot要素。"
+    exceptions:
+      - "ルートはnav、Listはul、Itemはli、Linkはa、Triggerはtype=buttonとなる。"
+      - "Contentにはpopover=autoと浮動配置data属性が加わる。"
+      - "Triggerはchevron SVG、Indicatorは装飾用内側divを自動生成する。"
+  form:
+    kind: none
+    details: "Linkはhrefへ遷移しフォーム値を送信しない。Triggerはtype=buttonでname/valueを送信せず、NavigationMenuはdisabled、未選択、複数値の送信契約を持たない。"
+  state:
+    mode: uncontrolled
+    details: "Trigger/Contentの対応、開閉、フォーカスはPopover APIとStimulusが所有する。Ruby側にcontrolled open値はなく、通常Linkの遷移状態はブラウザが所有する。"
+  browser:
+    apis:
+      - "HTML Popover API"
+      - "Native anchor navigation"
+      - "CSSOM direction and geometry"
+    keyboard:
+      - "Tab/Enterは通常Linkのネイティブ操作を維持する。"
+      - "ArrowLeft/ArrowRightとHome/EndでRTLを考慮してトップレベル項目を移動する。"
+      - "ArrowDown/ArrowUpでTriggerのContentを開き、Content内リンクを巡回する。"
+      - "EscapeでContentを閉じTriggerへ戻る。"
+  upstream:
+    differences:
+      - "Base UI NavigationMenuではなく、nav/linkとPopover APIを組み合わせたStimulus実装。"
+      - "ARIA menuロールを付けず、通常のナビゲーションリンクの意味を保つ。"
+    unsupported:
+      - "base-novaのViewportとPositioner公開コンポーネント。"
+      - "controlled value/open状態と変更コールバック。"
+
+pagination:
+  summary: "通常のa要素でページ遷移する、JavaScript不要のページネーション。"
+  composition:
+    required:
+      - "Shadcn::Pagination::Content"
+      - "Shadcn::Pagination::Item"
+      - "Shadcn::Pagination::Link"
+    notes: "Content内へItemを並べ、各ItemへLink、Previous、Next、Ellipsisのいずれかを置く。現在ページはLinkのis_active: trueで示す。"
+  attributes:
+    default_target: "各公開クラスが描く自身のdata-slot要素。"
+    exceptions:
+      - "Linkは実a要素へButton契約のvariant/sizeクラスを合成し、is_active:をdata-activeとaria-current=pageへ反映する。"
+      - "Previous/Nextの利用者属性は内部のPagination::Linkへ渡り、既定aria-label、SVG、表示ラベルを加える。"
+      - "EllipsisはSVGとsr-onlyラベルを自動生成する。"
+  form:
+    kind: none
+    details: "Link/Previous/Nextはa要素でフォーム送信を行わず、name/value/disabled、未選択、複数値の送信契約を持たない。無効化が必要ならhrefを出さない等を利用者が決める。"
+  state:
+    mode: server
+    details: "hrefとis_activeはサーバー描画時に決まり、現在ページのcontrolled/uncontrolledクライアント状態は持たない。遷移後はサーバーが次のPaginationを描画する。"
+  browser:
+    apis:
+      - "Native anchor navigation"
+    keyboard:
+      - "Tabでリンク間を移動し、Enterでhrefへ遷移する。"
+  upstream:
+    differences:
+      - "ReactのPaginationLink render propではなく、Buttonクラスを合成した実a要素をSSRする。"
+      - "Previous/Next/EllipsisのLucide相当SVGをRuby側で直接描画する。"
+    unsupported:
+      - "クライアントルーターとの自動統合。"

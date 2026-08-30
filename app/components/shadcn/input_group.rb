@@ -17,21 +17,30 @@ module Shadcn
       def variant_options
         { align: @align }
       end
+
+      sig { override.returns(T::Hash[Symbol, T.untyped]) }
+      def contract_data_attributes
+        super.merge(align: @align)
+      end
     end
 
     class Input < BaseComponent
-      # input(契約クラスは input-group-control)
+      # upstream は Input(別アイテム)に上書きクラスを足す
       sig { override.returns(String) }
-      def default_tag
-        "input"
+      def call
+        attributes = @html_args.merge(class: self.class.classes(extra: @user_class))
+        merge_nested(attributes, :data, { slot: "input-group-control" })
+        render(::Shadcn::Input.new(**attributes)) { content }
       end
     end
 
     class Textarea < BaseComponent
-      # textarea(契約クラスは input-group-control)
+      # upstream は Textarea(別アイテム)に上書きクラスを足す
       sig { override.returns(String) }
-      def default_tag
-        "textarea"
+      def call
+        attributes = @html_args.merge(class: self.class.classes(extra: @user_class))
+        merge_nested(attributes, :data, { slot: "input-group-control" })
+        render(::Shadcn::Textarea.new(**attributes)) { content }
       end
     end
 

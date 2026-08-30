@@ -6,7 +6,8 @@ module Shadcn
   # Stimulus + CustomEvent で同等の通知領域を提供する:
   #   dispatchEvent(new CustomEvent("shadcn:toast", { detail: { title: "保存しました" } }))
   # JS無効時フォールバック: Graceful(通知はJS依存だが、領域自体は空で害がない)
-  class Sonner < BaseComponent
+  # Sonner自体は名前空間であり、描画にはToasterを使う。
+  module Sonner
     class Toaster < BaseComponent
       CONTROLLER = "shadcn--toast"
 

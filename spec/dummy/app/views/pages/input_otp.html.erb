@@ -1,0 +1,70 @@
+<main class="input-otp-page">
+  <h1>Input OTP</h1>
+
+  <section id="standard-otp-fixture">
+    <form id="otp-form" action="/pages/echo" method="get">
+      <%= render(Shadcn::Form::Item.new) do %>
+        <%= render(Shadcn::Field::Label.new(for: "verification-code")) { "認証コード" } %>
+        <%= render(Shadcn::InputOTP.new(
+          id: "verification-code",
+          name: "q",
+          length: 6,
+          value: "12",
+          required: true,
+          aria: { describedby: "verification-help" }
+        )) %>
+        <%= render(Shadcn::Field::Description.new(id: "verification-help")) { "6桁の認証コードを入力してください" } %>
+      <% end %>
+      <%= render(Shadcn::Button.new(id: "otp-submit", type: "submit")) { "送信" } %>
+    </form>
+  </section>
+
+  <section id="numeric-otp-fixture">
+    <%= render(Shadcn::InputOTP.new(
+      id: "numeric-code",
+      length: 6,
+      pattern: '^\d+$',
+      aria: { label: "数字限定コード" }
+    )) %>
+  </section>
+
+  <section id="inputmode-hint-fixture">
+    <%= render(Shadcn::InputOTP.new(
+      id: "hint-only-code",
+      length: 6,
+      inputmode: "numeric",
+      aria: { label: "入力モードのみ指定したコード" }
+    )) %>
+  </section>
+
+  <section id="autofill-otp-fixture">
+    <%= render(Shadcn::InputOTP.new(
+      id: "autofill-code",
+      length: 6,
+      aria: { label: "自動入力コード" }
+    )) %>
+  </section>
+
+  <section id="invalid-otp-fixture">
+    <%= render(Shadcn::Form::Item.new(invalid: true)) do %>
+      <%= render(Shadcn::Field::Label.new(for: "invalid-code")) { "無効な認証コード" } %>
+      <%= render(Shadcn::InputOTP.new(
+        id: "invalid-code",
+        length: 6,
+        value: "000000",
+        aria: { invalid: "true", describedby: "otp-error" }
+      )) %>
+      <%= render(Shadcn::Form::Error.new(id: "otp-error", message: "認証コードが正しくありません")) %>
+    <% end %>
+  </section>
+
+  <section id="disabled-otp-fixture">
+    <%= render(Shadcn::InputOTP.new(
+      id: "disabled-code",
+      length: 6,
+      value: "123456",
+      disabled: true,
+      aria: { label: "無効な認証コード" }
+    )) %>
+  </section>
+</main>

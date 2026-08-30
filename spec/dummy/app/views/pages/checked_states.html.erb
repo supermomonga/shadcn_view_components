@@ -1,0 +1,68 @@
+<main class="space-y-4">
+  <h1>Native checked states</h1>
+
+  <form id="native-checked-form" action="/pages/echo" method="get" class="space-y-4">
+    <section class="flex items-center gap-2 sm:gap-3">
+      <%= render(Shadcn::Checkbox.new(
+        id: "newsletter",
+        name: "newsletter",
+        value: "yes",
+        checked: true,
+        data: { fixture: "checkbox" }
+      )) %>
+      <%= render(Shadcn::Label.new(for: "newsletter")) { "ニュースレター" } %>
+    </section>
+
+    <section class="flex items-center gap-2 sm:gap-3">
+      <%= render(Shadcn::Switch.new(
+        id: "notifications",
+        name: "notifications",
+        value: "enabled",
+        data: { fixture: "switch" }
+      )) %>
+      <%= render(Shadcn::Label.new(for: "notifications")) { "通知" } %>
+    </section>
+
+    <fieldset class="space-y-2">
+      <legend>プラン</legend>
+      <%= render(Shadcn::RadioGroup.new(id: "plan-group", class: "gap-3", aria: { label: "プラン" })) do %>
+        <div class="flex items-center gap-2 sm:gap-3">
+          <%= render(Shadcn::RadioGroup::Item.new(
+            id: "plan-free",
+            name: "plan",
+            value: "free",
+            checked: true
+          )) %>
+          <%= render(Shadcn::Label.new(for: "plan-free")) { "無料" } %>
+        </div>
+        <div class="flex items-center gap-2 sm:gap-3">
+          <%= render(Shadcn::RadioGroup::Item.new(
+            id: "plan-pro",
+            name: "plan",
+            value: "pro"
+          )) %>
+          <%= render(Shadcn::Label.new(for: "plan-pro")) { "プロ" } %>
+        </div>
+        <div class="flex items-center gap-2 sm:gap-3">
+          <input id="plan-enterprise" type="radio" name="plan" value="enterprise">
+          <%= render(Shadcn::Label.new(for: "plan-enterprise")) { "エンタープライズ（通常input）" } %>
+        </div>
+      <% end %>
+    </fieldset>
+
+    <div class="flex flex-col gap-2 sm:flex-row">
+      <%= render(Shadcn::Button.new(type: "reset")) { "初期値に戻す" } %>
+      <%= render(Shadcn::Button.new(type: "submit")) { "送信" } %>
+    </div>
+  </form>
+
+  <form id="separate-radio-form" class="flex items-center gap-2 sm:gap-3">
+    <%= render(Shadcn::RadioGroup::Item.new(
+      id: "other-plan",
+      name: "plan",
+      value: "other",
+      checked: true
+    )) %>
+    <%= render(Shadcn::Label.new(for: "other-plan")) { "別フォームのプラン" } %>
+  </form>
+</main>

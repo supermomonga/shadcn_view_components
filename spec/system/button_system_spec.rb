@@ -5,7 +5,11 @@
 # ESMチェーンが実ブラウザで起動することと、ボタンのフォーム送信を検証する。
 require "rails_helper"
 
-RSpec.describe "Button system behavior", type: :system do
+RSpec.describe(
+  "Button system behavior",
+  type: :system,
+  component_coverage: { "button" => %i[pointer keyboard form] }
+) do
   it "boots the ESM chain: importmap → shadcn module → Stimulus register" do
     visit "/pages/button"
 
@@ -24,6 +28,15 @@ RSpec.describe "Button system behavior", type: :system do
     visit "/pages/button"
 
     click_button "保存"
+
+    expect(page).to have_selector("#echo-result", text: "submitted-from-button")
+  end
+
+  it "submits a form when the focused button is activated with Enter" do
+    visit "/pages/button"
+
+    page.execute_script("document.querySelector('#echo-form button').focus()")
+    page.driver.browser.page.keyboard.type(:enter)
 
     expect(page).to have_selector("#echo-result", text: "submitted-from-button")
   end

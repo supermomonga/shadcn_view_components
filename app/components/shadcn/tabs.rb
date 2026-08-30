@@ -9,8 +9,9 @@ module Shadcn
     CONTROLLER = "shadcn--tabs"
 
     sig { params(orientation: T.any(Symbol, String), args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
-    def initialize(orientation: "horizontal", **args)
-      @orientation = T.let(orientation.to_s, String)
+    def initialize(orientation: self.class.property_default(:orientation), **args)
+      assign_accessibility_root_id(args, prefix: "tabs")
+      @orientation = T.let(normalize_property(:orientation, orientation), String)
       super(**args)
     end
 
@@ -26,14 +27,11 @@ module Shadcn
       sig do
         params(
           variant: T.any(Symbol, String),
-          orientation: T.any(Symbol, String),
           args: T::Hash[Symbol, T.untyped]
         ).void.checked(:never)
       end
-      def initialize(variant: ShadcnViewComponents::Contracts::Tabs::List::DEFAULTS.fetch(:variant),
-                     orientation: "horizontal", **args)
+      def initialize(variant: ShadcnViewComponents::Contracts::Tabs::List::DEFAULTS.fetch(:variant), **args)
         @variant = T.let(normalize_option(:variant, variant), Symbol)
-        @orientation = T.let(orientation.to_s, String)
         super(**args)
       end
 
@@ -46,7 +44,6 @@ module Shadcn
       def html_attributes
         attributes = super
         merge_nested(attributes, :data, { variant: @variant })
-        merge_nested(attributes, :aria, { orientation: @orientation })
         attributes[:role] = "tablist"
         attributes
       end
@@ -57,13 +54,16 @@ module Shadcn
 
       sig do
         params(
-          value: T.nilable(String),
+          value: String,
           active: T::Boolean,
           args: T::Hash[Symbol, T.untyped]
         ).void.checked(:never)
       end
-      def initialize(value: nil, active: false, **args)
-        @value = value
+      def initialize(value:, active: false, **args)
+        raw_value = T.let(T.unsafe(value), T.untyped)
+        raise ArgumentError, "value must be a non-empty String" unless raw_value.is_a?(String) && !raw_value.strip.empty?
+
+        @value = T.let(value, String)
         @active = active
         super(**args)
       end
@@ -98,9 +98,12 @@ module Shadcn
     end
 
     class Content < BaseComponent
-      sig { params(value: T.nilable(String), args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
-      def initialize(value: nil, **args)
-        @value = value
+      sig { params(value: String, args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
+      def initialize(value:, **args)
+        raw_value = T.let(T.unsafe(value), T.untyped)
+        raise ArgumentError, "value must be a non-empty String" unless raw_value.is_a?(String) && !raw_value.strip.empty?
+
+        @value = T.let(value, String)
         super(**args)
       end
 

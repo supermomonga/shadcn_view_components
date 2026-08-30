@@ -5,6 +5,7 @@ import type { CvaDefinition } from "../contract.ts"
 import { ParseError } from "../errors.ts"
 import { traverse } from "./babel.ts"
 import type { FunctionLike } from "./context.ts"
+import { belongsToRenderFunction } from "./scope.ts"
 
 /**
  * `className={cn(A, B)}` をAST上で発見し、A/Bそれぞれの種別
@@ -77,8 +78,13 @@ export function analyzeCn(
       if (expression.type !== "CallExpression") return
       if (expression.callee.type !== "Identifier" || expression.callee.name !== "cn") return
 
-      const belongsToFunction = path.getFunctionParent()?.node === fnNode
+      const belongsToFunction = belongsToRenderFunction(path, fnNode)
       if (!belongsToFunction) return
+
+      // inline callback内のdata-slotを持たない補助要素は、どの公開スロットにも
+      // classを結び付けられない。Slider Thumbのような明示スロットだけを対象にする。
+      const nestedCallback = path.getFunctionParent()?.node !== fnNode
+      if (nestedCallback && slotOf(path) === "") return
 
       const call: CnCall = {
         slot: slotOf(path),

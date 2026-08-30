@@ -4,7 +4,11 @@
 # ARIA tabs パターン: クリック選択・パネル切替・roving tabindex(05 §4)
 require "rails_helper"
 
-RSpec.describe "Tabs behavior", type: :system do
+RSpec.describe(
+  "Tabs behavior",
+  type: :system,
+  component_coverage: { "tabs" => %i[pointer keyboard state accessibility] }
+) do
   it "activates the first trigger and shows its panel on connect" do
     visit "/pages/tabs"
 
@@ -13,6 +17,9 @@ RSpec.describe "Tabs behavior", type: :system do
     expect(account["aria-selected"]).to eq("true")
     expect(account["tabindex"]).to eq("0")
     expect(find("#trigger-password")["tabindex"]).to eq("-1")
+    expect(account["aria-controls"]).to eq("panel-account")
+    expect(find("#panel-account")["aria-labelledby"]).to eq("trigger-account")
+    expect(find("#panel-account")["tabindex"]).to eq("0")
 
     expect(find("#panel-account")).to be_visible
     expect(page).to have_selector("#panel-password[hidden]", visible: :all)
@@ -39,5 +46,18 @@ RSpec.describe "Tabs behavior", type: :system do
     find("#trigger-password").send_keys(:left)
     expect(find("#trigger-account")["data-active"]).to eq("")
     expect(page.evaluate_script("document.activeElement.id")).to eq("trigger-account")
+  end
+
+  it "moves to the first and last trigger with Home and End" do
+    visit "/pages/tabs"
+
+    find("#trigger-account").click
+    find("#trigger-account").send_keys(:end)
+    expect(page.evaluate_script("document.activeElement.id")).to eq("trigger-password")
+    expect(find("#trigger-password")["aria-selected"]).to eq("true")
+
+    find("#trigger-password").send_keys(:home)
+    expect(page.evaluate_script("document.activeElement.id")).to eq("trigger-account")
+    expect(find("#trigger-account")["aria-selected"]).to eq("true")
   end
 end

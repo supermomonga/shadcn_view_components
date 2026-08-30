@@ -25,10 +25,10 @@ module Shadcn
     end
     def initialize(variant: ShadcnViewComponents::Contracts::Toggle::DEFAULTS.fetch(:variant),
                    size: ShadcnViewComponents::Contracts::Toggle::DEFAULTS.fetch(:size),
-                   state: :off, **args)
+                   state: self.class.property_default(:state), **args)
       @variant = T.let(normalize_option(:variant, variant), Symbol)
       @size = T.let(normalize_option(:size, size), Symbol)
-      @state = T.let(state.to_s, String)
+      @state = T.let(normalize_property(:state, state), String)
       super(**args)
     end
 

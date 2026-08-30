@@ -11,7 +11,8 @@
  *     -i tailwind/input.css -o app/assets/stylesheets/application.css
  * または mise run build-css
  */
-@import "tailwindcss";
+/* 追跡済みの出力application.cssを自動検出して次回生成へ混ぜない。 */
+@import "tailwindcss" source(none);
 @import "../../../app/assets/stylesheets/shadcn/shadcn.css";
 
 /* 比較の決定論性のためフォントスタックを両側で同一に固定する
@@ -23,6 +24,7 @@
 
 /* gem 側のクラス文字列(生成契約 + 手書きコンポーネント + コントローラJS) */
 @source "../../../lib/shadcn_view_components/generated/**/*.rb";
+@source "../../../lib/shadcn_view_components/contracts/**/*.rb";
 @source "../../../app/components/shadcn/**/*.rb";
 @source "../../../app/assets/javascripts/shadcn/**/*.js";
 

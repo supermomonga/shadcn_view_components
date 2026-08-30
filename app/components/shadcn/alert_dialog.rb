@@ -3,11 +3,17 @@
 
 module Shadcn
   # 確認ダイアログ(ネイティブ `<dialog>` + role="alertdialog")。
-  # Escでの意図しない棄却を防ぐため、コントローラが cancel を抑止する
-  # (05-stimulus-hotwire §3「alert-dialog = <dialog> + フォーカス制御」)
+  # EscはARIA Authoring Practicesのモーダルダイアログと同じく閉じる操作とし、
+  # ネイティブ <dialog> の cancel 動作に委ねる。
   # JS無効時フォールバック: Readable(dialog と同じ)
   class AlertDialog < BaseComponent
     CONTROLLER = "shadcn--dialog"
+
+    sig { params(args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
+    def initialize(**args)
+      assign_accessibility_root_id(args, prefix: "alert-dialog")
+      super
+    end
 
     sig { override.returns(T::Hash[Symbol, T.untyped]) }
     def contract_data_attributes
@@ -45,8 +51,8 @@ module Shadcn
       # 契約スロット構成: alert-dialog-content のみ(portal/overlayは契約外)。
       # サイズ(default/sm)は data-size で表現する
       sig { params(size: T.any(Symbol, String), args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
-      def initialize(size: "default", **args)
-        @size = T.let(size.to_s, String)
+      def initialize(size: self.class.property_default(:size), **args)
+        @size = T.let(normalize_property(:size, size), String)
         super(**args)
       end
 
@@ -108,8 +114,8 @@ module Shadcn
         ).void.checked(:never)
       end
       def initialize(variant: :default, size: :default, **args)
-        @variant = variant
-        @size = size
+        @variant = T.let(ShadcnViewComponents::Classes.normalize_option(:button, :variant, variant), Symbol)
+        @size = T.let(ShadcnViewComponents::Classes.normalize_option(:button, :size, size), Symbol)
         super(**args)
       end
 

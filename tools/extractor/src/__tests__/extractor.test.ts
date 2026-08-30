@@ -9,7 +9,9 @@ import { resolveCnCombinations, resolveConstrainedCombinations } from "../derive
 import { renderContractRuby } from "../emit/ruby.ts"
 import { renderThemeCss } from "../emit/css.ts"
 import { snakeCase } from "../normalize.ts"
+import { extractContractFromItem } from "../pipeline.ts"
 import type { Contract } from "../contract.ts"
+import type { Manifest } from "../manifest.ts"
 
 /**
  * 簡退化させた固定フィクスチャTSX(03-extraction-codegen §9)。
@@ -73,6 +75,50 @@ describe("parse: cva", () => {
 })
 
 describe("parse: exports and slots", () => {
+  it("keeps exported primitive Root aliases as canonical empty contracts", async () => {
+    const source = `
+      const Select = SelectPrimitive.Root
+      const Combobox = ComboboxPrimitive.Root
+      const ConfigurationRoot = Configuration.Root
+      const variants = cva("base", {})
+      export { Select, Combobox, ConfigurationRoot, variants }
+    `
+    const ast = parseTsx(source)
+    const discovered = discoverExports(ast, "picker", "ui/picker.tsx")
+    expect(discovered.map(({ name, primitiveRootTag }) => [name, primitiveRootTag])).toEqual([
+      ["Select", "SelectPrimitive.Root"],
+      ["Combobox", "ComboboxPrimitive.Root"],
+      ["ConfigurationRoot", null],
+      ["variants", null],
+    ])
+
+    const contract = await extractContractFromItem(
+      "",
+      { items: {} } as Manifest,
+      "picker",
+      { name: "picker", files: [{ path: "ui/picker.tsx", content: source }] },
+      "abc123",
+      {},
+    )
+    expect(contract.exports.Select).toEqual({
+      root_slot: "",
+      classes_slot: "",
+      component_class: "Shadcn::Select",
+      cva: { prop_names: [], defaults: {}, compound: [] },
+      combinations: { "": "" },
+      slots: [{
+        name: "",
+        tag: "SelectPrimitive.Root",
+        static_attributes: {},
+        dynamic_attributes: [],
+      }],
+      passthrough_class: false,
+    })
+    expect(contract.exports.Combobox?.slots[0]?.tag).toBe("ComboboxPrimitive.Root")
+    expect(contract.exports.ConfigurationRoot).toBeUndefined()
+    expect(contract.exports.variants).toBeUndefined()
+  })
+
   it("binds JSX elements to the Button export and collects data-slot structure", () => {
     const ast = parseTsx(FIXTURE_BUTTON_TSX)
     const exports = discoverExports(ast, "button", "ui/button.tsx")
@@ -92,6 +138,91 @@ describe("parse: exports and slots", () => {
         dynamic_attributes: ["aria-pressed", "data-variant"],
       },
     ])
+  })
+
+  it("collects slots rendered by inline collection callbacks without taking nested helper components", () => {
+    const code = `
+      function Slider({ values }) {
+        function UnusedHelper() {
+          return <div data-slot="unrelated" className={cn("unrelated")} />
+        }
+        return (
+          <div data-slot="slider">
+            <SliderPrimitive.Control className="control">
+              {Array.from(values, (_, index) => (
+                <SliderPrimitive.Thumb data-slot="slider-thumb" className={cn("thumb")} key={index} />
+              ))}
+            </SliderPrimitive.Control>
+          </div>
+        )
+      }
+      export { Slider }
+    `
+    const ast = parseTsx(code)
+    const slider = discoverExports(ast, "slider", "ui/slider.tsx")[0]!
+    const slots = collectSlots(ast, slider.functionNode!, "slider", "ui/slider.tsx")
+
+    expect(slots.slots.map((slot) => [slot.name, slot.tag])).toEqual([
+      ["slider", "div"],
+      ["", "SliderPrimitive.Control"],
+      ["slider-thumb", "SliderPrimitive.Thumb"],
+    ])
+    expect(slots.slots[1]?.static_attributes.class).toBe("control")
+    expect(slots.slots[2]?.dynamic_attributes).toEqual([])
+
+    const analysis = analyzeCn(ast, slider.functionNode!, new Map(), "slider", "ui/slider.tsx")
+    expect(analysis.calls.map((call) => call.slot)).toEqual(["slider-thumb"])
+  })
+
+  it("collects map callbacks used as returned JSX children", () => {
+    const code = `
+      function List({ values }) {
+        return (
+          <div data-slot="list">
+            {values.map((value) => (
+              <span data-slot="list-item" className={cn("item")}>{value}</span>
+            ))}
+          </div>
+        )
+      }
+      export { List }
+    `
+    const ast = parseTsx(code)
+    const list = discoverExports(ast, "list", "ui/list.tsx")[0]!
+    const slots = collectSlots(ast, list.functionNode!, "list", "ui/list.tsx")
+    const analysis = analyzeCn(ast, list.functionNode!, new Map(), "list", "ui/list.tsx")
+
+    expect(slots.slots.map((slot) => slot.name)).toEqual(["list", "list-item"])
+    expect(analysis.calls.map((call) => call.slot)).toEqual(["list-item"])
+  })
+
+  it("ignores inline callbacks whose JSX does not flow into the returned render tree", () => {
+    const code = `
+      function List({ values }) {
+        subscribe(() => <span data-slot="event-only" className={cn("event-only")} />)
+        const unusedItems = values.map(() => (
+          <span data-slot="unused-item" className={cn("unused-item")} />
+        ))
+
+        return (
+          <div data-slot="list">
+            {values.map((value) => {
+              subscribe(() => <span data-slot="nested-event" className={cn("nested-event")} />)
+              const unused = <span data-slot="nested-unused" className={cn("nested-unused")} />
+              return <span data-slot="list-item" className={cn("item")}>{value}</span>
+            })}
+          </div>
+        )
+      }
+      export { List }
+    `
+    const ast = parseTsx(code)
+    const list = discoverExports(ast, "list", "ui/list.tsx")[0]!
+    const slots = collectSlots(ast, list.functionNode!, "list", "ui/list.tsx")
+    const analysis = analyzeCn(ast, list.functionNode!, new Map(), "list", "ui/list.tsx")
+
+    expect(slots.slots.map((slot) => slot.name)).toEqual(["list", "list-item"])
+    expect(analysis.calls.map((call) => call.slot)).toEqual(["list-item"])
   })
 
   it("allows a root element without data-slot (spinner等のアイコン系) and records it as name: \"\"", () => {

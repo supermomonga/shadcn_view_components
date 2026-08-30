@@ -9,6 +9,7 @@ require "action_view/railtie"
 # テーマCSS/コントローラJSの配信(システムスペックでJSを検証する)
 require "propshaft"
 require "importmap-rails"
+require "turbo-rails"
 
 require "view_component"
 require "lookbook"

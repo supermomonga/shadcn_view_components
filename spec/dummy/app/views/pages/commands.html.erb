@@ -8,6 +8,34 @@
 <main class="command-page">
   <h1>Command / Combobox</h1>
 
+  <% if @combobox_error %>
+    <p id="combobox-error" role="alert"><%= @combobox_error %></p>
+  <% end %>
+
+  <% if @submitted_profile %>
+    <section
+      id="submitted-profile"
+      data-status="<%= @combobox_error ? "rejected" : "accepted" %>"
+      data-tags-parameter-present="<%= @tags_parameter_present %>"
+      data-raw-tags="<%= @submitted_raw_tags.to_json %>"
+    >
+      <h2>受信した値</h2>
+      <p>
+        framework:
+        <span
+          id="submitted-framework"
+          data-present="<%= @submitted_profile[:framework].present? %>"
+          data-value="<%= @submitted_profile[:framework] %>"
+        ><%= @submitted_profile[:framework] %></span>
+      </p>
+      <ul id="submitted-tags">
+        <% @submitted_profile[:tags].each do |tag| %>
+          <li data-value="<%= tag %>"><%= tag %></li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
   <section id="command-demo">
     <%= render(Shadcn::Command.new(id: "command")) do %>
       <%= render(Shadcn::Command::Input.new(id: "command-input")) %>
@@ -22,26 +50,58 @@
     <% end %>
   </section>
 
-  <section id="combobox-demo">
-    <%= render(Shadcn::Combobox.new(id: "combobox")) do %>
-      <%= render(Shadcn::Combobox::Input.new(id: "combobox-input")) %>
-      <%= render(Shadcn::Combobox::Content.new(id: "combobox-content")) do %>
-        <%= render(Shadcn::Combobox::List.new) do %>
-          <%= render(Shadcn::Combobox::Empty.new(id: "combobox-empty")) { "見つかりません" } %>
-          <%= render(Shadcn::Combobox::Item.new(id: "cb-rails", value: "rails")) { "Ruby on Rails" } %>
-          <%= render(Shadcn::Combobox::Item.new(id: "cb-hanami", value: "hanami")) { "Hanami" } %>
+  <%= form_with(
+    url: pages_commands_path,
+    method: :post,
+    local: true,
+    id: "combobox-form",
+    data: { turbo: false }
+  ) do %>
+    <section id="combobox-demo">
+      <%= render(Shadcn::Combobox.new(
+        id: "combobox",
+        name: "profile[framework]",
+        default_value: @framework,
+        disabled: @framework_disabled,
+        required: true
+      )) do %>
+        <%= render(Shadcn::Combobox::Input.new(id: "combobox-input")) %>
+        <%= render(Shadcn::Combobox::Content.new(id: "combobox-content")) do %>
+          <%= render(Shadcn::Combobox::List.new) do %>
+            <%= render(Shadcn::Combobox::Empty.new(id: "combobox-empty")) { "見つかりません" } %>
+            <%= render(Shadcn::Combobox::Item.new(id: "cb-rails", value: "rails")) { "Ruby on Rails" } %>
+            <%= render(Shadcn::Combobox::Item.new(id: "cb-hanami", value: "hanami")) { "Hanami Framework" } %>
+          <% end %>
         <% end %>
       <% end %>
-    <% end %>
-  </section>
+    </section>
 
-  <section id="combobox-chips-demo">
-    <%= render(Shadcn::Combobox.new(id: "combobox-chips")) do %>
-      <%= render(Shadcn::Combobox::Chips.new(id: "combobox-chips-box")) do %>
-        <%= render(Shadcn::Combobox::Chip.new(id: "chip-rails")) { "Rails" } %>
-        <%= render(Shadcn::Combobox::Chip.new(id: "chip-hanami")) { "Hanami" } %>
-        <%= render(Shadcn::Combobox::ChipsInput.new(id: "combobox-chip-input", placeholder: "追加…")) %>
+    <section id="combobox-chips-demo">
+      <%= render(Shadcn::Combobox.new(
+        id: "combobox-chips",
+        name: "profile[tags][]",
+        default_value: @tags,
+        multiple: true
+      )) do %>
+        <%= render(Shadcn::Combobox::Chips.new(id: "combobox-chips-box")) do %>
+          <% tag_labels = { "rails" => "Rails", "hanami" => "Hanami", "view_component" => "ViewComponent" } %>
+          <% @tags.each_with_index do |tag, index| %>
+            <%= render(Shadcn::Combobox::Chip.new(id: "chip-#{index}", value: tag)) { tag_labels.fetch(tag, tag) } %>
+          <% end %>
+          <%= render(Shadcn::Combobox::ChipsInput.new(id: "combobox-chip-input", placeholder: "追加…")) %>
+        <% end %>
+        <%= render(Shadcn::Combobox::Trigger.new(id: "combobox-chips-trigger", aria: { label: "タグ候補を開く" })) %>
+        <%= render(Shadcn::Combobox::Content.new(id: "combobox-chips-content")) do %>
+          <%= render(Shadcn::Combobox::List.new) do %>
+            <%= render(Shadcn::Combobox::Empty.new(id: "combobox-chips-empty")) { "見つかりません" } %>
+            <%= render(Shadcn::Combobox::Item.new(id: "chip-option-rails", value: "rails")) { "Rails" } %>
+            <%= render(Shadcn::Combobox::Item.new(id: "chip-option-hanami", value: "hanami")) { "Hanami" } %>
+            <%= render(Shadcn::Combobox::Item.new(id: "chip-option-view-component", value: "view_component")) { "ViewComponent" } %>
+          <% end %>
+        <% end %>
       <% end %>
-    <% end %>
-  </section>
+    </section>
+
+    <%= render(Shadcn::Button.new(id: "combobox-submit", type: "submit")) { "送信する" } %>
+  <% end %>
 </main>

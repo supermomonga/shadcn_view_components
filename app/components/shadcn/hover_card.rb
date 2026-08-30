@@ -31,6 +31,13 @@ module Shadcn
     end
 
     class Content < BaseComponent
+      include Shadcn::FloatingPositionOptions
+
+      FLOATING_POSITION_DEFAULTS = T.let(
+        { side: :bottom, align: :center, side_offset: 4, align_offset: 4, collision_padding: 5 }.freeze,
+        T::Hash[Symbol, T.untyped]
+      )
+
       # 契約スロット構成: hover-card-portal(ラッパー) > hover-card-content。
       # 表示切替は hidden 属性 + data-state で行う
       sig { override.returns(String) }
@@ -45,8 +52,12 @@ module Shadcn
       sig { returns(T::Hash[Symbol, T.untyped]) }
       def content_attributes
         attributes = @html_args.merge(class: self.class.classes(extra: @user_class))
-        data = T.cast(attributes[:data], T.nilable(T::Hash[Symbol, T.untyped])) || {}
-        attributes[:data] = { slot: "hover-card-content", state: "closed", action: "mouseenter->#{CONTROLLER}#show mouseleave->#{CONTROLLER}#hide" }.merge(data)
+        merge_floating_position_data(
+          attributes,
+          slot: "hover-card-content",
+          state: "closed",
+          action: "mouseenter->#{CONTROLLER}#show mouseleave->#{CONTROLLER}#hide"
+        )
         attributes[:hidden] = true
         attributes
       end

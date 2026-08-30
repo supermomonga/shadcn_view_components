@@ -1,0 +1,7 @@
+strictDepBuilds: true
+
+onlyBuiltDependencies:
+  # Tailwind CSSのnative filesystem watcher。
+  - "@parcel/watcher"
+  # tsx / Vitest / Tailwind CSSが利用するplatform別binaryを導入する。
+  - esbuild

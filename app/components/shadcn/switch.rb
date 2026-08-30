@@ -3,6 +3,9 @@
 
 module Shadcn
   class Switch < BaseComponent
+    include NativeCheckedState
+
+    NATIVE_STATE_CLASS = "not-checked:bg-input dark:not-checked:bg-input/80 checked:bg-primary disabled:cursor-not-allowed disabled:opacity-50"
     # 契約タグは SwitchPrimitive.Root。ネイティブな input[type=checkbox][role=switch] として
     # 描く(JS無しで動作 — 05-stimulus-hotwire §3)。ツマミは input の兄弟に置き、
     # peer-checked: で移動させる(契約の data-[state] ユーティリティを peer-checked 系に
@@ -19,8 +22,8 @@ module Shadcn
         args: T::Hash[Symbol, T.untyped]
       ).void.checked(:never)
     end
-    def initialize(size: "default", **args)
-      @size = T.let(size.to_s, String)
+    def initialize(size: self.class.property_default(:size), **args)
+      @size = T.let(normalize_property(:size, size), String)
       super(**args)
     end
 
@@ -41,25 +44,15 @@ module Shadcn
 
     private
 
-    # base-nova の契約クラスは data-checked / data-unchecked(属性の存在)を参照する
-    # (bg-primary / bg-input / ツマミ背景等)。checked 属性(利用者指定)の有無から
-    # 導出して両要素に付与する
-    sig { returns(T::Hash[Symbol, T.untyped]) }
-    def state_attributes
-      @html_args[:checked] ? { checked: "" } : { unchecked: "" }
-    end
-
     sig { returns(String) }
     def input_element
       attributes = html_attributes.merge(type: "checkbox", role: "switch")
       # ネイティブチェックボックスのウィジェット描画(appearance:auto)はCSSの
       # 背景/角丸の上にOS標準の箱を塗る(dark時は白箱として視覚差になる)ため消す。
       # 契約の data-[state] 系背景クラスを素の要素に効かせるために必要
-      attributes[:class] = [attributes[:class], "appearance-none"].compact.join(" ")
-      merge_nested(attributes, :data, state_attributes)
-      content_tag(:input, **attributes) { "".html_safe }
-        .then { |markup| markup.sub(%r{></input>\z}, ">") }
-        .then(&:html_safe)
+      attributes[:class] = [attributes[:class], "appearance-none", NATIVE_STATE_CLASS].compact.join(" ")
+      merge_native_checked_state(attributes, checked: native_checked?(@html_args))
+      void_tag("input", **attributes)
     end
 
     sig { returns(String) }
@@ -71,12 +64,14 @@ module Shadcn
       size_class = @size == "sm" ? "size-3" : "size-4"
       decoration = [
         "pointer-events-none absolute left-0.5 top-1/2 -translate-y-1/2 translate-x-0",
-        "peer-checked:translate-x-[calc(100%-2px)] transition-transform",
+        "peer-checked:translate-x-[calc(100%-2px)] peer-not-checked:translate-x-0",
+        "dark:peer-checked:bg-primary-foreground dark:peer-not-checked:bg-foreground transition-transform",
         size_class
       ].join(" ")
       content_tag(
         :span,
-        data: { slot: "switch-thumb" }.merge(state_attributes),
+        data: { slot: "switch-thumb" }.merge(native_checked_data(checked: native_checked?(@html_args))),
+        aria: { hidden: "true" },
         class: [thumb_class, decoration].compact.join(" ")
       ) { "".html_safe }
     end

@@ -6,34 +6,41 @@
 
 1. **決定論的な生成パイプライン** — upstream レジストリから機械的に導出できるもの(クラス文字列・バリアント定義・`data-slot` 構造・CSS変数)はすべて自動抽出・自動生成し、コミットされた生成物として扱う
 2. **自動的な乖離検知** — upstream が変わった際に、適合試験(conformance tests)が互換性の崩れを自動検出する
-3. **型付きコードベース** — Sorbet(`typed: strict`)による静的型検査を全面採用
+3. **型付きコードベース** — `app/`・`lib/`をSorbet(`typed: strict`)で検査
 
 クライアントサイドのふるまいは React/Radix を持ち込まず、**Stimulus + Hotwire + ネイティブHTML要素**による Rails 流の再実装。クラス名・`data-slot`・ARIA属性といった「見た目と構造の契約」は upstream 由来の生成物として維持されるため、視覚的な追従は自動化される。
 
-設計の詳細は `docs.local/` の計画書群(00〜10)を参照。
+設計の詳細は[設計ドキュメント](docs/README.md)を参照。
 
 ## ステータス
 
-Phase 0〜4 完了 — vendor の全61アイテムを実装(calendar は個別契約として提供)。ロードマップは `docs.local/10-roadmap.md` 参照。
+Phase 0〜4 完了 — vendor manifestの63アイテムを追跡し、61アイテムを実装済み（`questionnaire`と`toast`はpending）。calendarは個別契約として提供する。初期実装計画は[ロードマップ（履歴）](docs/10-roadmap.md)を参照。
 
-- 提供コンポーネント(26アイテム / 全エクスポートが適合試験で検証済み):
-  **Button, Badge, Alert, Card, Avatar, Separator, Skeleton, Table, Label, Kbd, Spinner,
-  Empty, AspectRatio, Item, Marker, Input, Textarea, Breadcrumb,
-  Accordion, Checkbox, Collapsible, RadioGroup, ScrollArea, Switch, Toggle, ToggleGroup,
-  Tabs, Carousel, Pagination, Form(Item/Error — Fieldベース),
-  Dialog, AlertDialog, Sheet, Drawer, Popover, HoverCard, Tooltip,
-  DropdownMenu, ContextMenu, Menubar, NavigationMenu, Command, Combobox, Resizable,
-  Progress, Slider, NativeSelect, InputOTP, Select, Field, InputGroup,
-  ButtonGroup, DirectionProvider,
-  Sidebar, Attachment, Bubble, Message, MessageScroller, Chart, Sonner(Toaster),
-  Calendar**
+<!-- BEGIN GENERATED COMPONENT INVENTORY -->
+- 提供範囲（[適合試験registry](spec/conformance/registry.yml)から生成）: **実装済み 61 アイテム / 描画可能な公開 ViewComponent 322 クラス**
+- 実装済みアイテム:
+  `accordion`, `alert`, `alert-dialog`, `aspect-ratio`, `attachment`, `avatar`, `badge`, `breadcrumb`, `bubble`, `button`, `button-group`, `calendar`, `card`, `carousel`, `chart`, `checkbox`, `collapsible`, `combobox`, `command`, `context-menu`, `dialog`, `direction`, `drawer`, `dropdown-menu`, `empty`, `field`, `form`, `hover-card`, `input`, `input-group`, `input-otp`, `item`, `kbd`, `label`, `marker`, `menubar`, `message`, `message-scroller`, `native-select`, `navigation-menu`, `pagination`, `popover`, `progress`, `radio-group`, `resizable`, `scroll-area`, `select`, `separator`, `sheet`, `sidebar`, `skeleton`, `slider`, `sonner`, `spinner`, `switch`, `table`, `tabs`, `textarea`, `toggle`, `toggle-group`, `tooltip`
+<!-- END GENERATED COMPONENT INVENTORY -->
+
+全クラスのinitializer、slot、HTML属性の適用先、フォーム送信、状態、JavaScript要件、upstreamとの差異は[コンポーネントAPIリファレンス](docs/components/README.md)で確認できる。
+
 - calendar は react-day-picker の実行時クラス合成のため静的抽出の対象外。
   契約は lib/shadcn_view_components/contracts/calendar.rb に個別契約として保守し、
   コンポーネントは月テーブル(年月ナビ・日付ボタン)として提供する
 - インタラクティブふるまい(05 §3 ネイティブ最優先): toggle/toggle-group は Stimulus、
   accordion/collapsible は `<details>`/`<summary>`、dialog系は `<dialog>` + showModal、
   popover/tooltip/menu は Popover API
+- DropdownMenu / ContextMenuはARIA menu、Menubarは複数のARIA menuを束ねるmenubar、
+  NavigationMenuはネイティブの`nav` / リンクとして、それぞれ独立したキーボード操作を提供する
 - upstream 出所: `vendor/shadcn/manifest.json` が唯一の真実の源(現在: shadcn@4.19.0 系)
+
+### 公開コンポーネントの境界
+
+公開コンポーネントとして管理するクラスは、すべて`.new`して描画できるViewComponentである。
+`Shadcn::Chart`、`Shadcn::Form`、`Shadcn::Resizable`、`Shadcn::Sonner`は名前空間であり、
+描画には上記一覧の配下クラスを使う。公開コンポーネントの一覧は
+`spec/conformance/registry.yml`で管理し、各クラスの契約と最小構成での描画を自動検証する。
+基底クラスと内部ナビゲーション用クラスは公開APIに含まれない。
 
 ## インストール
 
@@ -73,17 +80,30 @@ importmap-rails利用時はエンジンが自動pinする:
 
 ```js
 // app/javascript/application.js
-import { register } from "shadcn"
+import { register } from "@supermomonga/shadcn-view-components"
 register(application)
 ```
 
-importmap非利用のホストは、gem内のESM(`app/assets/javascripts/shadcn/index.js`)を直接importする。手動pinのフォールバック行:
+自動pinを使えないimportmap-rails環境では、次を `config/importmap.rb` に追加する:
 
 ```ruby
-# config/importmap.rb
-pin "shadcn", to: "shadcn/index.js"
-pin_all_from "app/assets/javascripts/shadcn/controllers", under: "shadcn/controllers", preload: false
+pin_all_from ShadcnViewComponents::Engine.root.join("app/assets/javascripts/shadcn"),
+             under: "@supermomonga/shadcn-view-components",
+             to: "shadcn"
 ```
+
+jsbundling-rails等のbundlerを使う場合は、generatorでESM packageをrepository内の
+安定した相対pathへ同期し、そのlocal dependencyを追加する:
+
+```bash
+bin/rails generate shadcn_view_components:install --javascript=bundler
+pnpm add ./vendor/shadcn_view_components/javascript
+# npm install ./vendor/shadcn_view_components/javascript でも可
+```
+
+`@hotwired/stimulus` はホスト側のdependencyを使う。登録コードはimportmapと同じで、
+`import { register } from "@supermomonga/shadcn-view-components"` に統一される。
+gem更新後はgeneratorとpackage managerのinstallを再実行し、同期されたpackageをcommitする。
 
 ## 使い方
 
@@ -107,30 +127,272 @@ Shadcn::Button.classes(variant: :link)
   <% end %>
   <%= render(Shadcn::Card::Content.new) { "本文" } %>
 <% end %>
+
+# 浮動要素の配置(Popover / Tooltip / HoverCard / Menu系Contentで共通)
+render(Shadcn::Popover::Content.new(
+  side: :right,
+  align: :start,
+  side_offset: 8,
+  align_offset: 0,
+  collision_padding: 5
+)) { "内容" }
+
+# JSで操作する装飾Select。default_valueはhidden inputへ入り、nameでフォーム送信される
+render(Shadcn::Select.new(name: "framework", default_value: "rails")) do
+  safe_join([
+    render(Shadcn::Select::Trigger.new) do
+      render(Shadcn::Select::Value.new(placeholder: "選択してください"))
+    end,
+    render(Shadcn::Select::Content.new) do
+      safe_join([
+        render(Shadcn::Select::Item.new(value: "rails")) { "Ruby on Rails" },
+        render(Shadcn::Select::Item.new(value: "hanami")) { "Hanami" }
+      ])
+    end
+  ])
+end
 ```
+
+### ComboboxをRailsフォームで使う
+
+`Combobox`ルートが確定値を持ち、`Input` / `ChipsInput`は候補を検索する表示用inputとして働く。
+`name:`、`default_value:`、`disabled:`、`required:`、`form:`はルートへ渡す。
+候補の表示ラベルと送信値は`Item`の本文と`value:`で分ける。
+
+```erb
+<%= render(Shadcn::Combobox.new(
+  name: "profile[framework]",
+  default_value: "rails",
+  required: true
+)) do %>
+  <%= render(Shadcn::Combobox::Input.new(placeholder: "検索…")) %>
+  <%= render(Shadcn::Combobox::Content.new) do %>
+    <%= render(Shadcn::Combobox::List.new) do %>
+      <%= render(Shadcn::Combobox::Item.new(value: "rails")) { "Ruby on Rails" } %>
+      <%= render(Shadcn::Combobox::Item.new(value: "hanami")) { "Hanami" } %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<%= render(Shadcn::Combobox.new(
+  name: "profile[tags][]",
+  default_value: %w[rails hanami],
+  multiple: true
+)) do %>
+  <%= render(Shadcn::Combobox::Chips.new) do %>
+    <%= render(Shadcn::Combobox::Chip.new(value: "rails")) { "Rails" } %>
+    <%= render(Shadcn::Combobox::Chip.new(value: "hanami")) { "Hanami" } %>
+    <%= render(Shadcn::Combobox::ChipsInput.new(placeholder: "追加…")) %>
+  <% end %>
+<% end %>
+```
+
+複数値の`[]`は自動付与しないため、Railsの配列パラメータには上例のような`name:`を指定する。
+単一選択を空にすると空文字を送信する。chipsをすべて削除した場合もRailsへキーを送るため、
+空文字のhidden inputを有効にする。受信側では`Array(params.dig(:profile, :tags)).compact_blank`のように
+空文字を除いて空配列へ正規化する。空の自由入力と既存値の重複は無視される。
+単一選択では未確定の検索文字列だけでは送信値を変えず、検索入力を空にしたときに空文字へ更新する。
+確定値が実際に変わったときだけ、ルート内の
+`select[data-slot="combobox-form-control"]`から、bubblingする`input`、`change`の順で発火する。
+初期描画、Turboによる再接続、同じ値の再選択では発火しない。バリデーションエラー時は、
+サーバへ届いた値を`default_value:`へ戻して再描画する。
+
+### InputOTPをフォームで使う
+
+`InputOTP`は実際の`input[type="text"]`を値と選択範囲の唯一の情報源にし、各桁の`Slot`を
+表示用として同期する。ブロックを省略すると、`length:`個の`Slot`を1つの`Group`に入れた
+標準構成を自動で描画する。`id`、`name`、`form`、`required`、`disabled`、ARIA、data、
+イベント属性は実inputへ渡るため、Railsフォーム、`label[for]`、エラー要素と直接結び付けられる。
+
+```erb
+<%= render(Shadcn::Form::Item.new(invalid: @code_error.present?)) do %>
+  <%= render(Shadcn::Field::Label.new(for: "verification-code")) { "認証コード" } %>
+  <%= render(Shadcn::InputOTP.new(
+    id: "verification-code",
+    name: "verification[code]",
+    length: 6,
+    value: params.dig(:verification, :code),
+    pattern: '^\d+$',
+    required: true,
+    aria: {
+      invalid: @code_error.present?.to_s,
+      describedby: ("verification-code-error" if @code_error.present?)
+    }
+  )) %>
+  <%= render(Shadcn::Form::Error.new(id: "verification-code-error", message: @code_error)) %>
+<% end %>
+```
+
+`inputmode: "numeric"`はモバイル端末へ数字キーボードを示すヒントであり、文字種を制限しない。
+数字だけに制限する場合は、上例のようにupstreamの`REGEXP_ONLY_DIGITS`と同じ
+`pattern: '^\d+$'`を指定する。patternに一致しない入力・貼り付けは、不正文字だけを除くのではなく
+変更全体を拒否して直前の値を保つ。patternを省略すれば任意の文字を入力できる。
+入力中の判定はJavaScriptの`RegExp`を使うため、`pattern`には`^`と`$`を含めて全体一致を明示する。
+これにより、HTMLのpattern制約によるフォーム送信時の全体一致判定とも結果が一致する。
+
+独自の区切り方が必要な場合は、ブロック内に`Group`、`Slot.new(index:)`、`Separator`を明示する。
+`container_class:`は実inputを覆う表示コンテナへ、`class:`は実inputへ追加される。初期値、入力、削除、
+貼り付け、one-time-codeの自動入力、caretはStimulusが同じ実inputから各Slotへ反映する。
+JavaScriptが無効な場合は、同梱の`noscript`スタイルによって実input自体を通常のテキスト欄として表示する。
+
+### Checkbox、RadioGroup、Switchをフォームで使う
+
+`Checkbox`、`RadioGroup::Item`、`Switch`は、ネイティブinputの`checked`プロパティを状態の唯一の
+情報源にする。`data-checked` / `data-unchecked`は見た目と外部コード向けの投影であり、初期描画、
+利用者操作、フォームのreset、Turboによる再接続のたびに現在の`checked`へ同期される。プログラムから
+`input.checked`を変更した場合、ブラウザは`change`イベントを自動では発火しないため、変更後に
+bubblingする`change`イベントをdispatchする。
+
+```erb
+<%= render(Shadcn::Checkbox.new(
+  id: "terms",
+  name: "account[terms]",
+  value: "accepted",
+  required: true,
+  aria: { label: "利用規約に同意する" }
+)) %>
+
+<%= render(Shadcn::RadioGroup.new(aria: { label: "プラン" })) do %>
+  <%= render(Shadcn::RadioGroup::Item.new(name: "account[plan]", value: "free", checked: true, aria: { label: "無料" })) %>
+  <%= render(Shadcn::RadioGroup::Item.new(name: "account[plan]", value: "pro", aria: { label: "プロ" })) %>
+<% end %>
+
+<%= render(Shadcn::Switch.new(name: "account[notifications]", value: "enabled", aria: { label: "通知" })) %>
+```
+
+Radioの`name`、`value`、`checked`、`required`、`disabled`、`form`は`RadioGroup`ではなく各`Item`へ
+指定する。同じフォーム所有者と`name`を持つItemは、ブラウザのネイティブな排他グループになる。
+CheckboxとSwitchは未選択時にはフォーム値を送信せず、Radioは選択されたItemの値だけを送信する。
+未選択値も必要な場合はRailsのフォームヘルパと同様にhidden inputを別途置く。`checked`属性は初期値と
+reset後の復帰先を表す。JavaScriptが無効でも、選択・キーボード操作・フォーム送信・表示色と印の切替は
+ネイティブinputと`:checked` CSSで動作する。
+
+### Sliderをフォームで使う
+
+`Slider`はネイティブの`input[type="range"]`を値の唯一の情報源にする。`id`、`name`、`form`、
+`disabled`、`required`、`aria:`、`data:`、イベント属性は実際のinputへ渡り、`class:`、`style:`、
+`tag:`だけが見た目を構成するRootへ渡る。
+
+```erb
+<%= render(Shadcn::Label.new(for: "volume")) { "音量" } %>
+<%= render(Shadcn::Slider.new(
+  id: "volume",
+  name: "settings[volume]",
+  min: 0,
+  max: 100,
+  step: 5,
+  value: 40,
+  aria: { label: "音量" }
+)) %>
+```
+
+`min` / `max` / `step` / `value`は有限数として検証し、`max > min`、`step > 0`、値域、
+`min`を基準にしたstepとの一致を満たさない値は`ArgumentError`にする。`value: nil`ではブラウザ標準の
+step調整済み中間値を使う。`orientation: :vertical`ではRootへ高さを`style:`または`class:`で指定する。
+ポインタ・矢印キー・Home / Endの値変更はネイティブinputへ委ね、Stimulusはrangeとthumbの表示だけを同期する。
+
+### Carouselの向きと書字方向を指定する
+
+`Carousel`はRootの`orientation:`と`direction:`をレイアウトと移動方向の唯一の指定箇所にする。
+子の`Content`、`Item`、`Previous`、`Next`へ同じ値を繰り返し渡す必要はない。`direction:`はRootの
+`dir`属性にも反映され、ブラウザのRTLレイアウトとcontrollerのスクロール位置正規化を一致させる。
+
+```erb
+<h2 id="recommendations-title">おすすめ</h2>
+<%= render(Shadcn::Carousel.new(
+  orientation: :vertical,
+  direction: :rtl,
+  class: "h-80 max-w-xs",
+  aria: { labelledby: "recommendations-title" }
+)) do %>
+  <%= render(Shadcn::Carousel::Content.new(class: "h-64")) do %>
+    <% recommendations.each_with_index do |recommendation, index| %>
+      <%= render(Shadcn::Carousel::Item.new(
+        aria: { label: "#{index + 1} of #{recommendations.size}" }
+      )) { recommendation.name } %>
+    <% end %>
+  <% end %>
+  <%= render(Shadcn::Carousel::Previous.new) %>
+  <%= render(Shadcn::Carousel::Next.new) %>
+<% end %>
+```
+
+縦向きでは上例のように表示領域の高さを指定する。移動先はviewport幅・高さの固定量ではなく、
+実際の各Itemの位置から決めるため、Itemの寸法が異なる場合やレスポンシブ変更後も同じAPIを使える。
+横LTRでは左矢印が前、右矢印が次、横RTLではその対応が逆になり、縦向きは書字方向にかかわらず
+上矢印が前、下矢印が次になる。Previous / Nextは現在の論理スクロール位置が先頭・末尾に達したとき、
+ネイティブの`disabled`状態へ同期する。Rootは既定で`tabindex="0"`となるため、Rootへフォーカスして
+矢印キーを使える。既存のフォーカス設計へ組み込む場合は`tabindex:`で明示的に上書きできる。
+
+Rootには内容を表す`aria-label`または`aria-labelledby`を指定する。各Itemにも内容名、または上例の
+`1 of N`のような位置を表す名前を指定できる。複数Itemが同時に見える構成もあるため、ライブラリは
+Itemへ一律の`aria-current`や`aria-hidden`を付けない。
+[WAI-ARIA Carousel Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/carousel/)に従い、Rootの
+`role="region"` / `aria-roledescription="carousel"`、Itemの`role="group"` /
+`aria-roledescription="slide"`、ネイティブボタンの操作を保つ。
+
+### 複合コンポーネントのアクセシビリティ契約
+
+JavaScriptを使う複合コンポーネントは、ルートごとに一意なIDを生成し、子要素間のARIA参照を
+接続時に補完する。利用者が指定した`id`、`aria-controls`、`aria-labelledby`、
+`aria-describedby`などは上書きしない。fragment cacheなどによって自動生成IDだけが重複した場合は、
+そのルートと自動生成した参照先だけを再採番する。入れ子にした同種コンポーネントは、それぞれの
+controllerが直近のルートだけを管理する。
+Tabsの向きは`Shadcn::Tabs.new(orientation: :horizontal | :vertical)`へ指定し、Listの
+`aria-orientation`と矢印キーの方向を同じ値から補完する。
+
+| コンポーネント | ARIA参照・状態 | キーボード操作 |
+| --- | --- | --- |
+| Dialog / AlertDialog / Sheet / Drawer | Triggerと`dialog`を`aria-controls`で結び、TitleとDescriptionを`aria-labelledby` / `aria-describedby`で参照する。開閉時は`aria-expanded`を同期する | ネイティブ`<dialog>`のモーダルフォーカス管理、Tab巡回、Escapeで閉じてTriggerへ戻る |
+| Tabs | TriggerとPanelを`aria-controls` / `aria-labelledby`で相互参照し、`aria-selected`、`tabindex`、`hidden`を同期する | 向きに応じた矢印キー、Home / Endで選択とフォーカスを移動する |
+| Combobox | Input、Listbox、Optionを`aria-controls` / `aria-labelledby` / `aria-activedescendant`で結び、候補の`aria-selected`を同期する | Inputにフォーカスを保ち、矢印キー、Home / End、Enter、Escapeで候補を操作する |
+| Select | Trigger、Listbox、Optionを`aria-controls` / `aria-labelledby` / `aria-activedescendant`で結び、開閉・選択状態を同期する | Triggerにフォーカスを保ち、矢印キー、Home / End、Enter / Space、Escape、Tabで操作する |
+| Accordion | TriggerとContentを`aria-controls` / `aria-labelledby`で相互参照し、`aria-expanded`を同期する | ネイティブ`<summary>`のEnter / Space操作を保つ |
+| Carousel | Rootを`region`、Itemを`group`として識別し、Previous / Nextの`disabled`を論理スクロール位置へ同期する | 横LTRは左 / 右、横RTLは右 / 左、縦は上 / 下矢印で前後へ移動する。ボタンはEnter / Spaceでも操作できる |
+| Resizable | Handleを`separator`として前方Panelへ結び、`aria-valuemin` / `aria-valuemax` / `aria-valuenow`を同期する | 向きに応じた矢印キーで5%ずつ、Home / Endで最小値・最大値へ変更する |
+| Calendar | GridをCaptionへ結び、日付セルの`aria-selected`、当日の`aria-current`、日付ボタンの読み上げ名を設定する | 表示中の月表内で矢印キーを日・週単位、Home / Endを行の先頭・末尾への移動に使う |
 
 注意: 純Rubyのコード(`#call` 内等)で複数の子を `render` で連ねるときはブロックの
 戻り値しか使われないため `safe_join([...])` で連結する(ERBでは出力バッファが連結するため不要)。
 
 - バリアント値は Symbol / String 両方を受け付ける。契約に存在しない値は `ArgumentError`(fail-fast)
+- data属性・ARIA・CSS値になる意味的プロパティも同様に描画前に検証する。たとえば
+  `orientation` は `horizontal/vertical`、Toggle状態は `off/on`、Sheetの `side` は
+  `top/right/bottom/left`、Toggle Groupの `type` は `single/multiple`
+- 数値プロパティは有限の数値または厳密な数値文字列だけを受け付ける。`nil`、上下限、既定値を含む
+  個別の制約は `Shadcn::Progress.property_contract(:value)` のように確認できる
+- 浮動要素の `side` は `top/right/bottom/left/inline-start/inline-end`、`align` は
+  `start/center/end`。画面端では実配置を反転・調整し、scrollやresizeにも追従する
+- `Select` は単一値の装飾listboxで、Stimulus登録が必要。JS不要、`multiple`、ブラウザ標準の
+  制約検証が必要なフォームには、実際の`<select>`を描く`NativeSelect`を使う
 - `class:` で渡した追加クラスは `tailwind_merge` により契約クラスと統合される(利用者の上書きが後勝ち)
 - テーマのカスタマイズは CSS変数の上書きが唯一の公式経路(`@import` より後に書く)
 
 ## 開発
 
 ```bash
-mise install          # ruby 4.0 / node LTS / pnpm
-bundle install
-pnpm -C tools/extractor install
+bin/setup              # mise toolchain + Ruby + 全JavaScript依存を導入
+bundle exec rake verify # CI必須検査を同じRake taskで順に実行
 
-bundle exec rspec                      # 全テスト(層1/2/3/4)
-bundle exec rspec spec/conformance     # 適合試験のみ(追従PRで最初に見る)
-bundle exec rspec spec/system          # ふるまいのみ(Cuprite + Chrome)
-bundle exec srb tc                     # 型検査
-bundle exec rubocop                    # lint
+bundle exec rake verify:spec           # component/conformance/contract/generator/request
+bundle exec rake verify:system         # ふるまい(Cuprite + Chrome)
+bundle exec rake verify:parity         # visual + animation parity
+bundle exec rake verify:javascript     # extractor + distributed JS lint/typecheck/DOM/bundle tests
+bundle exec rake verify:sorbet         # Sorbet + RBI freshness
+bundle exec rake verify:generated      # コード生成物と生成ドキュメントの決定性
+bundle exec rake verify:tailwind       # Tailwind build
+bundle exec rake verify:rubocop        # Ruby lint
 mise run lookbook                      # プレビュー(http://localhost:9292/)
 mise run build-css                     # Lookbook用の静的スタイル再生成
 ```
+
+CI検査を追加する場合は、`.github/workflows/ci.yml`のjobへ対応する
+`LOCAL_VERIFY_TASK`を宣言し、同じtaskを`verify:full`の依存に追加する。
+契約specが全jobと`verify:full`の完全一致を検査するため、どちらか一方だけの追加はCIで失敗する。
+検査コマンドをworkflowへ直接追加せず、対応する`verify:*` task内へ実装する。
+このworkflowは検証専用とし、他のstepは`setup_*`または`artifact_*`のIDを付ける。
+未分類stepは契約specが拒否し、releaseやdeployのjobは目的別のworkflowへ分ける。
+通常CIとupstream同期は、依存関係の導入にも文書と同じ`bin/setup`を使用する。
 
 Lookbook は dummy アプリのルートパス(`/`)で開く。プレビューツールバーには
 **Theme トグルボタン(月/太陽アイコン)** があり、プレビューの
@@ -138,6 +400,18 @@ Lookbook は dummy アプリのルートパス(`/`)で開く。プレビュー�
 (`spec/dummy/app/views/layouts/preview.html.erb`)が `<html class="dark">` として行う。
 ボタンは Lookbook の display option「theme」(select)のテンプレートを差し替えたもので
 (`spec/dummy/config/initializers/lookbook_theme_toggle.rb` 参照)、動作経路は Lookbook 組み込みのままである。
+
+### コンポーネント別テスト範囲
+
+`spec/coverage/registry.yml` は、実装済みの全61 registry itemについて、最小描画、
+Lookbookプレビュー、upstreamとの見た目比較、ブラウザ操作テストの対応を管理する正本である。
+見た目比較またはブラウザ操作テストを行わない項目にも、機械検査できる除外理由を必ず記載する。
+契約registryへ実装済みitemを追加したのにcoverage行がない場合、存在しないpreview・controller・
+system specを指定した場合、あるいはsystem spec側の対象・確認項目と台帳が一致しない場合はCIが失敗する。
+
+全公開exportの最小構成はcomponent contract specが実際に描画し、全preview exampleはrequest specが
+HTTP描画する。操作を持つコンポーネントはsystem specの`component_coverage` metadataで、pointer、
+keyboard、state、form、reset、reconnect、no-JS、accessibilityなど、実際に確認するふるまいを宣言する。
 
 ### 生成パイプライン
 
@@ -148,7 +422,14 @@ rake shadcn:update    # sync + generate(追従作業のフルセット)
 rake shadcn:check     # 決定論性検証(一時ディレクトリ生成とコミット済み生成物のバイト比較)
 ```
 
-編集ポリシー(詳細は `docs.local/01-architecture.md` §2):
+`shadcn:sync` は、upstream の内容と revision が前回から変わらない場合、manifest の
+`fetched_at` / `checked_at` を保持する。同じ入力を再同期しても時刻だけの差分は作られない。
+同期時は unversioned なregistry一式とGitHub release metadataを処理の前後で二度確認し、
+内容が安定している場合だけ完成済みstaging directoryを `vendor/shadcn` へ置換する。404、
+通信失敗、JSON/schema不正、同期中の変更では既存snapshotを変更せず、`[sync:<種別>]` と
+`retryable=true|false` をエラーへ出す。
+
+編集ポリシー（詳細は[アーキテクチャとリポジトリ構成](docs/01-architecture.md#2-リポジトリ構成)）:
 
 | パス | 性質 | 編集 |
 |---|---|---|
@@ -158,15 +439,31 @@ rake shadcn:check     # 決定論性検証(一時ディレクトリ生成とコ�
 | `vendor/shadcn/` | スナップショット | `rake shadcn:sync` のみ |
 | `gen/contracts/`, `lib/shadcn_view_components/generated/`, `app/assets/stylesheets/shadcn/` | **生成物** | 禁止(再生成) |
 
-### 新規コンポーネント追加(Phase 1以降)
+### 新規コンポーネント追加
 
 1. `tools/extractor/config/targets.json` にアイテム名を追加 → `rake shadcn:generate`
 2. `app/components/shadcn/<name>.rb` + `<name>.html.erb` を実装(クラスは `Classes.resolve` 経由のみ。04 §7のチェックリスト参照)
 3. `spec/conformance/registry.yml` に1行追加(該当アイテムを `pending` から実装へ)→ 適合試験が自動的に全組み合わせを検証
+4. `spec/coverage/registry.yml` にpreview、見た目比較、操作テストの対応を追加する。対象外にする検証には具体的な理由を書く
 
 ### 週次upstream追従
 
-`.github/workflows/upstream-drift.yml` が毎週月曜 09:00 JST に `rake shadcn:update` を実行し、差分があれば自動PR(`chore/upstream-sync`)を作成する。人間の仕事はPRのレビューと、赤い場合(適合試験が崩れた場合)の修正のみ。手動実行は workflow_dispatch から。
+`.github/workflows/upstream-drift.yml` が毎週月曜 09:00 JST に `rake shadcn:update`
+を実行する。差分があれば、Chromeを含む全依存を用意して
+`bundle exec rake verify` の8検査を先に実行し、全て成功した場合だけ自動PR
+(`chore/upstream-sync`) を作成する。検証失敗はworkflow自体の失敗となり、PRは作成しない。
+
+PR作成は `github.token` に固定し、最初にdraftで作成する。同じhead branchを指定して
+`CI` workflowを `workflow_dispatch` する。GitHubの再帰防止により、`github.token` が
+作成したPRの `pull_request` eventが起動しない場合でも、PR headに必須の
+8 status checkが付く。その8個が実際に作成された後だけreview readyにする。
+PR本文とActions summaryには、upstreamの完全なcommit SHA、
+registry snapshot hash、取得日時、先行検証の結果とworkflow URLを記録する。手動実行は
+`workflow_dispatch` から行う。
+
+リポジトリ設定ではActionsにPull Request作成を許可し、mainの必須checkを
+`lint-ruby`, `lint-js`, `sorbet`, `rspec`, `system`, `parity`, `determinism`,
+`tailwind-build` に固定する。専用PATやApp tokenは使用しない。
 
 ### 見た目のupstreamパリティ検証(visual parity)
 
@@ -175,22 +472,31 @@ rake shadcn:check     # 決定論性検証(一時ディレクトリ生成とコ�
 ```bash
 bundle exec rake parity:run                      # または mise run parity(ハーネスを明示的に再ビルド)
 PARITY_RATIO=0.01 bundle exec rake parity:run    # 閾値を1%に緩和(既定 0.5%)
+bundle exec rake parity:update                   # 追跡baselineを意図して更新するときだけ実行
 ```
 
 仕組み: `vendor/shadcn` の tsx を `tools/visual-parity` で展開し、Vite + React で実際に描画(upstream側)。dummy の Lookbook プレビュー(うち側)と同じ Chromium(Cuprite)でスクリーンショットを撮り、pixelmatch で差分率を判定する。upstream側のスタイルは upstream 実アプリの globals.css 相当のみを抽出器が生成した `tools/visual-parity/src/upstream_theme.css`(トークン + npm `shadcn/tailwind.css` の verbatim取り込み)から与えられ、gem の `shadcn.css` とは独立している。これにより shadcn.css への移植漏れ・移植ミス(例: カスタムバリアント未定義でクラスが沈黙する)が upstream 側との差分として検出される(共有してしまうと両側が同じだけ壊れて差分が消えるため)。両側でアニメーションを停止し、同一ブラウザ・同一フォントで比較するため決定論的。各シナリオは **light/dark 両カラースキーム**で撮影する(dark は両側の `<html>` に `.dark` を付与。`dark:bg-destructive/60` 等の dark時ユーティリティや `.dark` トークンの差分はこのモードでしか検出できない)。
+
+画像寸法がわずかに異なる場合は、各画像の右下にあるページ背景色で不足領域を補完する。
+これによりlight/darkのどちらでも背景だけの寸法差を同じように扱い、余分な領域にある
+実コンテンツは引き続き差分として検出する。
 
 さらにアニメーションパリティ(`spec/visual/animation_parity_spec.rb`)では、両側のコンポーネントを開いた直後に WAAPI でアニメーションを取得・停止し、currentTime を同一チェックポイント(0/25/50/75/100%)に固定した上で補間値(opacity / transform / 高さ)とアニメーション名・持続時間・イージングを比較する。時間を仮想化するため実行タイミングに影響されない(drawer は upstream が vaul のJSバネ物理で動くため対象外)。
 
 - 素の `bundle exec rspec` でも**常時実行される**。upstream参照サーバ(vite preview)のキャッシュビルドと起動・停止は `spec/support/parity_server.rb` が自動で行う(ビルド入力のハッシュが変わらなければ再ビルドを省略)。明示的に外したいときだけ `PARITY=0 bundle exec rspec`
 - CI でも必須ジョブ(`parity`)として実行される
-- 成果物は `spec/visual/baselines/<demo>/<light|dark>/`(ours.png / upstream.png / diff.png / report.json)。Commitして人間が差分画像を確認できる
-- 初期セットは13シナリオ(うち11がピクセル完全一致、残り2件も0.06〜0.22%)
+- 通常実行の成果物はgitignore済みの `tmp/visual-parity/run-<pid>/<demo>/<light|dark>/`
+  (ours.png / upstream.png / diff.png / report.json)へ出力する。CI失敗時は同じ内容を
+  `visual-parity-<run id>-<attempt>` artifactとして7日間保存する
+- 追跡中の `spec/visual/baselines/` は通常テストから変更しない。
+  `bundle exec rake parity:update` を明示的に実行した場合だけ更新し、画像差分をレビューしてCommitする
+- 対象は `spec/coverage/registry.yml` が管理する99シナリオ。各シナリオをlight/darkで比較し、対象外5アイテムは同一状態を比較できない設計差の理由を同registryへ記録する
 
 **シナリオの追加手順**:
 
 1. 対象コンポーネントの Lookbook プレビュー(`spec/dummy/app/components/previews/shadcn/*_preview.rb`)を用意
 2. `tools/visual-parity/src/demos.tsx` に同じテキスト・props・並びのJSXデモを追加(キーは `<コンポーネント>/<シナリオ>`)
-3. `spec/visual/parity_spec.rb` の `SCENARIOS` に `[プレビューのパス, デモID]` を1行追加
+3. `spec/coverage/registry.yml` の対象itemの`parity.scenarios`にプレビューのパスとデモIDを追加
 
 `tools/visual-parity/src/components/ui/`(展開したupstreamソース)と `dist/` は gitignore 済みで、`pnpm run unpack` / `vite build` が常に `vendor/shadcn` から再生成する(sha256検証つき)。
 

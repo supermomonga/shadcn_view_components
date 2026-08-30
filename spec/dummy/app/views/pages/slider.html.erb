@@ -1,0 +1,51 @@
+<main class="slider-page">
+  <h1>Slider</h1>
+
+  <%= render(Shadcn::Label.new(for: "volume")) { "音量" } %>
+  <%= render(
+    Shadcn::Slider.new(
+      id: "volume",
+      name: "q",
+      form: "slider-form",
+      min: 10,
+      max: 90,
+      step: 5,
+      value: 40,
+      required: true,
+      aria: { label: "音量" },
+      data: { fixture: "volume-input" }
+    )
+  ) %>
+
+  <form id="slider-form" action="/pages/echo" method="get">
+    <%= render(Shadcn::Button.new(type: "submit")) { "送信" } %>
+  </form>
+
+  <section id="vertical-slider-fixture">
+    <%= render(Shadcn::Slider.new(
+      id: "temperature",
+      min: 0,
+      max: 100,
+      step: 5,
+      value: 25,
+      orientation: :vertical,
+      style: "height: 160px",
+      aria: { label: "温度" }
+    )) %>
+  </section>
+
+  <section id="disabled-slider-fixture">
+    <%= render(Shadcn::Slider.new(id: "disabled-volume", value: 50, disabled: true, aria: { label: "無効な音量" })) %>
+  </section>
+
+  <section id="native-default-slider-fixture">
+    <%= render(Shadcn::Slider.new(
+      id: "native-default-volume",
+      min: 0,
+      max: 10,
+      step: 3,
+      value: nil,
+      aria: { label: "既定の音量" }
+    )) %>
+  </section>
+</main>

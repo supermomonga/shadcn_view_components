@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "source": {
     "style": "base-nova",
     "registry_base_url": "https://ui.shadcn.com/r",
@@ -12,6 +12,14 @@
       "tw-animate-css",
       "shadcn"
     ],
+    "registry_snapshot": {
+      "consistency": "double-fetch",
+      "index_path": "registry/index.json",
+      "index_sha256": "445fc81a464be890f629f0c141cd22f7b18c139ac03f953bd215478f6be7c2ed",
+      "style_path": "registry/styles/base-nova/index.json",
+      "style_sha256": "86d88be9badd30c44e8cae06903cfbe001d58ad4c3f5c2255776cbf402396987",
+      "content_sha256": "c34a83ec7ac2e133729a680286f534c6ba973c1bbc52a14e654a98fc75b8252f"
+    },
     "upstream_release": {
       "tag": "shadcn@4.19.0",
       "resolved_sha": "1773ecfeeb4a04366978d353e69b5c7ded78dcb2",
@@ -24,7 +32,7 @@
       "sha256": "bc7d83425702955b4cb67cb14ede9d603f9d912376d57a2d81d661094d2a782a"
     }
   },
-  "fetched_at": "2026-08-29T07:47:05.374Z",
+  "fetched_at": "2026-08-30T04:56:32.776Z",
   "theme": {
     "base_color": "neutral",
     "path": "registry/colors/neutral.json",

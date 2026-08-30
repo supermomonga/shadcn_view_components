@@ -1,0 +1,69 @@
+<main>
+  <h1>Coverage interactions</h1>
+
+  <section aria-labelledby="collapsible-heading">
+    <h2 id="collapsible-heading">Collapsible</h2>
+    <%= render(Shadcn::Collapsible.new(id: "coverage-collapsible")) do %>
+      <%= render(Shadcn::Collapsible::Trigger.new(id: "coverage-collapsible-trigger")) do %>
+        詳細を表示
+      <% end %>
+      <%= render(Shadcn::Collapsible::Content.new(id: "coverage-collapsible-content")) do %>
+        折りたたみ領域の内容
+      <% end %>
+    <% end %>
+  </section>
+
+  <section aria-labelledby="message-scroller-heading">
+    <h2 id="message-scroller-heading">Message scroller</h2>
+    <%= render(Shadcn::MessageScroller.new(id: "coverage-message-scroller", style: "height: 120px; width: 360px")) do %>
+      <%= render(Shadcn::MessageScroller::Provider.new) do %>
+        <%= render(Shadcn::MessageScroller::Viewport.new(
+          id: "coverage-message-viewport",
+          aria: { label: "メッセージ履歴" },
+          style: "height: 120px; overflow-y: auto"
+        )) do %>
+          <%= render(Shadcn::MessageScroller::Content.new) do %>
+            <% 12.times do |index| %>
+              <%= render(Shadcn::MessageScroller::Item.new(style: "min-height: 32px")) do %>
+                メッセージ <%= index + 1 %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+        <%= render(Shadcn::MessageScroller::Button.new(
+          id: "coverage-message-bottom",
+          aria: { label: "一番下へ移動" }
+        )) { "一番下へ" } %>
+      <% end %>
+    <% end %>
+  </section>
+
+  <section aria-labelledby="native-select-heading">
+    <h2 id="native-select-heading">Native select</h2>
+    <%= render(Shadcn::Label.new(for: "coverage-native-select")) { "果物" } %>
+    <p id="coverage-native-select-help">好きな果物を選んでください</p>
+    <%= render(Shadcn::NativeSelect.new(
+      id: "coverage-native-select",
+      name: "coverage_choice",
+      form: "coverage-native-select-form",
+      required: true,
+      aria: { describedby: "coverage-native-select-help" },
+      data: { fixture: "native-select" }
+    )) do %>
+      <%= render(Shadcn::NativeSelect::Option.new(value: "apple", selected: true)) { "りんご" } %>
+      <%= render(Shadcn::NativeSelect::Option.new(value: "banana")) { "バナナ" } %>
+      <%= render(Shadcn::NativeSelect::Option.new(value: "orange")) { "オレンジ" } %>
+    <% end %>
+    <form id="coverage-native-select-form" action="/pages/coverage_interactions" method="get">
+      <%= render(Shadcn::Button.new(id: "coverage-native-select-submit", type: :submit)) { "選択を送信" } %>
+    </form>
+    <% if params[:coverage_choice].present? %>
+      <output id="coverage-native-select-result"><%= params[:coverage_choice] %></output>
+    <% end %>
+  </section>
+
+  <section aria-labelledby="sonner-heading">
+    <h2 id="sonner-heading">Sonner</h2>
+    <%= render(Shadcn::Sonner::Toaster.new(id: "coverage-toaster", aria: { label: "通知" })) %>
+  </section>
+</main>

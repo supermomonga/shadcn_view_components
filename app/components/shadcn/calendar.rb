@@ -5,11 +5,13 @@ module Shadcn
   # 月表示カレンダー(10-roadmap Phase 4 の個別評価ルート)。
   # upstream は react-day-picker を使うが、本gemは依存せず月テーブルを
   # サーバ側で描く(見出し・曜日・日付ボタン)。年月の移動は GET リンクの
-  # サーバラウンドトリップで行う(完全JSレス — 05 §5 Graceful)
+  # サーバラウンドトリップで行い、JSは表示中のgrid内のフォーカス移動だけを補助する。
+  # JS無効時も月移動と日付ボタンは利用できる(05 §5 Graceful)
   #
   # 契約クラスは lib/shadcn_view_components/contracts/calendar.rb に
   # 手動で保守する(静的抽出の対象外のため再生成されない点に注意)
   class Calendar < BaseComponent
+    CONTROLLER = "shadcn--calendar"
     START_OF_WEEK = 0 # 日曜始まり
     WEEKDAY_LABELS = %w[日 月 火 水 木 金 土].freeze
 
@@ -22,6 +24,8 @@ module Shadcn
       ).void.checked(:never)
     end
     def initialize(month: Date.current.beginning_of_month, selected: nil, month_path: nil, **args)
+      assign_accessibility_root_id(args, prefix: "calendar")
+      @root_id = T.let(args.fetch(:id).to_s, String)
       @month = month
       @selected = selected
       # 年月移動リンクの送り先(例: pages_calendar_path)。未指定の時はリンクを出さない
@@ -33,7 +37,8 @@ module Shadcn
     def call
       content_tag(:div, **html_attributes) do
         # ナビはキャプション行に絶対配置で重なる(upstream rdp と同じ構造)
-        safe_join([render(Navigation.new(month: @month, month_path: @month_path)), month_grid])
+        navigation = Navigation.new(month: @month, caption_id: caption_id, month_path: @month_path)
+        safe_join([render(navigation), month_grid])
       end
     end
 
@@ -43,13 +48,15 @@ module Shadcn
       sig do
         params(
           month: Date,
+          caption_id: String,
           month_path: T.nilable(String),
           args: T::Hash[Symbol, T.untyped]
         ).void.checked(:never)
       end
-      def initialize(month:, month_path: nil, **args)
+      def initialize(month:, caption_id:, month_path: nil, **args)
         @month = month
         @month_path = month_path
+        @caption_id = T.let(caption_id, String)
         super(**args)
       end
 
@@ -64,7 +71,12 @@ module Shadcn
       sig { returns(String) }
       def caption_row
         row_class = "flex h-(--cell-size) w-full items-center justify-center px-(--cell-size) font-medium select-none text-sm"
-        content_tag(:div, class: row_class) { "#{@month.year}年#{@month.month}月" }
+        content_tag(
+          :div,
+          id: @caption_id,
+          class: row_class,
+          data: { slot: "calendar-caption", shadcn_generated_id: "true" }
+        ) { "#{@month.year}年#{@month.month}月" }
       end
 
       sig { returns(String) }
@@ -128,7 +140,12 @@ module Shadcn
       def html_attributes
         attributes = super
         attributes[:type] = "button"
-        attributes[:tabindex] = "-1" if @outside
+        attributes[:tabindex] = "-1" if @outside && !attributes.key?(:tabindex)
+        merge_nested(
+          attributes,
+          :aria,
+          { label: full_date_label }.merge(@today ? { current: "date" } : {})
+        )
         merge_nested(attributes, :data, {
                        day: @date.iso8601,
                        selected_single: @selected.to_s,
@@ -136,6 +153,11 @@ module Shadcn
                        outside: @outside.to_s
                      })
         attributes
+      end
+
+      sig { returns(String) }
+      def full_date_label
+        "#{@date.year}年#{@date.month}月#{@date.day}日"
       end
 
       sig { override.returns(String) }
@@ -152,9 +174,19 @@ module Shadcn
       # (width:100%)の自然幅が利用幅に解決されて w-fit が効かなくなる
       attributes = @html_args.merge(class: self.class.classes(extra: @user_class))
       data = T.cast(attributes[:data], T.nilable(T::Hash[Symbol, T.untyped])) || {}
-      attributes[:data] = { slot: "calendar" }.merge(data)
+      attributes[:data] = {
+        slot: "calendar",
+        controller: CONTROLLER,
+        action: "keydown->#{CONTROLLER}#navigate"
+      }.merge(data)
       attributes
     end
+
+    sig { returns(String) }
+    def caption_id = "#{@root_id}-caption"
+
+    sig { returns(String) }
+    def grid_id = "#{@root_id}-grid"
 
     sig { returns(String) }
     def month_grid
@@ -162,7 +194,14 @@ module Shadcn
       # month_grid と同じ 196px)。w-full / w-fit の親子で幅を決めると Chrome の
       # table 自然幅計算が利用幅に解決され、セルが --cell-size より広がり、
       # upstream と寸法が合わなくなる
-      content_tag(:table, class: "w-49 border-collapse") do
+      content_tag(
+        :table,
+        id: grid_id,
+        role: "grid",
+        class: "w-49 border-collapse",
+        aria: { labelledby: caption_id },
+        data: { slot: "calendar-grid", shadcn_generated_id: "true" }
+      ) do
         safe_join([weekday_header, weeks_body])
       end
     end
@@ -205,6 +244,7 @@ module Shadcn
     def day_cell(date)
       today = date == Date.current
       outside = date.month != @month.month
+      selected = date == @selected
       # w-full を付けない: td が table 幅の 100% を要求すると 7列分の割合指定で
       # table 幅が利用幅まで引き延ばされてセルが --cell-size より広くなる
       cell_class = +"group/day relative aspect-square h-full p-0 text-center select-none " \
@@ -213,14 +253,24 @@ module Shadcn
       cell_class << " rounded-(--cell-radius) bg-muted text-foreground data-[selected=true]:rounded-none" if today
       cell_class << " text-muted-foreground aria-selected:text-muted-foreground" if outside
 
-      content_tag(:td, class: cell_class, data: { today: today.to_s, outside: outside.to_s }) do
+      data = { selected: selected.to_s, today: today.to_s, outside: outside.to_s }
+      content_tag(:td, role: "gridcell", class: cell_class, aria: { selected: selected.to_s }, data: data) do
         render(DayButton.new(
                  date: date,
-                 selected: date == @selected,
+                 selected: selected,
                  outside: outside,
-                 today: today
+                 today: today,
+                 **T.unsafe({ tabindex: date == focus_date ? "0" : "-1" })
                ))
       end
     end
+
+    sig { returns(Date) }
+    def focus_date
+      dates = month_weeks.flatten
+      [@selected, Date.current, @month.beginning_of_month].compact.find { |date| dates.include?(date) } || @month
+    end
+
+    private_constant :Navigation
   end
 end

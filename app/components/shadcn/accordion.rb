@@ -10,6 +10,12 @@ module Shadcn
     # data-state と高さ変数を同期して担う
     CONTROLLER = "shadcn--accordion"
 
+    sig { params(args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
+    def initialize(**args)
+      assign_accessibility_root_id(args, prefix: "accordion")
+      super
+    end
+
     sig { override.returns(T::Hash[Symbol, T.untyped]) }
     def contract_data_attributes
       super.merge(controller: CONTROLLER)
@@ -17,9 +23,22 @@ module Shadcn
 
     class Item < BaseComponent
       # 契約タグは AccordionPrimitive.Item。ネイティブな details として描く
+      sig { params(args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
+      def initialize(**args)
+        assign_accessibility_root_id(args, prefix: "accordion-item")
+        super
+      end
+
       sig { override.returns(String) }
       def default_tag
         "details"
+      end
+
+      # Accordion ルート外で Item 単体を描画した場合も、開閉状態と
+      # ARIA参照を同期できるようにする。ルート内では親controllerが管理する。
+      sig { override.returns(T::Hash[Symbol, T.untyped]) }
+      def contract_data_attributes
+        super.merge(controller: Accordion::CONTROLLER)
       end
     end
 
