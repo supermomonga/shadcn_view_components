@@ -1,4 +1,6 @@
 let openPopovers = new WeakSet()
+let deferToggleEvents = false
+let pendingToggleEvents = []
 let reducedMotion = false
 let resizeObservers = new Set()
 let intersectionObservers = new Set()
@@ -24,11 +26,11 @@ export function installBrowserShims() {
   for (const [name, value] of Object.entries({
     showPopover() {
       openPopovers.add(this)
-      this.dispatchEvent(new Event("toggle"))
+      dispatchToggle(this)
     },
     hidePopover() {
       openPopovers.delete(this)
-      this.dispatchEvent(new Event("toggle"))
+      dispatchToggle(this)
     },
     togglePopover() {
       if (openPopovers.has(this)) this.hidePopover()
@@ -108,11 +110,23 @@ export function installBrowserShims() {
 
 export function resetBrowserShims() {
   openPopovers = new WeakSet()
+  deferToggleEvents = false
+  pendingToggleEvents = []
   reducedMotion = false
   for (const observer of [...resizeObservers]) observer.disconnect()
   for (const observer of [...intersectionObservers]) observer.disconnect()
   resizeObservers = new Set()
   intersectionObservers = new Set()
+}
+
+export function setToggleEventsDeferred(value) {
+  deferToggleEvents = value
+}
+
+export function flushToggleEvents() {
+  const elements = pendingToggleEvents
+  pendingToggleEvents = []
+  for (const element of elements) element.dispatchEvent(new Event("toggle"))
 }
 
 export function setReducedMotion(value) {
@@ -153,4 +167,10 @@ export function animationEvent(type, animationName) {
   const event = new Event(type)
   Object.defineProperty(event, "animationName", { value: animationName })
   return event
+}
+
+/** @param {HTMLElement} element */
+function dispatchToggle(element) {
+  if (deferToggleEvents) pendingToggleEvents.push(element)
+  else element.dispatchEvent(new Event("toggle"))
 }

@@ -6,6 +6,24 @@ All notable changes to this project will be documented in this file.
 
 Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
+### Menubar・NavigationMenuの状態管理を分離
+
+- 単一の`shadcn--menu`が先頭のpopoverだけを操作していた構造を廃止し、Menubarと
+  NavigationMenuへ各ARIAパターン専用のStimulus controllerを追加した
+- Menubarの各Menu、NavigationMenuの各Item、サブメニューのTriggerとContentを
+  DOM上の親要素から一対一に対応付け、IDと`aria-controls`、ARIA menuの`aria-labelledby`を同期する
+- ContextMenu以外は`popover=auto`のネイティブなlight dismissを維持し、開いているTriggerへの
+  pointer操作を記録して、ブラウザの自動解散後にclickで再び開く競合を解消した。非同期の`toggle`通知より
+  利用者の開閉要求を優先し、開いている親popover内の子だけを残す共有調停で別rootも同時に開かないようにした
+- Menubarの左右移動、NavigationMenuのネイティブリンク操作、段階的なEscape、外側クリック、
+  フォーカス復帰、ARIA menuitemのEnter / Space活性化を実装し、入れ子の別controllerを
+  項目探索や閉じる対象から除外した
+- ContextMenu Triggerをフォーカス可能な右クリック領域へ戻し、左クリックactionが残る継承不具合を解消した。
+  manualのContextMenuを開く際は既存のauto popoverを閉じ、ARIA menuはTab / Shift+Tabで全階層を閉じる。
+  NavigationMenuは`nav`と通常リンクの構造へ戻し、開いたContent内のTab巡回を維持したまま
+  Content外へのfocus移動で閉じる
+- 複数Menu / Item、サブメニュー、入れ子の制御範囲をJavaScript単体テストと実ブラウザテストで検証した
+
 ### 公開コンポーネントと名前空間の境界を明確化
 
 - `Chart`、`Form`、`Resizable`、`Sonner`を描画クラスではなく名前空間として定義し、

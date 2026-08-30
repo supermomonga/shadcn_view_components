@@ -35,6 +35,8 @@ Phase 0〜4 完了 — vendor の全61アイテムを実装(calendar は個別�
 - インタラクティブふるまい(05 §3 ネイティブ最優先): toggle/toggle-group は Stimulus、
   accordion/collapsible は `<details>`/`<summary>`、dialog系は `<dialog>` + showModal、
   popover/tooltip/menu は Popover API
+- DropdownMenu / ContextMenuはARIA menu、Menubarは複数のARIA menuを束ねるmenubar、
+  NavigationMenuはネイティブの`nav` / リンクとして、それぞれ独立したキーボード操作を提供する
 - upstream 出所: `vendor/shadcn/manifest.json` が唯一の真実の源(現在: shadcn@4.19.0 系)
 
 ### 公開コンポーネントの境界

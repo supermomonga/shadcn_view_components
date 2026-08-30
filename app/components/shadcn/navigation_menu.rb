@@ -3,14 +3,20 @@
 
 module Shadcn
   # ナビゲーションメニュー(10-roadmap Phase 3)。
-  # トリガーの開閉は details/summary 風ではなく menu_controller(Popover API)で行う
+  # 通常のnav/linkと開閉領域をnavigation_menu_controller(Popover API)で管理する。
+  # ARIA menuではないためLinkはネイティブのTab/Enter操作を維持する。
   # JS無効時フォールバック: Readable(リンク自体はSSR済みで辿れる)
   class NavigationMenu < BaseComponent
-    CONTROLLER = "shadcn--menu"
+    CONTROLLER = "shadcn--navigation-menu"
 
     sig { override.returns(T::Hash[Symbol, T.untyped]) }
     def contract_data_attributes
       super.merge(controller: CONTROLLER)
+    end
+
+    sig { override.returns(String) }
+    def default_tag
+      "nav"
     end
 
     class List < BaseComponent
@@ -39,7 +45,7 @@ module Shadcn
       def html_attributes
         attributes = super
         attributes[:type] = "button" unless attributes.key?(:type)
-        merge_nested(attributes, :aria, { haspopup: "menu", expanded: "false" })
+        merge_nested(attributes, :aria, { expanded: "false" })
         merge_nested(attributes, :data, { action: "#{CONTROLLER}#toggle" })
         attributes
       end
@@ -67,7 +73,7 @@ module Shadcn
           "stroke-linejoin": "round",
           width: "12",
           height: "12",
-          class: "relative top-[1px] ml-1 size-3 transition duration-300 group-data-[state=open]:rotate-180",
+          class: "relative top-px ml-1 size-3 transition duration-300 group-data-popup-open/navigation-menu-trigger:rotate-180 group-data-open/navigation-menu-trigger:rotate-180",
           aria: { hidden: "true" }
         ) do
           raw(%(<path d="m6 9 6 6 6-6"/>))
@@ -91,12 +97,7 @@ module Shadcn
         T::Hash[Symbol, T.untyped]
       )
 
-      # Popover API で開閉(ul)
-      sig { override.returns(String) }
-      def default_tag
-        "ul"
-      end
-
+      # Popover API で開閉。中身のリンク構造は利用者が組む。
       sig { override.returns(T::Hash[Symbol, T.untyped]) }
       def html_attributes
         attributes = super

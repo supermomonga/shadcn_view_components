@@ -19,7 +19,9 @@ import CommandController from "@supermomonga/shadcn-view-components/controllers/
 import DialogController from "@supermomonga/shadcn-view-components/controllers/dialog_controller"
 import HoverCardController from "@supermomonga/shadcn-view-components/controllers/hover_card_controller"
 import MenuController from "@supermomonga/shadcn-view-components/controllers/menu_controller"
+import MenubarController from "@supermomonga/shadcn-view-components/controllers/menubar_controller"
 import MessageScrollerController from "@supermomonga/shadcn-view-components/controllers/message_scroller_controller"
+import NavigationMenuController from "@supermomonga/shadcn-view-components/controllers/navigation_menu_controller"
 import PopoverController from "@supermomonga/shadcn-view-components/controllers/popover_controller"
 import ResizableController from "@supermomonga/shadcn-view-components/controllers/resizable_controller"
 import SelectController from "@supermomonga/shadcn-view-components/controllers/select_controller"
@@ -38,7 +40,9 @@ export function register(application) {
   application.register("shadcn--dialog", DialogController)
   application.register("shadcn--hover-card", HoverCardController)
   application.register("shadcn--menu", MenuController)
+  application.register("shadcn--menubar", MenubarController)
   application.register("shadcn--message-scroller", MessageScrollerController)
+  application.register("shadcn--navigation-menu", NavigationMenuController)
   application.register("shadcn--popover", PopoverController)
   application.register("shadcn--resizable", ResizableController)
   application.register("shadcn--select", SelectController)

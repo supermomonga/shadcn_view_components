@@ -8,11 +8,13 @@ module Shadcn
   # - Content は右クリックイベント列の途中で light dismiss されないよう popover=manual
   # JS無効時フォールバック: Readable
   class ContextMenu < DropdownMenu
-    class Trigger < DropdownMenu::Trigger
-      # 右クリック(contextmenu)でポインタ位置に開く。button 既定の type 等は親に従う
+    class Trigger < BaseComponent
+      # 任意の領域を右クリック対象にできる非button要素。
       sig { override.returns(T::Hash[Symbol, T.untyped]) }
       def html_attributes
         attributes = super
+        attributes[:tabindex] = "0" unless attributes.key?(:tabindex)
+        merge_nested(attributes, :aria, { haspopup: "menu" })
         merge_nested(attributes, :data, { action: "contextmenu->#{DropdownMenu::CONTROLLER}#showAt" })
         attributes
       end
@@ -28,12 +30,10 @@ module Shadcn
         T::Hash[Symbol, T.untyped]
       )
 
-      # 右クリックで開く際、イベント列の途中で light dismiss されないよう manual にする
+      # 右クリックで開く際、イベント列の途中でlight dismissされないようmanualにする
       sig { override.returns(T::Hash[Symbol, T.untyped]) }
       def html_attributes
-        attributes = super
-        attributes[:popover] = "manual"
-        attributes
+        super.tap { |attributes| attributes[:popover] = "manual" }
       end
     end
 

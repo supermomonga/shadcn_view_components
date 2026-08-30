@@ -7,6 +7,7 @@
     "./controllers/*": "./controllers/*.js",
     "./floating_position": "./floating_position.js",
     "./hide_after_exit": "./hide_after_exit.js",
+    "./menu_popover": "./menu_popover.js",
     "./state_attrs": "./state_attrs.js"
   },
   "peerDependencies": {

@@ -27,8 +27,20 @@ module Shadcn
         attributes = apply_button_styling(super)
         attributes[:type] = "button" unless attributes.key?(:type)
         merge_nested(attributes, :aria, { haspopup: "menu", expanded: "false" })
-        merge_nested(attributes, :data, { action: "#{DropdownMenu::CONTROLLER}#toggle" })
+        merge_nested(attributes, :data, { action: default_action })
         attributes
+      end
+
+      private
+
+      sig { returns(String) }
+      def default_action
+        "#{controller_identifier}#toggle"
+      end
+
+      sig { returns(String) }
+      def controller_identifier
+        DropdownMenu::CONTROLLER
       end
     end
 
@@ -44,7 +56,7 @@ module Shadcn
         T::Hash[Symbol, T.untyped]
       )
 
-      # role=menu + popover=auto(light dismiss)。位置合わせはコントローラが行う
+      # role=menu + popover=auto。light dismissはネイティブ、状態・位置合わせはコントローラが担う
       sig { override.returns(T::Hash[Symbol, T.untyped]) }
       def html_attributes
         attributes = super
@@ -81,7 +93,12 @@ module Shadcn
 
       sig { returns(String) }
       def default_action
-        "#{DropdownMenu::CONTROLLER}#activate"
+        "#{controller_identifier}#activate"
+      end
+
+      sig { returns(String) }
+      def controller_identifier
+        DropdownMenu::CONTROLLER
       end
     end
 
@@ -209,7 +226,7 @@ module Shadcn
 
       sig { override.returns(String) }
       def default_action
-        "click->#{DropdownMenu::CONTROLLER}#toggleSub"
+        "click->#{controller_identifier}#toggleSub"
       end
     end
 

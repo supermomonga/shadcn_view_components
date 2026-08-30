@@ -184,8 +184,7 @@ context-menu:
   ContextMenu:
     attributes: [data-controller]
   ContextMenuTrigger:
-    # DropdownMenu::Trigger を継承するため button 既定の属性も出る
-    attributes: [type, aria-haspopup, aria-expanded, data-action]
+    attributes: [tabindex, aria-haspopup, data-action]
   ContextMenuContent:
     attributes: [role, popover, tabindex, data-state, data-position-side, data-position-align, data-position-side-offset, data-position-align-offset, data-position-collision-padding, style]
   ContextMenuGroup:
@@ -211,9 +210,11 @@ resizable:
     attributes: [role, tabindex, style, aria-orientation, data-action]
 menubar:
   Menubar:
-    attributes: [data-controller]
+    attributes: [data-controller, role, aria-orientation]
+  MenubarMenu:
+    attributes: [role]
   MenubarTrigger:
-    attributes: [type, aria-haspopup, aria-expanded, data-action]
+    attributes: [type, role, aria-haspopup, aria-expanded, data-action]
   MenubarContent:
     attributes: [role, popover, tabindex, data-state, data-position-side, data-position-align, data-position-side-offset, data-position-align-offset, data-position-collision-padding, style]
   MenubarGroup:
@@ -234,7 +235,7 @@ navigation-menu:
   NavigationMenu:
     attributes: [data-controller]
   NavigationMenuTrigger:
-    attributes: [type, aria-haspopup, aria-expanded, data-action]
+    attributes: [type, aria-expanded, data-action]
   NavigationMenuContent:
     attributes: [popover, data-state, data-position-side, data-position-align, data-position-side-offset, data-position-align-offset, data-position-collision-padding]
 command:

@@ -32,6 +32,13 @@
     <% end %>
   </section>
 
+  <section id="peer-popover-demo">
+    <%= render(Shadcn::Popover.new(id: "peer-popover")) do %>
+      <%= render(Shadcn::Popover::Trigger.new(id: "peer-popover-trigger")) { "ポップオーバーを開く" } %>
+      <%= render(Shadcn::Popover::Content.new(id: "peer-popover-content")) { "ポップオーバー本文" } %>
+    <% end %>
+  </section>
+
   <section id="menubar-demo">
     <%= render(Shadcn::Menubar.new(id: "menubar")) do %>
       <%= render(Shadcn::Menubar::Menu.new) do %>
@@ -39,6 +46,19 @@
         <%= render(Shadcn::Menubar::Content.new(id: "menubar-file-content")) do %>
           <%= render(Shadcn::Menubar::Item.new(id: "menubar-new")) { "新規作成" } %>
           <%= render(Shadcn::Menubar::Item.new(id: "menubar-save")) { "保存" } %>
+          <%= render(Shadcn::Menubar::Sub.new(id: "menubar-recent-scope")) do %>
+            <%= render(Shadcn::Menubar::SubTrigger.new(id: "menubar-recent")) { "最近使った項目" } %>
+            <%= render(Shadcn::Menubar::SubContent.new(id: "menubar-recent-content")) do %>
+              <%= render(Shadcn::Menubar::Item.new(id: "menubar-project")) { "project.rb" } %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+      <%= render(Shadcn::Menubar::Menu.new) do %>
+        <%= render(Shadcn::Menubar::Trigger.new(id: "menubar-edit")) { "編集" } %>
+        <%= render(Shadcn::Menubar::Content.new(id: "menubar-edit-content")) do %>
+          <%= render(Shadcn::Menubar::Item.new(id: "menubar-copy")) { "コピー" } %>
+          <%= render(Shadcn::Menubar::Item.new(id: "menubar-paste")) { "貼り付け" } %>
         <% end %>
       <% end %>
     <% end %>
@@ -54,6 +74,13 @@
           <%= render(Shadcn::NavigationMenu::Trigger.new(id: "nav-docs")) { "ドキュメント" } %>
           <%= render(Shadcn::NavigationMenu::Content.new(id: "nav-docs-content")) do %>
             <%= render(Shadcn::NavigationMenu::Link.new(id: "nav-intro", href: "#intro")) { "はじめに" } %>
+            <%= render(Shadcn::NavigationMenu::Link.new(id: "nav-install", href: "#install")) { "インストール" } %>
+          <% end %>
+        <% end %>
+        <%= render(Shadcn::NavigationMenu::Item.new) do %>
+          <%= render(Shadcn::NavigationMenu::Trigger.new(id: "nav-guides")) { "ガイド" } %>
+          <%= render(Shadcn::NavigationMenu::Content.new(id: "nav-guides-content")) do %>
+            <%= render(Shadcn::NavigationMenu::Link.new(id: "nav-rails", href: "#rails")) { "Rails" } %>
           <% end %>
         <% end %>
       <% end %>
