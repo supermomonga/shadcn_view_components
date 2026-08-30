@@ -15,6 +15,13 @@ Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
   `strictDepBuilds` でinstall failureとして検出する
 - 各toolは従来どおり独立したlockfileを維持し、workspace化による依存解決の変更を避けた
 
+### visual parityの検証出力とbaseline更新を分離
+
+- 通常のvisual specは `tmp/visual-parity/run-<pid>/` へ成果物を出し、追跡中の
+  `spec/visual/baselines/` を書き換えない
+- `rake parity:update` だけが追跡baselineを更新する。CI失敗時のours / upstream /
+  diff / reportはGitHub Actions artifactとして7日間保存する
+
 ### 残っていた parity 失敗 8件の解消(不具合修正)
 
 参照側CSSパイプラインの独立化の時点で残っていた8件の失敗(静的5件: command / calendar

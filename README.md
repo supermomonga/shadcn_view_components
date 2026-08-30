@@ -175,6 +175,7 @@ rake shadcn:check     # 決定論性検証(一時ディレクトリ生成とコ�
 ```bash
 bundle exec rake parity:run                      # または mise run parity(ハーネスを明示的に再ビルド)
 PARITY_RATIO=0.01 bundle exec rake parity:run    # 閾値を1%に緩和(既定 0.5%)
+bundle exec rake parity:update                   # 追跡baselineを意図して更新するときだけ実行
 ```
 
 仕組み: `vendor/shadcn` の tsx を `tools/visual-parity` で展開し、Vite + React で実際に描画(upstream側)。dummy の Lookbook プレビュー(うち側)と同じ Chromium(Cuprite)でスクリーンショットを撮り、pixelmatch で差分率を判定する。upstream側のスタイルは upstream 実アプリの globals.css 相当のみを抽出器が生成した `tools/visual-parity/src/upstream_theme.css`(トークン + npm `shadcn/tailwind.css` の verbatim取り込み)から与えられ、gem の `shadcn.css` とは独立している。これにより shadcn.css への移植漏れ・移植ミス(例: カスタムバリアント未定義でクラスが沈黙する)が upstream 側との差分として検出される(共有してしまうと両側が同じだけ壊れて差分が消えるため)。両側でアニメーションを停止し、同一ブラウザ・同一フォントで比較するため決定論的。各シナリオは **light/dark 両カラースキーム**で撮影する(dark は両側の `<html>` に `.dark` を付与。`dark:bg-destructive/60` 等の dark時ユーティリティや `.dark` トークンの差分はこのモードでしか検出できない)。
@@ -183,7 +184,11 @@ PARITY_RATIO=0.01 bundle exec rake parity:run    # 閾値を1%に緩和(既定 0
 
 - 素の `bundle exec rspec` でも**常時実行される**。upstream参照サーバ(vite preview)のキャッシュビルドと起動・停止は `spec/support/parity_server.rb` が自動で行う(ビルド入力のハッシュが変わらなければ再ビルドを省略)。明示的に外したいときだけ `PARITY=0 bundle exec rspec`
 - CI でも必須ジョブ(`parity`)として実行される
-- 成果物は `spec/visual/baselines/<demo>/<light|dark>/`(ours.png / upstream.png / diff.png / report.json)。Commitして人間が差分画像を確認できる
+- 通常実行の成果物はgitignore済みの `tmp/visual-parity/run-<pid>/<demo>/<light|dark>/`
+  (ours.png / upstream.png / diff.png / report.json)へ出力する。CI失敗時は同じ内容を
+  `visual-parity-<run id>-<attempt>` artifactとして7日間保存する
+- 追跡中の `spec/visual/baselines/` は通常テストから変更しない。
+  `bundle exec rake parity:update` を明示的に実行した場合だけ更新し、画像差分をレビューしてCommitする
 - 初期セットは13シナリオ(うち11がピクセル完全一致、残り2件も0.06〜0.22%)
 
 **シナリオの追加手順**:

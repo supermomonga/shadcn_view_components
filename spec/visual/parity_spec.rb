@@ -2,6 +2,7 @@
 
 require "rails_helper"
 require "open3"
+require_relative "../support/parity_artifacts"
 
 # 見た目の upstream パリティ検証(ビジュアルリグレッション)。
 #
@@ -15,8 +16,8 @@ require "open3"
 # 素の `bundle exec rspec` でも常時実行される(upstream参照サーバのビルドと
 # 起動は spec/support/parity_server.rb が行う。明示的に外すときは PARITY=0)。
 # 実行:   bundle exec rspec spec/visual(または rake parity:run / mise run parity)
+# baseline更新: bundle exec rake parity:update(この明示コマンドだけが追跡ファイルへ書く)
 # 閾値:   PARITY_RATIO(既定 0.005 = 0.5%)を超える差分で失敗
-PARITY_BASELINES = File.expand_path("baselines", __dir__)
 PARITY_COMPARE = File.expand_path("../../tools/visual-parity/compare.mjs", __dir__)
 PARITY_THRESHOLD = (ENV.fetch("PARITY_RATIO", nil) || "0.005").to_f
 # 各シナリオを light/dark 両カラースキームで撮る。ダークでしか発火しない
@@ -155,7 +156,7 @@ RSpec.describe "visual parity", :parity, type: :system do
           scenario_threshold || PARITY_THRESHOLD
         end
       it "#{ours_path} が upstream(#{demo_id}) と一致する(#{mode})" do
-        dir = File.join(PARITY_BASELINES, demo_id.tr("/", "-"), mode.to_s)
+        dir = ParityArtifacts.scenario_dir(demo_id, mode)
         FileUtils.mkdir_p(dir)
         ours_png = File.join(dir, "ours.png")
         upstream_png = File.join(dir, "upstream.png")
@@ -181,8 +182,10 @@ RSpec.describe "visual parity", :parity, type: :system do
           #{ours_path} のupstreamとの差分率が閾値(#{threshold})を超えました: #{report['ratio']}(#{mode})
 
           #{"#{out}\n" unless status.success?}
-          baseline: #{dir}
+          artifacts: #{dir}
             ours.png / upstream.png / diff.png(赤=差分ピクセル)
+
+          追跡baselineを更新する場合だけ `bundle exec rake parity:update` を実行してください。
         MSG
       end
     end

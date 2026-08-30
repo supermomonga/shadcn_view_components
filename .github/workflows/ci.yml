@@ -75,6 +75,14 @@ jobs:
         run: pnpm -C tools/visual-parity install --frozen-lockfile
       # ローカルと同じ自己起動パス(ハーネスのキャッシュビルド+vite preview起動)を通す
       - run: CHROME_BIN=$(which chrome) bundle exec rspec spec/visual
+      - name: Upload visual parity artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: visual-parity-${{ github.run_id }}-${{ github.run_attempt }}
+          path: tmp/visual-parity
+          if-no-files-found: ignore
+          retention-days: 7
 
   determinism:
     runs-on: ubuntu-latest
