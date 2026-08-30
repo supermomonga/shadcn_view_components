@@ -21,10 +21,11 @@ namespace :verify do
     Rake::Task["rubocop"].invoke
   end
 
-  desc "Run extractor TypeScript typecheck and unit tests"
+  desc "Run extractor checks and the bundled JavaScript consumer test"
   task :javascript do
     sh "pnpm", "-C", "tools/extractor", "run", "typecheck"
     sh "pnpm", "-C", "tools/extractor", "run", "test"
+    sh "pnpm", "-C", "tools/js-consumer", "run", "test"
   end
 
   desc "Run Sorbet and verify gem RBI freshness"

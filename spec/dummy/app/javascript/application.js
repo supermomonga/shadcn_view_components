@@ -1,7 +1,7 @@
 // frozen_string_literal: false はJSには無関係。ホストアプリでの登録例そのもの(05-stimulus-hotwire §2.2)。
-// エンジンの自動pinにより `import ... from "shadcn"` が解決されることを検証する。
+// エンジンの自動pinによりpackage固有名が解決されることを検証する。
 import { Application } from "@hotwired/stimulus"
-import { register } from "shadcn"
+import { register } from "@supermomonga/shadcn-view-components"
 
 const application = Application.start()
 

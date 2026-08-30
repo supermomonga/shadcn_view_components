@@ -5,6 +5,19 @@ require "rails/generators"
 
 module ShadcnViewComponents
   module Generators
+    module JavascriptDeliveryMode
+      extend T::Sig
+
+      MODES = %w[importmap bundler].freeze
+
+      sig { params(value: String).returns(String) }
+      def self.validate(value)
+        return value if MODES.include?(value)
+
+        Kernel.raise ArgumentError, "unknown JavaScript delivery mode #{value.inspect} (valid: #{MODES.join(', ')})"
+      end
+    end
+
     # ホストアプリへのインストール手順を自動化する(06-theming-tailwind §5)。
     #
     # - ホストのTailwindエントリCSSに @import 行と @source 行を追記する
@@ -13,16 +26,22 @@ module ShadcnViewComponents
     # - 冪等であること(二回実行で重複行を作らない。gemパスが変わった場合は最新化する)
     class InstallGenerator < Rails::Generators::Base
       extend T::Sig
+      include Thor::Actions
 
       source_root File.expand_path("templates", __dir__)
 
       class_option :stylesheet, type: :string, default: "app/assets/stylesheets/application.css",
                                 desc: "Host Tailwind entry CSS to append imports to"
+      class_option :javascript, type: :string, default: "importmap",
+                                desc: "JavaScript delivery mode: importmap or bundler"
+
+      VENDORED_JAVASCRIPT_PATH = "vendor/shadcn_view_components/javascript"
 
       sig { void }
       def append_stylesheets
+        JavascriptDeliveryMode.validate(T.cast(options["javascript"], String))
         entry = T.cast(options["stylesheet"], String)
-        entry_path = expanded(entry)
+        entry_path = File.expand_path(entry, destination_root)
         current = File.exist?(entry_path) ? File.binread(entry_path) : ""
         normalized = stylesheet_with_directives(current)
 
@@ -30,19 +49,45 @@ module ShadcnViewComponents
       end
 
       sig { void }
+      def install_javascript_package
+        return unless bundler_javascript?
+
+        # このdirectoryはgenerator管理。gem更新時に削除済みfileを残さず完全同期する。
+        if behavior == :revoke
+          empty_directory(VENDORED_JAVASCRIPT_PATH)
+        else
+          remove_dir(VENDORED_JAVASCRIPT_PATH)
+          directory(javascript_package_path, VENDORED_JAVASCRIPT_PATH, force: true)
+        end
+      end
+
+      sig { void }
       def print_js_instructions
-        say <<~TEXT
+        if bundler_javascript?
+          say <<~TEXT
 
-          Interactive components need Stimulus registration. With importmap-rails
-          (auto-pinned by the engine), add to app/javascript/application.js:
+            Interactive components need Stimulus registration. The ESM package was
+            synchronized to #{VENDORED_JAVASCRIPT_PATH}. Add the repository-relative
+            package with your package manager:
 
-              import { register } from "shadcn"
-              register(application)
+                pnpm add ./#{VENDORED_JAVASCRIPT_PATH}
+                # or: npm install ./#{VENDORED_JAVASCRIPT_PATH}
 
-          Without importmap, import the ESM files from the gem directly:
+            Then add to the bundled JavaScript entry point:
 
-              import { register } from "<absolute path>/app/assets/javascripts/shadcn/index.js"
-        TEXT
+                import { register } from "@supermomonga/shadcn-view-components"
+                register(application)
+          TEXT
+        else
+          say <<~TEXT
+
+            Interactive components need Stimulus registration. With importmap-rails
+            (auto-pinned by the engine), add to app/javascript/application.js:
+
+                import { register } from "@supermomonga/shadcn-view-components"
+                register(application)
+          TEXT
+        end
       end
 
       private
@@ -122,9 +167,14 @@ module ShadcnViewComponents
         File.join(gem_root, "app", "components")
       end
 
-      sig { params(path: String).returns(String) }
-      def expanded(path)
-        File.expand_path(path, destination_root)
+      sig { returns(String) }
+      def javascript_package_path
+        File.join(gem_root, "app", "assets", "javascripts", "shadcn")
+      end
+
+      sig { returns(T::Boolean) }
+      def bundler_javascript?
+        JavascriptDeliveryMode.validate(T.cast(options["javascript"], String)) == "bundler"
       end
     end
   end

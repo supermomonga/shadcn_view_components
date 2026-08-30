@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
-import { hideAfterExit } from "shadcn/hide_after_exit"
-import { applyStateAttrs } from "shadcn/state_attrs"
+import { hideAfterExit } from "@supermomonga/shadcn-view-components/hide_after_exit"
+import { applyStateAttrs } from "@supermomonga/shadcn-view-components/state_attrs"
 
 // ホバーインテント: trigger と content のどちらにいるかを遅延つきで判定し、
 // 素早い通り抜けでは表示しない(05-stimulus-hotwire §3)。

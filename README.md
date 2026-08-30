@@ -73,17 +73,30 @@ importmap-rails利用時はエンジンが自動pinする:
 
 ```js
 // app/javascript/application.js
-import { register } from "shadcn"
+import { register } from "@supermomonga/shadcn-view-components"
 register(application)
 ```
 
-importmap非利用のホストは、gem内のESM(`app/assets/javascripts/shadcn/index.js`)を直接importする。手動pinのフォールバック行:
+自動pinを使えないimportmap-rails環境では、次を `config/importmap.rb` に追加する:
 
 ```ruby
-# config/importmap.rb
-pin "shadcn", to: "shadcn/index.js"
-pin_all_from "app/assets/javascripts/shadcn/controllers", under: "shadcn/controllers", preload: false
+pin_all_from ShadcnViewComponents::Engine.root.join("app/assets/javascripts/shadcn"),
+             under: "@supermomonga/shadcn-view-components",
+             to: "shadcn"
 ```
+
+jsbundling-rails等のbundlerを使う場合は、generatorでESM packageをrepository内の
+安定した相対pathへ同期し、そのlocal dependencyを追加する:
+
+```bash
+bin/rails generate shadcn_view_components:install --javascript=bundler
+pnpm add ./vendor/shadcn_view_components/javascript
+# npm install ./vendor/shadcn_view_components/javascript でも可
+```
+
+`@hotwired/stimulus` はホスト側のdependencyを使う。登録コードはimportmapと同じで、
+`import { register } from "@supermomonga/shadcn-view-components"` に統一される。
+gem更新後はgeneratorとpackage managerのinstallを再実行し、同期されたpackageをcommitする。
 
 ## 使い方
 
@@ -125,7 +138,7 @@ bundle exec rake verify # CI必須検査を同じRake taskで順に実行
 bundle exec rake verify:spec           # component/conformance/contract/generator/request
 bundle exec rake verify:system         # ふるまい(Cuprite + Chrome)
 bundle exec rake verify:parity         # visual + animation parity
-bundle exec rake verify:javascript     # extractor typecheck + Vitest
+bundle exec rake verify:javascript     # extractor + bundled JS consumer
 bundle exec rake verify:sorbet         # Sorbet + RBI freshness
 bundle exec rake verify:generated      # 生成物の決定性
 bundle exec rake verify:tailwind       # Tailwind build

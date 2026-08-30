@@ -6,6 +6,17 @@ All notable changes to this project will be documented in this file.
 
 Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
+### 非Importmap向けJavaScript entry pointを実行可能にする
+
+- gem内の `app/assets/javascripts/shadcn` を固有名のlocal ESM packageとして定義し、内部importを
+  Node bundlerのpackage self-referenceで解決できるようにした
+- importmapとbundlerのどちらも `@supermomonga/shadcn-view-components` を正式なentry pointとした
+- importmap-railsの標準構成に従い、engineのmap定義とcache監視対象をinitializerで合成する
+- bundler用packageはgeneratorがhost repository内の固定相対pathへ完全同期し、machine固有の
+  gem install pathをpackage.jsonやlockfileへ保存しない
+- 実consumer fixtureをesbuildし、配布済みcontroller全件の登録とToggle操作をCIで検証する
+- README、install generator、ESM source commentの非Importmap手順を同じlocal package方式へ統一した
+
 ### OTP inflectionのhost applicationへの副作用を解消
 
 - require時とengine initializerで重複登録していたグローバルな `OTP` acronymを削除した

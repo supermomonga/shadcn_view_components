@@ -6,6 +6,8 @@
 /log/
 /node_modules/
 /tools/extractor/node_modules/
+/tools/js-consumer/node_modules/
+/tools/js-consumer/fixture/vendor/
 # visual-parity の展開物(upstreamソース)とviteビルドは unpack/build で再生成される
 /tools/visual-parity/node_modules/
 /tools/visual-parity/src/components/

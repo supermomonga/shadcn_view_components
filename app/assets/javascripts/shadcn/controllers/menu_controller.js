@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
-import { hideAfterExit } from "shadcn/hide_after_exit"
-import { applyStateAttrs } from "shadcn/state_attrs"
+import { hideAfterExit } from "@supermomonga/shadcn-view-components/hide_after_exit"
+import { applyStateAttrs } from "@supermomonga/shadcn-view-components/state_attrs"
 
 // ARIA menu パターンの共通実装(dropdown-menu / context-menu 共用 — 05 §4)。
 // - 矢印 / Home / End でハイライト移動(roving)

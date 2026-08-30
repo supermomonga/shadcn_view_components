@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 
-import { hideAfterExit } from "shadcn/hide_after_exit"
+import { hideAfterExit } from "@supermomonga/shadcn-view-components/hide_after_exit"
 
 // コマンドパレット / コンボボックスの絞り込み(10-roadmap Phase 3)。
 // SSR済みの項目リストを入力でフィルタし、矢印キーでハイライト移動、

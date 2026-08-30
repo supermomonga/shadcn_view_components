@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
-import { hideAfterExit } from "shadcn/hide_after_exit"
-import { applyStateAttrs } from "shadcn/state_attrs"
+import { hideAfterExit } from "@supermomonga/shadcn-view-components/hide_after_exit"
+import { applyStateAttrs } from "@supermomonga/shadcn-view-components/state_attrs"
 
 // ツールチップの遅延制御(既定 delayDuration=0 — upstream と同じ)。
 // aria-describedby で trigger と内容を結合する(05 §4)。

@@ -8,6 +8,7 @@ RSpec.describe "pnpm toolchain configuration", type: :conformance do
     %w[
       package.json
       tools/extractor/package.json
+      tools/js-consumer/package.json
       tools/visual-parity/package.json
     ]
   end
@@ -24,6 +25,7 @@ RSpec.describe "pnpm toolchain configuration", type: :conformance do
 
   it "allows only the dependency builds required by each tool" do
     extractor = YAML.safe_load_file(File.join(REPO_ROOT, "tools/extractor/pnpm-workspace.yaml"))
+    js_consumer = YAML.safe_load_file(File.join(REPO_ROOT, "tools/js-consumer/pnpm-workspace.yaml"))
     visual_parity = YAML.safe_load_file(File.join(REPO_ROOT, "tools/visual-parity/pnpm-workspace.yaml"))
 
     expect(extractor).to include(
@@ -31,6 +33,10 @@ RSpec.describe "pnpm toolchain configuration", type: :conformance do
       "onlyBuiltDependencies" => %w[@parcel/watcher esbuild]
     )
     expect(visual_parity).to include(
+      "strictDepBuilds" => true,
+      "onlyBuiltDependencies" => %w[esbuild]
+    )
+    expect(js_consumer).to include(
       "strictDepBuilds" => true,
       "onlyBuiltDependencies" => %w[esbuild]
     )

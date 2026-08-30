@@ -67,6 +67,8 @@ RSpec.describe "upstream drift workflow", type: :conformance do
       "bundle install",
       "pnpm install --frozen-lockfile",
       "pnpm -C tools/extractor install --frozen-lockfile",
+      "node tools/js-consumer/prepare.mjs",
+      "pnpm -C tools/js-consumer install --frozen-lockfile",
       "pnpm -C tools/visual-parity install --frozen-lockfile"
     )
     expect(verify.fetch("run")).to include("bundle exec rake verify")

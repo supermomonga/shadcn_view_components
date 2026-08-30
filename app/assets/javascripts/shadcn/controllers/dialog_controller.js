@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 
-import { hideAfterExit } from "shadcn/hide_after_exit"
+import { hideAfterExit } from "@supermomonga/shadcn-view-components/hide_after_exit"
 
 // ネイティブ <dialog> の開閉(05-stimulus-hotwire §3)。
 // showModal がフォーカストラップ・背景inert・EscClose・フォーカス復帰を提供するため、

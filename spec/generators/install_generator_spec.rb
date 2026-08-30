@@ -78,6 +78,53 @@ RSpec.describe ShadcnViewComponents::Generators::InstallGenerator do
     expect_convergence_to("/* docs: #{import_directive} */\n#{managed_block}.host { color: red; }\n")
   end
 
+  it "vendors one reproducible ESM package for bundler hosts" do
+    output = run_generator(javascript: "bundler")
+    vendored_package = File.join(destination_root, "vendor/shadcn_view_components/javascript")
+    stale_file = File.join(vendored_package, "stale.js")
+
+    expect(output).to include(
+      'import { register } from "@supermomonga/shadcn-view-components"',
+      "pnpm add ./vendor/shadcn_view_components/javascript",
+      "npm install ./vendor/shadcn_view_components/javascript"
+    )
+    expect(output).not_to include('from "<absolute path>')
+    expect(package_files(vendored_package)).to eq(package_files(File.join(REPO_ROOT, "app/assets/javascripts/shadcn")))
+
+    File.write(stale_file, "stale")
+    run_generator(javascript: "bundler")
+    expect(File.exist?(stale_file)).to be(false)
+    expect(package_files(vendored_package)).to eq(package_files(File.join(REPO_ROOT, "app/assets/javascripts/shadcn")))
+  end
+
+  it "does not mutate the vendored package in pretend mode" do
+    vendored_package = File.join(destination_root, "vendor/shadcn_view_components/javascript")
+    marker = File.join(vendored_package, "marker")
+    FileUtils.mkdir_p(vendored_package)
+    File.write(marker, "keep")
+
+    run_generator(javascript: "bundler", pretend: true)
+
+    expect(File.binread(marker)).to eq("keep")
+    expect(File.exist?(File.join(vendored_package, "package.json"))).to be(false)
+    expect(File.exist?(stylesheet_path)).to be(false)
+  end
+
+  it "removes the generator-managed package when revoked" do
+    vendored_package = File.join(destination_root, "vendor/shadcn_view_components/javascript")
+    run_generator(javascript: "bundler")
+    File.write(File.join(vendored_package, "stale.js"), "stale")
+
+    run_generator(javascript: "bundler", behavior: :revoke)
+
+    expect(File.exist?(vendored_package)).to be(false)
+  end
+
+  it "rejects an unknown JavaScript delivery mode before changing files" do
+    expect { run_generator(javascript: "unknown") }.to raise_error(ArgumentError, /unknown JavaScript delivery mode/)
+    expect(File.exist?(stylesheet_path)).to be(false)
+  end
+
   define_method(:write_stylesheet) do |contents|
     FileUtils.mkdir_p(File.dirname(stylesheet_path))
     File.binwrite(stylesheet_path, contents)
@@ -106,9 +153,18 @@ RSpec.describe ShadcnViewComponents::Generators::InstallGenerator do
     contents.lines(chomp: true).select { |line| [import_directive, source_directive].include?(line) }
   end
 
-  define_method(:run_generator) do
+  define_method(:package_files) do |root|
+    Dir[File.join(root, "**/*")].select { |path| File.file?(path) }.to_h do |path|
+      [path.delete_prefix("#{root}/"), File.binread(path)]
+    end
+  end
+
+  define_method(:run_generator) do |javascript: nil, pretend: false, behavior: :invoke|
+    arguments = ["--stylesheet", stylesheet]
+    arguments.push("--javascript", javascript) if javascript
+    arguments.push("--pretend") if pretend
     capture(:stdout) do
-      described_class.start(["--stylesheet", stylesheet], destination_root: destination_root)
+      described_class.start(arguments, destination_root: destination_root, behavior: behavior)
     end
   end
 end

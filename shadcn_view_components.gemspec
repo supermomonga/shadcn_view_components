@@ -27,6 +27,7 @@ Gem::Specification.new do |spec|
     "lib/shadcn_view_components/**/*",
     "lib/generators/**/*",
     "lib/tasks/**/*",
+    "config/importmap.rb",
     "app/components/**/*",
     "app/assets/javascripts/**/*",
     "app/assets/stylesheets/**/*"
