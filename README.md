@@ -150,6 +150,9 @@ rake shadcn:update    # sync + generate(追従作業のフルセット)
 rake shadcn:check     # 決定論性検証(一時ディレクトリ生成とコミット済み生成物のバイト比較)
 ```
 
+`shadcn:sync` は、upstream の内容と revision が前回から変わらない場合、manifest の
+`fetched_at` / `checked_at` を保持する。同じ入力を再同期しても時刻だけの差分は作られない。
+
 編集ポリシー(詳細は `docs.local/01-architecture.md` §2):
 
 | パス | 性質 | 編集 |

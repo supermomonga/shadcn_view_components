@@ -54,6 +54,10 @@ export interface SyncResult {
   unchanged: number
 }
 
+export interface SyncOptions {
+  now?: () => Date
+}
+
 interface FetchContext {
   item: string
   file: string
@@ -100,7 +104,7 @@ export async function listUiItems(): Promise<string[]> {
  * ロックの本体はitems.*.sha256であり、ここは参考情報にすぎないため、
  * 失敗時は警告の上 null で続行する(レート制限等)。
  */
-export async function resolveUpstreamRelease(): Promise<UpstreamRelease | null> {
+export async function resolveUpstreamRelease(checkedAt = new Date().toISOString()): Promise<UpstreamRelease | null> {
   const ctx: FetchContext = { item: "github", file: "releases/latest" }
   const headers: Record<string, string> = { Accept: "application/vnd.github+json", "User-Agent": "shadcn_view_components-sync" }
   if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`
@@ -116,7 +120,7 @@ export async function resolveUpstreamRelease(): Promise<UpstreamRelease | null> 
       const tagObject = (await requireJson(ref.object.url, ctx, { headers })) as { object: { sha: string } }
       sha = tagObject.object.sha
     }
-    return { tag: release.tag_name, resolved_sha: sha, checked_at: new Date().toISOString() }
+    return { tag: release.tag_name, resolved_sha: sha, checked_at: checkedAt }
   } catch (error) {
     process.stderr.write(`WARN: could not resolve upstream release metadata: ${String(error)}\n`)
     return null
@@ -154,11 +158,47 @@ async function writeAtomic(filePath: string, content: string): Promise<void> {
   await rename(tempPath, filePath)
 }
 
+function sameRelease(left: UpstreamRelease | null, right: UpstreamRelease | null): boolean {
+  if (left === null || right === null) return left === right
+  return left.tag === right.tag && left.resolved_sha === right.resolved_sha
+}
+
+/**
+ * 追跡対象の時刻は、対応するスナップショットの内容が変わった時だけ更新する。
+ * 単に同じreleaseを再確認した時刻はversioned snapshotの一部にしない。
+ */
+export function preserveUnchangedTimestamps(candidate: Manifest, previous: Manifest | null): Manifest {
+  if (previous === null) return candidate
+
+  let next = candidate
+  if (sameRelease(candidate.source.upstream_release, previous.source.upstream_release) &&
+      candidate.source.upstream_release !== null && previous.source.upstream_release !== null) {
+    next = {
+      ...candidate,
+      source: {
+        ...candidate.source,
+        upstream_release: {
+          ...candidate.source.upstream_release,
+          checked_at: previous.source.upstream_release.checked_at,
+        },
+      },
+    }
+  }
+
+  const candidateWithoutFetchTime = { ...next, fetched_at: "" }
+  const previousWithoutFetchTime = { ...previous, fetched_at: "" }
+  if (JSON.stringify(candidateWithoutFetchTime) === JSON.stringify(previousWithoutFetchTime)) {
+    return { ...next, fetched_at: previous.fetched_at }
+  }
+  return next
+}
+
 /**
  * vendorスナップショットを更新する。全アイテム取得が成功してから一括で書き込む
  * (アトミック性。部分更新で終わらせない — 02-upstream-sync §5.1)。
  */
-export async function syncVendor(vendorDir: string): Promise<SyncResult> {
+export async function syncVendor(vendorDir: string, options: SyncOptions = {}): Promise<SyncResult> {
+  const syncedAt = (options.now ?? (() => new Date()))().toISOString()
   const itemsDir = path.join(vendorDir, "registry", "items")
   const overridesDir = path.join(vendorDir, "overrides", "items")
   const colorsPath = path.join(vendorDir, "registry", "colors", `${DEFAULT_BASE_COLOR}.json`)
@@ -265,7 +305,7 @@ export async function syncVendor(vendorDir: string): Promise<SyncResult> {
   //     の実体。カスタムバリアントや scroll-fade 等のスタイル共通定義)。バージョンは
   //     upstream_release.tag に固定する。release解決に失敗したときは前回manifestの
   //     バージョンで取得を試み、取得失敗時は既存スナップショットを維持する
-  const upstreamRelease = await resolveUpstreamRelease()
+  const upstreamRelease = await resolveUpstreamRelease(syncedAt)
   let tailwindCss: ManifestTailwindCss | null = null
   const tailwindVersion = (upstreamRelease !== null ? versionFromReleaseTag(upstreamRelease.tag) : null)
     ?? previous?.source.tailwind_css?.version ?? null
@@ -293,7 +333,7 @@ export async function syncVendor(vendorDir: string): Promise<SyncResult> {
     }
   }
 
-  const manifest: Manifest = {
+  const candidateManifest: Manifest = {
     version: 1,
     source: {
       style: STYLE,
@@ -302,7 +342,7 @@ export async function syncVendor(vendorDir: string): Promise<SyncResult> {
       upstream_release: upstreamRelease,
       tailwind_css: tailwindCss,
     },
-    fetched_at: new Date().toISOString(),
+    fetched_at: syncedAt,
     theme: {
       base_color: DEFAULT_BASE_COLOR,
       path: path.relative(vendorDir, colorsPath).split(path.sep).join("/"),
@@ -310,6 +350,7 @@ export async function syncVendor(vendorDir: string): Promise<SyncResult> {
     },
     items,
   }
+  const manifest = preserveUnchangedTimestamps(candidateManifest, previous)
   await writeAtomic(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`)
 
   return { added, removed, changed, unchanged }

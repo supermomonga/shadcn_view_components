@@ -6,6 +6,13 @@ All notable changes to this project will be documented in this file.
 
 Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
+### upstream同期のtimestamp差分を抑止
+
+- upstream の内容と revision が前回から変わらない場合、manifest の `fetched_at` と
+  `checked_at` を保持し、定期同期が時刻だけのcommit / Pull Requestを作らないようにした
+- 同一responseの再同期ではvendorスナップショット全体がバイト単位で不変になり、内容または
+  revisionが変わった時だけ対応するmetadataが更新されることを固定時刻のテストで保証する
+
 ### pnpm toolchainとdependency build policyの固定
 
 - `mise.toml` と各 `package.json` で pnpm 10.22.0 を固定し、ローカルとCIが
