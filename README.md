@@ -49,30 +49,35 @@ Phase 0〜4 完了 — vendor manifestの63アイテムを追跡し、61アイ�
 gem "shadcn_view_components"
 ```
 
+Tailwind CSS v4と`tailwindcss-rails >= 4.3`が必須。`tailwindcss-rails`は本gemの
+実行時依存として導入される。ホストに標準入力がまだない場合は、先に作成する:
+
 ```bash
 bundle install
+bin/rails tailwindcss:install
+npm install tw-animate-css   # または pnpm add / yarn add
 bin/rails generate shadcn_view_components:install
 ```
 
-インストーラはホストのTailwindエントリCSSに次を追記する(冪等):
+インストーラは`app/assets/tailwind/application.css`だけを対象に、次の固定importを
+冪等に配置する。標準入力がない場合は`tailwindcss:install`の実行を求めて失敗する:
 
 ```css
 @import "tailwindcss";
+@import "tw-animate-css";
 
-/* gemが供給するテーマ(Sprockets/Propshaftが解決) */
-@import "shadcn/shadcn.css";
-
-/* ★必須: gem内コンポーネントのクラス抽出対象を明示 */
-@source "<gemのインストールパス>/app/components";
+/* shadcn_view_components */
+@import "../builds/tailwind/shadcn_view_components";
 ```
 
-**`@source` 指定が必須**である理由: Tailwind v4の自動コンテンツ検出はgem内部を走査しない。この指定がないと、コンポーネントの契約クラスがCSSに含まれず素のHTMLとして表示される(最も多い導入トラブル)。gemアップデートでパスが変わったらインストーラを再実行するとパスが最新化される。
+`tailwindcss:build`と`tailwindcss:watch`は、先に`tailwindcss:engines`を実行して
+`app/assets/builds/tailwind/shadcn_view_components.css`を自動生成する。このwrapperが
+gem同梱のEngine CSSを読み、生成契約、Calendar個別契約、ViewComponent、配布JavaScriptを
+gem内部の相対`@source`で走査する。ホストCSSにgemの物理パスや`@source`は保存されず、
+gem更新後にTailwindパス更新のためgeneratorを再実行する必要もない。
 
-**アニメーション**: テーマCSSは `@import "tw-animate-css"` を含む(upstreamのshadcnインストールと同じ)。開閉・ポップオーバーのアニメーション(animate-in/out、accordion-down/up等)のため、ホストのnode環境に `tw-animate-css` がインストール済みであること:
-
-```bash
-npm install tw-animate-css   # または pnpm add / yarn add
-```
+`app/assets/builds/tailwind/shadcn_view_components.css`は生成物なので直接編集しない。
+`tw-animate-css`はホスト入力から解決するため、上記のnpm依存は必須。
 
 ### JS(インタラクティブコンポーネント利用時)
 
@@ -504,7 +509,7 @@ bundle exec rake parity:update                   # 追跡baselineを意図して
 
 | 症状 | 原因 | 対処 |
 |---|---|---|
-| スタイルがまったく当たらない | `@source` 未指定 | インストーラを再実行 |
+| スタイルがまったく当たらない | Engine wrapperが未生成、または固定importがない | インストーラを実行し、`bin/rails tailwindcss:build`を実行 |
 | ダークモードが効かない | `.dark` の付与先が `<html>` 以外 | `<html class="dark">` に付与 |
 | 変数を上書きしたのに反映されない | 上書き位置が `@import` より前 | importより後に書く |
 | クラスの競合が意図どおりに解決されない | `tailwind_merge` gemのバージョン差 | issueで報告 |

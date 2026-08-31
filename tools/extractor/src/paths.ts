@@ -9,6 +9,7 @@ export const DEFAULT_PATHS = {
   genDir: path.join(REPO_ROOT, "gen", "contracts"),
   rubyDir: path.join(REPO_ROOT, "lib", "shadcn_view_components", "generated", "contracts"),
   cssFile: path.join(REPO_ROOT, "app", "assets", "stylesheets", "shadcn", "shadcn.css"),
+  engineCssFile: path.join(REPO_ROOT, "app", "assets", "tailwind", "shadcn_view_components", "engine.css"),
   upstreamCssFile: path.join(REPO_ROOT, "tools", "visual-parity", "src", "upstream_theme.css"),
   configDir: path.join(REPO_ROOT, "tools", "extractor", "config"),
 } as const

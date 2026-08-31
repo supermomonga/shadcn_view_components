@@ -4,6 +4,7 @@
 # 生成物(contracts/*.rb)の T.let / sig がロード時に評価されるため、
 # view_component と sorbet-runtime を最初に明示ロードする
 require "sorbet-runtime"
+require "tailwindcss-rails"
 require "view_component"
 
 require_relative "shadcn_view_components/version"

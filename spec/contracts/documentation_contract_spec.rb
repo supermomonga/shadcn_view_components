@@ -81,4 +81,13 @@ RSpec.describe "documentation contracts" do
     )
     expect(package).to include("private" => true, "type" => "module", "exports" => include("." => "./index.js"))
   end
+
+  it "documents only the fixed tailwindcss-rails host imports" do
+    expect(readme).to include(
+      "app/assets/tailwind/application.css",
+      '@import "tw-animate-css";',
+      '@import "../builds/tailwind/shadcn_view_components";'
+    )
+    expect(readme).not_to include("<gemのインストールパス>", %(@source "<gem))
+  end
 end

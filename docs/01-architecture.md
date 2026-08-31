@@ -55,6 +55,9 @@ shadcn_view_components/
 │   │       └── ...
 │   │
 │   └── assets/
+│       ├── tailwind/
+│       │   └── shadcn_view_components/
+│       │       └── engine.css                 # tailwindcss-rails Engine入力
 │       ├── stylesheets/
 │       │   └── shadcn/
 │       │       └── shadcn.css                 # ★生成物（テーマ: 変数/keyframes/utility）
@@ -137,6 +140,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "rails", ">= 8.1"        # ActionView / Rails要件
   spec.add_dependency "view_component", ">= 4.0"
   spec.add_dependency "tailwind_merge"          # ユーザー追加クラスとのマージ
+  spec.add_dependency "tailwindcss-rails", ">= 4.3"
   spec.add_development_dependency "sorbet-static", "~> 0.5"
   # ...（rspec / cuprite / lookbook / tapioca / rubocop は development）
 end
@@ -154,8 +158,7 @@ module ShadcnViewComponents
     isolate_namespace ShadcnViewComponents
 
     initializer "shadcn_view_components.assets" do |app|
-      app.config.assets.paths << root.join("app/assets/stylesheets")
-      app.config.assets.precompile += %w[shadcn/shadcn.css]
+      app.config.assets.paths << root.join("app/assets/javascripts")
     end
 
     # importmap-railsの標準engine統合へmap定義とcache監視対象を追加する
@@ -169,8 +172,10 @@ module ShadcnViewComponents
 end
 ```
 
-- **CSS**: Sprockets / Propshaft どちらでも `app/assets/stylesheets` が解決される。
-  ホスト側のTailwind v4エントリCSSから `@import "shadcn/shadcn.css"` 相当で取り込む（[06-theming-tailwind](06-theming-tailwind.md) §5）。
+- **CSS**: `tailwindcss-rails >= 4.3`が`app/assets/tailwind/shadcn_view_components/engine.css`を
+  検出し、ホストの`app/assets/builds/tailwind/`へwrapperを生成する。生の`shadcn.css`を
+  Sprockets / Propshaftで直接precompileせず、最終成果物はホストのTailwindビルドだけが供給する
+  （[06-theming-tailwind](06-theming-tailwind.md) §5）。
 - **JS**: `importmap-rails` 利用時は上記により `import { register } from "@supermomonga/shadcn-view-components"` が可能。
   importmap非利用（jsbundling-rails等）のホストは、インストーラがrepository内へ同期する
   ESM packageをlocal dependencyとして追加し、同じpackage名からimportする（§3.3）。
@@ -182,8 +187,9 @@ end
 bin/rails generate shadcn_view_components:install
 ```
 
-- ホストのTailwindエントリCSSに `@import` 行と、gem内 `app/components` を指す `@source` 行を追記する
-  （Tailwind v4の自動コンテンツ検出はgem内を走査しないため、この明示指定が必須。詳細は [06-theming-tailwind](06-theming-tailwind.md) §5）
+- `app/assets/tailwind/application.css`に`tw-animate-css`とEngine wrapperの固定`@import`を追記する。
+  入力ファイルがなければ`tailwindcss:install`の実行を求めて失敗する。ホストへgemの物理パスや
+  `@source`は書かない（詳細は [06-theming-tailwind](06-theming-tailwind.md) §5）
 - importmapでは `@supermomonga/shadcn-view-components` を自動pinする。bundlerではESM packageを
   `vendor/shadcn_view_components/javascript` へ同期し、local dependencyとして追加する
 - `app/javascript/application.js` 等に `import { register } from "@supermomonga/shadcn-view-components"; register(application)` スニペットの追記を案内する

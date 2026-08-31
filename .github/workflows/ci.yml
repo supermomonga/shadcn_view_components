@@ -145,6 +145,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       LOCAL_VERIFY_TASK: verify:tailwind
+      VERIFY_TAILWIND_MINIMUM: "1"
     steps:
       - id: setup_checkout
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
