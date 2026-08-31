@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "lib/shadcn_view_components/version"
+require "bundler"
 require "digest"
 require "open3"
 require "rspec/core/rake_task"
@@ -81,8 +82,16 @@ namespace :verify do
     sh "bundle", "exec", "rspec", "spec/visual"
   end
 
-  desc "Verify all contract classes compile with Tailwind CSS"
+  desc "Verify the packaged Engine and all contract classes compile with Tailwind CSS"
   task :tailwind do
+    sh "bundle", "exec", "rspec", "spec/contracts/tailwind_engine_distribution_spec.rb"
+    if ENV["VERIFY_TAILWIND_MINIMUM"] == "1"
+      minimum_environment = { "BUNDLE_GEMFILE" => File.join(__dir__, "gemfiles/tailwindcss_rails_4_3.gemfile") }
+      Bundler.with_unbundled_env do
+        sh minimum_environment, "bundle", "install"
+        sh minimum_environment, "bundle", "exec", "rspec", "spec/contracts/tailwind_engine_distribution_spec.rb"
+      end
+    end
     sh "pnpm", "-C", "tools/extractor", "run", "tailwind:check"
   end
 

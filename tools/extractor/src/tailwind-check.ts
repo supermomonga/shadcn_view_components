@@ -6,8 +6,7 @@
  * CI の tailwind-build ジョブから `pnpm run tailwind:check` として実行される。
  */
 import { spawnSync } from "node:child_process"
-import { mkdtemp, readFile, writeFile, rm } from "node:fs/promises"
-import { tmpdir } from "node:os"
+import { mkdir, mkdtemp, readFile, writeFile, rm } from "node:fs/promises"
 import path from "node:path"
 
 import { DEFAULT_PATHS, REPO_ROOT } from "./paths.ts"
@@ -28,10 +27,17 @@ const EXPECTED_UTILITY_SUBSTRINGS = [
   ".peer-focus-visible\\:ring-3",
   ".peer-active\\:ring-3",
   ".peer-disabled\\:pointer-events-none",
+  ".animate-spin",
+  ".in-data-\\[slot\\=card-content\\]\\:bg-transparent",
+  ".top-\\[60\\%\\]",
+  ".px-4",
+  ".py-3",
 ]
 
 async function main(): Promise<number> {
-  const workDir = await mkdtemp(path.join(tmpdir(), "shadcn-tailwind-check-"))
+  const temporaryRoot = path.join(REPO_ROOT, "tmp")
+  await mkdir(temporaryRoot, { recursive: true })
+  const workDir = await mkdtemp(path.join(temporaryRoot, "shadcn-tailwind-check-"))
   const inputPath = path.join(workDir, "input.css")
   const outputPath = path.join(workDir, "output.css")
   const dummyOutputPath = path.join(workDir, "dummy.css")
@@ -46,14 +52,11 @@ async function main(): Promise<number> {
     "application.css",
   )
 
-  // gem のインストール手順(06 §5.1)と同じ構成: tailwindcss + gemのテーマCSS + @source。
-  // 自動検出を無効化し、明示した配布対象だけで必要なクラスを生成できることを検証する。
+  // 公開Engine entryと同じ構成で、配布対象だけから必要なクラスを生成できることを検証する。
   const input = [
     '@import "tailwindcss" source(none);',
-    `@import "${DEFAULT_PATHS.cssFile}";`,
-    `@source "${path.join(REPO_ROOT, "app", "components")}";`,
-    `@source "${DEFAULT_PATHS.genDir}";`,
-    `@source "${path.join(REPO_ROOT, "lib", "shadcn_view_components", "contracts")}";`,
+    '@import "tw-animate-css";',
+    `@import "${DEFAULT_PATHS.engineCssFile}";`,
     "",
   ].join("\n")
   await writeFile(inputPath, input, "utf8")

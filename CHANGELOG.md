@@ -6,6 +6,15 @@ All notable changes to this project will be documented in this file.
 
 Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
+### Tailwind統合をtailwindcss-railsのEngine機構へ統一
+
+- Tailwind CSS v4と`tailwindcss-rails >= 4.3`を必須にし、gem同梱のEngine CSSから生成テーマ、
+  生成契約、Calendar個別契約、ViewComponent、配布JavaScriptを相対パスで走査する
+- ホストの`app/assets/tailwind/application.css`は`tw-animate-css`と自動生成Engine wrapperの
+  固定importだけを保持し、gemの物理パス、`@source`、任意のstylesheet指定を廃止した
+- ビルド済みgemを任意パスへinstallしたconsumerで`tailwindcss:engines`と`tailwindcss:build`を実行し、
+  最低対応4.3系と現在版の双方で全ソース由来のクラスが最終CSSへ入ることをCIで検証する
+
 ### 全コンポーネントのテスト範囲を一元管理
 
 - 実装済み61 registry itemについて、全公開exportの最小描画、Lookbook preview、upstreamとの
@@ -187,9 +196,9 @@ Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
 ### install generatorのTailwind directiveを独立して保証
 
-- host CSSのshadcn importとgem component pathの `@source` を別々に検査し、
+- host CSSの`tw-animate-css` importとEngine wrapper importを別々に検査し、
   どちらか一方だけが既にある場合も不足したdirectiveを補う
-- import / sourceの有無による4状態が同じ最終条件に収束し、generatorを再実行しても
+- 二つのimportの有無による4状態が同じ最終条件に収束し、generatorを再実行しても
   行の重複やbyte差分を作らないことをgenerator specで保証し、このspecを
   `verify:spec` の必須対象に加えた
 

@@ -41,9 +41,7 @@ module ShadcnViewComponents
 
     initializer "shadcn_view_components.assets" do |app|
       root = ShadcnViewComponents::Engine.root
-      app.config.assets.paths << root.join("app/assets/stylesheets")
       app.config.assets.paths << root.join("app/assets/javascripts")
-      app.config.assets.precompile += %w[shadcn/shadcn.css]
     end
 
     # importmap-railsの標準engine統合に従い、map定義とcache監視対象を

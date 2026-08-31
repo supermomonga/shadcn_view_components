@@ -13,8 +13,8 @@
 | Tailwindバージョン | **v4のみ**（CSS-first設定） | upstreamがv4移行済み。v3の併立サポートは追従コストを倍加させるためノンゴール（[00-overview](00-overview.md) §2） |
 | 設定形式 | `tailwind.config` なし。CSS（`@import "tailwindcss"` / `@theme` / `@custom-variant`）で完結 | upstreamのv4流をそのまま反映 |
 | カラー体系 | upstream準拠の**oklch CSS変数**（`--background` 等のsemantic token）を `:root` / `.dark` に定義 | テーマの差し替えが変数上書きで可能になる |
-| gemが提供するCSS | **生成物 `shadcn.css` の1ファイルのみ**（テーマ変数 + keyframes + utility） | コンポーネントの見た目はすべてTailwindユーティリティ（契約クラス）で表現されるため、追加のコンポーネントCSSは基本不要 |
-| ホストのTailwindビルド | ホストが自分のTailwindプロセス（`@tailwindcss/cli` / PostCSS / cssbundling-rails等）でビルドする。gemはCSSを**供給するだけ** | gemがビルドツールを押し付けない |
+| gemが提供するCSS | 生成テーマ`shadcn.css`と`tailwindcss-rails`用`engine.css` | Engine CSSがテーマと全クラス抽出元をgem内部の相対パスでまとめる |
+| ホストのTailwindビルド | **`tailwindcss-rails >= 4.3`のみ** | Rails Engine用CSSの探索・wrapper生成・ホストビルドを一つの標準経路に固定する |
 
 ## 2. 生成物 `app/assets/stylesheets/shadcn/shadcn.css` の構造
 
@@ -115,23 +115,29 @@ upstreamと同様、**CSS変数の上書き**が唯一の公式カスタマイ�
 
 ### 5.1 手順（インストーラ `bin/rails g shadcn_view_components:install` が自動化する内容）
 
+Tailwind CSS v4と`tailwindcss-rails >= 4.3`が必須。先に
+`bin/rails tailwindcss:install`で標準入力`app/assets/tailwind/application.css`を作り、
+ホストのnode環境へ`tw-animate-css`を追加する。インストーラは標準入力がなければ失敗し、
+別の入力ファイルを指定するオプションは提供しない。
+
 ```css
-/* ホストのTailwind v4エントリ（例: app/assets/stylesheets/application.css） */
+/* app/assets/tailwind/application.css */
 @import "tailwindcss";
+@import "tw-animate-css";
 
-/* gemが供給するテーマ（Sprockets/Propshaftが解決） */
-@import "shadcn/shadcn.css";
-
-/* ★必須: gem内コンポーネントのクラス抽出対象を明示 */
-@source "../../../../vendor/bundle/ruby/4.0/gems/shadcn_view_components-0.x.x/app/components";
+/* shadcn_view_components */
+@import "../builds/tailwind/shadcn_view_components";
 ```
 
-- **`@source` 指定が必須**である理由: Tailwind v4の自動コンテンツ検出はgem内部を走査しない。
-  この指定がないと、コンポーネントの契約クラスがCSSに含まれず素のHTMLとして表示される
-  （最も多い導入トラブルになるため、インストーラとREADMEで最強調する）
-- gemのインストールパスは環境で異なるため、インストーラが `Gem.loaded_specs["shadcn_view_components"].full_gem_path`
-  から解決して**相対パスを書き込む**。gemアップデートでバージョン付きパスが変わることに備え、
-  インストーラは冪期実行でパスを最新化する（READMEにも再実行を案内）
+`tailwindcss:build` / `tailwindcss:watch`の前提タスク`tailwindcss:engines`が、
+`app/assets/builds/tailwind/shadcn_view_components.css`を生成する。このwrapperはgemの
+`app/assets/tailwind/shadcn_view_components/engine.css`をimportする。Engine CSSは生成テーマ、
+生成契約、Calendar個別契約、`app/components`のRuby / ERB、配布JavaScriptをgem内部の
+相対パスで宣言する。ホストの追跡対象CSSは固定importだけを持ち、gemの物理パスや
+`@source`を持たない。gem更新時のパス追従も不要。
+
+`tw-animate-css`はgem内部の生成テーマではなく、ホスト入力からimportする。これにより
+ホストの`node_modules`から一意に解決される。自動生成されるEngine wrapperは直接編集しない。
 
 ### 5.2 JS（インタラクティブコンポーネント利用時）
 
@@ -147,16 +153,16 @@ importmap-rails利用時はエンジンが自動pin（[01](01-architecture.md) �
 
 | 症状 | 原因 | 対処 |
 |---|---|---|
-| スタイルがまったく当たらない | `@source` 未指定 | §5.1の指定を確認 |
+| スタイルがまったく当たらない | Engine wrapperが未生成、または固定importがない | インストーラを実行し、`bin/rails tailwindcss:build`を実行 |
 | ダークモードが効かない | `.dark` の付与先が `<html>` 以外 / `@custom-variant` 未読み込み | §3確認 |
 | 変数を上書きしたのに反映されない | 上書き位置が `@import` より前 | importより後に書く |
 | クラスの競合が意図どおりに解決されない | `tailwind_merge` gemのバージョン差 | issue報告の窓口として案内 |
 
 ## 6. gem内部でクラスを検証する仕組み（開発時）
 
-- spec/dummy アプリのTailwindビルド（`@tailwindcss/cli` を開発依存で実行）が
-  **契約クラスを含むCSSを実際に生成できるか**をCIで検証する（`spec/support/tailwind_build` タスク）。
-  これにより「upstreamが新ユーティリティ（例: 新しい `grid-cols-*` 値）を使い始めた場合に
-  ホストのTailwind v4で解決できないクラスがある」状況を早期検知する
+- 公開Engine CSSを入力にしたTailwindビルドで、生成契約、Calendar個別契約、ViewComponent、
+  配布JavaScriptの代表クラスが最終CSSへ入ることを検証する。テスト専用の追加`@source`は使わない
+- ビルドしたgemを任意名の一時パスへinstallしたconsumerで`tailwindcss:engines`と
+  `tailwindcss:build`を実行する。CIは最低対応の4.3系と現在のlock解決版の両方で同じ検証を行う
 - 検証は「生成CSSに期待するユーティリティ宣言が存在する」ことのチェックに留め、
   ピクセル単位のvisual parityは `spec/visual/parity_spec.rb` でlight/darkを比較し、アニメーションは `spec/visual/animation_parity_spec.rb` で補間値を比較する

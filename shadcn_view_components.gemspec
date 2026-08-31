@@ -26,17 +26,18 @@ Gem::Specification.new do |spec|
     "lib/shadcn_view_components.rb",
     "lib/shadcn_view_components/**/*",
     "lib/generators/**/*",
-    "lib/tasks/**/*",
     "config/importmap.rb",
     "app/components/**/*",
     "app/assets/javascripts/**/*",
-    "app/assets/stylesheets/**/*"
+    "app/assets/stylesheets/**/*",
+    "app/assets/tailwind/**/*"
   ]
   spec.bindir = "exe"
   spec.executables = []
   spec.require_paths = ["lib"]
 
   spec.add_dependency "rails", ">= 8.1"
+  spec.add_dependency "tailwindcss-rails", ">= 4.3"
   spec.add_dependency "tailwind_merge"
   spec.add_dependency "view_component", ">= 4.0"
   # 生成物(contracts/*.rb)の T.let / sig が実行時に評価されるため runtime も必要

@@ -20,32 +20,34 @@ module ShadcnViewComponents
 
     # ホストアプリへのインストール手順を自動化する(06-theming-tailwind §5)。
     #
-    # - ホストのTailwindエントリCSSに @import 行と @source 行を追記する
-    #   (Tailwind v4の自動コンテンツ検出はgem内部を走査しないため、@sourceの明示指定が必須)
+    # - tailwindcss-rails標準のTailwindエントリCSSにEngine CSSの @import 行を追記する
     # - JS登録スニペットの追記を案内する
-    # - 冪等であること(二回実行で重複行を作らない。gemパスが変わった場合は最新化する)
+    # - 冪等であること(二回実行で重複行を作らない)
     class InstallGenerator < Rails::Generators::Base
       extend T::Sig
       include Thor::Actions
 
       source_root File.expand_path("templates", __dir__)
 
-      class_option :stylesheet, type: :string, default: "app/assets/stylesheets/application.css",
-                                desc: "Host Tailwind entry CSS to append imports to"
       class_option :javascript, type: :string, default: "importmap",
                                 desc: "JavaScript delivery mode: importmap or bundler"
 
       VENDORED_JAVASCRIPT_PATH = "vendor/shadcn_view_components/javascript"
+      TAILWIND_STYLESHEET_PATH = "app/assets/tailwind/application.css"
 
       sig { void }
       def append_stylesheets
         JavascriptDeliveryMode.validate(T.cast(options["javascript"], String))
-        entry = T.cast(options["stylesheet"], String)
-        entry_path = File.expand_path(entry, destination_root)
-        current = File.exist?(entry_path) ? File.binread(entry_path) : ""
+        entry_path = File.expand_path(TAILWIND_STYLESHEET_PATH, destination_root)
+        unless File.file?(entry_path)
+          Kernel.raise Thor::Error,
+                       "#{TAILWIND_STYLESHEET_PATH} was not found. Run `bin/rails tailwindcss:install` first."
+        end
+
+        current = File.binread(entry_path)
         normalized = stylesheet_with_directives(current)
 
-        create_file(entry, normalized, force: true) unless current == normalized
+        create_file(TAILWIND_STYLESHEET_PATH, normalized, force: true) unless current == normalized
       end
 
       sig { void }
@@ -96,10 +98,14 @@ module ShadcnViewComponents
       def stylesheet_with_directives(contents)
         newline = contents.include?("\r\n") ? "\r\n" : "\n"
         lines = contents.lines(chomp: true).reject do |line|
-          managed_comment_line?(line) || import_directive_line?(line) || source_directive_line?(line)
+          managed_comment_line?(line) || animate_import_line?(line) || engine_import_line?(line)
         end
         insertion_index = directive_insertion_index(lines)
-        lines.insert(insertion_index, managed_comment, import_directive, source_directive)
+        while insertion_index.positive? && lines.fetch(insertion_index - 1).empty?
+          lines.delete_at(insertion_index - 1)
+          insertion_index -= 1
+        end
+        lines.insert(insertion_index, animate_import, "", managed_comment, engine_import)
 
         "#{lines.join(newline)}#{newline}"
       end
@@ -110,13 +116,13 @@ module ShadcnViewComponents
       end
 
       sig { returns(String) }
-      def import_directive
-        '@import "shadcn/shadcn.css";'
+      def animate_import
+        '@import "tw-animate-css";'
       end
 
       sig { returns(String) }
-      def source_directive
-        "@source \"#{components_source_path}\";"
+      def engine_import
+        '@import "../builds/tailwind/shadcn_view_components";'
       end
 
       sig { params(line: String).returns(T::Boolean) }
@@ -125,13 +131,13 @@ module ShadcnViewComponents
       end
 
       sig { params(line: String).returns(T::Boolean) }
-      def import_directive_line?(line)
-        line.match?(%r{\A[ \t]*@import[ \t]+(["'])shadcn/shadcn\.css\1[ \t]*;?[ \t]*\z})
+      def animate_import_line?(line)
+        line.match?(/\A[ \t]*@import[ \t]+(["'])tw-animate-css\1[ \t]*;?[ \t]*\z/)
       end
 
       sig { params(line: String).returns(T::Boolean) }
-      def source_directive_line?(line)
-        line.match?(%r{\A[ \t]*@source[ \t]+(["'])[^"'\r\n]*/shadcn_view_components[^/"'\r\n]*/app/components\1[ \t]*;?[ \t]*\z})
+      def engine_import_line?(line)
+        line.match?(%r{\A[ \t]*@import[ \t]+(["'])\.\./builds/tailwind/shadcn_view_components\1[ \t]*;?[ \t]*\z})
       end
 
       sig { params(lines: T::Array[String]).returns(Integer) }
@@ -160,11 +166,6 @@ module ShadcnViewComponents
       sig { returns(String) }
       def gem_root
         Gem.loaded_specs.fetch("shadcn_view_components").full_gem_path
-      end
-
-      sig { returns(String) }
-      def components_source_path
-        File.join(gem_root, "app", "components")
       end
 
       sig { returns(String) }

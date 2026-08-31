@@ -13,7 +13,8 @@
  */
 /* 追跡済みの出力application.cssを自動検出して次回生成へ混ぜない。 */
 @import "tailwindcss" source(none);
-@import "../../../app/assets/stylesheets/shadcn/shadcn.css";
+@import "tw-animate-css";
+@import "../../../app/assets/tailwind/shadcn_view_components/engine.css";
 
 /* 比較の決定論性のためフォントスタックを両側で同一に固定する
    (upstream側の tools/visual-parity/src/theme.css と同じ定義) */
@@ -21,12 +22,6 @@
   --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
-
-/* gem 側のクラス文字列(生成契約 + 手書きコンポーネント + コントローラJS) */
-@source "../../../lib/shadcn_view_components/generated/**/*.rb";
-@source "../../../lib/shadcn_view_components/contracts/**/*.rb";
-@source "../../../app/components/shadcn/**/*.rb";
-@source "../../../app/assets/javascripts/shadcn/**/*.js";
 
 /* dummy 側(previews / pages / 独自JS) */
 @source "../app/**/*.rb";

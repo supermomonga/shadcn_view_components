@@ -1,5 +1,5 @@
 PATH
-  remote: .
+  remote: ..
   specs:
     shadcn_view_components (0.1.0)
       rails (>= 8.1)
@@ -204,8 +204,6 @@ GEM
       activesupport (>= 7.0.0)
       rack
     public_suffix (7.0.5)
-    puma (8.0.2)
-      nio4r (~> 2.0)
     racc (1.8.1)
     rack (3.2.7)
     rack-session (2.1.2)
@@ -312,15 +310,15 @@ GEM
     rubydex (0.4.0-x86_64-linux)
     securerandom (0.4.1)
     sin_lru_redux (2.5.3)
-    sorbet (0.6.13444)
-      sorbet-static (= 0.6.13444)
-    sorbet-runtime (0.6.13444)
-    sorbet-static (0.6.13444-aarch64-linux)
-    sorbet-static (0.6.13444-universal-darwin)
-    sorbet-static (0.6.13444-x86_64-linux)
-    sorbet-static-and-runtime (0.6.13444)
-      sorbet (= 0.6.13444)
-      sorbet-runtime (= 0.6.13444)
+    sorbet (0.6.13455)
+      sorbet-static (= 0.6.13455)
+    sorbet-runtime (0.6.13455)
+    sorbet-static (0.6.13455-aarch64-linux)
+    sorbet-static (0.6.13455-universal-darwin)
+    sorbet-static (0.6.13455-x86_64-linux)
+    sorbet-static-and-runtime (0.6.13455)
+      sorbet (= 0.6.13455)
+      sorbet-runtime (= 0.6.13455)
     spoom (1.8.7)
       erubi (>= 1.10.0)
       prism (>= 0.28.0)
@@ -332,7 +330,7 @@ GEM
     ssrf_filter (1.5.0)
     tailwind_merge (1.5.5)
       sin_lru_redux (~> 2.5)
-    tailwindcss-rails (4.6.0)
+    tailwindcss-rails (4.3.0)
       railties (>= 7.0.0)
       tailwindcss-ruby (~> 4.0)
     tailwindcss-ruby (4.3.3-aarch64-linux-gnu)
@@ -396,13 +394,13 @@ DEPENDENCIES
   importmap-rails (>= 2.0)
   lookbook (>= 2.0)
   propshaft
-  puma
   rspec-rails
   rubocop
   rubocop-packaging
   rubocop-sorbet
   shadcn_view_components!
   sorbet-static (~> 0.5)
+  tailwindcss-rails (~> 4.3.0)
   tapioca
   turbo-rails
 
@@ -474,7 +472,6 @@ CHECKSUMS
   prism (1.9.0) sha256=7b530c6a9f92c24300014919c9dcbc055bf4cdf51ec30aed099b06cd6674ef85
   propshaft (1.3.2) sha256=1d56a3e56a92c21bfc29caf07406b5386b00d4c47ddf357cf989a5a234b1389e
   public_suffix (7.0.5) sha256=1a8bb08f1bbea19228d3bed6e5ed908d1cb4f7c2726d18bd9cadf60bc676f623
-  puma (8.0.2) sha256=c8ed871dfbbe66448ea9ffd46692342d9804d4071522b52b5331b7b6e7b686fb
   racc (1.8.1) sha256=4a7f6929691dbec8b5209a0b373bc2614882b55fc5d2e447a21aaa691303d62f
   rack (3.2.7) sha256=93e13e1c24f93556671d85d2d79fa228c3485815c50d7e2f265b5330c6528fb7
   rack-session (2.1.2) sha256=595434f8c0c3473ae7d7ac56ecda6cc6dfd9d37c0b2b5255330aa1576967ffe8
@@ -512,16 +509,16 @@ CHECKSUMS
   securerandom (0.4.1) sha256=cc5193d414a4341b6e225f0cb4446aceca8e50d5e1888743fac16987638ea0b1
   shadcn_view_components (0.1.0)
   sin_lru_redux (2.5.3) sha256=d9bcc184537cb0781cccfb283a18d36c5b820cf811b2637b398b55e98f4cecbd
-  sorbet (0.6.13444) sha256=ddcccc6c9e252503e859e853a54b7a385ab689c832fc7b71501ee173beb66d58
-  sorbet-runtime (0.6.13444) sha256=1b97769d5c585faac9b6c11736e0966ae64a7c352c053d43a9c254e2a7532350
-  sorbet-static (0.6.13444-aarch64-linux) sha256=dcd9d005bf101e8880392830b7c517697cf1e61e424d5b1ce7f390c70983a223
-  sorbet-static (0.6.13444-universal-darwin) sha256=7441870df4f87d3167074f4edcdc7dcec6d5e6c27011ad6cfc81bc4a903362a2
-  sorbet-static (0.6.13444-x86_64-linux) sha256=8b2f247f46b4df546a078f97fc69818ae52f16dc860efe44cf308d9b2e408c7e
-  sorbet-static-and-runtime (0.6.13444) sha256=cc554487081acf8a007ec8c07e1af05e4eaee12a3c931b1a0c855f255b4f3d1c
+  sorbet (0.6.13455) sha256=4fe61df1486eab72eead9932553d0881d06663ecb786fce7e7f7decab0fd0c1f
+  sorbet-runtime (0.6.13455) sha256=6eb546ac583a9fe96528f3c74ce22d86b355289aeda99b334c4440a9d6de5df6
+  sorbet-static (0.6.13455-aarch64-linux) sha256=ab87c32c22461eea0e51b7116e3b9ff68590a83b0e00f96e182128cd9f7a1930
+  sorbet-static (0.6.13455-universal-darwin) sha256=3c23f48d4f0905520733657aff4618af07f349c8a97800e11d2ba3869cd59e23
+  sorbet-static (0.6.13455-x86_64-linux) sha256=69c8b2e9c560418966fa180da11a08b93e85329b8c145051342a620e88a845d5
+  sorbet-static-and-runtime (0.6.13455) sha256=65fb0918700f3cdeb7965192f2a2964d22ba3cca49b521cfa8ea7ad01620b6a2
   spoom (1.8.7) sha256=81960502cdf23aa991f015988aa5dd43325e23ae4318b8e00d541299cbdb70f6
   ssrf_filter (1.5.0) sha256=e03dcdb9d1730d7f6710532a606b3543df2a448a0293ce04a2d995523c5a97f6
   tailwind_merge (1.5.5) sha256=391b93d11acdce3e04e2cff8059d300d1857ea9f3b997b91e06caa9120915b1e
-  tailwindcss-rails (4.6.0) sha256=d99512867173d55c5ef8890427682299d8539f550cec1408b3d8667a538bd365
+  tailwindcss-rails (4.3.0) sha256=1e7bf788b8724ba76fec7c43c151a8bca2a39f5d52484aef867f75322df3a6d5
   tailwindcss-ruby (4.3.3-aarch64-linux-gnu) sha256=c86d6dd3eccc85fe0d792a832b06f2bf3c0a7a83b399308aeb9d8f5725f42a6a
   tailwindcss-ruby (4.3.3-aarch64-linux-musl) sha256=72b77ca9edea82383dd09510ab520a122e3cb9f9864ca5b38e27698098d2b899
   tailwindcss-ruby (4.3.3-arm64-darwin) sha256=776c51fc734aac64bde0c253eadd2ed2e610b2ba0d8e760501fe7cbec55fd6cf

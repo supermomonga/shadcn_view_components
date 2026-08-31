@@ -27,7 +27,7 @@
 | `system` | Cupriteシステムスペック（層3）。Chromeのセットアップを含む | browser-actions/setup-chrome |
 | `parity` | upstream React/ViteとLookbookの静的・アニメーションparity。失敗成果物をartifactとして保存 | Chrome + pnpm + pixelmatch |
 | `determinism` | **`rake verify:generated` → `git diff --exit-code`**。`shadcn:check`に加えてREADME inventoryとcomponent referenceの`docs:check`も実行 | ruby + node |
-| `tailwind-build` | 契約クラスが実際にTailwindビルドを通るか（[06](06-theming-tailwind.md) §6） | node + @tailwindcss/cli |
+| `tailwind-build` | ビルド済みgemのEngine統合と全クラス抽出元が実際にTailwindビルドを通るか（[06](06-theming-tailwind.md) §6） | `tailwindcss-rails` 4.3系 / lock解決版 + node |
 
 - セットアップはmiseで統一（`jdx/mise-action`）。Ruby・Nodeのバージョンは `mise.toml` が単一の真実の源
 - **`determinism` は最重要ジョブ**: 「生成物が手編集された」「パイプラインが非決定論化した」の両方を

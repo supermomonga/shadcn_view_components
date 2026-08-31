@@ -1,0 +1,11 @@
+/* shadcn_view_components: Tailwind CSS entry point for tailwindcss-rails. */
+@import "../../stylesheets/shadcn/shadcn.css";
+
+/* Generated and hand-maintained class contracts used at runtime. */
+@source "../../../../lib/shadcn_view_components/generated/contracts/**/*.rb";
+@source "../../../../lib/shadcn_view_components/contracts/**/*.rb";
+
+/* Classes emitted directly by ViewComponents and distributed JavaScript. */
+@source "../../../components/**/*.rb";
+@source "../../../components/**/*.erb";
+@source "../../javascripts/shadcn/**/*.js";
