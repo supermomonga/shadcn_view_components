@@ -27,19 +27,25 @@ module Documentation
         - 提供範囲（[適合試験registry](spec/conformance/registry.yml)から生成）: **実装済み #{implemented_items.length} アイテム / 描画可能な公開 ViewComponent #{public_components.length} クラス**
         - 実装済みアイテム:
           #{implemented_items.map { |item| "`#{item}`" }.join(', ')}
+        - 意図的に非対応のアイテム:
+        #{unsupported_items.map { |item, details| unsupported_item_line(item, details) }.join("\n")}
         #{END_MARKER}
       MARKDOWN
     end
 
     def implemented_items
-      registry.reject { |_item, entry| entry["pending"] }.keys.sort
+      registry.select { |_item, entry| entry.key?("exports") }.keys.sort
+    end
+
+    def unsupported_items
+      registry.select { |_item, entry| entry.key?("unsupported") }.sort.to_h
     end
 
     def public_components
       registry.filter_map do |_item, entry|
-        next if entry["pending"]
+        next unless entry.key?("exports")
 
-        entry.fetch("exports", [entry]).map { |export| export.fetch("component") }
+        entry.fetch("exports").map { |export| export.fetch("component") }
       end.flatten.sort
     end
 
@@ -56,7 +62,13 @@ module Documentation
     end
 
     def registry
-      @registry ||= YAML.safe_load_file(File.join(@root, "spec/conformance/registry.yml"))
+      @registry ||= YAML.safe_load_file(File.join(@root, "spec/conformance/registry.yml"), aliases: false)
+    end
+
+    def unsupported_item_line(item, entry)
+      details = entry.fetch("unsupported")
+      alternatives = details.fetch("alternatives").map { |alternative| "`#{alternative}`" }.join(", ")
+      "  - `#{item}`: #{details.fetch('reason')} 代替: #{alternatives}。"
     end
 
     def readme_path

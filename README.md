@@ -14,15 +14,19 @@
 
 ## ステータス
 
-Phase 0〜4 完了 — vendor manifestの63アイテムを追跡し、61アイテムを実装済み（`questionnaire`と`toast`はpending）。calendarは個別契約として提供する。初期実装計画は[ロードマップ（履歴）](docs/10-roadmap.md)を参照。
+Phase 0〜4 完了 — vendor manifestの63アイテムを追跡し、61アイテムを実装済み。`questionnaire`と`toast`は[理由付き非対応](docs/unsupported-components.md)（代替と再評価条件を文書化）。calendarは個別契約として提供する。初期実装計画は[ロードマップ（履歴）](docs/10-roadmap.md)を参照。
 
 <!-- BEGIN GENERATED COMPONENT INVENTORY -->
 - 提供範囲（[適合試験registry](spec/conformance/registry.yml)から生成）: **実装済み 61 アイテム / 描画可能な公開 ViewComponent 322 クラス**
 - 実装済みアイテム:
   `accordion`, `alert`, `alert-dialog`, `aspect-ratio`, `attachment`, `avatar`, `badge`, `breadcrumb`, `bubble`, `button`, `button-group`, `calendar`, `card`, `carousel`, `chart`, `checkbox`, `collapsible`, `combobox`, `command`, `context-menu`, `dialog`, `direction`, `drawer`, `dropdown-menu`, `empty`, `field`, `form`, `hover-card`, `input`, `input-group`, `input-otp`, `item`, `kbd`, `label`, `marker`, `menubar`, `message`, `message-scroller`, `native-select`, `navigation-menu`, `pagination`, `popover`, `progress`, `radio-group`, `resizable`, `scroll-area`, `select`, `separator`, `sheet`, `sidebar`, `skeleton`, `slider`, `sonner`, `spinner`, `switch`, `table`, `tabs`, `textarea`, `toggle`, `toggle-group`, `tooltip`
+- 意図的に非対応のアイテム:
+  - `questionnaire`: 具体的な共通要件なしにRails版の状態管理を定義すると、upstreamと異なる独自仕様を保守することになるため。 代替: `form`, `field`, `input`, `radio-group`, `checkbox`, `button`, `progress`。
+  - `toast`: 独立したToastは既存のSonner通知基盤と責務が重複し、通知APIを二重に保守することになるため。 代替: `sonner`, `alert`。
 <!-- END GENERATED COMPONENT INVENTORY -->
 
 全クラスのinitializer、slot、HTML属性の適用先、フォーム送信、状態、JavaScript要件、upstreamとの差異は[コンポーネントAPIリファレンス](docs/components/README.md)で確認できる。
+意図的に非対応のコンポーネント（`questionnaire` / `toast`）の理由、代替手段（サーバー主導の複数ステップフォーム、Sonner通知）、再評価条件は[非対応コンポーネントと代替](docs/unsupported-components.md)にまとめている。
 
 - calendar は react-day-picker の実行時クラス合成のため静的抽出の対象外。
   契約は lib/shadcn_view_components/contracts/calendar.rb に個別契約として保守し、
@@ -448,7 +452,7 @@ rake shadcn:check     # 決定論性検証(一時ディレクトリ生成とコ�
 
 1. `tools/extractor/config/targets.json` にアイテム名を追加 → `rake shadcn:generate`
 2. `app/components/shadcn/<name>.rb` + `<name>.html.erb` を実装(クラスは `Classes.resolve` 経由のみ。04 §7のチェックリスト参照)
-3. `spec/conformance/registry.yml` に1行追加(該当アイテムを `pending` から実装へ)→ 適合試験が自動的に全組み合わせを検証
+3. `spec/conformance/registry.yml` に1行追加(該当アイテムを非対応の `unsupported` から `exports` へ)→ 適合試験が自動的に全組み合わせを検証
 4. `spec/coverage/registry.yml` にpreview、見た目比較、操作テストの対応を追加する。対象外にする検証には具体的な理由を書く
 
 ### 週次upstream追従

@@ -6,6 +6,21 @@ All notable changes to this project will be documented in this file.
 
 Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
+### questionnaire / toast を理由付き非対応として確定
+
+- `spec/conformance/registry.yml`の各エントリを`exports`(実装済み)か`unsupported`(理由付き非対応)の
+  厳密に一方へ統一し、`pending`を廃止した。`unsupported`は`reason` / `alternatives` / `reviewed_sha256`
+  のみを持ち、代替は実装済みアイテムのみを参照できる
+- `spec/contracts/registry_status_spec.rb`が状態・形式・代替・SHAを検証し、upstream同期で
+  `reviewed_sha256`が`vendor/shadcn/manifest.json`と乖離すると非対応判断の再評価が強制される
+- `questionnaire`はField / Form等の代替とサーバー主導の複数ステップフロー(1 step = 1リクエスト、
+  422で同一step再描画)を案内する。`toast`は移植せず、既存のSonner通知
+  (`Shadcn::Sonner::Toaster` + `shadcn:toast`)を唯一の通知APIとする(base-novaではToastが正規である点は
+  意図的な差異として決定ログに記録)。操作を伴う通知・重要情報は`Shadcn::Alert`へ案内
+- `docs/unsupported-components.md`を新設し、READMEの生成インベントリへ非対応の理由と代替を表示する。
+  現行Sonnerの非対応機能(Action / Close / type / priority / pause / swipe / promise)と、
+  `toast_controller.js`の手書きクラスが既知の限界であることをdocsへ記録した
+
 ### Tailwind統合をtailwindcss-railsのEngine機構へ統一
 
 - Tailwind CSS v4と`tailwindcss-rails >= 4.3`を必須にし、gem同梱のEngine CSSから生成テーマ、

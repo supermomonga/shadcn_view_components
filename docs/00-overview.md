@@ -31,7 +31,7 @@ React/Radix を持ち込まず、**Stimulus + Hotwire + ネイティブHTML要�
 ### ゴール
 
 - vendor manifestの63アイテムを追跡し、実装済み61アイテムをViewComponent + Stimulusで提供する
-- 未実装の`questionnaire`と`toast`はconformance registryでpendingとして明示する
+- `questionnaire`と`toast`は理由付き非対応としてconformance registryで明示する（[非対応コンポーネントと代替](unsupported-components.md)）
 - upstream のクラス変更・テーマ変更が **`rake shadcn:sync && rake shadcn:generate` の再実行のみ**で反映される
 - upstream 変更による互換性の崩れが適合試験により自動検知され、週次の自動PRとして届く
 - ホストアプリは gem 追加 + CSS import + JS 登録の少ない手順で利用開始できる
@@ -111,7 +111,7 @@ React/Radix を持ち込まず、**Stimulus + Hotwire + ネイティブHTML要�
 
 | # | 決定事項 | 選択 | 主な理由 |
 |---|---|---|---|
-| 1 | コンポーネントスコープ | manifest 63件を追跡、61件実装、2件pending | `questionnaire`と`toast`を未実装境界としてregistryで機械検証 |
+| 1 | コンポーネントスコープ | manifest 63件を追跡、61件実装、2件は理由付き非対応 | `questionnaire`と`toast`を理由・代替・対象SHA付きの`unsupported`としてregistryで機械検証 |
 | 2 | 生成アーキテクチャ | 抽出 + 手書きテンプレ + 自動検証のハイブリッド | TSX→Rubyの全自动翻訳は非現実的な脆さを持つ。機械導出可能な領域に「決定論的生成」を限定する |
 | 3 | upstreamの固定方法 | ベンダースナップショット（コミット） | submoduleはリポジトリが巨大、都度フェッチは決定論性を壊す。コミットされたスナップショットが最もシンプルでレビュー可能 |
 | 4 | 配布形式 | Railsエンジンgem | ViewComponent・Stimulus・CSSを一元管理し、ホストの手数を最小化する |
@@ -122,6 +122,8 @@ React/Radix を持ち込まず、**Stimulus + Hotwire + ネイティブHTML要�
 | 9 | Sorbet厳格度 | `app/`・`lib/`を`typed: strict`で検査 | spec/tools等は`sorbet/config`で除外。Tapioca RBIをコミットしCIで検証 |
 | 10 | API規約 | `Shadcn::` 名前空間 + prop→kwarg機械対応 | upstreamのprop名との対応規約自体を文書化された契約にする（[04-component-conventions](04-component-conventions.md)） |
 | 11 | 設計資料構成 | 領域別フルセット（00〜09 + 履歴roadmap） | 現行設計と初期実装計画の履歴を分離する |
+| 12 | 通知（upstream `toast`） | `toast`は移植せず、既存のSonner通知（`Shadcn::Sonner::Toaster` + `shadcn:toast`）を唯一の通知APIとする | base-novaでは`toast`（Base UI専用）が正規だが、本gemは**意図的に差異**を置く。Provider・manager・表示領域が既存Sonner実装と重複し、通知APIの二重保守を避けるため。操作を伴う通知・重要情報は`Shadcn::Alert`へ（[非対応コンポーネントと代替](unsupported-components.md)） |
+| 13 | アンケート（upstream `questionnaire`） | 理由付き非対応。Field / Form等の代替と、サーバー主導の複数ステップフロー（1 step = 1リクエスト、422で同一step再描画）を案内する | step・回答・validation・shortcutまで単一の状態機械として所有するupstream実装を、共通要件のないまま独自仕様として保守するとupstream同期の恩恵を失うため。再評価はregistryの`reviewed_sha256`変化または具体的な共通要件の発生時（[非対応コンポーネントと代替](unsupported-components.md)） |
 
 ### 補足: ヒアリングで明示的に確認しなかった技術的デフォルト
 

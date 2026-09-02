@@ -79,7 +79,9 @@ end
 ```
 
 - 「どの契約がどのスペックに対応するか」の対応表（`spec/conformance/registry.yml`）を1つ持ち、
-  **コンポーネント追加時に1行追加するだけ**で全バリアント組み合わせの適合試験が走る
+  **コンポーネント追加時に1行追加するだけ**で全バリアント組み合わせの適合試験が走る。
+  各エントリは`exports`（実装済み・適合試験の対象）か`unsupported`（理由付き非対応・適合試験の対象外）の
+  厳密に一方を持ち、形式・代替item・対象SHAは`spec/contracts/registry_status_spec.rb`が検証する
 - upstreamでバリアントが増える → 生成物の `COMBINATIONS` が増える → **スペックが自動的に増える**。
   新バリアントが未実装なら `render_inline` の `ArgumentError` / 要素不一致で即座に赤になる。
   これが「upstream変更の自動検知」の主要経路である
@@ -126,8 +128,10 @@ end
 ## 6. 生成物整合スペック（層4）
 
 - `lib/shadcn_view_components/generated/` 配下の全ファイルに「AUTO-GENERATEDヘッダ」があること
-- vendor manifestの63アイテムと`spec/conformance/registry.yml`を完全一致させる。現在は61アイテムを実装し、
-  `questionnaire`と`toast`の2件を`pending: true`として明示している
+- vendor manifestの63アイテムと`spec/conformance/registry.yml`を完全一致させる。各エントリは`exports`（実装済み61件）か
+  `unsupported`（理由付き非対応2件: `questionnaire`と`toast`）の厳密に一方を持ち、`pending`などの未確定状態は存在しない。
+  形式・代替item・`reviewed_sha256`は`spec/contracts/registry_status_spec.rb`が検証し、`reviewed_sha256`が
+  manifestの`items.*.sha256`と乖離した時点で非対応判断の再評価が強制される
 - 実装済み61アイテムは`spec/coverage/registry.yml`と完全一致し、render smoke・preview・parity・interaction・systemの判断を必須にする
 - `vendor/shadcn/manifest.json` の `items.*.sha256` が実ファイルと一致すること（手編集の検知）
 - `docs/components/` のAPIリファレンスが、Ruby initializer・生成契約・coverage registry・代表preview・手書きの意味仕様と一致すること。
@@ -149,7 +153,7 @@ end
 
 | 指標 | ゲート |
 |---|---|
-| 適合試験 | 実装済み61アイテムの契約組み合わせ100%。pending 2件は未実装境界として明示 |
+| 適合試験 | 実装済み61アイテムの契約組み合わせ100%。非対応2件は理由・代替・SHA込みで機械検証 |
 | システムスペック | coverage registryで33アイテムを対象とし、spec metadataのbehavior集合と双方向照合 |
 | 行カバレッジ | 目標値を設けない（契約駆動のための指標として意味が薄い）。`srb tc` と適合試験が主品質ゲート |
 

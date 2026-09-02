@@ -5,6 +5,7 @@
 ## 利用者向け資料
 
 - [コンポーネントAPIリファレンス](components/README.md) — 全公開クラスのinitializer、slot、HTML属性、フォーム送信、状態、JavaScript要件、upstreamとの差異
+- [非対応コンポーネントと代替](unsupported-components.md) — `questionnaire` / `toast`を非対応とした理由、具体的な代替レシピ、再評価条件
 
 ## 現行の保守者向け資料
 

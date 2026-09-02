@@ -10,9 +10,8 @@ module PublicComponentBoundary
 
   def entries
     registry = YAML.safe_load_file(File.expand_path("../conformance/registry.yml", __dir__))
-    registry.reject { |_name, item| item["pending"] }.values.flat_map do |item|
-      exports = item["exports"] || [item]
-      exports.filter_map do |export|
+    registry.select { |_name, item| item.key?("exports") }.values.flat_map do |item|
+      item.fetch("exports").filter_map do |export|
         next unless export["component"]
 
         Entry.new(

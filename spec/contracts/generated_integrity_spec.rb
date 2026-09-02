@@ -84,13 +84,13 @@ RSpec.describe "generated outputs integrity", type: :conformance do
     end
   end
 
-  describe "registry coverage (vendorにあるのに未実装、の検知 — 07 §6)" do
+  describe "registry coverage (vendor itemの実装済み・非対応分類 — 07 §6)" do
     let(:manifest_items) do
       JSON.parse(File.read(File.join(REPO_ROOT, "vendor/shadcn/manifest.json")))["items"].keys.sort
     end
     let(:registry) { YAML.safe_load_file(File.expand_path("../conformance/registry.yml", __dir__)) }
 
-    it "covers every vendored item as implemented or pending" do
+    it "covers every vendored item as implemented or unsupported" do
       uncovered = manifest_items - registry.keys
       expect(uncovered).to be_empty, "items missing from spec/conformance/registry.yml: #{uncovered.join(', ')}"
     end
@@ -101,9 +101,8 @@ RSpec.describe "generated outputs integrity", type: :conformance do
     end
 
     it "has a resolvable component class and contract for implemented entries" do
-      registry.reject { |_name, entry| entry["pending"] }.each do |name, entry|
-        exports = entry["exports"] || [{ "component" => entry["component"], "export" => entry["export"] }]
-        exports.each do |export_entry|
+      registry.select { |_name, entry| entry.key?("exports") }.each do |name, entry|
+        entry.fetch("exports").each do |export_entry|
           component_name = export_entry.fetch("component")
           expect { component_name.constantize }.not_to raise_error, "#{name}/#{export_entry['export']}: component class missing"
           contract_path = component_name.delete_prefix("Shadcn::")
@@ -115,7 +114,7 @@ RSpec.describe "generated outputs integrity", type: :conformance do
 
     it "keeps registry, extractor targets, and generated contracts in sync" do
       targets = JSON.parse(File.read(File.join(REPO_ROOT, "tools/extractor/config/targets.json")))["items"].sort
-      implemented = registry.reject { |_name, entry| entry["pending"] }.keys.sort
+      implemented = registry.select { |_name, entry| entry.key?("exports") }.keys.sort
       generated = Dir[File.join(GEN_JSON_DIR, "*.json")].map { |f| File.basename(f, ".json") }.sort
 
       # 個別評価ルートのアイテム(upstream が静的抽出の対象外)。契約は

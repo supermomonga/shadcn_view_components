@@ -24,7 +24,7 @@ def normalized_exports(entry)
   end
 end
 
-registry.reject { |_name, entry| entry["pending"] }.each do |name, entry|
+registry.select { |_name, entry| entry.key?("exports") }.each do |name, entry|
   item_allowances = allowances[name] || {}
 
   normalized_exports(entry).each do |component_name, export_name, export_content, export_args|
