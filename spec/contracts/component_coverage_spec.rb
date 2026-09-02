@@ -7,7 +7,7 @@ RSpec.describe "component coverage registry" do
   subject(:coverage) { ComponentCoverage.registry }
 
   let(:component_registry) { YAML.safe_load_file(File.expand_path("../conformance/registry.yml", __dir__)) }
-  let(:implemented_items) { component_registry.reject { |_item, entry| entry["pending"] }.keys.sort }
+  let(:implemented_items) { component_registry.select { |_item, entry| entry.key?("exports") }.keys.sort }
   let(:registered_controllers) do
     File.read(File.join(REPO_ROOT, "app/assets/javascripts/shadcn/index.js"))
         .scan(/application\.register\("([^"]+)"/).flatten.sort

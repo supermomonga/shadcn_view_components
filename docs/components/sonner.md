@@ -4,7 +4,7 @@
 
 [コンポーネント一覧](README.md) / [実装](../../app/components/shadcn/sonner.rb#L11) / [代表preview](../../spec/dummy/app/components/previews/shadcn/sonner_preview.rb)
 
-shadcn:toastイベントから通知を生成するaria-live通知領域。
+shadcn:toastイベント(detail: title / description / duration)から通知を生成するaria-live通知領域。本gem唯一の通知API。
 
 ## 構成
 
@@ -12,7 +12,7 @@ shadcn:toastイベントから通知を生成するaria-live通知領域。
 - 主コンポーネントと組み合わせる、常に必須のクラス: なし
 - このitemが公開する任意の補助クラス: なし
 
-Sonnerは名前空間で、Toaster単体を配置する。通知要素はcontrollerがイベント受信時に生成する。
+Sonnerは名前空間で、Toaster単体をlayoutへ1つ配置する。通知要素はcontrollerがイベント受信時に生成する。
 
 ## Ruby APIとslot
 
@@ -46,11 +46,18 @@ Sonnerは名前空間で、Toaster単体を配置する。通知要素はcontrol
 ### 差異
 
 - sonner Reactライブラリのportal/storeではなくCustomEventとStimulusで通知とタイマーを管理する。
+- base-novaではtoast(Base UI専用)が通知の正本だが、本gemは既存Sonnerへ一本化する意図的な差異である。
+- 通知要素のクラスはtoast_controller.js内の手書き文字列(既知の限界であり、手書きクラスを許す前例ではない)。
 
 ### 未対応
 
 - sonnerライブラリ固有の命令的APIとReact portal。
-- 通知を手動で閉じるbutton。
+- Actionボタン(操作を伴う通知はShadcn::Alertやdialogで代替)。
+- 通知を手動で閉じるClose button。
+- type / priority(success / error等の区分とrole=alert切替)。
+- hover / focus / 非表示タブでのタイマー一時停止。
+- swipe dismiss。
+- promise / loading状態の通知。
 
 ## CIで描画する代表例を含むpreview定義
 

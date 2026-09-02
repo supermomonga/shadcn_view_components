@@ -1,8 +1,9 @@
 # 適合試験レジストリ(07-testing §3.2)。
 # コンポーネント追加時に1行追加するだけで全バリアント組み合わせの適合試験が走る。
-# pending: true の項目は vendor にあるが未実装のコンポーネント(負債の見える化 — 07 §6)。
+# 各項目は exports(実装済み)または unsupported(理由付き非対応)の厳密に一方を持つ。
 # upstream同期でアイテムが増減した場合、spec/contracts のカバレッジスペックがこのファイルの
-# 整合を検証する(新規アイテムの追加漏れ・廃止アイテムの削除忘れを検知)。
+# 整合と非対応判断時のSHAを検証する(新規アイテムの追加漏れ・廃止アイテムの削除忘れ・
+# 判断後のupstream変更を検知)。
 
 accordion:
   exports:
@@ -372,9 +373,18 @@ progress:
   exports:
     - { component: Shadcn::Progress, export: Progress }
 
-# questionnaire: base-nova で新規に追加されたアイテム。移植は個別評価(10-roadmap §7)
 questionnaire:
-  pending: true
+  unsupported:
+    reason: "具体的な共通要件なしにRails版の状態管理を定義すると、upstreamと異なる独自仕様を保守することになるため。"
+    alternatives:
+      - form
+      - field
+      - input
+      - radio-group
+      - checkbox
+      - button
+      - progress
+    reviewed_sha256: "7cdac8a84fd8d91f2f24cd32092ee3ec2f744a2b6f8b19c00b18359aecd4f36d"
 
 radio-group:
   exports:
@@ -456,10 +466,13 @@ spinner:
   exports:
     - { component: Shadcn::Spinner, export: Spinner }
 
-# toast: base-nova では Base UI 専用コンポーネント(CLI の DEPRECATED_COMPONENTS にも
-# 「toast is only available for Base UI projects」と記載)。ベンダーはするが移植は個別評価
 toast:
-  pending: true
+  unsupported:
+    reason: "独立したToastは既存のSonner通知基盤と責務が重複し、通知APIを二重に保守することになるため。"
+    alternatives:
+      - sonner
+      - alert
+    reviewed_sha256: "94d1c340172245ff8d5d479b03a5bee4758fca9cd38f40031947ca980aa602e9"
 
 switch:
   exports:

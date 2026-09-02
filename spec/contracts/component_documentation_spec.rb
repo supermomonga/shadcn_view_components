@@ -12,7 +12,7 @@ RSpec.describe Documentation::ComponentReference do
   let(:coverage_registry) do
     YAML.safe_load_file(File.join(REPO_ROOT, "spec/coverage/registry.yml"), aliases: false)
   end
-  let(:implemented_registry) { component_registry.reject { |_item, entry| entry["pending"] } }
+  let(:implemented_registry) { component_registry.select { |_item, entry| entry.key?("exports") } }
 
   it "generates exactly one current API page for every implemented item" do
     expected_names = ["README.md", *implemented_registry.keys.map { |item| "#{item}.md" }].sort

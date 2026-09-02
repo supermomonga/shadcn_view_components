@@ -14,14 +14,21 @@ RSpec.describe "documentation contracts" do
 
   it "keeps the generated README inventory identical to the conformance registry" do
     generated = readme[/#{Regexp.escape(Documentation::ReadmeInventory::BEGIN_MARKER)}.*?#{Regexp.escape(Documentation::ReadmeInventory::END_MARKER)}/m]
-    implemented = registry.reject { |_item, entry| entry["pending"] }
+    implemented = registry.select { |_item, entry| entry.key?("exports") }
     public_components = implemented.values.flat_map do |entry|
       entry.fetch("exports").map { |export| export.fetch("component") }
     end.sort
 
     expect(generated).to eq(inventory.generated_section)
     expect(inventory.implemented_items).to eq(implemented.keys.sort)
+    expect(inventory.unsupported_items.keys).to contain_exactly("questionnaire", "toast")
     expect(inventory.public_components).to eq(public_components)
+    expect(generated).to include(
+      "`questionnaire`:",
+      "代替: `form`, `field`, `input`, `radio-group`, `checkbox`, `button`, `progress`。",
+      "`toast`:",
+      "代替: `sonner`, `alert`。"
+    )
   end
 
   it "fails fast when an inventory marker is missing or duplicated" do

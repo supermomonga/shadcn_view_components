@@ -99,7 +99,7 @@ module Documentation
     end
 
     def implemented_items
-      @implemented_items ||= component_registry.reject { |_item, entry| entry["pending"] }.keys.sort.freeze
+      @implemented_items ||= component_registry.select { |_item, entry| entry.key?("exports") }.keys.sort.freeze
     end
 
     def metadata
