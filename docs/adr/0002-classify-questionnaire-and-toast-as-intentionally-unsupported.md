@@ -82,4 +82,4 @@ CI confirms the decision by requiring manifest and registry keys to match, valid
 
 Re-evaluate `questionnaire` when recurring requirements cannot be satisfied by a server-authoritative multi-step form. Re-evaluate `toast` when concrete notification requirements cannot be met by current Sonner or Alert. Re-evaluate either decision when its `reviewed_sha256` changes.
 
-The public migration guide is [`docs/unsupported-components.md`](../unsupported-components.md). This decision resolves GitHub Issue #4.
+The public migration guide is [`docs/guides/unsupported-components.md`](../guides/unsupported-components.md). This decision resolves GitHub Issue #4.

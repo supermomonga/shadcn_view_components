@@ -10,11 +10,11 @@
 
 クライアントサイドのふるまいは React/Radix を持ち込まず、**Stimulus + Hotwire + ネイティブHTML要素**による Rails 流の再実装。クラス名・`data-slot`・ARIA属性といった「見た目と構造の契約」は upstream 由来の生成物として維持されるため、視覚的な追従は自動化される。
 
-設計の詳細は[設計ドキュメント](docs/README.md)を参照。
+設計の詳細は[ドキュメント案内](docs/reference/README.md)を参照。
 
 ## ステータス
 
-Phase 0〜4 完了 — vendor manifestの63アイテムを追跡し、61アイテムを実装済み。`questionnaire`と`toast`は[理由付き非対応](docs/unsupported-components.md)（代替と再評価条件を文書化）。calendarは個別契約として提供する。初期実装計画は[ロードマップ（履歴）](docs/10-roadmap.md)を参照。
+Phase 0〜4 完了 — vendor manifestの63アイテムを追跡し、61アイテムを実装済み。`questionnaire`と`toast`は[理由付き非対応](docs/guides/unsupported-components.md)（代替と再評価条件を文書化）。calendarは個別契約として提供する。初期実装計画は[ロードマップ（履歴）](docs/history/initial-roadmap.md)を参照。
 
 <!-- BEGIN GENERATED COMPONENT INVENTORY -->
 - 提供範囲（[適合試験registry](spec/conformance/registry.yml)から生成）: **実装済み 61 アイテム / 描画可能な公開 ViewComponent 322 クラス**
@@ -25,8 +25,8 @@ Phase 0〜4 完了 — vendor manifestの63アイテムを追跡し、61アイ�
   - `toast`: 独立したToastは既存のSonner通知基盤と責務が重複し、通知APIを二重に保守することになるため。 代替: `sonner`, `alert`。
 <!-- END GENERATED COMPONENT INVENTORY -->
 
-全クラスのinitializer、slot、HTML属性の適用先、フォーム送信、状態、JavaScript要件、upstreamとの差異は[コンポーネントAPIリファレンス](docs/components/README.md)で確認できる。
-意図的に非対応のコンポーネント（`questionnaire` / `toast`）の理由、代替手段（サーバー主導の複数ステップフォーム、Sonner通知）、再評価条件は[非対応コンポーネントと代替](docs/unsupported-components.md)にまとめている。
+全クラスのinitializer、slot、HTML属性の適用先、フォーム送信、状態、JavaScript要件、upstreamとの差異は[コンポーネントAPIリファレンス](docs/reference/components/README.md)で確認できる。
+意図的に非対応のコンポーネント（`questionnaire` / `toast`）の理由、代替手段（サーバー主導の複数ステップフォーム、Sonner通知）、再評価条件は[非対応コンポーネントと代替](docs/guides/unsupported-components.md)にまとめている。
 
 - calendar は react-day-picker の実行時クラス合成のため静的抽出の対象外。
   契約は lib/shadcn_view_components/contracts/calendar.rb に個別契約として保守し、
@@ -438,7 +438,7 @@ rake shadcn:check     # 決定論性検証(一時ディレクトリ生成とコ�
 通信失敗、JSON/schema不正、同期中の変更では既存snapshotを変更せず、`[sync:<種別>]` と
 `retryable=true|false` をエラーへ出す。
 
-編集ポリシー（詳細は[アーキテクチャとリポジトリ構成](docs/01-architecture.md#2-リポジトリ構成)）:
+編集ポリシー（詳細は[アーキテクチャとリポジトリ構成](docs/reference/architecture.md#2-リポジトリ構成)）:
 
 | パス | 性質 | 編集 |
 |---|---|---|

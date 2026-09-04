@@ -16,7 +16,7 @@ RSpec.describe Documentation::ComponentReference do
 
   it "generates exactly one current API page for every implemented item" do
     expected_names = ["README.md", *implemented_registry.keys.map { |item| "#{item}.md" }].sort
-    actual_names = Dir[File.join(REPO_ROOT, "docs/components/*.md")].map { |path| File.basename(path) }.sort
+    actual_names = Dir[File.join(REPO_ROOT, "docs/reference/components/*.md")].map { |path| File.basename(path) }.sort
 
     expect(reference.validate_metadata!).to be(true)
     expect(reference.implemented_items).to eq(implemented_registry.keys.sort)
@@ -25,7 +25,7 @@ RSpec.describe Documentation::ComponentReference do
     expect(actual_names).to eq(expected_names)
 
     reference.expected_files.each do |name, contents|
-      expect(File.read(File.join(REPO_ROOT, "docs/components", name))).to eq(contents), name
+      expect(File.read(File.join(REPO_ROOT, "docs/reference/components", name))).to eq(contents), name
     end
   end
 
@@ -73,7 +73,7 @@ RSpec.describe Documentation::ComponentReference do
     )
     expect(input_otp).to include("`new(index:, **args)` | index: number, integer, >= 0 |")
     expect(input_otp).not_to match(/index:[^\n]+default:/)
-    expect(input_group).to match(%r{\[`Shadcn::InputGroup`\]\(../../app/components/shadcn/input_group\.rb#L\d+\)})
+    expect(input_group).to match(%r{\[`Shadcn::InputGroup`\]\(../../../app/components/shadcn/input_group\.rb#L\d+\)})
     expect(input_group).to include("variant: default, destructive, ghost, link, outline, secondary (default: :ghost)")
     expect(alert_dialog).to include("variant: default, destructive, ghost, link, outline, secondary (default: :outline)")
     expect(pagination).to include("size: default, icon, icon-lg, icon-sm, icon-xs, lg, sm, xs (default: :icon)")
@@ -99,8 +99,8 @@ RSpec.describe Documentation::ComponentReference do
       stale_reference = described_class.new(root:)
       expect { stale_reference.check }.to raise_error(RuntimeError) do |error|
         expect(error.message).to include(
-          "docs/components/accordion.md is missing or stale",
-          "docs/components/button.md is missing or stale"
+          "docs/reference/components/accordion.md is missing or stale",
+          "docs/reference/components/button.md is missing or stale"
         )
       end
     end
@@ -109,7 +109,7 @@ RSpec.describe Documentation::ComponentReference do
   define_method(:copy_reference_inputs) do |root|
     %w[
       app/components/shadcn
-      docs/component_reference
+      docs/reference/component-specifications
       gen/contracts
       spec/conformance
       spec/coverage
