@@ -139,7 +139,7 @@ module Documentation
       <<~MARKDOWN
         # `#{item}` — `#{main_component}`
 
-        > このページはコード・registry・手書き仕様から生成されています。直接編集せず、[生成元](../component_reference/README.md)を更新して `bundle exec rake docs:generate` を実行してください。
+        > このページはコード・registry・手書き仕様から生成されています。直接編集せず、[生成元](../component-specifications/README.md)を更新して `bundle exec rake docs:generate` を実行してください。
 
         [コンポーネント一覧](README.md) / [実装](#{source_link_for_component(main_component)}) / [代表preview](#{relative_link(preview_file)})
 
@@ -190,7 +190,7 @@ module Documentation
 
         ## CIで描画する代表例を含むpreview定義
 
-        `#{preview_path}` は [Lookbook request spec](../../spec/requests/lookbook_previews_spec.rb) がHTTP描画します。以下はそのexampleを含む [#{relative(preview_file)}](#{relative_link(preview_file)}) の全定義です。同じファイルにある他のexampleも同specが描画します。
+        `#{preview_path}` は [Lookbook request spec](../../../spec/requests/lookbook_previews_spec.rb) がHTTP描画します。以下はそのexampleを含む [#{relative(preview_file)}](#{relative_link(preview_file)}) の全定義です。同じファイルにある他のexampleも同specが描画します。
 
         ```ruby
         #{preview_code(File.read(preview_file))}
@@ -261,7 +261,7 @@ module Documentation
       end.join("\n")
 
       metadata_links = metadata_paths.map do |path|
-        "[#{relative(path)}](../component_reference/#{File.basename(path)})"
+        "[#{relative(path)}](../component-specifications/#{File.basename(path)})"
       end.join("、")
 
       <<~MARKDOWN
@@ -269,14 +269,14 @@ module Documentation
 
         このリファレンスは、実装済み#{implemented_items.length}アイテム・公開ViewComponent #{all_public_components.length}クラスを対象に、次の正本から決定論的に生成します。
 
-        - 公開クラスと最小描画引数: [conformance registry](../../spec/conformance/registry.yml)
-        - initializer: [BaseComponentと各公開クラス](../../app/components/shadcn/base_component.rb)
-        - variant・slot: [生成契約JSON（例: button）](../../gen/contracts/button.json)
-        - Rails固有prop: [property contract definitions](../../lib/shadcn_view_components/property_contract_definitions.rb)
-        - JavaScript・操作・代表preview: [coverage registry](../../spec/coverage/registry.yml)
+        - 公開クラスと最小描画引数: [conformance registry](../../../spec/conformance/registry.yml)
+        - initializer: [BaseComponentと各公開クラス](../../../app/components/shadcn/base_component.rb)
+        - variant・slot: [生成契約JSON（例: button）](../../../gen/contracts/button.json)
+        - Rails固有prop: [property contract definitions](../../../lib/shadcn_view_components/property_contract_definitions.rb)
+        - JavaScript・操作・代表preview: [coverage registry](../../../spec/coverage/registry.yml)
         - 意味上の仕様: #{metadata_links}
 
-        initializerやpreviewを変更したのに生成ページを更新しなかった場合、`bundle exec rake docs:check`が失敗します。代表previewの全exampleは[request spec](../../spec/requests/lookbook_previews_spec.rb)がHTTP描画するため、掲載例と実行例が分離しません。
+        initializerやpreviewを変更したのに生成ページを更新しなかった場合、`bundle exec rake docs:check`が失敗します。代表previewの全exampleは[request spec](../../../spec/requests/lookbook_previews_spec.rb)がHTTP描画するため、掲載例と実行例が分離しません。
 
         ## 共通のHTML属性
 
@@ -702,7 +702,7 @@ module Documentation
     end
 
     def metadata_paths
-      @metadata_paths ||= Dir[File.join(root, "docs/component_reference/*.yml")].sort.freeze
+      @metadata_paths ||= Dir[File.join(root, "docs/reference/component-specifications/*.yml")].sort.freeze
     end
 
     def all_public_components
@@ -710,7 +710,7 @@ module Documentation
     end
 
     def output_directory
-      File.join(root, "docs/components")
+      File.join(root, "docs/reference/components")
     end
   end
 end
