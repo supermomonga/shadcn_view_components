@@ -21,6 +21,7 @@
 - [テスト戦略](testing.md)
 - [Sorbet型付け方針](sorbet.md)
 - [CIとドリフト自動検知](ci-drift-detection.md)
+- [サポートmatrix](support-matrix.md) — Ruby・Rails・Node・pnpm・ブラウザのサポート範囲と、CIでの検証構成
 
 APIリファレンスはコードとregistryから生成します。コードから推測できない意味上の仕様は[component-specifications](component-specifications/README.md)に置き、生成済みの`components/`は直接編集しません。
 

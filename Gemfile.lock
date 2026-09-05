@@ -2,11 +2,11 @@ PATH
   remote: .
   specs:
     shadcn_view_components (0.1.0)
-      rails (>= 8.1)
-      sorbet-runtime
-      tailwind_merge
-      tailwindcss-rails (>= 4.3)
-      view_component (>= 4.0)
+      rails (~> 8.1)
+      sorbet-runtime (~> 0.6)
+      tailwind_merge (~> 1.5)
+      tailwindcss-rails (~> 4.3)
+      view_component (~> 4.1)
 
 GEM
   remote: https://rubygems.org/
