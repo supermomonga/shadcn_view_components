@@ -1,0 +1,12 @@
+# frozen_string_literal: true
+
+source "https://rubygems.org"
+
+# support matrix(docs/reference/support-matrix.md)の最低version組み合わせ。
+# gemspecが宣言する下限と同じ組み合わせで、CIのrspec / tailwind-build jobが
+# VERIFY_MINIMUM=1 により軽量specを再実行して検証する。
+gemspec path: ".."
+gem "rails", "8.1.0"
+gem "tailwindcss-rails", "4.3.0"
+gem "tailwind_merge", "1.5.0"
+gem "view_component", "4.1.0"

@@ -46,6 +46,23 @@ Phase 0〜4 完了 — vendor manifestの63アイテムを追跡し、61アイ�
 `spec/conformance/registry.yml`で管理し、各クラスの契約と最小構成での描画を自動検証する。
 基底クラスと内部ナビゲーション用クラスは公開APIに含まれない。
 
+## サポート範囲
+
+正本は[support matrix](docs/reference/support-matrix.md)。gemspec・CIも同じ範囲を表す。
+
+| 種別 | 対象 |
+|---|---|
+| Ruby | 4.0系 |
+| Rails | 8.1系（`~> 8.1`。major updateは検証後に緩和） |
+| ViewComponent | 4.1以降の4系（4.0系はRails 8.1と組み合わせ不能なため対象外） |
+| Tailwind CSS | v4（`tailwindcss-rails ~> 4.3`） |
+| tailwind_merge | 1.5系 |
+| ブラウザ | Baseline 2024以上（拘束条件はPopover API: Chrome/Edge 114+ / Safari 17+ / Firefox 125+）。polyfillは提供しない |
+
+CIは最新リリース版で全検査を実行し、下限組み合わせ（`gemfiles/minimum.gemfile`）は
+`rspec` / `tailwind-build` job内の軽量spec再実行で検証する。Node・pnpm等の
+開発toolchainの要件もsupport matrixを参照。
+
 ## インストール
 
 ```ruby
@@ -53,7 +70,8 @@ Phase 0〜4 完了 — vendor manifestの63アイテムを追跡し、61アイ�
 gem "shadcn_view_components"
 ```
 
-Tailwind CSS v4と`tailwindcss-rails >= 4.3`が必須。`tailwindcss-rails`は本gemの
+Ruby 4.0系・Rails 8.1系（[サポート範囲](#サポート範囲)参照）と、Tailwind CSS v4および
+`tailwindcss-rails >= 4.3`が必須。`tailwindcss-rails`は本gemの
 実行時依存として導入される。ホストに標準入力がまだない場合は、先に作成する:
 
 ```bash
@@ -381,6 +399,7 @@ Tabsの向きは`Shadcn::Tabs.new(orientation: :horizontal | :vertical)`へ指�
 
 ```bash
 bin/setup              # mise toolchain + Ruby + 全JavaScript依存を導入
+                       # (Ruby 4.0 / Node 24 / pnpm 10.22.0 — support matrix参照)
 bundle exec rake verify # CI必須検査を同じRake taskで順に実行
 
 bundle exec rake verify:spec           # component/conformance/contract/generator/request

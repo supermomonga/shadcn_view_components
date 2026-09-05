@@ -39,6 +39,17 @@ worktree_fingerprint = lambda do
 end
 
 namespace :verify do
+  # support matrixの最低version組み合わせ(gemfiles/minimum.gemfile)でもspecを通す。
+  # CIのrspec / tailwind-build jobがVERIFY_MINIMUM=1で呼び出す。ローカルの
+  # rake verifyでは実行されない(コストの高い再installを強制しない)。
+  run_minimum_specs = lambda do |*spec_arguments|
+    minimum_environment = { "BUNDLE_GEMFILE" => File.join(__dir__, "gemfiles/minimum.gemfile") }
+    Bundler.with_unbundled_env do
+      sh minimum_environment, "bundle", "install"
+      sh minimum_environment, "bundle", "exec", "rspec", *spec_arguments
+    end
+  end
+
   desc "Verify generated contracts are deterministic"
   task :generated do
     before = worktree_fingerprint.call
@@ -69,6 +80,7 @@ namespace :verify do
   desc "Run component, conformance, contract, generator, and request specs"
   task :spec do
     sh "bundle", "exec", "rspec", "spec/components", "spec/conformance", "spec/contracts", "spec/generators", "spec/requests"
+    run_minimum_specs.call("spec/components", "spec/contracts") if ENV["VERIFY_MINIMUM"] == "1"
   end
 
   desc "Run browser interaction specs"
@@ -85,13 +97,7 @@ namespace :verify do
   desc "Verify the packaged Engine and all contract classes compile with Tailwind CSS"
   task :tailwind do
     sh "bundle", "exec", "rspec", "spec/contracts/tailwind_engine_distribution_spec.rb"
-    if ENV["VERIFY_TAILWIND_MINIMUM"] == "1"
-      minimum_environment = { "BUNDLE_GEMFILE" => File.join(__dir__, "gemfiles/tailwindcss_rails_4_3.gemfile") }
-      Bundler.with_unbundled_env do
-        sh minimum_environment, "bundle", "install"
-        sh minimum_environment, "bundle", "exec", "rspec", "spec/contracts/tailwind_engine_distribution_spec.rb"
-      end
-    end
+    run_minimum_specs.call("spec/contracts/tailwind_engine_distribution_spec.rb") if ENV["VERIFY_MINIMUM"] == "1"
     sh "pnpm", "-C", "tools/extractor", "run", "tailwind:check"
   end
 

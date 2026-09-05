@@ -15,3 +15,5 @@
 * [15. Model Form on Field primitives as a local override](0015-model-form-on-field-primitives-as-a-local-override.md)
 * [16. Retain DirectionProvider as a local override](0016-retain-directionprovider-as-a-local-override.md)
 * [17. Keep Chart rendering library-independent](0017-keep-chart-rendering-library-independent.md)
+* [18. Define a support matrix and verify it without a CI matrix](0018-define-a-support-matrix-and-verify-it-without-a-ci-matrix.md)
+

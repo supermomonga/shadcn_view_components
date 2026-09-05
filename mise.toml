@@ -1,6 +1,7 @@
 [tools]
 ruby = "4.0"
-node = "lts"
+# LTSエイリアスは次のLTS登場時に浮動するため、検証するmajorを固定する
+node = "24"
 pnpm = "10.22.0"
 
 [tasks.lookbook]

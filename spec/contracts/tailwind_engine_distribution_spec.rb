@@ -19,7 +19,7 @@ RSpec.describe "Tailwind Engine distribution" do
     dependency = specification.runtime_dependencies.find { |candidate| candidate.name == "tailwindcss-rails" }
 
     expect(specification.files).to include(TAILWIND_ENGINE_CSS_PATH)
-    expect(dependency&.requirement).to eq(Gem::Requirement.new(">= 4.3"))
+    expect(dependency&.requirement).to eq(Gem::Requirement.new("~> 4.3"))
   end
 
   it "keeps every distributed source relative to the Engine entry point" do

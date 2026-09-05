@@ -36,12 +36,16 @@ Gem::Specification.new do |spec|
   spec.executables = []
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "rails", ">= 8.1"
-  spec.add_dependency "tailwindcss-rails", ">= 4.3"
-  spec.add_dependency "tailwind_merge"
-  spec.add_dependency "view_component", ">= 4.0"
+  # 許容範囲はsupport matrix(docs/reference/support-matrix.md)と一致させる。
+  # major updateは未検証のため上限で抑え、検証済みになったときだけ緩める。
+  spec.add_dependency "rails", "~> 8.1"
+  spec.add_dependency "tailwindcss-rails", "~> 4.3"
+  spec.add_dependency "tailwind_merge", "~> 1.5"
+  # view_component 4.0系はactivesupport < 8.1でありRails 8.1と組み合わせ不能なため、
+  # Rails 8.1で解決可能な実際の下限は4.1.0になる。
+  spec.add_dependency "view_component", "~> 4.1"
   # 生成物(contracts/*.rb)の T.let / sig が実行時に評価されるため runtime も必要
-  spec.add_dependency "sorbet-runtime"
+  spec.add_dependency "sorbet-runtime", "~> 0.6"
 
   spec.add_development_dependency "cuprite"
   spec.add_development_dependency "importmap-rails", ">= 2.0"
