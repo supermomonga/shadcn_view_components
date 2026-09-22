@@ -24,7 +24,7 @@ module Documentation
     def generated_section
       <<~MARKDOWN.chomp
         #{BEGIN_MARKER}
-        - 提供範囲（[適合試験registry](spec/conformance/registry.yml)から生成）: **実装済み #{implemented_items.length} アイテム / 描画可能な公開 ViewComponent #{public_components.length} クラス**
+        - 提供範囲（[適合試験registry](https://github.com/supermomonga/shadcn_view_components/blob/main/spec/conformance/registry.yml)から生成）: **実装済み #{implemented_items.length} アイテム / 描画可能な公開 ViewComponent #{public_components.length} クラス**
         - 実装済みアイテム:
           #{implemented_items.map { |item| "`#{item}`" }.join(', ')}
         - 意図的に非対応のアイテム:
