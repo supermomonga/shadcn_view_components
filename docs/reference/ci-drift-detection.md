@@ -11,7 +11,9 @@
 ```
 .github/workflows/
 ├── ci.yml               # PR/プッシュ時に実行する通常CI
-└── upstream-drift.yml   # 週次cron + workflow_dispatch で実行するドリフト検知
+├── upstream-drift.yml   # 週次cron + workflow_dispatch で実行するドリフト検知
+├── version-bump.yml     # workflow_dispatch でバージョン更新PRを作成
+└── release.yml          # mainのバージョン変更を検知してgemを公開
 ```
 
 ## 2. ci.yml（通常CI）
@@ -118,17 +120,29 @@ upstreamが大量の同時変更（デザイン刷新等）を配信した場合
 ```
 1. 通常開発・upstream-sync PRのマージをmainに蓄積
 2. リリース時:
-   a. VERSION更新（semver判定は人間:
+   a. mainを選択してVersion Bump workflowを手動実行（semver判定は人間:
       - 生成物のみの変更で適合試験緑 → patch
       - Ruby API追加 → minor
       - API破壊的変更・大規模upstream変更 → major）
-   b. CHANGELOG.md に以下を記載:
+      version入力があればrelease_typeより優先する（例: 1.2.3）。
+      VERSIONと2つのGemfile.lockを更新するrelease/vX.Y.Z PRが作成され、通常CIが起動する。
+   b. 作成されたPRのCHANGELOG.md に以下を記載:
       - このリリースに含まれる upstream-sync の出所（tag / resolved_sha / 日付）
       - upstream差分サマリ（syncサマリのコピペ）
       - gem側のAPI変更
-3. タグ付け → `rake release`（rubygems/release-gem等）
+   c. CI成功とCHANGELOGを確認してPRをmainにマージ
+3. release workflowが直前のcommitとのVERSION差分を検知:
+   vX.Y.Zタグ作成 → gem build → RubyGems公開 → GitHub Release作成（自動リリースノート）
 ```
 
+- 初期設定: repository secret `RUBYGEMS_ORG_API_KEY` にRubyGemsの公開用APIキーを登録し、
+  GitHub ActionsによるPR作成をrepository settingsで許可する。
+- 参考元のmomocopと同じAPIキー認証を使う。現在の`r7kamura/workflows`はTrusted Publishingへ
+  移行しており、バージョン抽出と公開用Rake taskも本gemに合わないため、公開処理は本repository内に定義する。
+- `release` はmainへのpushとmainでの手動実行に対応する。VERSIONが直前のcommitと同じ場合、
+  または同じタグが既に存在する場合は公開しない。初回公開もVERSIONを更新したPRから行う。
+- タグ作成後に公開が失敗した場合は、RubyGemsとGitHub Releaseの公開状況を確認してから復旧する。
+  タグが残った状態での再実行は公開処理をスキップするため、失敗原因の修正だけでは再公開されない。
 - CHANGELOGのupstream出所記録により、「このバージョンはshadcn/uiのいつの時点か」が
   gemのバージョン表記なしで完全に追跡できる
 

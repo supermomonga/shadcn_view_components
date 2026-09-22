@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.name = "shadcn_view_components"
   spec.version = ShadcnViewComponents::VERSION
   spec.authors = ["supermomonga"]
-  spec.email = ["kamoto@supermomonga.com"]
+  spec.email = ["rubygems.qgj95@addy.io"]
 
   spec.summary = "shadcn/ui components as Rails ViewComponents with a deterministic sync pipeline"
   spec.description = "Ports shadcn/ui (base-nova) to Rails ViewComponent + Stimulus. " \

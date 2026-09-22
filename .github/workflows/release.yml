@@ -1,0 +1,50 @@
+name: release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 2
+
+      - name: Set up mise
+        uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
+
+      - name: Detect and tag new version
+        id: new-version
+        uses: salsify/action-detect-and-tag-new-version@b1778166f13188a9d478e2d1198f993011ba9864 # v2
+        with:
+          version-command: ruby -r ./lib/shadcn_view_components/version -e 'puts ShadcnViewComponents::VERSION'
+
+      - name: Build gem
+        if: steps.new-version.outputs.tag != ''
+        run: gem build shadcn_view_components.gemspec --output "$RUNNER_TEMP/shadcn_view_components.gem"
+
+      - name: Publish to RubyGems
+        if: steps.new-version.outputs.tag != ''
+        env:
+          GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_ORG_API_KEY }}
+        run: gem push "$RUNNER_TEMP/shadcn_view_components.gem" --host https://rubygems.org
+
+      - name: Create GitHub Release
+        if: steps.new-version.outputs.tag != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.new-version.outputs.tag }}
+        run: gh release create "$RELEASE_TAG" --verify-tag --generate-notes
