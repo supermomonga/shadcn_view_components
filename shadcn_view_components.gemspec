@@ -16,13 +16,14 @@ Gem::Specification.new do |spec|
   spec.license = "MIT"
   spec.required_ruby_version = ">= 4.0.0"
   spec.metadata = {
-    "homepage_uri" => spec.homepage,
     "source_code_uri" => spec.homepage,
+    "documentation_uri" => "#{spec.homepage}/blob/main/docs/reference/README.md",
+    "bug_tracker_uri" => "#{spec.homepage}/issues",
     "changelog_uri" => "#{spec.homepage}/blob/main/CHANGELOG.md",
     "rubygems_mfa_required" => "true"
   }
 
-  spec.files = Dir[
+  spec.files = %w[README.md CHANGELOG.md LICENSE] + Dir[
     "lib/shadcn_view_components.rb",
     "lib/shadcn_view_components/**/*",
     "lib/generators/**/*",

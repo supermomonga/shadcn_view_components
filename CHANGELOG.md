@@ -6,6 +6,12 @@ All notable changes to this project will be documented in this file.
 
 Phase 0(インフラ構築 + Buttonによるパイプライン実証)。
 
+### gem の配布内容と consumer 検証を整備
+
+- README・CHANGELOG・LICENSE を gem に同梱し、本プロジェクトと shadcn/ui 由来の配布物の MIT ライセンス本文を収録する
+- RubyGems の重複 homepage metadata を除き、文書・Issue へのリンクを追加する。詳細文書は GitHub で公開する
+- build 済み gem を一時 consumer app に install し、文書・metadata・require・generator・asset 解決・代表描画・Tailwind ビルドを現在版と下限版の依存 gem で検証する
+
 ### questionnaire / toast を理由付き非対応として確定
 
 - `spec/conformance/registry.yml`の各エントリを`exports`(実装済み)か`unsupported`(理由付き非対応)の

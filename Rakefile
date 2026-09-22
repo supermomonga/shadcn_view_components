@@ -94,7 +94,7 @@ namespace :verify do
     sh "bundle", "exec", "rspec", "spec/visual"
   end
 
-  desc "Verify the packaged Engine and all contract classes compile with Tailwind CSS"
+  desc "Verify installed gem documentation, generators, assets, rendering, and Tailwind CSS"
   task :tailwind do
     sh "bundle", "exec", "rspec", "spec/contracts/tailwind_engine_distribution_spec.rb"
     run_minimum_specs.call("spec/contracts/tailwind_engine_distribution_spec.rb") if ENV["VERIFY_MINIMUM"] == "1"

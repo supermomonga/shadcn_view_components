@@ -10,14 +10,14 @@
 
 クライアントサイドのふるまいは React/Radix を持ち込まず、**Stimulus + Hotwire + ネイティブHTML要素**による Rails 流の再実装。クラス名・`data-slot`・ARIA属性といった「見た目と構造の契約」は upstream 由来の生成物として維持されるため、視覚的な追従は自動化される。
 
-設計の詳細は[ドキュメント案内](docs/reference/README.md)を参照。
+設計の詳細は[ドキュメント案内](https://github.com/supermomonga/shadcn_view_components/blob/main/docs/reference/README.md)を参照。
 
 ## ステータス
 
-Phase 0〜4 完了 — vendor manifestの63アイテムを追跡し、61アイテムを実装済み。`questionnaire`と`toast`は[理由付き非対応](docs/guides/unsupported-components.md)（代替と再評価条件を文書化）。calendarは個別契約として提供する。初期実装計画は[ロードマップ（履歴）](docs/history/initial-roadmap.md)を参照。
+Phase 0〜4 完了 — vendor manifestの63アイテムを追跡し、61アイテムを実装済み。`questionnaire`と`toast`は[理由付き非対応](https://github.com/supermomonga/shadcn_view_components/blob/main/docs/guides/unsupported-components.md)（代替と再評価条件を文書化）。calendarは個別契約として提供する。初期実装計画は[ロードマップ（履歴）](https://github.com/supermomonga/shadcn_view_components/blob/main/docs/history/initial-roadmap.md)を参照。
 
 <!-- BEGIN GENERATED COMPONENT INVENTORY -->
-- 提供範囲（[適合試験registry](spec/conformance/registry.yml)から生成）: **実装済み 61 アイテム / 描画可能な公開 ViewComponent 322 クラス**
+- 提供範囲（[適合試験registry](https://github.com/supermomonga/shadcn_view_components/blob/main/spec/conformance/registry.yml)から生成）: **実装済み 61 アイテム / 描画可能な公開 ViewComponent 322 クラス**
 - 実装済みアイテム:
   `accordion`, `alert`, `alert-dialog`, `aspect-ratio`, `attachment`, `avatar`, `badge`, `breadcrumb`, `bubble`, `button`, `button-group`, `calendar`, `card`, `carousel`, `chart`, `checkbox`, `collapsible`, `combobox`, `command`, `context-menu`, `dialog`, `direction`, `drawer`, `dropdown-menu`, `empty`, `field`, `form`, `hover-card`, `input`, `input-group`, `input-otp`, `item`, `kbd`, `label`, `marker`, `menubar`, `message`, `message-scroller`, `native-select`, `navigation-menu`, `pagination`, `popover`, `progress`, `radio-group`, `resizable`, `scroll-area`, `select`, `separator`, `sheet`, `sidebar`, `skeleton`, `slider`, `sonner`, `spinner`, `switch`, `table`, `tabs`, `textarea`, `toggle`, `toggle-group`, `tooltip`
 - 意図的に非対応のアイテム:
@@ -25,8 +25,8 @@ Phase 0〜4 完了 — vendor manifestの63アイテムを追跡し、61アイ�
   - `toast`: 独立したToastは既存のSonner通知基盤と責務が重複し、通知APIを二重に保守することになるため。 代替: `sonner`, `alert`。
 <!-- END GENERATED COMPONENT INVENTORY -->
 
-全クラスのinitializer、slot、HTML属性の適用先、フォーム送信、状態、JavaScript要件、upstreamとの差異は[コンポーネントAPIリファレンス](docs/reference/components/README.md)で確認できる。
-意図的に非対応のコンポーネント（`questionnaire` / `toast`）の理由、代替手段（サーバー主導の複数ステップフォーム、Sonner通知）、再評価条件は[非対応コンポーネントと代替](docs/guides/unsupported-components.md)にまとめている。
+全クラスのinitializer、slot、HTML属性の適用先、フォーム送信、状態、JavaScript要件、upstreamとの差異は[コンポーネントAPIリファレンス](https://github.com/supermomonga/shadcn_view_components/blob/main/docs/reference/components/README.md)で確認できる。
+意図的に非対応のコンポーネント（`questionnaire` / `toast`）の理由、代替手段（サーバー主導の複数ステップフォーム、Sonner通知）、再評価条件は[非対応コンポーネントと代替](https://github.com/supermomonga/shadcn_view_components/blob/main/docs/guides/unsupported-components.md)にまとめている。
 
 - calendar は react-day-picker の実行時クラス合成のため静的抽出の対象外。
   契約は lib/shadcn_view_components/contracts/calendar.rb に個別契約として保守し、
@@ -48,7 +48,7 @@ Phase 0〜4 完了 — vendor manifestの63アイテムを追跡し、61アイ�
 
 ## サポート範囲
 
-正本は[support matrix](docs/reference/support-matrix.md)。gemspec・CIも同じ範囲を表す。
+正本は[support matrix](https://github.com/supermomonga/shadcn_view_components/blob/main/docs/reference/support-matrix.md)。gemspec・CIも同じ範囲を表す。
 
 | 種別 | 対象 |
 |---|---|
@@ -408,7 +408,7 @@ bundle exec rake verify:parity         # visual + animation parity
 bundle exec rake verify:javascript     # extractor + distributed JS lint/typecheck/DOM/bundle tests
 bundle exec rake verify:sorbet         # Sorbet + RBI freshness
 bundle exec rake verify:generated      # コード生成物と生成ドキュメントの決定性
-bundle exec rake verify:tailwind       # Tailwind build
+bundle exec rake verify:tailwind       # install 済み gem の consumer 検証と Tailwind build
 bundle exec rake verify:rubocop        # Ruby lint
 mise run lookbook                      # プレビュー(http://localhost:9292/)
 mise run build-css                     # Lookbook用の静的スタイル再生成
@@ -457,7 +457,7 @@ rake shadcn:check     # 決定論性検証(一時ディレクトリ生成とコ�
 通信失敗、JSON/schema不正、同期中の変更では既存snapshotを変更せず、`[sync:<種別>]` と
 `retryable=true|false` をエラーへ出す。
 
-編集ポリシー（詳細は[アーキテクチャとリポジトリ構成](docs/reference/architecture.md#2-リポジトリ構成)）:
+編集ポリシー（詳細は[アーキテクチャとリポジトリ構成](https://github.com/supermomonga/shadcn_view_components/blob/main/docs/reference/architecture.md#2-リポジトリ構成)）:
 
 | パス | 性質 | 編集 |
 |---|---|---|
@@ -539,4 +539,4 @@ bundle exec rake parity:update                   # 追跡baselineを意図して
 
 ## ライセンス
 
-MIT
+[MIT License](LICENSE)。本プロジェクトと shadcn/ui 由来の配布物のライセンス本文は、gem に同梱した LICENSE を参照してください。
