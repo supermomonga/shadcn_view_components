@@ -37,16 +37,10 @@ module Shadcn
 
     sig { override.returns(String) }
     def call
-      # upstreamの行内配置はdefaultが20px、smが24pxの領域で中央に来る。
-      # 入力と兄弟の装飾を同じ領域に置き、ブラウザの行内基準位置を揃える。
-      # Fieldの横配置ではSwitch自体がflex itemになる。そこで余分な行内高さを
-      # 持たせると本体が下がるため、見た目の本体と同じ高さにする。
-      wrapper_height = if @size == "sm"
-                         "h-6 group-data-[orientation=horizontal]/field:h-[14px]"
-                       else
-                         "h-5 group-data-[orientation=horizontal]/field:h-[18.4px]"
-                       end
-      content_tag(:span, class: "relative inline-flex items-center align-top #{wrapper_height}") do
+      # 装飾をflex内の通常要素にして、upstreamと同じ行内ボックスの基準位置を使う。
+      # inputは外枠に重ね、ネイティブのチェック状態とフォーム値を保持する。
+      wrapper_size = @size == "sm" ? "h-[14px] w-[24px]" : "h-[18.4px] w-[32px]"
+      content_tag(:span, class: "relative inline-flex shrink-0 items-center rounded-full border border-transparent #{wrapper_size}") do
         safe_join([input_element, thumb_element])
       end
     end
@@ -60,6 +54,8 @@ module Shadcn
       # 背景/角丸の上にOS標準の箱を塗る(dark時は白箱として視覚差になる)ため消す。
       # 契約の data-[state] 系背景クラスを素の要素に効かせるために必要
       attributes[:class] = [attributes[:class], "appearance-none", NATIVE_STATE_CLASS].compact.join(" ")
+      # 外枠の透明な1px borderを覆い、上流のrootと同じ描画位置に置く。
+      merge_style(attributes, position: "absolute", top: "-1px", left: "-1px")
       merge_native_checked_state(attributes, checked: native_checked?(@html_args))
       void_tag("input", **attributes)
     end
@@ -72,7 +68,7 @@ module Shadcn
       # 発火しない。sizeはコンポーネント側で明示する(契約のdata-size値と同じ)
       size_class = @size == "sm" ? "size-3" : "size-4"
       decoration = [
-        "pointer-events-none absolute left-px top-1/2 -translate-y-1/2 translate-x-0",
+        "pointer-events-none relative",
         "peer-checked:translate-x-[calc(100%-2px)] peer-not-checked:translate-x-0",
         "dark:peer-checked:bg-primary-foreground dark:peer-not-checked:bg-foreground transition-transform",
         size_class

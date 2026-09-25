@@ -39,9 +39,9 @@ checkbox:
 switch:
   Switch:
     # checkbox と同じ理由の data-checked / data-unchecked / appearance-none
-    # (peer-checked のための peer 含む)
+    # (peer-checked のための peer 含む)。style は入力を装飾外枠へ重ねる位置指定。
     class_mode: contains
-    attributes: [type, role, data-checked, data-unchecked, data-controller, data-action]
+    attributes: [type, role, data-checked, data-unchecked, data-controller, data-action, style]
 radio-group:
   RadioGroup:
     attributes: [role]
