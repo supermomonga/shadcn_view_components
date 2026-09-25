@@ -127,9 +127,13 @@ function renderExportConstants(exportData: Export): string[] {
   const slotLines = exportData.slots.map((slot) => {
     const staticPairs = Object.keys(slot.static_attributes).sort()
       .map((key) => [key, rubyString(slot.static_attributes[key]!)] as [string, string])
+    const variantClasses = slot.class_variants
+      ? `, class_variants: ${rubyHashBody(Object.entries(slot.class_variants).sort(([a], [b]) => a.localeCompare(b)).map(([prop, values]) =>
+        [prop, `${rubyHashBody(Object.entries(values).sort(([a], [b]) => a.localeCompare(b)).map(([value, classes]) => [value, rubyString(classes)]))}.freeze`]))}.freeze`
+      : ""
     return `        { name: ${rubyString(slot.name)}, tag: ${rubyString(slot.tag)}, ` +
       `static_attributes: ${rubyHashBody(staticPairs)}.freeze, ` +
-      `dynamic_attributes: ${rubyStringArray(slot.dynamic_attributes)}.freeze }.freeze`
+      `dynamic_attributes: ${rubyStringArray(slot.dynamic_attributes)}.freeze${variantClasses} }.freeze`
   })
   lines.push("      SLOTS = T.let([")
   lines.push(slotLines.join(",\n"))

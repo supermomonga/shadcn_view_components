@@ -109,11 +109,28 @@ export async function extractContracts(pipeline: PipelinePaths, only?: string[])
 /** 静的なだけのサブ要素cnを、そのスロットの static_attributes["class"] に合成する。
  * 対象スロットが無い(data-slot を持たない外側ラッパー等)は、名前無しスロットとして
  * 記録する — 手書き側がラッパー構造を再現できるようにするため */
-function attachSecondaryStaticClass(slots: Array<{ name: string, tag: string, static_attributes: Record<string, string>, dynamic_attributes: string[] }>, call: { slot: string, slotTag: string, statics: string[] }): void {
+function attachSecondaryStaticClass(slots: Array<{ name: string, tag: string, static_attributes: Record<string, string>, dynamic_attributes: string[], class_variants?: Record<string, Record<string, string>> }>, call: { slot: string, slotTag: string, statics: string[], conditionals: Array<{ identifier: string, trueValues: string[], trueClass: string, falseClass: string, staticIndex: number }> }, fnNode: FunctionLike, item: string, file: string): void {
   const slot = slots.find((candidate) => candidate.name === call.slot)
   if (slot) {
     const existing = slot.static_attributes["class"]
-    slot.static_attributes["class"] = [existing, call.statics.join(" ")].filter(Boolean).join(" ")
+    const staticClass = call.statics.join(" ")
+    slot.static_attributes["class"] = [existing, staticClass].filter(Boolean).join(" ")
+    if (call.conditionals.length > 1) {
+      throw new ParseError("multiple conditional classes on one secondary slot are unsupported", item, file)
+    }
+    for (const conditional of call.conditionals) {
+      const defaultValue = paramDefaults(fnNode, [conditional.identifier])[conditional.identifier]
+      if (defaultValue === undefined) {
+        throw new ParseError(`conditional class prop '${conditional.identifier}' has no parameter default`, item, file)
+      }
+      const values = [...new Set([...conditional.trueValues, defaultValue])]
+      slot.class_variants ??= {}
+      slot.class_variants[snakeCase(conditional.identifier)] = Object.fromEntries(values.map((value) => {
+        const replacement = conditional.trueValues.includes(value) ? conditional.trueClass : conditional.falseClass
+        const resolved = call.statics.map((part, index) => index === conditional.staticIndex ? replacement : part).join(" ")
+        return [value, [existing, resolved].filter(Boolean).join(" ")]
+      }))
+    }
     return
   }
   if (call.slot === "") {
@@ -379,7 +396,7 @@ export async function extractContractFromItem(
         // 流れる」ことを意味するが、クラス契約は主呼び出し側に紐づけるため
         // 静的側のみ採用する(手書き側が各要素に配る)
         if (call.cvaRef === null && call.statics.length > 0) {
-          attachSecondaryStaticClass(slots.slots, call)
+          attachSecondaryStaticClass(slots.slots, call, fnNode, name, file.path)
         } else {
           throw new ParseError(
             `unsupported secondary cn() call on '${call.slot || "(no data-slot)"}' ` +

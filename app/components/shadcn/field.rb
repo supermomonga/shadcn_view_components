@@ -73,6 +73,17 @@ module Shadcn
     end
 
     class Legend < BaseComponent
+      sig { params(variant: T.any(Symbol, String), args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
+      def initialize(variant: self.class.property_default(:variant), **args)
+        @variant = T.let(normalize_property(:variant, variant), String)
+        super(**args)
+      end
+
+      sig { override.returns(T::Hash[Symbol, T.untyped]) }
+      def contract_data_attributes
+        super.merge(variant: @variant)
+      end
+
       sig { override.returns(String) }
       def default_tag
         "legend"

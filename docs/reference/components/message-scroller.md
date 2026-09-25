@@ -26,7 +26,7 @@ Provider内へスクロール対象のViewport/ContentとButtonを兄弟とし�
 | [`Shadcn::MessageScroller::Viewport`](../../../app/components/shadcn/message_scroller.rb#L20) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `message-scroller-viewport` |
 | [`Shadcn::MessageScroller::Content`](../../../app/components/shadcn/message_scroller.rb#L28) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `message-scroller-content` |
 | [`Shadcn::MessageScroller::Item`](../../../app/components/shadcn/message_scroller.rb#L32) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `message-scroller-item` |
-| [`Shadcn::MessageScroller::Button`](../../../app/components/shadcn/message_scroller.rb#L36) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `message-scroller-button` |
+| [`Shadcn::MessageScroller::Button`](../../../app/components/shadcn/message_scroller/button.rb#L7) | `new(variant: :secondary, size: :"icon-sm", direction: self.class.property_default(:direction), **args)` | direction: start, end (default: "end") | `message-scroller-button` |
 
 ## HTML attributesの適用先
 

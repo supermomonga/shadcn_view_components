@@ -351,7 +351,8 @@ input-group:
     class_mode: contains
   InputGroupButton:
     class_mode: contains
-    attributes: [type, data-size, data-action, data-state, aria-haspopup]
+    slots_mode: superset
+    attributes: [type, data-slot, data-size, data-action, data-state, aria-haspopup]
 button-group:
   ButtonGroupSeparator:
     class_mode: contains
@@ -361,10 +362,13 @@ direction:
     attributes: [dir]
 sidebar:
   Sidebar:
-    attributes: [data-state]
+    # 契約の最初の同名slotは collapsible=none。既定描画は3番目の desktop 枝。
+    render_branch_slot_index: 2
+    attributes: [data-collapsible-mode]
   SidebarProvider:
     attributes: [data-controller, data-state]
   SidebarTrigger:
+    class_mode: contains
     attributes: [type, aria-expanded, aria-label, data-action]
   SidebarRail:
     attributes: [type, tabindex, aria-label, data-action]
@@ -386,6 +390,7 @@ sidebar:
     attributes: [data-active, aria-haspopup, aria-expanded]
 attachment:
   AttachmentAction:
+    class_mode: contains
     attributes: [type, aria-label, data-action]
   AttachmentTrigger:
     attributes: [type, aria-label, data-action]
@@ -398,6 +403,7 @@ message-scroller:
   MessageScrollerViewport:
     attributes: [tabindex]
   MessageScrollerButton:
+    class_mode: contains
     attributes: [type, hidden, data-action]
 chart:
   ChartContainer:

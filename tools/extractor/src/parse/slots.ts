@@ -13,6 +13,7 @@ export interface CollectedSlot {
   tag: string
   static_attributes: Record<string, string>
   dynamic_attributes: string[]
+  class_variants?: Record<string, Record<string, string>>
 }
 
 export interface SlotsAnalysis {

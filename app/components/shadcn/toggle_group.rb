@@ -53,6 +53,17 @@ module Shadcn
       attributes
     end
 
+    sig { override.returns(String) }
+    def call
+      previous = ActiveSupport::IsolatedExecutionState[:shadcn_toggle_group]
+      ActiveSupport::IsolatedExecutionState[:shadcn_toggle_group] = {
+        variant: @group_variant, size: @group_size, spacing: @spacing
+      }
+      super
+    ensure
+      ActiveSupport::IsolatedExecutionState[:shadcn_toggle_group] = previous
+    end
+
     private
 
     # グループの variant/size を Item の許容値で fail-fast 検証する
@@ -69,9 +80,7 @@ module Shadcn
         "button"
       end
 
-      # variant/size はupstreamではグループのcontextから受け取る。Ruby側では
-      # 利用者が各Itemに指定する(規約: 省略時は契約の既定値)。
-      # spacing はグループと同じ既定値2を使い、data属性に出力する
+      # 親の描画スコープ内では upstream の context と同じ優先順位で値を受け取る。
       sig do
         params(
           variant: T.any(Symbol, String),
@@ -100,7 +109,7 @@ module Shadcn
 
       sig { override.returns(T::Hash[Symbol, VariantOption]) }
       def variant_options
-        { variant: @variant, size: @size }
+        { variant: effective_variant, size: effective_size }
       end
 
       # upstream の Item と同じ data 属性(spacing の角丸・枠線制御はここから効く)
@@ -108,9 +117,9 @@ module Shadcn
       def contract_data_attributes
         super.merge(
           state: @state,
-          variant: @variant,
-          size: @size,
-          spacing: @spacing.to_s,
+          variant: effective_variant,
+          size: effective_size,
+          spacing: effective_spacing.to_s,
           action: "#{ToggleGroup::CONTROLLER}#toggleItem"
         )
       end
@@ -121,6 +130,28 @@ module Shadcn
         merge_nested(attributes, :aria, { pressed: (@state == "on").to_s })
         attributes[:type] = "button" unless @html_args.key?(:type) || attributes.key?(:type)
         attributes
+      end
+
+      private
+
+      sig { returns(T.nilable(T::Hash[Symbol, T.untyped])) }
+      def group_context
+        T.cast(ActiveSupport::IsolatedExecutionState[:shadcn_toggle_group], T.nilable(T::Hash[Symbol, T.untyped]))
+      end
+
+      sig { returns(Symbol) }
+      def effective_variant
+        T.cast(group_context&.dig(:variant) || @variant, Symbol)
+      end
+
+      sig { returns(Symbol) }
+      def effective_size
+        T.cast(group_context&.dig(:size) || @size, Symbol)
+      end
+
+      sig { returns(T.any(Integer, Float)) }
+      def effective_spacing
+        T.cast(group_context&.dig(:spacing) || @spacing, T.any(Integer, Float))
       end
     end
   end

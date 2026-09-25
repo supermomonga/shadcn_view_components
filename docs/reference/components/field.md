@@ -27,10 +27,10 @@
 | [`Shadcn::Field::Error`](../../../app/components/shadcn/field.rb#L39) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `field-error` |
 | [`Shadcn::Field::Group`](../../../app/components/shadcn/field.rb#L53) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `field-group` |
 | [`Shadcn::Field::Label`](../../../app/components/shadcn/field.rb#L57) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `field-label` |
-| [`Shadcn::Field::Legend`](../../../app/components/shadcn/field.rb#L75) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `field-legend` |
-| [`Shadcn::Field::Separator`](../../../app/components/shadcn/field.rb#L82) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `field-separator`<br>`field-separator-content` |
-| [`Shadcn::Field::Set`](../../../app/components/shadcn/field.rb#L94) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `field-set` |
-| [`Shadcn::Field::Title`](../../../app/components/shadcn/field.rb#L102) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `field-label` |
+| [`Shadcn::Field::Legend`](../../../app/components/shadcn/field.rb#L75) | `new(variant: self.class.property_default(:variant), **args)` | variant: legend, label (default: "legend") | `field-legend` |
+| [`Shadcn::Field::Separator`](../../../app/components/shadcn/field.rb#L93) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `field-separator`<br>`field-separator-content` |
+| [`Shadcn::Field::Set`](../../../app/components/shadcn/field.rb#L105) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `field-set` |
+| [`Shadcn::Field::Title`](../../../app/components/shadcn/field.rb#L113) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `field-label` |
 
 ## HTML attributesの適用先
 

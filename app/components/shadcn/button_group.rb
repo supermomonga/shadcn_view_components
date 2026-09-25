@@ -15,6 +15,11 @@ module Shadcn
       { orientation: @orientation }
     end
 
+    sig { override.returns(T::Hash[Symbol, T.untyped]) }
+    def contract_data_attributes
+      super.merge(orientation: @orientation)
+    end
+
     class Separator < BaseComponent
       # div(契約クラスは upstream の separator 上書き分を事前解決したもの)
       sig { params(orientation: T.any(Symbol, String), args: T::Hash[Symbol, T.untyped]).void.checked(:never) }

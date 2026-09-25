@@ -2,7 +2,7 @@
 
 > このページはコード・registry・手書き仕様から生成されています。直接編集せず、[生成元](../component-specifications/README.md)を更新して `bundle exec rake docs:generate` を実行してください。
 
-[コンポーネント一覧](README.md) / [実装](../../../app/components/shadcn/message.rb#L9) / [代表preview](../../../spec/dummy/app/components/previews/shadcn/message_preview.rb)
+[コンポーネント一覧](README.md) / [実装](../../../app/components/shadcn/message.rb#L18) / [代表preview](../../../spec/dummy/app/components/previews/shadcn/message_preview.rb)
 
 チャットの送信者、アバター、本文、補助情報を整列する静的メッセージ行。
 
@@ -21,12 +21,12 @@
 
 | class | initializer | 既定値・許容値 | upstream data-slot |
 |---|---|---|---|
-| [`Shadcn::Message::Group`](../../../app/components/shadcn/message.rb#L9) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `message-group` |
-| [`Shadcn::Message`](../../../app/components/shadcn/message.rb#L6) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `message` |
-| [`Shadcn::Message::Avatar`](../../../app/components/shadcn/message.rb#L13) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `message-avatar` |
-| [`Shadcn::Message::Content`](../../../app/components/shadcn/message.rb#L17) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `message-content` |
-| [`Shadcn::Message::Footer`](../../../app/components/shadcn/message.rb#L21) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `message-footer` |
-| [`Shadcn::Message::Header`](../../../app/components/shadcn/message.rb#L25) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `message-header` |
+| [`Shadcn::Message::Group`](../../../app/components/shadcn/message.rb#L18) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `message-group` |
+| [`Shadcn::Message`](../../../app/components/shadcn/message.rb#L6) | `new(align: self.class.property_default(:align), **args)` | align: start, end (default: "start") | `message` |
+| [`Shadcn::Message::Avatar`](../../../app/components/shadcn/message.rb#L22) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `message-avatar` |
+| [`Shadcn::Message::Content`](../../../app/components/shadcn/message.rb#L26) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `message-content` |
+| [`Shadcn::Message::Footer`](../../../app/components/shadcn/message.rb#L30) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `message-footer` |
+| [`Shadcn::Message::Header`](../../../app/components/shadcn/message.rb#L34) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `message-header` |
 
 ## HTML attributesの適用先
 

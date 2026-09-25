@@ -17,6 +17,7 @@ export const SlotSchema = z.object({
   tag: z.string(),
   static_attributes: z.record(z.string(), z.string()),
   dynamic_attributes: z.array(z.string()),
+  class_variants: z.record(z.string(), z.record(z.string(), z.string())).optional(),
 })
 
 export const ExportSchema = z.object({

@@ -50,6 +50,9 @@ registry.select { |_name, entry| entry.key?("exports") }.each do |name, entry|
                       !root_static_class.empty?
 
     export_allowances = item_allowances[export_name] || {}
+    # 条件付き JSX が複数の同名ルートを持つ場合、描画する枝の slot を基準にする。
+    branch_slot_index = export_allowances["render_branch_slot_index"]
+    slot_definition = contract::SLOTS.fetch(branch_slot_index) if branch_slot_index
     allowed_extra = export_allowances["attributes"] || []
     class_contains = export_allowances["class_mode"] == "contains"
     slots_superset = export_allowances["slots_mode"] == "superset"
@@ -66,7 +69,9 @@ registry.select { |_name, entry| entry.key?("exports") }.each do |name, entry|
 
           # クラスが cn でなく静的className として記録された契約(コンボ "" + ルート静的クラス)
           static_only = !split_structure && expected_classes.to_s.empty? && !root_static_class.empty?
-          expected = if split_structure || static_only
+          expected = if branch_slot_index
+                       slot_definition.dig(:static_attributes, :class).to_s
+                     elsif split_structure || static_only
                        root_static_class
                      else
                        expected_classes

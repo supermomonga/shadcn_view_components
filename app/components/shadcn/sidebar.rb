@@ -10,15 +10,25 @@ module Shadcn
   class Sidebar < BaseComponent
     CONTROLLER = "shadcn--sidebar"
 
-    sig { params(state: T.any(Symbol, String), args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
-    def initialize(state: self.class.property_default(:state), **args)
+    sig do
+      params(state: T.any(Symbol, String), side: T.any(Symbol, String), variant: T.any(Symbol, String),
+             collapsible: T.any(Symbol, String), args: T::Hash[Symbol, T.untyped]).void.checked(:never)
+    end
+    def initialize(state: self.class.property_default(:state), side: self.class.property_default(:side),
+                   variant: self.class.property_default(:variant),
+                   collapsible: self.class.property_default(:collapsible), **args)
       @state = T.let(normalize_property(:state, state), String)
+      @side = T.let(normalize_property(:side, side), String)
+      @variant = T.let(normalize_property(:variant, variant), String)
+      @collapsible = T.let(normalize_property(:collapsible, collapsible), String)
       super(**args)
     end
 
     # 契約スロット構成: sidebar(状態root) > sidebar-gap / sidebar-container > sidebar-inner
     sig { override.returns(String) }
     def call
+      return content_tag(:div, **html_attributes) { content } if @collapsible == "none"
+
       content_tag(:div, **html_attributes) do
         safe_join([gap, container])
       end
@@ -26,9 +36,20 @@ module Shadcn
 
     sig { override.returns(T::Hash[Symbol, T.untyped]) }
     def html_attributes
-      attributes = @html_args.merge(class: self.class.classes(extra: @user_class))
+      root_class = if @collapsible == "none"
+                     self.class.classes(extra: @user_class)
+                   else
+                     T.cast(desktop_root_slot.dig(:static_attributes, :class), String)
+                   end
+      attributes = @html_args.merge(class: root_class)
       data = T.cast(attributes[:data], T.nilable(T::Hash[Symbol, T.untyped])) || {}
-      attributes[:data] = { slot: "sidebar", state: @state }.merge(data)
+      attributes[:data] = if @collapsible == "none"
+                            { slot: "sidebar", state: @state }.merge(data)
+                          else
+                            { slot: "sidebar", state: @state, side: @side, variant: @variant,
+                              collapsible: @state == "closed" ? @collapsible : "",
+                              collapsible_mode: @collapsible }.merge(data)
+                          end
       attributes
     end
 
@@ -41,14 +62,26 @@ module Shadcn
 
     sig { returns(String) }
     def container
-      content_tag(:div, class: slot_class("sidebar-container"), data: { slot: "sidebar-container" }) do
+      container_class = slot_class("sidebar-container")
+      container_class = ShadcnViewComponents::Classes::MERGER.merge("#{container_class} #{@user_class}") if @user_class
+      content_tag(:div, class: container_class, data: { slot: "sidebar-container", side: @side }) do
         content_tag(:div, class: slot_class("sidebar-inner"), data: { slot: "sidebar-inner" }) { content }
       end
     end
 
     sig { params(name: String).returns(T.nilable(String)) }
     def slot_class(name)
-      T.cast(contract_slot(name).dig(:static_attributes, :class), T.nilable(String))
+      slot = contract_slot(name)
+      variants = T.cast(slot[:class_variants], T.nilable(T::Hash[Symbol, T::Hash[Symbol, String]]))
+      return variants.fetch(:variant).fetch(@variant.to_sym) if variants
+
+      T.cast(slot.dig(:static_attributes, :class), T.nilable(String))
+    end
+
+    sig { returns(T::Hash[Symbol, T.untyped]) }
+    def desktop_root_slot
+      slots = T.cast(contract.const_get(:SLOTS), T::Array[T::Hash[Symbol, T.untyped]])
+      slots.find { |slot| slot[:name] == "sidebar" && slot[:tag] == "div" && slot.dig(:static_attributes, :class) } || {}
     end
 
     class Provider < BaseComponent
@@ -69,6 +102,19 @@ module Shadcn
     end
 
     class Trigger < BaseComponent
+      class << self
+        extend T::Sig
+
+        sig { params(extra: T.nilable(String), options: T::Hash[Symbol, T.nilable(T.any(Symbol, String))]).returns(String).checked(:never) }
+        def classes(extra: nil, **options)
+          raise ArgumentError, "unknown variant props: #{options.keys.inspect}" unless options.empty?
+
+          T.unsafe(ShadcnViewComponents::Classes).resolve(
+            :button, extra: extra, variant: :ghost, size: :"icon-sm"
+          )
+        end
+      end
+
       sig { override.returns(String) }
       def default_tag
         "button"
@@ -230,7 +276,7 @@ module Shadcn
         attributes = super
         attributes[:type] = "button" unless attributes.key?(:type) || tag == "a"
         # 契約スロットの静的属性 data-sidebar="menu-button"
-        merge_nested(attributes, :data, { sidebar: "menu-button", active: @active.to_s })
+        merge_nested(attributes, :data, { sidebar: "menu-button", active: @active.to_s, size: @size })
         attributes
       end
     end

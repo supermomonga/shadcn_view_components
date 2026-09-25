@@ -21,13 +21,13 @@ Header、Title、Description、Action、Content、Footerを必要な部分だけ
 
 | class | initializer | 既定値・許容値 | upstream data-slot |
 |---|---|---|---|
-| [`Shadcn::Card`](../../../app/components/shadcn/card.rb#L5) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `card` |
-| [`Shadcn::Card::Header`](../../../app/components/shadcn/card.rb#L6) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `card-header` |
-| [`Shadcn::Card::Title`](../../../app/components/shadcn/card.rb#L8) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `card-title` |
-| [`Shadcn::Card::Description`](../../../app/components/shadcn/card.rb#L10) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `card-description` |
-| [`Shadcn::Card::Action`](../../../app/components/shadcn/card.rb#L12) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `card-action` |
-| [`Shadcn::Card::Content`](../../../app/components/shadcn/card.rb#L14) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `card-content` |
-| [`Shadcn::Card::Footer`](../../../app/components/shadcn/card.rb#L16) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `card-footer` |
+| [`Shadcn::Card`](../../../app/components/shadcn/card.rb#L5) | `new(size: self.class.property_default(:size), **args)` | size: default, sm (default: "default") | `card` |
+| [`Shadcn::Card::Header`](../../../app/components/shadcn/card.rb#L17) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `card-header` |
+| [`Shadcn::Card::Title`](../../../app/components/shadcn/card.rb#L19) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `card-title` |
+| [`Shadcn::Card::Description`](../../../app/components/shadcn/card.rb#L21) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `card-description` |
+| [`Shadcn::Card::Action`](../../../app/components/shadcn/card.rb#L23) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `card-action` |
+| [`Shadcn::Card::Content`](../../../app/components/shadcn/card.rb#L25) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `card-content` |
+| [`Shadcn::Card::Footer`](../../../app/components/shadcn/card.rb#L27) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `card-footer` |
 
 ## HTML attributesの適用先
 

@@ -22,14 +22,14 @@ Media、Content、Title、Description、Actions、Action、Triggerは表示内�
 | class | initializer | 既定値・許容値 | upstream data-slot |
 |---|---|---|---|
 | [`Shadcn::Attachment`](../../../app/components/shadcn/attachment.rb#L6) | `new(orientation: ShadcnViewComponents::Contracts::Attachment::DEFAULTS.fetch(:orientation),<br>                   size: ShadcnViewComponents::Contracts::Attachment::DEFAULTS.fetch(:size), **args)` | orientation: horizontal, vertical (default: horizontal)<br>size: default, sm, xs (default: default) | `attachment` |
-| [`Shadcn::Attachment::Group`](../../../app/components/shadcn/attachment.rb#L26) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `attachment-group` |
-| [`Shadcn::Attachment::Media`](../../../app/components/shadcn/attachment.rb#L30) | `new(variant: ShadcnViewComponents::Contracts::Attachment::Media::DEFAULTS.fetch(:variant), **args)` | variant: icon, image (default: icon) | `attachment-media` |
-| [`Shadcn::Attachment::Content`](../../../app/components/shadcn/attachment.rb#L44) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `attachment-content` |
-| [`Shadcn::Attachment::Title`](../../../app/components/shadcn/attachment.rb#L48) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `attachment-title` |
-| [`Shadcn::Attachment::Description`](../../../app/components/shadcn/attachment.rb#L52) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `attachment-description` |
-| [`Shadcn::Attachment::Actions`](../../../app/components/shadcn/attachment.rb#L56) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `attachment-actions` |
-| [`Shadcn::Attachment::Action`](../../../app/components/shadcn/attachment.rb#L60) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `attachment-action` |
-| [`Shadcn::Attachment::Trigger`](../../../app/components/shadcn/attachment.rb#L73) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `attachment-trigger` |
+| [`Shadcn::Attachment::Group`](../../../app/components/shadcn/attachment.rb#L31) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `attachment-group` |
+| [`Shadcn::Attachment::Media`](../../../app/components/shadcn/attachment.rb#L35) | `new(variant: ShadcnViewComponents::Contracts::Attachment::Media::DEFAULTS.fetch(:variant), **args)` | variant: icon, image (default: icon) | `attachment-media` |
+| [`Shadcn::Attachment::Content`](../../../app/components/shadcn/attachment.rb#L54) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `attachment-content` |
+| [`Shadcn::Attachment::Title`](../../../app/components/shadcn/attachment.rb#L58) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `attachment-title` |
+| [`Shadcn::Attachment::Description`](../../../app/components/shadcn/attachment.rb#L62) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `attachment-description` |
+| [`Shadcn::Attachment::Actions`](../../../app/components/shadcn/attachment.rb#L66) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `attachment-actions` |
+| [`Shadcn::Attachment::Action`](../../../app/components/shadcn/attachment.rb#L70) | `new(variant: :ghost, size: :"icon-xs", **args)` | 追加制約なし（signatureどおり） | `attachment-action` |
+| [`Shadcn::Attachment::Trigger`](../../../app/components/shadcn/attachment.rb#L105) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `attachment-trigger` |
 
 ## HTML attributesの適用先
 

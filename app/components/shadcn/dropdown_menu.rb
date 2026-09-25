@@ -80,6 +80,20 @@ module Shadcn
 
     class Item < BaseComponent
       # role=menuitem。data-highlighted と tabindex はコントローラが管理する
+      sig { params(variant: T.nilable(T.any(Symbol, String)), args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
+      def initialize(variant: nil, **args)
+        @variant = T.let(
+          supports_variant? ? normalize_property(:variant, variant || self.class.property_default(:variant)) : nil,
+          T.nilable(String)
+        )
+        super(**args)
+      end
+
+      sig { override.returns(T::Hash[Symbol, T.untyped]) }
+      def contract_data_attributes
+        @variant ? super.merge(variant: @variant) : super
+      end
+
       sig { override.returns(T::Hash[Symbol, T.untyped]) }
       def html_attributes
         attributes = super
@@ -90,6 +104,12 @@ module Shadcn
       end
 
       private
+
+      sig { returns(T::Boolean) }
+      def supports_variant?
+        slots = T.cast(self.class.contract.const_get(:SLOTS), T::Array[T::Hash[Symbol, T.untyped]])
+        slots.any? { |slot| T.cast(slot[:dynamic_attributes], T::Array[String]).include?("data-variant") }
+      end
 
       sig { returns(String) }
       def default_action
@@ -106,7 +126,7 @@ module Shadcn
       sig { params(checked: T::Boolean, args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
       def initialize(checked: false, **args)
         @checked = checked
-        super(**args)
+        super(**T.unsafe(args))
       end
 
       sig { override.returns(T::Hash[Symbol, T.untyped]) }
