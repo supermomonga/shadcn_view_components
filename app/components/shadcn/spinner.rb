@@ -25,7 +25,7 @@ module Shadcn
         "stroke-linejoin": "round",
         **html_attributes
       ) do
-        raw(%(<path d="M21 12a9 9 0 1 1-9-9"/>))
+        raw(%(<path d="M21 12a9 9 0 1 1-6.219-8.56"/>))
       end
     end
   end

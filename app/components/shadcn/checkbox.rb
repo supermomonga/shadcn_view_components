@@ -8,8 +8,12 @@ module Shadcn
     NATIVE_STATE_CLASS = T.let([
       "not-checked:border-input not-checked:bg-transparent dark:not-checked:bg-input/30",
       "checked:border-primary checked:bg-primary checked:text-primary-foreground",
-      "group-has-[:focus-visible]/field-label:checked:border-primary dark:checked:bg-primary"
+      "group-has-[:focus-visible]/field-label:checked:border-primary dark:checked:bg-primary",
+      "disabled:opacity-100"
     ].join(" ").freeze, String)
+
+    # input の選択時の文字色は兄弟の indicator に継承されない。
+    INDICATOR_STATE_CLASS = "pointer-events-none absolute inset-0 hidden peer-checked:grid peer-checked:text-primary-foreground"
 
     # 契約タグは CheckboxPrimitive.Root。ネイティブな input[type=checkbox] として描く
     # (JS無しで動作 — 05-stimulus-hotwire §3「checkbox = input + CSS」)。
@@ -44,7 +48,7 @@ module Shadcn
     sig { returns(String) }
     def indicator_element
       contract_class = T.cast(contract_slot("checkbox-indicator").dig(:static_attributes, :class), T.nilable(String))
-      content_tag(:span, data: { slot: "checkbox-indicator" }, aria: { hidden: "true" }, class: [contract_class, "pointer-events-none absolute inset-0 hidden peer-checked:grid"].compact.join(" ")) do
+      content_tag(:span, data: { slot: "checkbox-indicator" }, aria: { hidden: "true" }, class: [contract_class, INDICATOR_STATE_CLASS].compact.join(" ")) do
         content_tag(
           :svg,
           xmlns: "http://www.w3.org/2000/svg",

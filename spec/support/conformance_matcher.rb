@@ -5,6 +5,7 @@
 # 検証内容(07-testing §3.3、§3.4):
 # - クラス列: 対象要素のclassが契約の事前解決文字列と順序含め完全一致(正規化: 連続空白の圧縮のみ)。
 #   allowances で class_mode: contains を宣言した要素のみ「契約クラスを全て含む」検証に緩和される
+#   extra_classes は指定した追加クラスだけを順序込みで許可する
 # - data-slot: 対象要素の data-slot が契約の root_slot と一致。
 #   root_slot が空(アイコン系)の場合は data-slot を持たないことを検証する
 # - 静的属性: 契約 static_attributes が出力に含まれる
@@ -14,7 +15,7 @@ RSpec::Matchers.define :conform_with_contract do |contract_data|
     @failures = []
 
     actual_classes = element["class"].to_s.split(/\s+/)
-    expected_classes = contract_data[:classes].split(/\s+/)
+    expected_classes = contract_data[:classes].split(/\s+/) + contract_data.fetch(:extra_classes, [])
     if contract_data[:class_contains]
       missing = expected_classes - actual_classes
       unless missing.empty?

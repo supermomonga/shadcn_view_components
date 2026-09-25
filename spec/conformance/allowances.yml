@@ -7,6 +7,7 @@
 # 別アイテムのクラスを合成する構造(item-separator が Separator をラップする等)で、
 # 抽出器が単一アイテム内のクラスしか事前解決できないための措置。
 # クラス列の不一致が許容されるケースは原則これのみ。
+# extra_classes は実装固有の追加クラスを順序まで指定し、残りのクラスは完全一致で検証する。
 separator:
   Separator:
     # ネイティブdiv化に伴うARIA(05-stimulus-hotwire §3 の方針)
@@ -329,6 +330,9 @@ select:
   SelectGroup:
     attributes: [role]
   SelectItem:
+    # ネイティブpopoverはトリガーにfocusを保持するため、強調表示を
+    # data-highlightedでも適用するクラスが必要。
+    extra_classes: ["data-[highlighted=true]:bg-accent", "data-[highlighted=true]:text-accent-foreground"]
     attributes: [role, tabindex, data-value, data-selected, data-action, aria-selected]
   SelectSeparator:
     attributes: [role]

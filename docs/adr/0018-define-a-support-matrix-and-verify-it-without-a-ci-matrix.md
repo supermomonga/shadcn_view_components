@@ -3,6 +3,9 @@ number: 18
 title: Define a support matrix and verify it without a CI matrix
 status: accepted
 date: 2026-09-04
+links:
+- target: 19
+  kind: amendedby
 ---
 
 # Define a support matrix and verify it without a CI matrix

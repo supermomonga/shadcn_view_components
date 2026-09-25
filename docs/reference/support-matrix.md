@@ -13,7 +13,7 @@
 | 正本 | この文書の表がサポート範囲の正本。gemspec・CI・[ルートREADME](../../README.md)は同じmatrixを表す |
 | CI | **基本は最新リリース版でのみ検証する**（CIコストの判断）。下限組み合わせは既存job内での軽量spec再実行によってのみ検証し、matrixジョブは作らない |
 | 上限 | gemspecは悲観的演算子（`~>`）でmajorを抑える。未検証のmajorを無制限に許容しない |
-| ブラウザ | 下限はBaseline 2024。**polyfillは提供しない**（[ADR 0008](../adr/0008-reimplement-client-behavior-with-stimulus-and-native-html.md)のネイティブ最優先方針）。CIでの機械検証は最新Chromeのみ |
+| ブラウザ | 下限はBaseline 2024。**polyfillは提供しない**（[ADR 0008](../adr/0008-reimplement-client-behavior-with-stimulus-and-native-html.md)のネイティブ最優先方針）。CIの動作検証は最新Chrome、画像比較は固定Chromium |
 
 ## 2. ツールチェーンmatrix
 
@@ -80,7 +80,7 @@ Baseline 2024を満たさないブラウザ（Chrome 113以前、Safari 16以前
 
 ### 検証方法
 
-- CI（`system` / `parity` job）は最新Chrome（Cuprite + `browser-actions/setup-chrome`）でのみ機械検証する。
+- CIの`system` jobは最新Chromeで動作を検証する。`parity` jobはUbuntu 24.04とChromium revision 1704574（156.0.8074.0）に固定し、画像比較環境を揃える。更新時は全シナリオと例外領域を再確認する（[ADR 0019](../adr/0019-require-exact-rgba-visual-parity-with-scoped-exceptions.md)）。
 - Safari / Firefoxは上表のAPI監査に基づくサポート宣言であり、CIでのクロスブラウザ検証は行わない（コストの判断）。
 - JavaScript無効時のfallback tierは[05-stimulus-hotwire](stimulus-hotwire.md)を参照。
 

@@ -46,18 +46,18 @@ module Shadcn
       sig { returns(String) }
       def range_style
         if vertical?
-          "position: absolute; bottom: 0; height: #{percentage}%"
+          "position: absolute; bottom: 0; height: #{edge_aligned_position}"
         else
-          "position: absolute; left: 0; width: #{percentage}%"
+          "position: absolute; left: 0; width: #{edge_aligned_position}"
         end
       end
 
       sig { returns(String) }
       def thumb_style
         if vertical?
-          "position: absolute; bottom: #{percentage}%; left: 50%; transform: translate(-50%, 50%)"
+          "position: absolute; bottom: #{edge_aligned_position}; left: 50%; transform: translate(-50%, 50%)"
         else
-          "position: absolute; left: #{percentage}%; top: 50%; transform: translate(-50%, -50%)"
+          "position: absolute; left: #{edge_aligned_position}; top: 50%; transform: translate(-50%, -50%)"
         end
       end
 
@@ -90,8 +90,20 @@ module Shadcn
 
       sig { returns(String) }
       def percentage
-        result = ((effective_value - decimal(@min)) / (decimal(@max) - decimal(@min))) * 100
-        format("%.12g", result.to_f)
+        format("%.12g", (fraction * 100).to_f)
+      end
+
+      # upstreamのthumbAlignment="edge"は12pxのつまみ中心を、両端6pxを
+      # 除いた範囲内で動かす。rangeの終端も同じ位置に合わせる。
+      sig { returns(String) }
+      def edge_aligned_position
+        offset = 6 - (12 * fraction)
+        "calc(#{percentage}% + #{format('%.12g', offset.to_f)}px)"
+      end
+
+      sig { returns(Rational) }
+      def fraction
+        (effective_value - decimal(@min)) / (decimal(@max) - decimal(@min))
       end
 
       sig { returns(Rational) }

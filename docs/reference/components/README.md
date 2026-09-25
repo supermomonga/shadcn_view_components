@@ -66,7 +66,7 @@ initializerやpreviewを変更したのに生成ページを更新しなかっ�
 | [`progress`](progress.md) | `Shadcn::Progress` | `static` | `none` |
 | [`radio-group`](radio-group.md) | `Shadcn::RadioGroup` | `controller` | `native` |
 | [`resizable`](resizable.md) | `Shadcn::Resizable::PanelGroup` | `controller` | `none` |
-| [`scroll-area`](scroll-area.md) | `Shadcn::ScrollArea` | `static` | `none` |
+| [`scroll-area`](scroll-area.md) | `Shadcn::ScrollArea` | `native` | `none` |
 | [`select`](select.md) | `Shadcn::Select` | `controller` | `composite` |
 | [`separator`](separator.md) | `Shadcn::Separator` | `static` | `none` |
 | [`sheet`](sheet.md) | `Shadcn::Sheet` | `controller` | `none` |

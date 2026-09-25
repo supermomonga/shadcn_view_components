@@ -158,7 +158,10 @@ module Shadcn
         attributes = @html_args.merge(class: self.class.classes(extra: @user_class))
         attributes[:role] = "presentation" unless attributes.key?(:role)
         attributes[:popover] = "auto" unless attributes.key?(:popover)
-        merge_style(attributes, display: "flex", flex_direction: "column", overflow: "hidden")
+        # upstreamのPositionerはtransformを持つ描画レイヤー。ネイティブpopoverは
+        # top layerへ移るため、自身にも同じレイヤーを作り色の合成を揃える。
+        merge_style(attributes, display: "flex", flex_direction: "column", overflow: "hidden",
+                                transform: "translate3d(0px, 0px, 0px)")
         merge_floating_position_data(
           attributes,
           slot: "select-content",
@@ -202,6 +205,9 @@ module Shadcn
         attributes = super
         attributes[:role] = "option"
         attributes[:tabindex] = "-1"
+        # upstreamは現在項目をfocusしてfocus:*を適用する。こちらはトリガーに
+        # focusを保持するため、同じ強調をdata-highlightedで反映する。
+        attributes[:class] = [attributes[:class], "data-[highlighted=true]:bg-accent data-[highlighted=true]:text-accent-foreground"].compact.join(" ")
         merge_nested(attributes, :aria, { selected: "false" }.merge(@disabled ? { disabled: "true" } : {}))
         item_data = {
           value: @value,

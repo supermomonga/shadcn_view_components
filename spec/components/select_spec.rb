@@ -82,7 +82,7 @@ RSpec.describe Shadcn::Select, type: :component do
       "data-closed" => ""
     )
     expect(popup["style"]).to eq(
-      "display: flex; flex-direction: column; overflow: hidden"
+      "display: flex; flex-direction: column; overflow: hidden; transform: translate3d(0px, 0px, 0px)"
     )
     listbox = popup.at_css("[role='listbox']")
     expect(listbox).not_to be_nil

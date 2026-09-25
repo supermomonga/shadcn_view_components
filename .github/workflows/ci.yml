@@ -100,7 +100,7 @@ jobs:
         run: CHROME_BIN=$(which chrome) bundle exec rake "$LOCAL_VERIFY_TASK"
 
   parity:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       LOCAL_VERIFY_TASK: verify:parity
     steps:
@@ -110,6 +110,9 @@ jobs:
         uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
       - id: setup_chrome
         uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce # v1
+        with:
+          # 2026-09-25のparity成功runで使用したChromium 156.0.8074.0
+          chrome-version: '1704574'
       - id: setup_dependencies
         name: Install all verification dependencies
         run: bin/setup

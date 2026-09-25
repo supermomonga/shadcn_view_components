@@ -25,7 +25,10 @@ module Shadcn
       def html_attributes
         attributes = super
         attributes[:role] = "group"
-        merge_style(attributes, { display: "flex" })
+        # groupロールにaria-orientationは許可されない。縦配置はCSSで指定する。
+        style = { display: "flex" }
+        style[:flex_direction] = "column" if @orientation == "vertical"
+        merge_style(attributes, style)
         merge_nested(attributes, :data, { controller: CONTROLLER, orientation: @orientation })
         attributes
       end

@@ -22,8 +22,8 @@ PanelGroup内に複数のPanelを置き、その間へHandleを置く。
 | class | initializer | 既定値・許容値 | upstream data-slot |
 |---|---|---|---|
 | [`Shadcn::Resizable::PanelGroup`](../../../app/components/shadcn/resizable.rb#L11) | `new(orientation: self.class.property_default(:orientation), **args)` | orientation: horizontal, vertical (default: "horizontal") | `resizable-panel-group` |
-| [`Shadcn::Resizable::Panel`](../../../app/components/shadcn/resizable.rb#L34) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `resizable-panel` |
-| [`Shadcn::Resizable::Handle`](../../../app/components/shadcn/resizable.rb#L45) | `new(orientation: self.class.property_default(:orientation), **args)` | orientation: horizontal, vertical (default: "vertical") | `resizable-handle` |
+| [`Shadcn::Resizable::Panel`](../../../app/components/shadcn/resizable.rb#L37) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `resizable-panel` |
+| [`Shadcn::Resizable::Handle`](../../../app/components/shadcn/resizable.rb#L48) | `new(orientation: self.class.property_default(:orientation), **args)` | orientation: horizontal, vertical (default: "vertical") | `resizable-handle` |
 
 ## HTML attributesの適用先
 

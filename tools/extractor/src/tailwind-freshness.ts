@@ -6,6 +6,20 @@
  * リポジトリのtheme、utilities、追加base層などの出力である。
  */
 export function withoutDependencyPreflight(css: string): string {
+  // --minifyは依存preflightと本gemのbase規則を1つの@layerへ統合する。
+  // 自前の最初の規則から後ろを残し、鮮度検査で実装規則を見落とさない。
+  const minifiedBase = "@layer base{"
+  const minifiedStart = css.indexOf(minifiedBase)
+  if (minifiedStart >= 0) {
+    const ownedRule = "*{border-color:var(--border)"
+    const ownedStart = css.indexOf(ownedRule, minifiedStart + minifiedBase.length)
+    const baseEnd = css.indexOf("}@layer components", minifiedStart)
+    if (ownedStart < 0 || baseEnd < 0 || ownedStart >= baseEnd) {
+      throw new Error("minified Tailwind CSS is missing the project base boundary")
+    }
+    return `${css.slice(0, minifiedStart)}${minifiedBase}${css.slice(ownedStart)}`
+  }
+
   const marker = "@layer base {"
   const start = css.indexOf(marker)
   if (start < 0) throw new Error("generated Tailwind CSS does not contain a base layer")

@@ -3,6 +3,9 @@ number: 12
 title: Verify compatibility through layered automated testing
 status: accepted
 date: 2026-09-03
+links:
+- target: 19
+  kind: amendedby
 ---
 
 # Verify compatibility through layered automated testing

@@ -15,7 +15,7 @@ run = "bundle exec puma config.ru"
 # コンポーネント追加・クラス変更時に実行する
 [tasks.build-css]
 description = "Lookbook/dummy 用の静的スタイル(spec/dummy/app/assets/stylesheets/application.css)を再生成する"
-run = "tools/extractor/node_modules/.bin/tailwindcss -i spec/dummy/tailwind/input.css -o spec/dummy/app/assets/stylesheets/application.css"
+run = "tools/extractor/node_modules/.bin/tailwindcss -i spec/dummy/tailwind/input.css -o spec/dummy/app/assets/stylesheets/application.css --minify"
 
 # 見た目の upstream パリティ検証(spec/visual)。素の rspec でも常時実行されるが、
 # このタスクはハーネスの明示的な再ビルドを伴う

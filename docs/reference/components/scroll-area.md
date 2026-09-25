@@ -40,7 +40,7 @@ viewportはrootが自動生成し、Scrollbarは契約構造を必要とする�
 - Stimulus: 不要
 - browser API: CSS overflow scrolling
 - keyboard: コンポーネント固有操作なし
-- CIで確認する操作: 対象外 — This component has no independent browser interaction beyond render and visual coverage.
+- CIで確認する操作: `state`
 
 ## upstreamとの差異・未対応機能
 

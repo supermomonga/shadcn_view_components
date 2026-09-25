@@ -60,9 +60,9 @@ RSpec.describe Shadcn::Slider, type: :component do
       "data-orientation" => "horizontal"
     )
     expect(root.at_css("[data-slot='slider-range']")["style"])
-      .to eq("position: absolute; left: 0; width: 25%")
+      .to eq("position: absolute; left: 0; width: calc(25% + 3px)")
     expect(root.at_css("[data-slot='slider-thumb']")["style"])
-      .to eq("position: absolute; left: 25%; top: 50%; transform: translate(-50%, -50%)")
+      .to eq("position: absolute; left: calc(25% + 3px); top: 50%; transform: translate(-50%, -50%)")
     expect(root.css("[data-orientation='horizontal']").length).to eq(4)
 
     expect(root.at_css("[data-slot='slider-track']")["class"].split).to include("relative", "grow")
@@ -95,7 +95,7 @@ RSpec.describe Shadcn::Slider, type: :component do
     input = rendered_root_element.at_css("input[data-slot='slider-input']")
     expect(input).not_to have_attribute("value")
     expect(rendered_root_element.at_css("[data-slot='slider-range']")["style"])
-      .to include("width: 60%")
+      .to include("width: calc(60% + -1.2px)")
   end
 
   it "renders vertical geometry and native input orientation without leaking it to the root API" do
@@ -108,9 +108,9 @@ RSpec.describe Shadcn::Slider, type: :component do
     expect(input["aria-orientation"]).to eq("vertical")
     expect(input["style"]).to eq("writing-mode: vertical-lr; direction: rtl")
     expect(root.at_css("[data-slot='slider-range']")["style"])
-      .to eq("position: absolute; bottom: 0; height: 40%")
+      .to eq("position: absolute; bottom: 0; height: calc(40% + 1.2px)")
     expect(root.at_css("[data-slot='slider-thumb']")["style"])
-      .to eq("position: absolute; bottom: 40%; left: 50%; transform: translate(-50%, 50%)")
+      .to eq("position: absolute; bottom: calc(40% + 1.2px); left: 50%; transform: translate(-50%, 50%)")
     expect(root.css("[data-orientation='vertical']").length).to eq(4)
   end
 

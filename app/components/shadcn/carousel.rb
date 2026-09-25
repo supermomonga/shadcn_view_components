@@ -69,7 +69,9 @@ module Shadcn
         merge_nested(attributes, :data, { slot: contract_root_slot[:name] })
         content_tag(tag, **attributes) do
           extra = [ORIENTATION_CLASS, @user_class].compact.join(" ")
-          content_tag(:div, class: self.class.classes(extra:)) { content }
+          # Emblaは初期位置にもtranslate3d(0,0,0)を付ける。描画レイヤーを
+          # 揃えることで、角丸と文字のアンチエイリアスもupstreamと一致する。
+          content_tag(:div, class: self.class.classes(extra:), style: "transform: translate3d(0px, 0px, 0px)") { content }
         end
       end
 
@@ -102,9 +104,7 @@ module Shadcn
       ORIENTATION_CLASS = "group-data-vertical/carousel:inset-y-auto " \
                           "group-data-vertical/carousel:left-1/2 group-data-vertical/carousel:my-0 " \
                           "group-data-vertical/carousel:-translate-x-1/2 group-data-vertical/carousel:rotate-90"
-      RTL_ICON_CLASS = "group-[[data-orientation=horizontal][data-direction=rtl]]/carousel:rotate-180"
-
-      private_constant :ORIENTATION_CLASS, :RTL_ICON_CLASS
+      private_constant :ORIENTATION_CLASS
 
       private
 
@@ -169,7 +169,7 @@ module Shadcn
           "stroke-linejoin": "round",
           width: "16",
           height: "16",
-          class: "size-4 #{RTL_ICON_CLASS}",
+          class: "size-4",
           aria: { hidden: "true" }
         ) do
           raw(paths)

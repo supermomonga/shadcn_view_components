@@ -59,4 +59,13 @@ RSpec.describe Shadcn::Resizable::PanelGroup, type: :component do
       "aria-valuenow" => "30"
     )
   end
+
+  it "renders vertical layout without aria-orientation on the group role" do
+    render_inline(ResizableComposition.new(group_args: { orientation: :vertical }))
+
+    root = rendered_root_element
+    expect(root["data-orientation"]).to eq("vertical")
+    expect(root["style"]).to include("flex-direction: column")
+    expect(root["aria-orientation"]).to be_nil
+  end
 end

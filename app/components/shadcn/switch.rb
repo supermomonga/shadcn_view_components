@@ -37,7 +37,16 @@ module Shadcn
 
     sig { override.returns(String) }
     def call
-      content_tag(:span, class: "relative inline-flex") do
+      # upstreamの行内配置はdefaultが20px、smが24pxの領域で中央に来る。
+      # 入力と兄弟の装飾を同じ領域に置き、ブラウザの行内基準位置を揃える。
+      # Fieldの横配置ではSwitch自体がflex itemになる。そこで余分な行内高さを
+      # 持たせると本体が下がるため、見た目の本体と同じ高さにする。
+      wrapper_height = if @size == "sm"
+                         "h-6 group-data-[orientation=horizontal]/field:h-[14px]"
+                       else
+                         "h-5 group-data-[orientation=horizontal]/field:h-[18.4px]"
+                       end
+      content_tag(:span, class: "relative inline-flex items-center align-top #{wrapper_height}") do
         safe_join([input_element, thumb_element])
       end
     end
@@ -63,7 +72,7 @@ module Shadcn
       # 発火しない。sizeはコンポーネント側で明示する(契約のdata-size値と同じ)
       size_class = @size == "sm" ? "size-3" : "size-4"
       decoration = [
-        "pointer-events-none absolute left-0.5 top-1/2 -translate-y-1/2 translate-x-0",
+        "pointer-events-none absolute left-px top-1/2 -translate-y-1/2 translate-x-0",
         "peer-checked:translate-x-[calc(100%-2px)] peer-not-checked:translate-x-0",
         "dark:peer-checked:bg-primary-foreground dark:peer-not-checked:bg-foreground transition-transform",
         size_class
