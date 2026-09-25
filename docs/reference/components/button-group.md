@@ -22,8 +22,8 @@ Shadcn::Button等の操作要素を内容として並べ、SeparatorやTextを�
 | class | initializer | 既定値・許容値 | upstream data-slot |
 |---|---|---|---|
 | [`Shadcn::ButtonGroup`](../../../app/components/shadcn/button_group.rb#L6) | `new(orientation: ShadcnViewComponents::Contracts::ButtonGroup::DEFAULTS.fetch(:orientation), **args)` | orientation: horizontal, vertical (default: horizontal) | `button-group` |
-| [`Shadcn::ButtonGroup::Separator`](../../../app/components/shadcn/button_group.rb#L18) | `new(orientation: :vertical, **args)` | orientation: horizontal, vertical (default: :vertical) | `button-group-separator` |
-| [`Shadcn::ButtonGroup::Text`](../../../app/components/shadcn/button_group.rb#L37) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `button-group-text` |
+| [`Shadcn::ButtonGroup::Separator`](../../../app/components/shadcn/button_group.rb#L23) | `new(orientation: :vertical, **args)` | orientation: horizontal, vertical (default: :vertical) | `button-group-separator` |
+| [`Shadcn::ButtonGroup::Text`](../../../app/components/shadcn/button_group.rb#L42) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `button-group-text` |
 
 ## HTML attributesの適用先
 

@@ -21,29 +21,29 @@ Providerを状態ホストにし、Sidebarと必要なHeader、Footer、Group、
 
 | class | initializer | 既定値・許容値 | upstream data-slot |
 |---|---|---|---|
-| [`Shadcn::Sidebar`](../../../app/components/shadcn/sidebar.rb#L10) | `new(state: self.class.property_default(:state), **args)` | state: open, closed (default: "open") | `sidebar`<br>`sidebar-gap`<br>`sidebar-container`<br>`sidebar-inner` |
-| [`Shadcn::Sidebar::Provider`](../../../app/components/shadcn/sidebar.rb#L54) | `new(state: self.class.property_default(:state), **args)` | state: open, closed (default: "open") | `sidebar-wrapper` |
-| [`Shadcn::Sidebar::Trigger`](../../../app/components/shadcn/sidebar.rb#L71) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-trigger` |
-| [`Shadcn::Sidebar::Rail`](../../../app/components/shadcn/sidebar.rb#L107) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-rail` |
-| [`Shadcn::Sidebar::Inset`](../../../app/components/shadcn/sidebar.rb#L125) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-inset` |
-| [`Shadcn::Sidebar::Input`](../../../app/components/shadcn/sidebar.rb#L133) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-input` |
-| [`Shadcn::Sidebar::Header`](../../../app/components/shadcn/sidebar.rb#L145) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-header` |
-| [`Shadcn::Sidebar::Footer`](../../../app/components/shadcn/sidebar.rb#L149) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-footer` |
-| [`Shadcn::Sidebar::Separator`](../../../app/components/shadcn/sidebar.rb#L153) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-separator` |
-| [`Shadcn::Sidebar::Content`](../../../app/components/shadcn/sidebar.rb#L163) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-content` |
-| [`Shadcn::Sidebar::Group`](../../../app/components/shadcn/sidebar.rb#L167) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-group` |
-| [`Shadcn::Sidebar::GroupLabel`](../../../app/components/shadcn/sidebar.rb#L171) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-group-label` |
-| [`Shadcn::Sidebar::GroupAction`](../../../app/components/shadcn/sidebar.rb#L175) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-group-action` |
-| [`Shadcn::Sidebar::GroupContent`](../../../app/components/shadcn/sidebar.rb#L183) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-group-content` |
-| [`Shadcn::Sidebar::Menu`](../../../app/components/shadcn/sidebar.rb#L187) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-menu` |
-| [`Shadcn::Sidebar::MenuItem`](../../../app/components/shadcn/sidebar.rb#L195) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-menu-item` |
-| [`Shadcn::Sidebar::MenuButton`](../../../app/components/shadcn/sidebar.rb#L203) | `new(variant: ShadcnViewComponents::Contracts::Sidebar::MenuButton::DEFAULTS.fetch(:variant),<br>                     size: ShadcnViewComponents::Contracts::Sidebar::MenuButton::DEFAULTS.fetch(:size),<br>                     active: false, **args)` | size: default, lg, sm (default: default)<br>variant: default, outline (default: default) | `sidebar-menu-button` |
-| [`Shadcn::Sidebar::MenuAction`](../../../app/components/shadcn/sidebar.rb#L238) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-menu-action` |
-| [`Shadcn::Sidebar::MenuBadge`](../../../app/components/shadcn/sidebar.rb#L246) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-menu-badge` |
-| [`Shadcn::Sidebar::MenuSkeleton`](../../../app/components/shadcn/sidebar.rb#L250) | `new(show_icon: true, **args)` | 追加制約なし（signatureどおり） | `sidebar-menu-skeleton` |
-| [`Shadcn::Sidebar::MenuSub`](../../../app/components/shadcn/sidebar.rb#L287) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-menu-sub` |
-| [`Shadcn::Sidebar::MenuSubItem`](../../../app/components/shadcn/sidebar.rb#L295) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-menu-sub-item` |
-| [`Shadcn::Sidebar::MenuSubButton`](../../../app/components/shadcn/sidebar.rb#L303) | `new(size: self.class.property_default(:size), active: false, **args)` | size: sm, md (default: "md") | `sidebar-menu-sub-button` |
+| [`Shadcn::Sidebar`](../../../app/components/shadcn/sidebar.rb#L10) | `new(state: self.class.property_default(:state), side: self.class.property_default(:side),<br>                   variant: self.class.property_default(:variant),<br>                   collapsible: self.class.property_default(:collapsible), **args)` | state: open, closed (default: "open")<br>side: left, right (default: "left")<br>variant: sidebar, floating, inset (default: "sidebar")<br>collapsible: offcanvas, icon, none (default: "offcanvas") | `sidebar`<br>`sidebar-gap`<br>`sidebar-container`<br>`sidebar-inner` |
+| [`Shadcn::Sidebar::Provider`](../../../app/components/shadcn/sidebar.rb#L87) | `new(state: self.class.property_default(:state), **args)` | state: open, closed (default: "open") | `sidebar-wrapper` |
+| [`Shadcn::Sidebar::Trigger`](../../../app/components/shadcn/sidebar.rb#L104) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-trigger` |
+| [`Shadcn::Sidebar::Rail`](../../../app/components/shadcn/sidebar.rb#L153) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-rail` |
+| [`Shadcn::Sidebar::Inset`](../../../app/components/shadcn/sidebar.rb#L171) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-inset` |
+| [`Shadcn::Sidebar::Input`](../../../app/components/shadcn/sidebar.rb#L179) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-input` |
+| [`Shadcn::Sidebar::Header`](../../../app/components/shadcn/sidebar.rb#L191) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-header` |
+| [`Shadcn::Sidebar::Footer`](../../../app/components/shadcn/sidebar.rb#L195) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-footer` |
+| [`Shadcn::Sidebar::Separator`](../../../app/components/shadcn/sidebar.rb#L199) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-separator` |
+| [`Shadcn::Sidebar::Content`](../../../app/components/shadcn/sidebar.rb#L209) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-content` |
+| [`Shadcn::Sidebar::Group`](../../../app/components/shadcn/sidebar.rb#L213) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-group` |
+| [`Shadcn::Sidebar::GroupLabel`](../../../app/components/shadcn/sidebar.rb#L217) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-group-label` |
+| [`Shadcn::Sidebar::GroupAction`](../../../app/components/shadcn/sidebar.rb#L221) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-group-action` |
+| [`Shadcn::Sidebar::GroupContent`](../../../app/components/shadcn/sidebar.rb#L229) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-group-content` |
+| [`Shadcn::Sidebar::Menu`](../../../app/components/shadcn/sidebar.rb#L233) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-menu` |
+| [`Shadcn::Sidebar::MenuItem`](../../../app/components/shadcn/sidebar.rb#L241) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-menu-item` |
+| [`Shadcn::Sidebar::MenuButton`](../../../app/components/shadcn/sidebar.rb#L249) | `new(variant: ShadcnViewComponents::Contracts::Sidebar::MenuButton::DEFAULTS.fetch(:variant),<br>                     size: ShadcnViewComponents::Contracts::Sidebar::MenuButton::DEFAULTS.fetch(:size),<br>                     active: false, **args)` | size: default, lg, sm (default: default)<br>variant: default, outline (default: default) | `sidebar-menu-button` |
+| [`Shadcn::Sidebar::MenuAction`](../../../app/components/shadcn/sidebar.rb#L284) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-menu-action` |
+| [`Shadcn::Sidebar::MenuBadge`](../../../app/components/shadcn/sidebar.rb#L292) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-menu-badge` |
+| [`Shadcn::Sidebar::MenuSkeleton`](../../../app/components/shadcn/sidebar.rb#L296) | `new(show_icon: true, **args)` | 追加制約なし（signatureどおり） | `sidebar-menu-skeleton` |
+| [`Shadcn::Sidebar::MenuSub`](../../../app/components/shadcn/sidebar.rb#L333) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-menu-sub` |
+| [`Shadcn::Sidebar::MenuSubItem`](../../../app/components/shadcn/sidebar.rb#L341) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `sidebar-menu-sub-item` |
+| [`Shadcn::Sidebar::MenuSubButton`](../../../app/components/shadcn/sidebar.rb#L349) | `new(size: self.class.property_default(:size), active: false, **args)` | size: sm, md (default: "md") | `sidebar-menu-sub-button` |
 
 ## HTML attributesの適用先
 

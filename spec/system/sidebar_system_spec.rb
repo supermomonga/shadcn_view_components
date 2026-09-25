@@ -17,14 +17,17 @@ RSpec.describe(
 
     expect(page).to have_selector("#sidebar-provider[data-state='open']")
     expect(page).to have_selector("#demo-sidebar[data-state='open']")
+    expect(page).to have_selector("#demo-sidebar[data-collapsible=''][data-collapsible-mode='offcanvas']")
 
     find("#sidebar-trigger").click
     expect(page).to have_selector("#sidebar-provider[data-state='closed']")
     expect(page).to have_selector("#demo-sidebar[data-state='closed']")
+    expect(page).to have_selector("#demo-sidebar[data-collapsible='offcanvas']")
     expect(page).to have_selector("#sidebar-trigger[aria-expanded='false']")
 
     find("#sidebar-trigger").click
     expect(page).to have_selector("#sidebar-provider[data-state='open']")
+    expect(page).to have_selector("#demo-sidebar[data-collapsible='']")
   end
 
   it "survives a cache-restored DOM reconnection (Turbo cache 相当)" do

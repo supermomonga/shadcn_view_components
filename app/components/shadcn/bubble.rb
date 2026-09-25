@@ -4,15 +4,22 @@
 module Shadcn
   # チャットの吹き出し(Phase 4)
   class Bubble < BaseComponent
-    sig { params(variant: T.any(Symbol, String), args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
-    def initialize(variant: ShadcnViewComponents::Contracts::Bubble::DEFAULTS.fetch(:variant), **args)
+    sig { params(variant: T.any(Symbol, String), align: T.any(Symbol, String), args: T::Hash[Symbol, T.untyped]).void.checked(:never) }
+    def initialize(variant: ShadcnViewComponents::Contracts::Bubble::DEFAULTS.fetch(:variant),
+                   align: self.class.property_default(:align), **args)
       @variant = T.let(normalize_option(:variant, variant), Symbol)
+      @align = T.let(normalize_property(:align, align), String)
       super(**args)
     end
 
     sig { override.returns(T::Hash[Symbol, VariantOption]) }
     def variant_options
       { variant: @variant }
+    end
+
+    sig { override.returns(T::Hash[Symbol, T.untyped]) }
+    def contract_data_attributes
+      super.merge(variant: @variant, align: @align)
     end
 
     class Group < BaseComponent
@@ -42,6 +49,11 @@ module Shadcn
       sig { override.returns(T::Hash[Symbol, VariantOption]) }
       def variant_options
         { align: @align, side: @side }
+      end
+
+      sig { override.returns(T::Hash[Symbol, T.untyped]) }
+      def contract_data_attributes
+        super.merge(align: @align, side: @side)
       end
     end
   end

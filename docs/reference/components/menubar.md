@@ -28,14 +28,14 @@
 | [`Shadcn::Menubar::Content`](../../../app/components/shadcn/menubar.rb#L59) | `new(side: :bottom, align: :start, side_offset: 8, align_offset: -4, collision_padding: 5, **args)`<br>initializerはShadcn::FloatingPositionOptionsで定義 | side: top / right / bottom / left / inline-start / inline-end (default: :bottom)<br>align: start / center / end (default: :start)<br>side_offset: 有限の数値 (default: 8)<br>align_offset: 有限の数値 (default: -4)<br>collision_padding: 0以上の有限の数値 (default: 5) | `menubar-content` |
 | [`Shadcn::Menubar::Group`](../../../app/components/shadcn/menubar.rb#L68) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `menubar-group` |
 | [`Shadcn::Menubar::Label`](../../../app/components/shadcn/menubar.rb#L70) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `menubar-label` |
-| [`Shadcn::Menubar::Item`](../../../app/components/shadcn/menubar.rb#L72) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `menubar-item` |
+| [`Shadcn::Menubar::Item`](../../../app/components/shadcn/menubar.rb#L72) | `new(variant: nil, **args)`<br>initializerはShadcn::DropdownMenu::Itemで定義 | variant: default, destructive (default: "default") | `menubar-item` |
 | [`Shadcn::Menubar::Shortcut`](../../../app/components/shadcn/menubar.rb#L100) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `menubar-shortcut` |
 | [`Shadcn::Menubar::CheckboxItem`](../../../app/components/shadcn/menubar.rb#L76) | `new(checked: false, **args)`<br>initializerはShadcn::DropdownMenu::CheckboxItemで定義 | 追加制約なし（signatureどおり） | `menubar-checkbox-item` |
 | [`Shadcn::Menubar::RadioGroup`](../../../app/components/shadcn/menubar.rb#L86) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `menubar-radio-group` |
 | [`Shadcn::Menubar::RadioItem`](../../../app/components/shadcn/menubar.rb#L88) | `new(checked: false, **args)`<br>initializerはShadcn::DropdownMenu::CheckboxItemで定義 | 追加制約なし（signatureどおり） | `menubar-radio-item` |
 | [`Shadcn::Menubar::Separator`](../../../app/components/shadcn/menubar.rb#L98) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `menubar-separator` |
 | [`Shadcn::Menubar::Sub`](../../../app/components/shadcn/menubar.rb#L102) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `menubar-sub` |
-| [`Shadcn::Menubar::SubTrigger`](../../../app/components/shadcn/menubar.rb#L104) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `menubar-sub-trigger` |
+| [`Shadcn::Menubar::SubTrigger`](../../../app/components/shadcn/menubar.rb#L104) | `new(variant: nil, **args)`<br>initializerはShadcn::DropdownMenu::Itemで定義 | 追加制約なし（signatureどおり） | `menubar-sub-trigger` |
 | [`Shadcn::Menubar::SubContent`](../../../app/components/shadcn/menubar.rb#L108) | `new(side: :right, align: :start, side_offset: 0, align_offset: -3, collision_padding: 5, **args)`<br>initializerはShadcn::FloatingPositionOptionsで定義 | side: top / right / bottom / left / inline-start / inline-end (default: :right)<br>align: start / center / end (default: :start)<br>side_offset: 有限の数値 (default: 0)<br>align_offset: 有限の数値 (default: -3)<br>collision_padding: 0以上の有限の数値 (default: 5) | `menubar-sub-content` |
 
 ## HTML attributesの適用先

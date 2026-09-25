@@ -28,6 +28,7 @@ export interface CnCall {
   cvaOptions: CvaOption[]
   /** `side === "right" && "クラス"` 形式の列挙可能なガード(露出prop化される) */
   guards: GuardEntry[]
+  conditionals: Array<{ identifier: string, trueValues: string[], trueClass: string, falseClass: string, staticIndex: number }>
   hasUserClass: boolean
 }
 
@@ -93,6 +94,7 @@ export function analyzeCn(
         cvaRef: null,
         cvaOptions: [],
         guards: [],
+        conditionals: [],
         hasUserClass: false,
       }
       for (const argument of expression.arguments) {
@@ -237,6 +239,21 @@ function classifyCnArgument(
       return
     }
     case "ConditionalExpression": {
+      const values = equalityValues(argument.test)
+      if (values && argument.consequent.type === "StringLiteral" && argument.alternate.type === "StringLiteral") {
+        const defaultValue = fileDefaults.get(values.identifier)
+        if (typeof defaultValue !== "string") {
+          throw new ParseError(`conditional class prop '${values.identifier}' has no string default`, item, file, loc)
+        }
+        const defaultClass = values.values.includes(defaultValue) ? argument.consequent.value : argument.alternate.value
+        call.conditionals.push({
+          identifier: values.identifier, trueValues: values.values,
+          trueClass: argument.consequent.value, falseClass: argument.alternate.value,
+          staticIndex: call.statics.length,
+        })
+        call.statics.push(defaultClass)
+        return
+      }
       // `orientation === "horizontal" ? A : B` の静的文字列分岐。
       // 識別子の既定値(当該関数またはファイル内ルートのパラメータ既定値)で
       // 分岐を確定させ、既定側を静的クラスとして採用する(carousel)。
@@ -273,6 +290,20 @@ function classifyCnArgument(
       "(only static strings, cva(...) calls and className references are supported)",
     item, file, loc,
   )
+}
+
+/** 同一propの `variant === "floating" || variant === "inset"` を列挙する。 */
+function equalityValues(test: Node): { identifier: string, values: string[] } | null {
+  if (test.type === "BinaryExpression" && test.operator === "===" &&
+      test.left.type === "Identifier" && test.right.type === "StringLiteral") {
+    return { identifier: test.left.name, values: [test.right.value] }
+  }
+  if (test.type !== "LogicalExpression" || test.operator !== "||") return null
+  const left = equalityValues(test.left)
+  const right = equalityValues(test.right)
+  return left && right && left.identifier === right.identifier
+    ? { identifier: left.identifier, values: [...new Set([...left.values, ...right.values])] }
+    : null
 }
 
 /**

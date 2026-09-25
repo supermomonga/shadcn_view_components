@@ -7,6 +7,25 @@ module Shadcn
     # data-slot を差し替える(Phase 3 の AlertDialogAction と同じ構成)。
     # NOTE: Shadcn::Button の sidecar テンプレートと名前が衝突するため専用ファイルに置く
     class Button < BaseComponent
+      class << self
+        extend T::Sig
+
+        sig do
+          params(extra: T.nilable(String), options: T::Hash[Symbol, T.nilable(T.any(Symbol, String))]).returns(String).checked(:never)
+        end
+        def classes(extra: nil, **options)
+          unknown = options.keys - %i[variant size]
+          raise ArgumentError, "unknown variant props: #{unknown.inspect}" unless unknown.empty?
+
+          variant = options[:variant] || :ghost
+          size = options[:size] || :xs
+          button_variant = ShadcnViewComponents::Classes.normalize_option(:button, :variant, variant)
+          group_size = ShadcnViewComponents::Classes.normalize_option(:"input_group/button", :size, size)
+          overlay = T.unsafe(ShadcnViewComponents::Classes).resolve(:"input_group/button", extra: extra, size: group_size)
+          T.unsafe(ShadcnViewComponents::Classes).resolve(:button, extra: overlay, variant: button_variant)
+        end
+      end
+
       sig do
         params(
           variant: T.any(Symbol, String),
@@ -28,20 +47,17 @@ module Shadcn
         { size: @size }
       end
 
-      # 契約は Button(ba_buttonVariants) との合成結果を事前解決済みのため、
-      # ここではその最終クラスをそのまま描く(upstream の DOM と同一)
+      # upstream の <Button> が基本クラスと variant を付け、
+      # input-group 側の contract がサイズ調整を上書きする。
       sig { override.returns(String) }
-      def default_tag
-        "button"
-      end
-
-      sig { override.returns(T::Hash[Symbol, T.untyped]) }
-      def html_attributes
-        attributes = super
+      def call
+        # Button に渡すのは InputGroup 固有のクラス。公開 classes は合成済みを返す。
+        overlay = T.unsafe(ShadcnViewComponents::Classes).resolve(:"input_group/button", extra: @user_class, size: @size)
+        attributes = @html_args.merge(class: overlay)
         attributes[:type] = "button" unless attributes.key?(:type)
         data = T.cast(attributes[:data], T.nilable(T::Hash[Symbol, T.untyped])) || {}
         attributes[:data] = { size: @size }.merge(data)
-        attributes
+        render(::Shadcn::Button.new(variant: @variant, **attributes)) { content }
       end
     end
   end

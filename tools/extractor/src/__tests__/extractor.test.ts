@@ -75,6 +75,29 @@ describe("parse: cva", () => {
 })
 
 describe("parse: exports and slots", () => {
+  it("records conditional classes for secondary slots across all exposed values", async () => {
+    const source = `
+      function Sidebar({ variant = "sidebar", className }) {
+        return <div data-slot="sidebar" className={cn("root", className)}>
+          <div data-slot="sidebar-gap" className={cn(
+            "gap",
+            variant === "floating" || variant === "inset" ? "wide" : "narrow"
+          )} />
+        </div>
+      }
+      export { Sidebar }
+    `
+    const contract = await extractContractFromItem(
+      "", { items: {} } as Manifest, "sidebar",
+      { name: "sidebar", files: [{ path: "ui/sidebar.tsx", content: source }] }, "abc123", {},
+    )
+    const gap = contract.exports.Sidebar?.slots.find((slot) => slot.name === "sidebar-gap")
+    expect(gap?.static_attributes.class).toBe("gap narrow")
+    expect(gap?.class_variants).toEqual({ variant: {
+      floating: "gap wide", inset: "gap wide", sidebar: "gap narrow",
+    } })
+  })
+
   it("keeps exported primitive Root aliases as canonical empty contracts", async () => {
     const source = `
       const Select = SelectPrimitive.Root

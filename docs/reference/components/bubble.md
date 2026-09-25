@@ -2,7 +2,7 @@
 
 > このページはコード・registry・手書き仕様から生成されています。直接編集せず、[生成元](../component-specifications/README.md)を更新して `bundle exec rake docs:generate` を実行してください。
 
-[コンポーネント一覧](README.md) / [実装](../../../app/components/shadcn/bubble.rb#L18) / [代表preview](../../../spec/dummy/app/components/previews/shadcn/bubble_preview.rb)
+[コンポーネント一覧](README.md) / [実装](../../../app/components/shadcn/bubble.rb#L25) / [代表preview](../../../spec/dummy/app/components/previews/shadcn/bubble_preview.rb)
 
 会話の発言本文と反応を吹き出しとして表示する。
 
@@ -21,10 +21,10 @@
 
 | class | initializer | 既定値・許容値 | upstream data-slot |
 |---|---|---|---|
-| [`Shadcn::Bubble::Group`](../../../app/components/shadcn/bubble.rb#L18) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `bubble-group` |
-| [`Shadcn::Bubble`](../../../app/components/shadcn/bubble.rb#L6) | `new(variant: ShadcnViewComponents::Contracts::Bubble::DEFAULTS.fetch(:variant), **args)` | variant: default, destructive, ghost, muted, outline, secondary, tinted (default: default) | `bubble` |
-| [`Shadcn::Bubble::Content`](../../../app/components/shadcn/bubble.rb#L22) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `bubble-content` |
-| [`Shadcn::Bubble::Reactions`](../../../app/components/shadcn/bubble.rb#L26) | `new(align: ShadcnViewComponents::Contracts::Bubble::Reactions::DEFAULTS.fetch(:align),<br>                     side: ShadcnViewComponents::Contracts::Bubble::Reactions::DEFAULTS.fetch(:side), **args)` | align: end, start (default: end)<br>side: bottom, top (default: bottom) | `bubble-reactions` |
+| [`Shadcn::Bubble::Group`](../../../app/components/shadcn/bubble.rb#L25) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `bubble-group` |
+| [`Shadcn::Bubble`](../../../app/components/shadcn/bubble.rb#L6) | `new(variant: ShadcnViewComponents::Contracts::Bubble::DEFAULTS.fetch(:variant),<br>                   align: self.class.property_default(:align), **args)` | variant: default, destructive, ghost, muted, outline, secondary, tinted (default: default)<br>align: start, end (default: "start") | `bubble` |
+| [`Shadcn::Bubble::Content`](../../../app/components/shadcn/bubble.rb#L29) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `bubble-content` |
+| [`Shadcn::Bubble::Reactions`](../../../app/components/shadcn/bubble.rb#L33) | `new(align: ShadcnViewComponents::Contracts::Bubble::Reactions::DEFAULTS.fetch(:align),<br>                     side: ShadcnViewComponents::Contracts::Bubble::Reactions::DEFAULTS.fetch(:side), **args)` | align: end, start (default: end)<br>side: bottom, top (default: bottom) | `bubble-reactions` |
 
 ## HTML attributesの適用先
 

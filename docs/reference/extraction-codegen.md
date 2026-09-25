@@ -179,12 +179,16 @@ combinations[["variant", "outline"], ["size", "sm"]]
 - 組み合わせ数は各コンポーネント高々数百程度であり、生成物サイズは実用範囲
 - upstreamの `tailwind-merge` がアップデートされて挙動が変わっても、
   extractor側の依存を更新して再生成すればよい（= 挙動変更も「再生成」に吸収される）
-- Ruby側の実行時マージは、**利用者が明示的に渡した追加クラスとの統合**（`tailwind_merge` gem）に限定される
-  （[04-component-conventions](component-conventions.md) §6）
+- Ruby側の実行時マージは、**利用者が明示的に渡した追加クラス**と**別 item の契約を重ねる場合**に行う
+  （[04-component-conventions](component-conventions.md) §6）。CVA の値域解決は Ruby で再実装しない。
+- この事前解決は各 registry item 内の `cn` / CVA を対象とする。`InputGroupButton` のように
+  別 item の `Button` を描く場合、生成契約は InputGroup 固有の上書きクラスを保持し、
+  ViewComponent と公開 `classes` が `Button` 契約の基本・variant クラスと合成する。
+  合成結果と描画結果の一致はコンポーネントテストで確認する。
 
 ### Rubyランタイムに残す役割
 
-組み合わせテーブルの辞書引き + 追加クラスの統合のみ。これにより:
+組み合わせテーブルの辞書引き、別 item の契約との合成、追加クラスの統合。これにより:
 
 - クラス解決ロジックのupstream追従コスト = ゼロ（テーブルが変わるだけ）
 - `srb tc` の型検査対象も単純なテーブル参照に限定される（[08-sorbet](sorbet.md)）

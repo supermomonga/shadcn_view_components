@@ -22,6 +22,9 @@ export default class SidebarController extends Controller {
     )
     for (const sidebar of sidebars) {
       sidebar.dataset.state = state
+      if (sidebar.dataset.collapsibleMode) {
+        sidebar.dataset.collapsible = state === "closed" ? sidebar.dataset.collapsibleMode : ""
+      }
     }
     for (const trigger of this.element.querySelectorAll("[data-slot='sidebar-trigger']")) {
       trigger.setAttribute("aria-expanded", String(state === "open"))

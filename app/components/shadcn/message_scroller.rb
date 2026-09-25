@@ -32,21 +32,5 @@ module Shadcn
     class Item < BaseComponent
       # div
     end
-
-    class Button < BaseComponent
-      # 一番下へ戻るボタン
-      sig { override.returns(String) }
-      def default_tag
-        "button"
-      end
-
-      sig { override.returns(T::Hash[Symbol, T.untyped]) }
-      def html_attributes
-        attributes = super
-        attributes[:type] = "button" unless attributes.key?(:type)
-        merge_nested(attributes, :data, { action: "#{CONTROLLER}#scrollToBottom" })
-        attributes
-      end
-    end
   end
 end

@@ -2,6 +2,8 @@
 # frozen_string_literal: true
 
 module ShadcnViewComponents
+  # 公開propの制約は一箇所で確認できるように集約する。
+  # rubocop:disable-next Metrics/ModuleLength
   module PropertyContracts
     DIRECTIONS = %w[ltr rtl].freeze
     ORIENTATIONS = %w[horizontal vertical].freeze
@@ -51,11 +53,38 @@ module ShadcnViewComponents
         state: { kind: :enum, default: "off", values: TOGGLE_STATES }.freeze,
         spacing: { kind: :number, default: 2, minimum: 0 }.freeze
       }.freeze,
+      "dropdown_menu/item": {
+        variant: { kind: :enum, default: "default", values: %w[default destructive].freeze }.freeze
+      }.freeze,
+      "context_menu/item": {
+        variant: { kind: :enum, default: "default", values: %w[default destructive].freeze }.freeze
+      }.freeze,
+      "menubar/item": {
+        variant: { kind: :enum, default: "default", values: %w[default destructive].freeze }.freeze
+      }.freeze,
+      "field/legend": {
+        variant: { kind: :enum, default: "legend", values: %w[legend label].freeze }.freeze
+      }.freeze,
+      card: {
+        size: { kind: :enum, default: "default", values: %w[default sm].freeze }.freeze
+      }.freeze,
+      message: {
+        align: { kind: :enum, default: "start", values: %w[start end].freeze }.freeze
+      }.freeze,
+      bubble: {
+        align: { kind: :enum, default: "start", values: %w[start end].freeze }.freeze
+      }.freeze,
+      "message_scroller/button": {
+        direction: { kind: :enum, default: "end", values: %w[start end].freeze }.freeze
+      }.freeze,
       direction_provider: {
         dir: { kind: :enum, default: "ltr", values: DIRECTIONS }.freeze
       }.freeze,
       sidebar: {
-        state: { kind: :enum, default: "open", values: %w[open closed].freeze }.freeze
+        state: { kind: :enum, default: "open", values: %w[open closed].freeze }.freeze,
+        side: { kind: :enum, default: "left", values: %w[left right].freeze }.freeze,
+        variant: { kind: :enum, default: "sidebar", values: %w[sidebar floating inset].freeze }.freeze,
+        collapsible: { kind: :enum, default: "offcanvas", values: %w[offcanvas icon none].freeze }.freeze
       }.freeze,
       "sidebar/provider": {
         state: { kind: :enum, default: "open", values: %w[open closed].freeze }.freeze
