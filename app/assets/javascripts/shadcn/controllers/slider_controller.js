@@ -18,31 +18,36 @@ export default class SliderController extends Controller {
     const input = this.input
     if (!input) return
 
-    const percentage = this.percentage(input)
     const vertical = this.element.dataset.orientation === "vertical"
+    const thumb = this.thumbs[0]
+    if (!thumb) return
+
+    const ratio = this.ratio(input)
+    const thumbSize = vertical ? thumb.offsetHeight : thumb.offsetWidth
+    const offset = Math.round((0.5 - ratio) * thumbSize * 1000) / 1000
+    const position = `calc(${ratio * 100}% + ${offset}px)`
 
     for (const range of this.ranges) {
-      range.style.width = vertical ? "" : percentage
-      range.style.height = vertical ? percentage : ""
+      range.style.width = vertical ? "" : position
+      range.style.height = vertical ? position : ""
     }
 
     for (const thumb of this.thumbs) {
-      thumb.style.left = vertical ? "50%" : percentage
-      thumb.style.bottom = vertical ? percentage : ""
+      thumb.style.left = vertical ? "50%" : position
+      thumb.style.bottom = vertical ? position : ""
     }
   }
 
   /** @param {HTMLInputElement} input */
-  percentage(input) {
+  ratio(input) {
     const min = this.numberOr(input.min, DEFAULT_MIN)
     const max = this.numberOr(input.max, DEFAULT_MAX)
-    if (max <= min) return "0%"
+    if (max <= min) return 0
 
     const value = Number.isFinite(input.valueAsNumber)
       ? input.valueAsNumber
       : this.numberOr(input.value, min)
-    const ratio = Math.min(1, Math.max(0, (value - min) / (max - min)))
-    return `${ratio * 100}%`
+    return Math.min(1, Math.max(0, (value - min) / (max - min)))
   }
 
   /** @param {string} value @param {number} fallback */

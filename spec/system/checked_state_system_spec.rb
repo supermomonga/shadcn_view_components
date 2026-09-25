@@ -77,6 +77,44 @@ RSpec.describe(
     expect_no_accessibility_violations
   end
 
+  it "keeps the checkbox checkmark visible in light and dark themes" do
+    visit "/pages/checked_states"
+    page.execute_script("document.getElementById('newsletter').style.transition = 'none'")
+
+    [false, true].each do |dark|
+      page.execute_script("document.documentElement.classList.toggle('dark', arguments[0])", dark)
+      text_color, background_color, checkmark_color = page.evaluate_script(<<~JS)
+        (() => {
+          const input = document.getElementById("newsletter")
+          const checkmark = input.nextElementSibling.querySelector("svg")
+          return [getComputedStyle(input).color, getComputedStyle(input).backgroundColor, getComputedStyle(checkmark).stroke]
+        })()
+      JS
+
+      expect(checkmark_color).to eq(text_color)
+      expect(checkmark_color).not_to eq(background_color)
+    end
+  end
+
+  it "keeps the selected radio dot visible in light and dark themes" do
+    visit "/pages/checked_states"
+    page.execute_script("document.getElementById('plan-free').style.transition = 'none'")
+
+    [false, true].each do |dark|
+      page.execute_script("document.documentElement.classList.toggle('dark', arguments[0])", dark)
+      text_color, background_color, dot_color = page.evaluate_script(<<~JS)
+        (() => {
+          const input = document.getElementById("plan-free")
+          const dot = input.nextElementSibling.querySelector("span")
+          return [getComputedStyle(input).color, getComputedStyle(input).backgroundColor, getComputedStyle(dot).backgroundColor]
+        })()
+      JS
+
+      expect(dot_color).to eq(text_color)
+      expect(dot_color).not_to eq(background_color)
+    end
+  end
+
   it "restores each native default and its projected state after form reset" do
     visit "/pages/checked_states"
 

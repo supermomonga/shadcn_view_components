@@ -1,59 +1,76 @@
 /**
- * 2枚のPNGを pixelmatch で比較し、差分画像と差分率 JSON を出力する。
+ * Compare decoded PNG dimensions and every RGBA channel exactly.
  *
- * 使い方: node compare.mjs <ours.png> <upstream.png> <diff.png> <report.json> [threshold]
- * 終了コード: 差分率が閾値(既定 0.005 = 0.5%)以下なら 0、超えたら 1。
- *
- * 両画像の寸法が違う場合(bodyの高さ差など)は大きい方のキャンバスへ、各画像の
- * 右下にあるページ背景色でパディングしてから比較する。light/darkに依存せず、
- * 余分な領域に実コンテンツがあれば差分ピクセルとして検出する。
+ * Usage: node compare.mjs <ours.png> <upstream.png> <diff.png> <report.json> [allowed-regions-json]
+ * Each allowed region is { x, y, width, height }; differences outside these
+ * rectangles always fail. The coverage registry records why each region exists.
  */
 import { readFileSync, writeFileSync } from "node:fs"
 import { PNG } from "pngjs"
-import pixelmatch from "pixelmatch"
 
-const [oursPath, upstreamPath, diffPath, reportPath, thresholdArg] = process.argv.slice(2)
-const threshold = Number.parseFloat(thresholdArg ?? "0.005")
-
+const [oursPath, upstreamPath, diffPath, reportPath, regionsArg] = process.argv.slice(2)
+const allowedRegions = JSON.parse(regionsArg ?? "[]")
 const ours = PNG.sync.read(readFileSync(oursPath))
 const upstream = PNG.sync.read(readFileSync(upstreamPath))
 const sizeMismatch = ours.width !== upstream.width || ours.height !== upstream.height
-
 const width = Math.max(ours.width, upstream.width)
 const height = Math.max(ours.height, upstream.height)
 
-const pad = (source) => {
-  if (source.width === width && source.height === height) return source
-  const canvas = new PNG({ width, height })
-  // body全幅のスクリーンショットでは右下がページ背景になる。不足領域を固定色で
-  // 埋めるとdarkだけ寸法差が偽陽性になるため、画像ごとの背景色を使う。
-  const edgeOffset = ((source.height - 1) * source.width + source.width - 1) * 4
-  for (let i = 0; i < canvas.data.length; i += 4) {
-    canvas.data[i] = source.data[edgeOffset]
-    canvas.data[i + 1] = source.data[edgeOffset + 1]
-    canvas.data[i + 2] = source.data[edgeOffset + 2]
-    canvas.data[i + 3] = source.data[edgeOffset + 3]
-  }
-  PNG.bitblt(source, canvas, 0, 0, source.width, source.height, 0, 0)
-  return canvas
+if (!Array.isArray(allowedRegions) || allowedRegions.some(({ x, y, width: w, height: h }) =>
+  ![x, y, w, h].every(Number.isInteger) || x < 0 || y < 0 || w <= 0 || h <= 0 || x + w > width || y + h > height
+)) {
+  throw new Error("Allowed regions must be rectangles inside the compared image")
 }
 
-const oursPadded = pad(ours)
-const upstreamPadded = pad(upstream)
 const diff = new PNG({ width, height })
-const differing = pixelmatch(oursPadded.data, upstreamPadded.data, diff.data, width, height, {
-  threshold: 0.1,
-  includeAA: false,
-})
-const ratio = differing / (width * height)
+let differing = 0
+let allowedDiffering = 0
+let unallowedDiffering = 0
 
+for (let y = 0; y < height; y += 1) {
+  for (let x = 0; x < width; x += 1) {
+    const target = (y * width + x) * 4
+    const oursPresent = x < ours.width && y < ours.height
+    const upstreamPresent = x < upstream.width && y < upstream.height
+    const oursOffset = (y * ours.width + x) * 4
+    const upstreamOffset = (y * upstream.width + x) * 4
+    const equal = oursPresent && upstreamPresent &&
+      ours.data[oursOffset] === upstream.data[upstreamOffset] &&
+      ours.data[oursOffset + 1] === upstream.data[upstreamOffset + 1] &&
+      ours.data[oursOffset + 2] === upstream.data[upstreamOffset + 2] &&
+      ours.data[oursOffset + 3] === upstream.data[upstreamOffset + 3]
+
+    if (equal) {
+      // Keep matching pixels faintly visible so the location of a difference is clear.
+      for (let channel = 0; channel < 3; channel += 1) {
+        diff.data[target + channel] = Math.round(255 * 0.8 + ours.data[oursOffset + channel] * 0.2)
+      }
+    } else {
+      differing += 1
+      const allowed = allowedRegions.some((region) =>
+        x >= region.x && x < region.x + region.width && y >= region.y && y < region.y + region.height
+      )
+      if (allowed) allowedDiffering += 1
+      else unallowedDiffering += 1
+      // Red: failure. Orange: documented regional exception.
+      diff.data[target] = 255
+      diff.data[target + 1] = allowed ? 165 : 0
+      diff.data[target + 2] = 0
+    }
+    diff.data[target + 3] = 255
+  }
+}
+
+const pass = !sizeMismatch && unallowedDiffering === 0
 writeFileSync(diffPath, PNG.sync.write(diff))
 writeFileSync(reportPath, `${JSON.stringify({
-  ratio,
-  pass: ratio <= threshold,
+  pass,
   differing,
+  allowedDiffering,
+  unallowedDiffering,
+  ratio: differing / (width * height),
   ...(sizeMismatch
     ? { sizeMismatch: true, ours: { width: ours.width, height: ours.height }, upstream: { width: upstream.width, height: upstream.height } }
     : {}),
 }, null, 2)}\n`)
-process.exit(ratio <= threshold ? 0 : 1)
+process.exit(pass ? 0 : 1)

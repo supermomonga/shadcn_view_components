@@ -58,15 +58,9 @@ module Shadcn
           class: [indicator_class, "pointer-events-none absolute inset-0 hidden peer-checked:flex"].compact.join(" ")
         ) do
           content_tag(
-            :svg,
-            xmlns: "http://www.w3.org/2000/svg",
-            viewBox: "0 0 24 24",
-            fill: "none",
-            stroke: "none",
-            class: "absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2 fill-current"
-          ) do
-            raw(%(<circle cx="12" cy="12" r="10"/>))
-          end
+            :span,
+            class: "absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary-foreground"
+          ) { "".html_safe }
         end
       end
     end

@@ -23,7 +23,7 @@ PreviousとNextは任意だが、ボタン操作を提供する場合はroot内�
 |---|---|---|---|
 | [`Shadcn::Carousel`](../../../app/components/shadcn/carousel.rb#L9) | `new(orientation: self.class.property_default(:orientation),<br>                   direction: self.class.property_default(:direction), **args)` | orientation: horizontal, vertical (default: "horizontal")<br>direction: ltr, rtl (default: "ltr") | `carousel` |
 | [`Shadcn::Carousel::Content`](../../../app/components/shadcn/carousel.rb#L58) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `carousel-content` |
-| [`Shadcn::Carousel::Item`](../../../app/components/shadcn/carousel.rb#L84) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `carousel-item` |
+| [`Shadcn::Carousel::Item`](../../../app/components/shadcn/carousel.rb#L86) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `carousel-item` |
 | [`Shadcn::Carousel::Previous`](../../../app/components/shadcn/carousel.rb#L185) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `carousel-previous` |
 | [`Shadcn::Carousel::Next`](../../../app/components/shadcn/carousel.rb#L206) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `carousel-next` |
 

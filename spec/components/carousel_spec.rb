@@ -97,7 +97,7 @@ RSpec.describe Shadcn::Carousel, type: :component do
     )
   end
 
-  it "renders upstream navigation defaults, vertical overrides, and horizontal-only RTL icon flipping" do
+  it "renders upstream navigation defaults and vertical overrides without flipping RTL icons" do
     render_inline(CarouselComposition.new)
 
     previous = rendered_root_element.at_css("[data-slot='carousel-previous']")
@@ -122,9 +122,8 @@ RSpec.describe Shadcn::Carousel, type: :component do
 
     previous_svg = previous.at_css("svg")
     next_svg = next_button.at_css("svg")
-    rtl_class = "group-[[data-orientation=horizontal][data-direction=rtl]]/carousel:rotate-180"
-    expect(previous_svg["class"].split).to include("size-4", rtl_class)
-    expect(next_svg["class"].split).to include("size-4", rtl_class)
+    expect(previous_svg["class"].split).to eq(["size-4"])
+    expect(next_svg["class"].split).to eq(["size-4"])
     expect(previous_svg.css("path").map { |path| path["d"] }).to eq(["m15 18-6-6 6-6"])
     expect(next_svg.css("path").map { |path| path["d"] }).to eq(["m9 18 6-6-6-6"])
     expect(previous_svg["aria-hidden"]).to eq("true")

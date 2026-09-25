@@ -65,17 +65,25 @@ RSpec.describe "component coverage registry" do
     expect(declared - available).to be_empty
   end
 
-  it "has unique parity pairs and valid thresholds" do
+  it "has unique parity pairs and documented, bounded exception regions" do
     scenarios = ComponentCoverage.parity_scenarios
     pairs = scenarios.map { |scenario| [scenario.fetch("preview"), scenario.fetch("demo")] }
     expect(pairs.uniq).to eq(pairs)
 
     scenarios.each do |scenario|
-      expect(scenario.keys - %w[item preview demo threshold dark_threshold min_height]).to be_empty
-      %w[threshold dark_threshold].each do |key|
+      expect(scenario.keys - %w[item preview demo allowed_regions dark_allowed_regions min_height]).to be_empty
+      %w[allowed_regions dark_allowed_regions].each do |key|
         next unless scenario.key?(key)
 
-        expect(scenario.fetch(key)).to be_between(0, 1).exclusive, "#{scenario.fetch('item')}/#{key}"
+        expect(scenario.fetch(key)).to be_an(Array)
+        expect(scenario.fetch(key)).not_to be_empty
+        scenario.fetch(key).each do |region|
+          expect(region.keys).to match_array(%w[x y width height reason])
+          expect(region.fetch("reason")).to be_a(String).and match(/\S/)
+          %w[x y].each { |coordinate| expect(region.fetch(coordinate)).to be_an(Integer).and be >= 0 }
+          %w[width height].each { |dimension| expect(region.fetch(dimension)).to be_an(Integer).and be > 0 }
+          expect(region.fetch("x") + region.fetch("width")).to be <= 1024
+        end
       end
     end
   end

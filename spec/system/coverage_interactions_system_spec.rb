@@ -9,6 +9,7 @@ RSpec.describe(
     "collapsible" => %i[pointer keyboard state no_js],
     "message-scroller" => %i[pointer keyboard state],
     "native-select" => %i[pointer keyboard state form no_js accessibility],
+    "scroll-area" => %i[state],
     "sonner" => %i[event state timing accessibility]
   }
 ) do
@@ -99,6 +100,19 @@ RSpec.describe(
 
     find("#coverage-native-select-submit").click
     expect(page).to have_selector("#coverage-native-select-result", text: "banana")
+  end
+
+  it "scrolls the native ScrollArea viewport beyond its initially visible rows" do
+    visit "/preview/shadcn/scroll_area/default"
+
+    viewport = find("[data-slot='scroll-area-viewport']")
+    dimensions = viewport.evaluate_script("[this.clientHeight, this.scrollHeight, getComputedStyle(this).overflowY]")
+    expect(dimensions[1]).to be > dimensions[0]
+    expect(dimensions[2]).to eq("auto")
+
+    viewport.execute_script("this.scrollTop = this.scrollHeight")
+    expect(viewport.evaluate_script("this.scrollTop")).to be_positive
+    expect(viewport).to have_text("行 20")
   end
 
   it "selects and submits NativeSelect without JavaScript" do

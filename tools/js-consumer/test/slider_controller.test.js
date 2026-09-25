@@ -39,20 +39,27 @@ describe("shadcn--slider", () => {
     await mount(sliderRoot({ id: "volume", min: "10", max: "50", step: "5", value: "20" }))
     const { input, range, thumb } = elements("volume")
 
-    expect(range.style.width).toBe("25%")
+    expect(range.style.width).toBe("calc(25% + 0px)")
     expect(range.style.height).toBe("")
-    expect(thumb.style.left).toBe("25%")
+    expect(thumb.style.left).toBe("calc(25% + 0px)")
     expect(thumb.style.bottom).toBe("")
 
     input.value = "40"
     input.dispatchEvent(new Event("input", { bubbles: true }))
-    expect(range.style.width).toBe("75%")
-    expect(thumb.style.left).toBe("75%")
+    expect(range.style.width).toBe("calc(75% + 0px)")
+    expect(thumb.style.left).toBe("calc(75% + 0px)")
 
     input.value = "50"
     input.dispatchEvent(new Event("change", { bubbles: true }))
-    expect(range.style.width).toBe("100%")
-    expect(thumb.style.left).toBe("100%")
+    expect(range.style.width).toBe("calc(100% + 0px)")
+    expect(thumb.style.left).toBe("calc(100% + 0px)")
+
+    // jsdomは寸法を計算しないので、実際の12pxつまみも明示して補正値を確認する。
+    Object.defineProperty(thumb, "offsetWidth", { value: 12 })
+    input.value = "20"
+    input.dispatchEvent(new Event("input", { bubbles: true }))
+    expect(range.style.width).toBe("calc(25% + 3px)")
+    expect(thumb.style.left).toBe("calc(25% + 3px)")
   })
 
   it("uses height and bottom for a vertical slider and keeps the thumb centered", async () => {
@@ -70,9 +77,9 @@ describe("shadcn--slider", () => {
 
     input.dispatchEvent(new Event("input", { bubbles: true }))
 
-    expect(range.style.height).toBe("50%")
+    expect(range.style.height).toBe("calc(50% + 0px)")
     expect(range.style.width).toBe("")
-    expect(thumb.style.bottom).toBe("50%")
+    expect(thumb.style.bottom).toBe("calc(50% + 0px)")
     expect(thumb.style.left).toBe("50%")
   })
 
@@ -81,13 +88,13 @@ describe("shadcn--slider", () => {
     const { input, range, thumb } = elements("decimal")
 
     expect(input.step).toBe("0.25")
-    expect(range.style.width).toBe("25%")
+    expect(range.style.width).toBe("calc(25% + 0px)")
 
     input.value = "5"
     input.dispatchEvent(new Event("input", { bubbles: true }))
     expect(input.valueAsNumber).toBe(1)
-    expect(range.style.width).toBe("100%")
-    expect(thumb.style.left).toBe("100%")
+    expect(range.style.width).toBe("calc(100% + 0px)")
+    expect(thumb.style.left).toBe("calc(100% + 0px)")
 
     const keydown = new KeyboardEvent("keydown", {
       bubbles: true,
@@ -96,7 +103,7 @@ describe("shadcn--slider", () => {
     })
     input.dispatchEvent(keydown)
     expect(keydown.defaultPrevented).toBe(false)
-    expect(range.style.width).toBe("100%")
+    expect(range.style.width).toBe("calc(100% + 0px)")
   })
 
   it("reflects the native midpoint when range attributes are omitted", async () => {
@@ -112,8 +119,8 @@ describe("shadcn--slider", () => {
     const { input, range, thumb } = elements("native-defaults")
 
     expect(input.valueAsNumber).toBe(50)
-    expect(range.style.width).toBe("50%")
-    expect(thumb.style.left).toBe("50%")
+    expect(range.style.width).toBe("calc(50% + 0px)")
+    expect(thumb.style.left).toBe("calc(50% + 0px)")
   })
 
   it("isolates nested roots and restores the current input value after reconnect", async () => {
@@ -129,13 +136,13 @@ describe("shadcn--slider", () => {
     const outer = elements("outer")
     const inner = elements("inner")
 
-    expect(outer.range.style.width).toBe("20%")
-    expect(inner.range.style.width).toBe("80%")
+    expect(outer.range.style.width).toBe("calc(20% + 0px)")
+    expect(inner.range.style.width).toBe("calc(80% + 0px)")
 
     inner.input.value = "30"
     inner.input.dispatchEvent(new Event("input", { bubbles: true }))
-    expect(inner.range.style.width).toBe("30%")
-    expect(outer.range.style.width).toBe("20%")
+    expect(inner.range.style.width).toBe("calc(30% + 0px)")
+    expect(outer.range.style.width).toBe("calc(20% + 0px)")
 
     const controller = lifecycle.controller(outer.root, "shadcn--slider")
     outer.root.remove()
@@ -145,7 +152,7 @@ describe("shadcn--slider", () => {
     await flushStimulus()
 
     expect(lifecycle.controller(outer.root, "shadcn--slider")).toBe(controller)
-    expect(outer.range.style.width).toBe("70%")
-    expect(outer.thumb.style.left).toBe("70%")
+    expect(outer.range.style.width).toBe("calc(70% + 0px)")
+    expect(outer.thumb.style.left).toBe("calc(70% + 0px)")
   })
 })

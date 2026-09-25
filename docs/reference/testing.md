@@ -14,7 +14,7 @@
 | (2) **適合試験 (conformance)** | 生成契約 vs レンダリングHTML | RSpec + 契約JSON（自動パラメータ化） | **upstreamとの視覚的・構造的一致**（本ライブラリの核心） |
 | (3) システムスペック | Stimulusコントローラのふるまい | RSpec + Capybara + **Cuprite**（ヘッドレスChrome, Ferrum） | ARIA・キーボード操作・Hotwire統合（[05](stimulus-hotwire.md) §4） |
 | (4) 生成物整合スペック | 生成Ruby・CSS・manifest | RSpec + ファイル検査 | パイプラインの健全性（[03](extraction-codegen.md) §7） |
-| (5) visual parity | upstream React/ViteとLookbook preview | RSpec + Cuprite + pixelmatch | light/darkの描画差分とアニメーション補間値 |
+| (5) visual parity | upstream React/ViteとLookbook preview | RSpec + Cuprite + RGBA完全比較 | light/darkの描画差分とアニメーション補間値 |
 
 加えて開発補助として **Lookbook**（ViewComponentプレビュー）をspec/dummyにマウントする（§7）。
 
@@ -41,7 +41,11 @@ spec/
 - CupriteはChrome実行ファイルを要求するため、CIでは `browser-actions/setup-chrome` 等で用意（[09](ci-drift-detection.md) §2）
 - `spec/visual/parity_spec.rb` はlight/darkのスクリーンショットを比較し、
   `spec/visual/animation_parity_spec.rb` はアニメーションを同じ進捗へ固定して補間値を比較する。
-  対象外は `spec/coverage/registry.yml` に設計差の理由とともに明示する
+  静的画像は寸法と復号後のRGBA全値の完全一致を既定とする。実装上の差異は
+  `spec/coverage/registry.yml` に理由と許容領域を明示し、領域外は完全一致を要求する。
+  現在の領域例外はScrollAreaのネイティブスクロールバー右端のみで、スクロール動作はシステムスペックが確認する。
+  `parity` CIはUbuntu 24.04とChromium revision 1704574を固定し、`system` CIは最新Chromeを使う。
+  対象外は同registryに設計差の理由とともに明示する
 
 ## 3. 適合試験（conformance）の設計 — 自動検知の中核
 

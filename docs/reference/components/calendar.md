@@ -22,7 +22,7 @@ Navigation、DayButton、月gridはrootが内部生成する。
 | class | initializer | 既定値・許容値 | upstream data-slot |
 |---|---|---|---|
 | [`Shadcn::Calendar`](../../../app/components/shadcn/calendar.rb#L13) | `new(month: Date.current.beginning_of_month, selected: nil, month_path: nil, **args)` | 追加制約なし（signatureどおり） | `calendar` |
-| [`Shadcn::Calendar::DayButton`](../../../app/components/shadcn/calendar.rb#L115) | `new(date: Date.current, selected: false, outside: false, today: false, **args)` | 追加制約なし（signatureどおり） | `calendar-day-button` |
+| [`Shadcn::Calendar::DayButton`](../../../app/components/shadcn/calendar.rb#L118) | `new(date: Date.current, selected: false, outside: false, today: false, **args)` | 追加制約なし（signatureどおり） | `calendar-day-button` |
 
 ## HTML attributesの適用先
 

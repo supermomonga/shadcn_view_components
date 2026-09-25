@@ -17,6 +17,7 @@ const EXPECTED_UTILITY_SUBSTRINGS = [
   ".inline-flex",
   ".bg-primary",
   ".text-primary-foreground",
+  ".peer-checked\\:text-primary-foreground",
   ".hover\\:bg-primary\\/80",
   ".h-9",
   ".size-9",
@@ -88,7 +89,7 @@ async function main(): Promise<number> {
   const dummyResult = spawnSync(
     process.execPath,
     [path.join(REPO_ROOT, "tools", "extractor", "node_modules", "@tailwindcss", "cli", "dist", "index.mjs"),
-      "--input", dummyInputPath, "--output", dummyOutputPath],
+      "--input", dummyInputPath, "--output", dummyOutputPath, "--minify"],
     { cwd: REPO_ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] },
   )
   if (dummyResult.status !== 0) {

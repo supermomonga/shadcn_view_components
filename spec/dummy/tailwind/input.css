@@ -8,7 +8,7 @@
  *
  * 再生成(コンポーネント追加・クラス変更時):
  *   cd spec/dummy && ../../tools/extractor/node_modules/.bin/tailwindcss \
- *     -i tailwind/input.css -o app/assets/stylesheets/application.css
+ *     -i tailwind/input.css -o app/assets/stylesheets/application.css --minify
  * または mise run build-css
  */
 /* 追跡済みの出力application.cssを自動検出して次回生成へ混ぜない。 */

@@ -3,6 +3,15 @@ import { describe, expect, it } from "vitest"
 import { withoutDependencyPreflight } from "../tailwind-freshness.ts"
 
 describe("withoutDependencyPreflight", () => {
+  it("preserves project base rules when minification merges both base layers", () => {
+    const macOS = "@layer theme{}@layer base{html{font-family:system-ui}*{border-color:var(--border)}body{color:var(--foreground)}}@layer components;@layer utilities{}"
+    const linux = macOS.replace("system-ui", "sans-serif")
+    expect(withoutDependencyPreflight(macOS)).toBe(withoutDependencyPreflight(linux))
+    expect(withoutDependencyPreflight(macOS)).toContain("*{border-color:var(--border)}body{color:var(--foreground)}")
+    expect(withoutDependencyPreflight(macOS.replace("var(--foreground)", "red")))
+      .not.toBe(withoutDependencyPreflight(macOS))
+  })
+
   it("ignores only the dependency-owned first base layer", () => {
     const macOS = [
       "@layer theme { :root { --color: red; } }",

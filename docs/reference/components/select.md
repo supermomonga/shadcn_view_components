@@ -25,12 +25,12 @@ Group、Label、Separator、ScrollUpButton、ScrollDownButtonは任意。Content
 | [`Shadcn::Select::Trigger`](../../../app/components/shadcn/select.rb#L68) | `new(size: self.class.property_default(:size), **args)` | size: default, sm (default: "default") | `select-trigger` |
 | [`Shadcn::Select::Value`](../../../app/components/shadcn/select.rb#L114) | `new(placeholder: nil, **args)` | 追加制約なし（signatureどおり） | `select-value` |
 | [`Shadcn::Select::Content`](../../../app/components/shadcn/select.rb#L129) | `new(side: :bottom, align: :center, side_offset: 4, align_offset: 0, collision_padding: 5, **args)`<br>initializerはShadcn::FloatingPositionOptionsで定義 | side: top / right / bottom / left / inline-start / inline-end (default: :bottom)<br>align: start / center / end (default: :center)<br>side_offset: 有限の数値 (default: 4)<br>align_offset: 有限の数値 (default: 0)<br>collision_padding: 0以上の有限の数値 (default: 5) | `select-content` |
-| [`Shadcn::Select::Group`](../../../app/components/shadcn/select.rb#L172) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `select-group` |
-| [`Shadcn::Select::Item`](../../../app/components/shadcn/select.rb#L179) | `new(value:, disabled: false, **args)` | 追加制約なし（signatureどおり） | `select-item` |
-| [`Shadcn::Select::Label`](../../../app/components/shadcn/select.rb#L250) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `select-label` |
-| [`Shadcn::Select::Separator`](../../../app/components/shadcn/select.rb#L254) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `select-separator` |
-| [`Shadcn::Select::ScrollUpButton`](../../../app/components/shadcn/select.rb#L286) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `select-scroll-up-button` |
-| [`Shadcn::Select::ScrollDownButton`](../../../app/components/shadcn/select.rb#L321) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `select-scroll-down-button` |
+| [`Shadcn::Select::Group`](../../../app/components/shadcn/select.rb#L175) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `select-group` |
+| [`Shadcn::Select::Item`](../../../app/components/shadcn/select.rb#L182) | `new(value:, disabled: false, **args)` | 追加制約なし（signatureどおり） | `select-item` |
+| [`Shadcn::Select::Label`](../../../app/components/shadcn/select.rb#L256) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `select-label` |
+| [`Shadcn::Select::Separator`](../../../app/components/shadcn/select.rb#L260) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `select-separator` |
+| [`Shadcn::Select::ScrollUpButton`](../../../app/components/shadcn/select.rb#L292) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `select-scroll-up-button` |
+| [`Shadcn::Select::ScrollDownButton`](../../../app/components/shadcn/select.rb#L327) | `new(**args)`<br>initializerはShadcn::BaseComponentで定義 | 追加制約なし（signatureどおり） | `select-scroll-down-button` |
 
 ## HTML attributesの適用先
 

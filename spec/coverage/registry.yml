@@ -201,12 +201,8 @@ calendar:
     scenarios:
     - preview: shadcn/calendar/default
       demo: calendar/default
-      threshold: 0.02
-      dark_threshold: 0.06
     - preview: shadcn/calendar/plain
       demo: calendar/plain
-      threshold: 0.02
-      dark_threshold: 0.06
   interaction:
     kind: controller
     controllers:
@@ -842,12 +838,20 @@ scroll-area:
     scenarios:
     - preview: shadcn/scroll_area/default
       demo: scroll-area/default
+      allowed_regions:
+      - x: 1016
+        y: 1
+        width: 7
+        height: 46
+        reason: Native CSS scrollbar differs from the upstream Radix scrollbar; the right-edge thumb is the only affected area.
   interaction:
-    kind: static
+    kind: native
     controllers: []
   system:
-    excluded:
-      reason: This component has no independent browser interaction beyond render and visual coverage.
+    specs:
+    - spec/system/coverage_interactions_system_spec.rb
+    behaviors:
+    - state
 select:
   render_smoke: all_exports
   preview:

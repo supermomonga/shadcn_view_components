@@ -36,9 +36,12 @@ module Shadcn
     sig { override.returns(String) }
     def call
       content_tag(:div, **html_attributes) do
-        # ナビはキャプション行に絶対配置で重なる(upstream rdp と同じ構造)
-        navigation = Navigation.new(month: @month, caption_id: caption_id, month_path: @month_path)
-        safe_join([render(navigation), month_grid])
+        # upstreamのmonthsはpadding内の位置基準。ナビのabsolute位置も
+        # ルートの外縁ではなくこの内容領域に合わせる。
+        content_tag(:div, class: "relative flex flex-col gap-4") do
+          navigation = Navigation.new(month: @month, caption_id: caption_id, month_path: @month_path)
+          safe_join([render(navigation), month_grid])
+        end
       end
     end
 

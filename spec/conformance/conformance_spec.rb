@@ -54,6 +54,7 @@ registry.select { |_name, entry| entry.key?("exports") }.each do |name, entry|
     branch_slot_index = export_allowances["render_branch_slot_index"]
     slot_definition = contract::SLOTS.fetch(branch_slot_index) if branch_slot_index
     allowed_extra = export_allowances["attributes"] || []
+    extra_classes = export_allowances["extra_classes"] || []
     class_contains = export_allowances["class_mode"] == "contains"
     slots_superset = export_allowances["slots_mode"] == "superset"
 
@@ -90,6 +91,7 @@ registry.select { |_name, entry| entry.key?("exports") }.each do |name, entry|
 
           expect(target).to conform_with_contract(
             classes: expected,
+            extra_classes: extra_classes,
             data_slot: data_slot_for_target,
             static_attributes: slot_definition[:static_attributes] || {},
             dynamic_attributes: slot_definition[:dynamic_attributes] || [],

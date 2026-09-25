@@ -27,7 +27,7 @@
 | `sorbet` | `srb tc` + `tapioca gem --verify` | mise |
 | `rspec` | コンポーネントスペック・適合試験・生成物整合スペック（[07-testing](testing.md) 層1/2/4） | mise |
 | `system` | Cupriteシステムスペック（層3）。Chromeのセットアップを含む | browser-actions/setup-chrome |
-| `parity` | upstream React/ViteとLookbookの静的・アニメーションparity。失敗成果物をartifactとして保存 | Chrome + pnpm + pixelmatch |
+| `parity` | upstream React/ViteとLookbookの静的・アニメーションparity。失敗成果物をartifactとして保存 | 固定Chromium + pnpm + RGBA完全比較 |
 | `determinism` | **`rake verify:generated` → `git diff --exit-code`**。`shadcn:check`に加えてREADME inventoryとcomponent referenceの`docs:check`も実行 | ruby + node |
 | `tailwind-build` | ビルド済みgemのEngine統合と全クラス抽出元が実際にTailwindビルドを通るか（[06](theming-tailwind.md) §6） | `tailwindcss-rails` 4.3系 / lock解決版 + node |
 

@@ -7,6 +7,7 @@
 # 別アイテムのクラスを合成する構造(item-separator が Separator をラップする等)で、
 # 抽出器が単一アイテム内のクラスしか事前解決できないための措置。
 # クラス列の不一致が許容されるケースは原則これのみ。
+# extra_classes は実装固有の追加クラスを順序まで指定し、残りのクラスは完全一致で検証する。
 separator:
   Separator:
     # ネイティブdiv化に伴うARIA(05-stimulus-hotwire §3 の方針)
@@ -38,9 +39,9 @@ checkbox:
 switch:
   Switch:
     # checkbox と同じ理由の data-checked / data-unchecked / appearance-none
-    # (peer-checked のための peer 含む)
+    # (peer-checked のための peer 含む)。style は入力を装飾外枠へ重ねる位置指定。
     class_mode: contains
-    attributes: [type, role, data-checked, data-unchecked, data-controller, data-action]
+    attributes: [type, role, data-checked, data-unchecked, data-controller, data-action, style]
 radio-group:
   RadioGroup:
     attributes: [role]
@@ -329,6 +330,9 @@ select:
   SelectGroup:
     attributes: [role]
   SelectItem:
+    # ネイティブpopoverはトリガーにfocusを保持するため、強調表示を
+    # data-highlightedでも適用するクラスが必要。
+    extra_classes: ["data-[highlighted=true]:bg-accent", "data-[highlighted=true]:text-accent-foreground"]
     attributes: [role, tabindex, data-value, data-selected, data-action, aria-selected]
   SelectSeparator:
     attributes: [role]
